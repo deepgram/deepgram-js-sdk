@@ -1,4 +1,3 @@
-import querystring from "querystring";
 import { request } from "https";
 import { ApiKeyResponse, Key } from "./types";
 
