@@ -12,13 +12,13 @@ function main() {
 
     const deepgram = new Deepgram({ apiKey: config.deepgramApiKey, apiSecret: config.deepgramApiSecret });
 
-    // deepgram.transcribe(config.urlToFile, { punctuate: true })
-    //   .then((result) => {
-    //     console.log(result.results.channels[0]);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    deepgram.transcribe(config.urlToFile, { punctuate: true })
+      .then((result) => {
+        console.log(result.results.channels[0]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     let key;
     deepgram.keys.create('test')
@@ -39,7 +39,6 @@ function main() {
       .catch((err) => {
         console.log(err);
       });
-
 
   });
 }

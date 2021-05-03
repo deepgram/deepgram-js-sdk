@@ -1,3 +1,4 @@
+import querystring from "querystring";
 import { request } from "https";
 import { ApiKeyResponse, Key } from "./types";
 
@@ -99,7 +100,7 @@ export class Keys {
   async delete(key: string): Promise<void> {
     const requestOptions = {
       host: this.apiUrl,
-      path: `${this._path}/${key}`,
+      path: this._path,
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
