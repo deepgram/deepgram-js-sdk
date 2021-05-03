@@ -1,0 +1,51 @@
+{
+  "name": "@deepgram/sdk",
+  "version": "0.5.0",
+  "description": "An SDK for the Deepgram automated speech recognition platform",
+  "main": "out/deepgram.js",
+  "scripts": {
+    "build": "tsc -p ./",
+    "lint": "eslint ./src --ext .ts",
+    "prettier:format": "prettier --config .prettierrc src/**/*.ts --write",
+    "test": "mocha -r ts-node/register tests/**/*test.ts --insect",
+    "watch": "nodemon -e ts --watch src --exec \"npm run build\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepgram/node-sdk.git"
+  },
+  "keywords": [
+    "deepgram",
+    "asr",
+    "speech",
+    "sdk"
+  ],
+  "author": {
+    "name": "Michael Jolley",
+    "email": "michael.jolley@deepgram.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deepgram/node-sdk/issues"
+  },
+  "homepage": "https://github.com/deepgram/node-sdk#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.41",
+    "@types/sinon": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "chai": "^4.3.4",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "mocha": "^8.3.2",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "sinon": "^10.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {}
+}
