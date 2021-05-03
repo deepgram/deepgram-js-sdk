@@ -99,7 +99,7 @@ export class Keys {
   async delete(key: string): Promise<void> {
     const requestOptions = {
       host: this.apiUrl,
-      path: this._path,
+      path: `${this._path}/${key}`,
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -132,7 +132,6 @@ export class Keys {
         httpRequest.on("error", (err) => {
           reject(`DG: ${err}`);
         });
-        console.log(key);
         const payload = JSON.stringify({ key });
 
         httpRequest.write(payload);
