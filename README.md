@@ -1,6 +1,6 @@
 # Deepgram Node.js SDK
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/deepgram/node-sdk/CI/main) ![npm (scoped)](https://img.shields.io/npm/v/deepgram/node-sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/deepgram/node-sdk/CI/main) ![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
 Node.js official SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
@@ -27,12 +27,12 @@ yarn add @deepgram/sdk
 ## Constructor
 
 ```js
-const Deepgram = require("@deepgram/sdk");
+const { Deepgram } = require("@deepgram/sdk");
 
 const deepgram = new Deepgram({
   apiKey: DEEPGRAM_API_KEY,
   apiSecret: DEEPGRAM_API_SECRET,
-  apiUrl: CUSTOM_API_URL,
+  apiUrl: CUSTOM_API_URL, // Optionally used for on-prem customers
 });
 ```
 

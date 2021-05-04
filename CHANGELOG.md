@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.4]
+
 ### Added
 
 - `transcribe` method will now return transcription results for both urls or buffers.
@@ -15,4 +17,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/vonage/vscode/compare/edc07b4...HEAD
+[unreleased]: https://github.com/vonage/vscode/compare/0.6.4...HEAD
+[0.6.4]: https://github.com/vonage/vscode/compare/edc07b4...0.6.4
