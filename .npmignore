@@ -1,5 +1,5 @@
 src
-test
+tests
 sample
 .github
 .nyc_output
