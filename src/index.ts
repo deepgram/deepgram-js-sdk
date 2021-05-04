@@ -1,12 +1,16 @@
 import { DefaultOptions } from "./constants";
-import { ApiBatchResponse, Options, TranscriptionOptions } from "./types";
+import {
+  ApiBatchResponse,
+  ApiKeyResponse,
+  Key,
+  Options,
+  TranscriptionOptions,
+} from "./types";
 import { transcribe } from "./batch";
 import { Keys } from "./keys";
 
 export class Deepgram {
   private _credentials: string;
-
-  public keys: Keys;
 
   constructor(private options: Options) {
     this._validateOptions();
@@ -14,8 +18,6 @@ export class Deepgram {
     this._credentials = Buffer.from(
       `${options.apiKey}:${options.apiSecret}`
     ).toString("base64");
-
-    this.keys = new Keys(this._credentials, this.options.apiUrl || "");
   }
 
   /**
@@ -50,4 +52,30 @@ export class Deepgram {
       options
     );
   }
+
+  public keys = {
+    list: async (): Promise<ApiKeyResponse> => {
+      return await Keys.list(this._credentials, this.options.apiUrl || "");
+    },
+
+    create: async (label: string): Promise<Key> => {
+      return await Keys.create(
+        this._credentials,
+        this.options.apiUrl || "",
+        label
+      );
+    },
+
+    delete: async (
+      credentials: string,
+      apiUrl: string,
+      key: string
+    ): Promise<void> => {
+      return await Keys.delete(
+        this._credentials,
+        this.options.apiUrl || "",
+        key
+      );
+    },
+  };
 }

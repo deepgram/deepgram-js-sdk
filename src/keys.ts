@@ -1,144 +1,85 @@
 import { request } from "https";
+import { RequestOptions } from "node:https";
 import { ApiKeyResponse, Key } from "./types";
 
-export class Keys {
-  private _path = "/v2/keys";
+export const Keys = {
+  async list(credentials: string, apiUrl: string): Promise<ApiKeyResponse> {
+    return _request<ApiKeyResponse>("GET", credentials, apiUrl);
+  },
 
-  constructor(private credentials: string, private apiUrl: string) {}
+  async create(
+    credentials: string,
+    apiUrl: string,
+    label: string
+  ): Promise<Key> {
+    return _request<Key>("POST", credentials, apiUrl, { label });
+  },
 
-  async list(): Promise<ApiKeyResponse> {
-    const requestOptions = {
-      host: this.apiUrl,
-      path: this._path,
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${this.credentials}`,
-      },
-    };
+  async delete(
+    credentials: string,
+    apiUrl: string,
+    key: string
+  ): Promise<void> {
+    return _request<void>("DELETE", credentials, apiUrl, { key });
+  },
+};
 
-    return new Promise((resolve, reject) => {
-      try {
-        const httpRequest = request(requestOptions, (dgRes) => {
-          let dgResContent = "";
+const _requestOptions = (
+  credentials: string,
+  apiUrl: string,
+  method: string
+): RequestOptions => {
+  return {
+    host: apiUrl,
+    path: "/v2/keys",
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${credentials}`,
+    },
+  };
+};
 
-          dgRes.on("data", (chunk) => {
-            dgResContent += chunk;
-          });
+function _request<T>(
+  method: string,
+  credentials: string,
+  apiUrl: string,
+  payload?: unknown
+): Promise<T> {
+  const requestOptions = _requestOptions(credentials, apiUrl, method);
+  return new Promise((resolve, reject) => {
+    try {
+      const httpRequest = request(requestOptions, (dgRes) => {
+        let dgResContent = "";
 
-          dgRes.on("end", () => {
-            const dgResJson = JSON.parse(dgResContent);
-            if (dgResJson.error) {
-              reject(`DG: ${dgResContent}`);
-            }
-            resolve(dgResJson);
-          });
-
-          dgRes.on("error", (err) => {
-            reject(`DG: ${err}`);
-          });
+        dgRes.on("data", (chunk) => {
+          dgResContent += chunk;
         });
 
-        httpRequest.on("error", (err) => {
+        dgRes.on("end", () => {
+          const dgResJson = JSON.parse(dgResContent);
+          if (dgResJson.error) {
+            reject(`DG: ${dgResContent}`);
+          }
+          resolve(dgResJson);
+        });
+
+        dgRes.on("error", (err) => {
           reject(`DG: ${err}`);
         });
+      });
 
-        httpRequest.end();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
+      httpRequest.on("error", (err) => {
+        reject(`DG: ${err}`);
+      });
 
-  async create(label: string): Promise<Key> {
-    const requestOptions = {
-      host: this.apiUrl,
-      path: this._path,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${this.credentials}`,
-      },
-    };
-
-    return new Promise((resolve, reject) => {
-      try {
-        const httpRequest = request(requestOptions, (dgRes) => {
-          let dgResContent = "";
-
-          dgRes.on("data", (chunk) => {
-            dgResContent += chunk;
-          });
-
-          dgRes.on("end", () => {
-            const dgResJson = JSON.parse(dgResContent);
-            if (dgResJson.error) {
-              reject(`DG: ${dgResContent}`);
-            }
-            resolve(dgResJson);
-          });
-
-          dgRes.on("error", (err) => {
-            reject(`DG: ${err}`);
-          });
-        });
-
-        httpRequest.on("error", (err) => {
-          reject(`DG: ${err}`);
-        });
-        const payload = JSON.stringify({ label });
-
+      if (payload) {
         httpRequest.write(payload);
-        httpRequest.end();
-      } catch (err) {
-        reject(err);
       }
-    });
-  }
 
-  async delete(key: string): Promise<void> {
-    const requestOptions = {
-      host: this.apiUrl,
-      path: this._path,
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${this.credentials}`,
-      },
-    };
-
-    return new Promise((resolve, reject) => {
-      try {
-        const httpRequest = request(requestOptions, (dgRes) => {
-          let dgResContent = "";
-
-          dgRes.on("data", (chunk) => {
-            dgResContent += chunk;
-          });
-
-          dgRes.on("end", () => {
-            const dgResJson = JSON.parse(dgResContent);
-            if (dgResJson.error) {
-              reject(`DG: ${dgResContent}`);
-            }
-            resolve(dgResJson);
-          });
-
-          dgRes.on("error", (err) => {
-            reject(`DG: ${err}`);
-          });
-        });
-
-        httpRequest.on("error", (err) => {
-          reject(`DG: ${err}`);
-        });
-        const payload = JSON.stringify({ key });
-
-        httpRequest.write(payload);
-        httpRequest.end();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
+      httpRequest.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
 }

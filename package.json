@@ -5,6 +5,7 @@
   "main": "out/deepgram.js",
   "scripts": {
     "build": "tsc -p ./",
+    "coverage": "nyc npm run test",
     "lint": "eslint ./src --ext .ts",
     "prettier:format": "prettier --config .prettierrc src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/**/*test.ts --insect",
@@ -41,7 +42,9 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "mocha": "^8.3.2",
+    "nock": "^13.0.11",
     "nodemon": "^2.0.7",
+    "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "sinon": "^10.0.0",
     "ts-node": "^9.1.1",

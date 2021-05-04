@@ -2,3 +2,4 @@ src
 test
 sample
 .github
+.nyc_output
