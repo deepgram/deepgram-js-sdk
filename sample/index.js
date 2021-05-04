@@ -20,7 +20,7 @@ function main() {
         console.log(err);
       });
 
-    let key;
+    let key = 'Xwr5JGdWhUciiNLZ';
     deepgram.keys.create('test')
       .then((result) => {
         key = result.key
@@ -32,7 +32,7 @@ function main() {
             })
             .catch((err) => {
               console.log(err);
-            })
+            });
         }
 
       })

@@ -1,6 +1,6 @@
 {
   "name": "@deepgram/sdk",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "An SDK for the Deepgram automated speech recognition platform",
   "main": "out/deepgram.js",
   "scripts": {

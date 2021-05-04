@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `transcribe` method will now return transcription results for both urls or buffers.
+- `keys` now provides `create`, `list`, and `delete` methods that allow managing of
+  API keys.
 
 ---
 

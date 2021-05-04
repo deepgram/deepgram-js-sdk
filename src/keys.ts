@@ -27,7 +27,8 @@ export const Keys = {
 const _requestOptions = (
   credentials: string,
   apiUrl: string,
-  method: string
+  method: string,
+  payload?: unknown
 ): RequestOptions => {
   return {
     host: apiUrl,
@@ -36,6 +37,11 @@ const _requestOptions = (
     headers: {
       "Content-Type": "application/json",
       Authorization: `Basic ${credentials}`,
+      "Content-Length": payload
+        ? typeof payload === "string"
+          ? Buffer.byteLength(payload)
+          : Buffer.byteLength(JSON.stringify(payload))
+        : undefined,
     },
   };
 };
@@ -46,7 +52,7 @@ function _request<T>(
   apiUrl: string,
   payload?: unknown
 ): Promise<T> {
-  const requestOptions = _requestOptions(credentials, apiUrl, method);
+  const requestOptions = _requestOptions(credentials, apiUrl, method, payload);
   return new Promise((resolve, reject) => {
     try {
       const httpRequest = request(requestOptions, (dgRes) => {
@@ -74,7 +80,9 @@ function _request<T>(
       });
 
       if (payload) {
-        httpRequest.write(payload);
+        httpRequest.write(
+          typeof payload === "string" ? payload : JSON.stringify(payload)
+        );
       }
 
       httpRequest.end();

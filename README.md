@@ -1,6 +1,6 @@
 # Deepgram Node.js SDK
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](CODE_OF_CONDUCT.md)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/deepgram/node-sdk/CI/main) ![npm (scoped)](https://img.shields.io/npm/v/deepgram/node-sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
 Node.js official SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
@@ -55,7 +55,7 @@ const response = await deepgram.transcribe(URL_OR_BUFFER_OF_FILE, {
 ```js
 {
   // AI model used to process submitted audio.
-  model?: "general" | "phonecall" |  "meeting" | <custom-id>,
+  model?: "general" | "phonecall" |  "meeting" | "<custom-id>",
 
   // BCP-47 language tag that hints at the primary spoken language.
   // Defaults to en-US

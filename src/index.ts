@@ -66,11 +66,7 @@ export class Deepgram {
       );
     },
 
-    delete: async (
-      credentials: string,
-      apiUrl: string,
-      key: string
-    ): Promise<void> => {
+    delete: async (key: string): Promise<void> => {
       return await Keys.delete(
         this._credentials,
         this.options.apiUrl || "",
