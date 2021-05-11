@@ -2,6 +2,9 @@
 
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/deepgram/node-sdk/CI/main) ![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
+> This is a pre-release SDK and is very likely to have breaking changes. Feel free to provide
+> feedback via GitHub issues and suggest new features.
+
 Node.js official SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
 

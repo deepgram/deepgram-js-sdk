@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Updated
+
+- Added notice to README to denote the library is in a very unstable state.
+
 ## [0.6.4]
 
 ### Added
