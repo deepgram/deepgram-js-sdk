@@ -5,7 +5,7 @@
 > This is a pre-release SDK and is very likely to have breaking changes. Feel free to provide
 > feedback via GitHub issues and suggest new features.
 
-Node.js official SDK for [Deepgram](https://www.deepgram.com/)'s automated
+Official Node.js SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
 
 To access the API you will need a Deepgram account. Sign up for free at
