@@ -1,16 +1,15 @@
 import { DefaultOptions } from "./constants";
-import {
-  ApiBatchResponse,
-  ApiKeyResponse,
-  Key,
-  Options,
-  TranscriptionOptions,
-} from "./types";
-import { transcribe } from "./batch";
+import { Options } from "./types";
 import { Keys } from "./keys";
+import { Projects } from "./projects";
+import { Transcriber } from "./transcription";
 
 export class Deepgram {
   private _credentials: string;
+
+  keys: Keys;
+  projects: Projects;
+  transcription: Transcriber;
 
   constructor(private options: Options) {
     this._validateOptions();
@@ -18,6 +17,13 @@ export class Deepgram {
     this._credentials = Buffer.from(
       `${options.apiKey}:${options.apiSecret}`
     ).toString("base64");
+
+    this.keys = new Keys(this._credentials, this.options.apiUrl || "");
+    this.projects = new Projects(this._credentials, this.options.apiUrl || "");
+    this.transcription = new Transcriber(
+      this._credentials,
+      this.options.apiUrl || ""
+    );
   }
 
   /**
@@ -35,43 +41,4 @@ export class Deepgram {
       throw new Error("DG: API key & secret are required");
     }
   }
-
-  /**
-   * Transcribes audio from a file or buffer
-   * @param source Url or Buffer of file to transcribe
-   * @param options Options to modify transcriptions
-   */
-  async transcribe(
-    source: string | Buffer,
-    options?: TranscriptionOptions
-  ): Promise<ApiBatchResponse> {
-    return await transcribe(
-      this._credentials,
-      this.options.apiUrl || "",
-      source,
-      options
-    );
-  }
-
-  public keys = {
-    list: async (): Promise<ApiKeyResponse> => {
-      return await Keys.list(this._credentials, this.options.apiUrl || "");
-    },
-
-    create: async (label: string): Promise<Key> => {
-      return await Keys.create(
-        this._credentials,
-        this.options.apiUrl || "",
-        label
-      );
-    },
-
-    delete: async (key: string): Promise<void> => {
-      return await Keys.delete(
-        this._credentials,
-        this.options.apiUrl || "",
-        key
-      );
-    },
-  };
 }

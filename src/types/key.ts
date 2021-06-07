@@ -1,5 +1,7 @@
 export type Key = {
   key: string;
   secret?: string;
-  label: string;
+  name: string;
+  created: Date;
+  scopes: Array<string>;
 };

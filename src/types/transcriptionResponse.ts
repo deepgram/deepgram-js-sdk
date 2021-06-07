@@ -1,9 +1,9 @@
-import { ApiMetadata } from "./apiMetadata";
+import { Metadata } from "./metadata";
 import { Channel } from "./channel";
 
-export type ApiBatchResponse = {
+export type TranscriptionResponse = {
   request_id?: string;
-  metadata?: ApiMetadata;
+  metadata?: Metadata;
   results?: {
     channels: Array<Channel>;
   };

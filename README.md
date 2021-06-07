@@ -35,25 +35,75 @@ const { Deepgram } = require("@deepgram/sdk");
 const deepgram = new Deepgram({
   apiKey: DEEPGRAM_API_KEY,
   apiSecret: DEEPGRAM_API_SECRET,
-  apiUrl: CUSTOM_API_URL, // Optionally used for on-prem customers
+  apiUrl: CUSTOM_API_URL, // Optionally used for on-premises customers
 });
 ```
 
 ## Usage
 
-## Batch Transcription
+## Transcription
 
-The `transcribe` method can receive the url to a file or a buffer with a file
-to transcribe. Additional options can be provided to customize the result.
+The `transcription` property can handle both pre-recorded and live transcriptions.
+
+### Pre-recorded
+
+The `transcription.preRecorded` method handles sending an existing file or
+buffer to the Deepgram API to generate a transcription. Additional options
+can be provided to customize the result.
 
 ```js
-const response = await deepgram.transcribe(URL_OR_BUFFER_OF_FILE, {
-  punctuate: true,
-  // other options are available
+// Sending a file
+const fileSource = { url: URL_OF_FILE };
+
+// Sending a buffer
+const bufferSource = { buffer: BUFFER_OF_FILE, mimetype: MIMETYPE_OF_FILE };
+
+// Both fileSource or bufferSource could be provided as the source parameter
+const response = await deepgram.transcription.preRecorded(
+  fileSource | bufferSource,
+  {
+    punctuate: true,
+    // other options are available
+  }
+);
+```
+
+### Live
+
+The `transcription.live` method provides access to a websocket connection
+to the Deepgram API for generating streaming transcriptions. Additional options
+can be provided to customize the result.
+
+```js
+const deepgramSocket = deepgram.transcription.live({ punctuate: true });
+
+socket.on("microphone-stream", (stream) => {
+  deepgramSocket.send(stream);
+});
+
+/**
+ * Receive transcriptions based on sent streams
+ */
+deepgramSocket.addListener("transcriptReceived", (transcription) => {
+  console.log(transcription.data);
 });
 ```
 
+#### Events
+
+The following events are fired by the live transcription object:
+
+| Event                | Description                                           | Data                                                |
+| -------------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| `open`               | The websocket connection to Deepgram has been opened. | --                                                  |
+| `close`              | The websocket connection to Deepgram has been closed. | --                                                  |
+| `error`              | An error occurred with the websocket connection       | Error object                                        |
+| `transcriptReceived` | Deepgram has responded with a transcription           | [Transcription Response](#transcription%20response) |
+
 ### Options
+
+Additional transcription options can be provided to both the pre-recorded and
+live transcriptions.
 
 ```js
 {
@@ -116,26 +166,138 @@ const response = await deepgram.transcribe(URL_OR_BUFFER_OF_FILE, {
 }
 ```
 
-### Response
+### Transcription Response
+
+```js
+{
+  "metadata": {
+    "request_id": "string",
+    "transaction_key": "string",
+    "sha256": "string",
+    "created": "string",
+    "duration": 0,
+    "channels": 0
+    },
+  "results": {
+    "channels": [
+      {
+        "search": [
+          {
+            "query": "string",
+            "hits": [
+              {
+                "confidence": 0,
+                "start": 0,
+                "end": 0,
+                "snippet": "string"
+              }
+            ]
+           }
+        ],
+        "alternatives": [
+          {
+            "transcript": "string",
+            "confidence": 0,
+            "words": [
+              {
+                "word": "string",
+                "start": 0,
+                "end": 0,
+                "confidence": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Project Management
+
+### List Projects
+
+Retrieve all projects.
+
+```js
+const projects = await deepgram.projects.list();
+```
+
+#### Response
+
+```ts
+{
+  projects: [
+    {
+      project_uuid: string,
+      name: string,
+    },
+  ];
+}
+```
+
+### Get a Project
+
+Retrieves all project based on the provided project id.
+
+```js
+const project = await deepgram.projects.get(PROJECT_ID);
+```
+
+#### Response
+
+```ts
+{
+  project_uuid: string,
+  name: string,
+}
+```
+
+### Create Project
+
+Creates a project.
+
+```js
+const project = await deepgram.projects.create(NAME_OF_PROJECT);
+```
+
+#### Response
+
+```ts
+{
+  project_uuid: string,
+  name: string,
+}
+```
+
+### Delete Project
+
+Delete a project.
+
+```js
+await deepgram.projects.delete(UUID_OF_PROJECT);
+```
 
 ## Key Management
 
 ### List Keys
 
-Retrieve all keys using the `keys.list` method.
+Retrieves all keys for a given project.
 
 ```js
-const response = await deepgram.keys.list();
+const response = await deepgram.keys.list(PROJECT_ID);
 ```
 
 #### Response
 
-```js
+```ts
 {
   keys: [
     {
-      key: "API KEY",
-      label: "KEY LABEL",
+      key: string,
+      name: string,
+      scopes: Array<string>
     },
   ];
 }
@@ -143,20 +305,21 @@ const response = await deepgram.keys.list();
 
 ### Create Key
 
-Create a new API key using the `keys.create` method with a label for the
-key.
+Create a new API key for a project using the `keys.create` method
+with a name for the key.
 
 ```js
-const response = await deepgram.keys.create("label for key");
+const response = await deepgram.keys.create(PROJECT_ID, NAME_FOR_KEY);
 ```
 
 #### Response
 
-```js
+```ts
 {
-  key: "API KEY",
-  secret: "API SECRET",
-  label: "LABEL PROVIDED"
+  key: string,
+  name: string,
+  secret: string,
+  scopes: Array<string>
 }
 ```
 
@@ -166,7 +329,7 @@ Delete an existing API key using the `keys.delete` method with the key to
 delete.
 
 ```js
-await deepgram.keys.delete("key to delete");
+await deepgram.keys.delete(PROJECT_ID, KEY_TO_DELETE);
 ```
 
 ## Samples
@@ -185,6 +348,8 @@ const config = {
 The sample demonstrates the following uses:
 
 - Transcribing a file from a url
+- Creating a project
+- Deleting a project
 - Creating an API key
 - Deleting an API key
 

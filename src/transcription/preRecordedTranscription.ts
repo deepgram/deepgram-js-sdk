@@ -1,6 +1,18 @@
 import querystring from "querystring";
 import { request } from "https";
-import { ApiBatchResponse, TranscriptionOptions } from "./types";
+import {
+  TranscriptionResponse,
+  TranscriptionOptions,
+  TranscriptionSource,
+  UrlSource,
+} from "../types";
+
+function isUrlSource(
+  providedSource: TranscriptionSource
+): providedSource is UrlSource {
+  if ((providedSource as UrlSource).url) return true;
+  return false;
+}
 
 /**
  * Transcribes audio from a file or buffer
@@ -8,17 +20,17 @@ import { ApiBatchResponse, TranscriptionOptions } from "./types";
  * @param source Url or Buffer of file to transcribe
  * @param options Options to modify transcriptions
  */
-export const transcribe = async (
+export const preRecordedTranscription = async (
   credentials: string,
   apiUrl: string,
-  source: string | Buffer,
+  source: TranscriptionSource,
   options?: TranscriptionOptions
-): Promise<ApiBatchResponse> => {
+): Promise<TranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 
   if (
-    typeof source !== "string" &&
-    transcriptionOptions.mimetype === undefined
+    !isUrlSource(source) &&
+    (source.mimetype === undefined || source.mimetype.length === 0)
   ) {
     throw new Error("DG: Mimetype must be provided if the source is a Buffer");
   }
@@ -29,16 +41,17 @@ export const transcribe = async (
 const _listen = async (
   credentials: string,
   apiUrl: string,
-  source: string | Buffer,
+  source: TranscriptionSource,
   options: TranscriptionOptions
-): Promise<ApiBatchResponse> => {
+): Promise<TranscriptionResponse> => {
   const requestOptions = {
     host: apiUrl,
-    path: `/v2/listen?${querystring.stringify(options)}`,
+    path: `/v1/transcribe?${querystring.stringify(options)}`,
     method: "POST",
     headers: {
-      "Content-Type":
-        typeof source === "string" ? "application/json" : options.mimetype,
+      "Content-Type": isUrlSource(source)
+        ? "application/json"
+        : source.mimetype,
       Authorization: `Basic ${credentials}`,
     },
   };
@@ -69,8 +82,9 @@ const _listen = async (
         reject(`DG: ${err}`);
       });
 
-      const payload =
-        typeof source === "string" ? JSON.stringify({ url: source }) : source;
+      const payload = isUrlSource(source)
+        ? JSON.stringify({ url: source.url })
+        : source.buffer;
 
       httpRequest.write(payload);
       httpRequest.end();

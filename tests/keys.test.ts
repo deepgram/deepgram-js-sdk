@@ -15,9 +15,11 @@ describe("Key tests", () => {
   const sandbox = Sinon.createSandbox();
 
   let requestStub: Sinon.SinonStub;
+  let keys: Keys;
 
   beforeEach(function () {
     requestStub = Sinon.stub(https, "request");
+    keys = new Keys(fakeCredentials, fakeUrl);
   });
 
   afterEach(function () {
@@ -33,7 +35,7 @@ describe("Key tests", () => {
       .get("/v2/keys")
       .reply(200, mockInvalidCredentials);
 
-    Keys.list(fakeCredentials, fakeUrl).catch((err) => {
+    keys.list("projectId").catch((err) => {
       assert.equal(err, expectedError);
     });
   });
@@ -41,7 +43,7 @@ describe("Key tests", () => {
   it("Create resolves", function () {
     nock(`https://${fakeUrl}`).post("/v2/keys").reply(200, mockKey);
 
-    Keys.create(fakeCredentials, fakeUrl, "testLabel").then((response) => {
+    keys.create("projectId", "testLabel", ["project:read"]).then((response) => {
       response.should.deep.eq(mockKey);
       requestStub.calledOnce.should.eq(true);
     });
@@ -50,7 +52,7 @@ describe("Key tests", () => {
   it("Delete resolves", function () {
     nock(`https://${fakeUrl}`).delete("/v2/keys").reply(200);
 
-    Keys.delete(fakeCredentials, fakeUrl, "testLabel").then(() => {
+    keys.delete("projectId", "testLabel").then(() => {
       requestStub.calledOnce.should.eq(true);
     });
   });

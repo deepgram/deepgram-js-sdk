@@ -1,93 +1,69 @@
-import { request } from "https";
-import { RequestOptions } from "node:https";
-import { ApiKeyResponse, Key } from "./types";
+import { _request } from "./httpRequest";
+import { KeyResponse, Key } from "./types";
 
-export const Keys = {
-  async list(credentials: string, apiUrl: string): Promise<ApiKeyResponse> {
-    return _request<ApiKeyResponse>("GET", credentials, apiUrl);
-  },
+export class Keys {
+  constructor(private _credentials: string, private _apiUrl: string) {}
 
+  private apiPath = "/projects";
+
+  /**
+   * Retrieves all keys associated with the provided projectId
+   * @param projectId Unique identifier of the project containing API keys
+   */
+  async list(projectId: string): Promise<KeyResponse> {
+    return _request<KeyResponse>(
+      "GET",
+      this._credentials,
+      this._apiUrl || "",
+      `${this.apiPath}/${projectId}/keys`
+    );
+  }
+
+  /**
+   * Retrieves a specific key associated with the provided projectId
+   * @param projectId Unique identifier of the project containing API keys
+   * @param key Unique key to retrieve
+   */
+  async get(projectId: string, key: string): Promise<Key> {
+    return _request<Key>(
+      "GET",
+      this._credentials,
+      this._apiUrl || "",
+      `${this.apiPath}/${projectId}/keys/${key}`
+    );
+  }
+
+  /**
+   * Creates an API key with the provided scopes
+   * @param projectId Unique identifier of the project to create an API key under
+   * @param name Name of the key
+   * @param scopes Permission scopes associated with the API key
+   */
   async create(
-    credentials: string,
-    apiUrl: string,
-    label: string
+    projectId: string,
+    name: string,
+    scopes: Array<string>
   ): Promise<Key> {
-    return _request<Key>("POST", credentials, apiUrl, { label });
-  },
+    return _request<Key>(
+      "POST",
+      this._credentials,
+      this._apiUrl,
+      `${this.apiPath}/${projectId}/keys`,
+      { name, scopes }
+    );
+  }
 
-  async delete(
-    credentials: string,
-    apiUrl: string,
-    key: string
-  ): Promise<void> {
-    return _request<void>("DELETE", credentials, apiUrl, { key });
-  },
-};
-
-const _requestOptions = (
-  credentials: string,
-  apiUrl: string,
-  method: string,
-  payload?: unknown
-): RequestOptions => {
-  return {
-    host: apiUrl,
-    path: "/v2/keys",
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${credentials}`,
-      "Content-Length": payload
-        ? typeof payload === "string"
-          ? Buffer.byteLength(payload)
-          : Buffer.byteLength(JSON.stringify(payload))
-        : undefined,
-    },
-  };
-};
-
-function _request<T>(
-  method: string,
-  credentials: string,
-  apiUrl: string,
-  payload?: unknown
-): Promise<T> {
-  const requestOptions = _requestOptions(credentials, apiUrl, method, payload);
-  return new Promise((resolve, reject) => {
-    try {
-      const httpRequest = request(requestOptions, (dgRes) => {
-        let dgResContent = "";
-
-        dgRes.on("data", (chunk) => {
-          dgResContent += chunk;
-        });
-
-        dgRes.on("end", () => {
-          const dgResJson = JSON.parse(dgResContent);
-          if (dgResJson.error) {
-            reject(`DG: ${dgResContent}`);
-          }
-          resolve(dgResJson);
-        });
-
-        dgRes.on("error", (err) => {
-          reject(`DG: ${err}`);
-        });
-      });
-
-      httpRequest.on("error", (err) => {
-        reject(`DG: ${err}`);
-      });
-
-      if (payload) {
-        httpRequest.write(
-          typeof payload === "string" ? payload : JSON.stringify(payload)
-        );
-      }
-
-      httpRequest.end();
-    } catch (err) {
-      reject(err);
-    }
-  });
+  /**
+   * Deletes an API key
+   * @param projectId Unique identifier of the project to create an API key under
+   * @param key API key to
+   */
+  async delete(projectId: string, key: string): Promise<void> {
+    return _request<void>(
+      "DELETE",
+      this._credentials,
+      this._apiUrl,
+      `${this.apiPath}/${projectId}/keys/${key}`
+    );
+  }
 }
