@@ -108,7 +108,7 @@ live transcriptions.
 ```js
 {
   // AI model used to process submitted audio.
-  model?: "general" | "phonecall" |  "meeting" | "<custom-id>",
+  model?: "general" | "phonecall" |  "meeting" | "<custom-string>",
 
   // BCP-47 language tag that hints at the primary spoken language.
   // Defaults to en-US

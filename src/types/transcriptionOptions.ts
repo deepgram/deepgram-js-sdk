@@ -7,7 +7,7 @@ export type TranscriptionOptions = {
   /**
    * AI model used to process submitted audio.
    * @default general
-   * @remarks Possible values are general, phonecall, meeting or a custom-id
+   * @remarks Possible values are general, phonecall, meeting or a custom string
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
    */
   model?: Models | string;
