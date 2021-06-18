@@ -34,7 +34,6 @@ const { Deepgram } = require("@deepgram/sdk");
 
 const deepgram = new Deepgram({
   apiKey: DEEPGRAM_API_KEY,
-  apiSecret: DEEPGRAM_API_SECRET,
   apiUrl: CUSTOM_API_URL, // Optionally used for on-premises customers
 });
 ```
@@ -218,7 +217,7 @@ live transcriptions.
 
 ### List Projects
 
-Retrieve all projects.
+Retrieve all projects
 
 ```js
 const projects = await deepgram.projects.list();
@@ -233,7 +232,7 @@ const projects = await deepgram.projects.list();
       project_uuid: string,
       name: string,
     },
-  ];
+  ],
 }
 ```
 
@@ -276,7 +275,7 @@ const project = await deepgram.projects.create(NAME_OF_PROJECT);
 Delete a project.
 
 ```js
-await deepgram.projects.delete(UUID_OF_PROJECT);
+await deepgram.projects.delete(PROJECT_ID);
 ```
 
 ## Key Management
@@ -309,7 +308,7 @@ Create a new API key for a project using the `keys.create` method
 with a name for the key.
 
 ```js
-const response = await deepgram.keys.create(PROJECT_ID, NAME_FOR_KEY);
+const response = await deepgram.keys.create(PROJECT_ID, COMMENT_FOR_KEY);
 ```
 
 #### Response
@@ -329,7 +328,7 @@ Delete an existing API key using the `keys.delete` method with the key to
 delete.
 
 ```js
-await deepgram.keys.delete(PROJECT_ID, KEY_TO_DELETE);
+await deepgram.keys.delete(PROJECT_ID, KEY_ID);
 ```
 
 ## Samples
@@ -340,7 +339,6 @@ located at the top of the file.
 ```js
 const config = {
   deepgramApiKey: "Your Deepgram API Key",
-  deepgramApiSecret: "Your Deepgram API Secret",
   urlToFile: "Url to audio file",
 };
 ```

@@ -1,63 +1,36 @@
+const fs = require('fs');
 const { Deepgram } = require('../dist');
 
 const config = {
-  deepgramApiKey: 'Your Deepgram API Key',
-  deepgramApiSecret: 'Your Deepgram API Secret',
-  urlToFile: 'Url to audio file'
+  deepgramApiKey: '043e46d9f63dca7e3723c394d9db25c5f1fd220b',
+  urlToFile: 'test.mp3'
 }
 
 function main() {
 
   return new Promise((resolve, reject) => {
 
-    const deepgram = new Deepgram({ apiKey: config.deepgramApiKey, apiSecret: config.deepgramApiSecret });
+    const deepgram = new Deepgram(config.deepgramApiKey);
 
-    /**
-     * Transcribing a file 
-     */
-    deepgram.transcription.preRecorded({ url: config.urlToFile }, { punctuate: true })
-      .then((result) => {
-        console.log(result.results.channels[0]);
+    /** Load file into a buffer */
+    const fileBuffer = fs.readFileSync(config.urlToFile);
+
+    deepgram.transcription.preRecorded({
+      buffer: fileBuffer,
+      mimetype: 'audio/mp3' // or appropriate mimetype of your file 
+    }, {
+      punctuate: true
+    })
+      .then((transcription) => {
+        console.log(transcription);
+        resolve();
       })
       .catch((err) => {
         console.log(err);
-      });
-
-    /**
-     * Create & delete projects and API keys
-     */
-    let key = 'Xwr5JGdWhUciiNLZ';
-    deepgram.projects.create('testproject')
-      .then((project) => {
-
-        deepgram.keys.create(project.project_uuid, key, ['account:read'])
-          .then((key) => {
-            if (key) {
-              deepgram.keys.delete(project.project_uuid, key.key)
-                .then((result) => {
-                  deepgram.projects.delete(project.project_uuid)
-                    .then((r) => {
-
-                      console.log(`Successfully deleted key: ${JSON.stringify(result)}`);
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        reject();
       })
-      .catch((err) => {
-        console.log(err);
-      });
-
   });
 }
 
 main();
+

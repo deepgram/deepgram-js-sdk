@@ -14,7 +14,7 @@ export class Keys {
     return _request<KeyResponse>(
       "GET",
       this._credentials,
-      this._apiUrl || "",
+      this._apiUrl,
       `${this.apiPath}/${projectId}/keys`
     );
   }
@@ -22,26 +22,26 @@ export class Keys {
   /**
    * Retrieves a specific key associated with the provided projectId
    * @param projectId Unique identifier of the project containing API keys
-   * @param key Unique key to retrieve
+   * @param keyId Unique identifier for the key to retrieve
    */
-  async get(projectId: string, key: string): Promise<Key> {
+  async get(projectId: string, keyId: string): Promise<Key> {
     return _request<Key>(
       "GET",
       this._credentials,
-      this._apiUrl || "",
-      `${this.apiPath}/${projectId}/keys/${key}`
+      this._apiUrl,
+      `${this.apiPath}/${projectId}/keys/${keyId}`
     );
   }
 
   /**
    * Creates an API key with the provided scopes
    * @param projectId Unique identifier of the project to create an API key under
-   * @param name Name of the key
+   * @param comment Comment to describe the key
    * @param scopes Permission scopes associated with the API key
    */
   async create(
     projectId: string,
-    name: string,
+    comment: string,
     scopes: Array<string>
   ): Promise<Key> {
     return _request<Key>(
@@ -49,21 +49,21 @@ export class Keys {
       this._credentials,
       this._apiUrl,
       `${this.apiPath}/${projectId}/keys`,
-      { name, scopes }
+      JSON.stringify({ comment, scopes })
     );
   }
 
   /**
    * Deletes an API key
    * @param projectId Unique identifier of the project to create an API key under
-   * @param key API key to
+   * @param keyId Unique identifier for the key to delete
    */
-  async delete(projectId: string, key: string): Promise<void> {
+  async delete(projectId: string, keyId: string): Promise<void> {
     return _request<void>(
       "DELETE",
       this._credentials,
       this._apiUrl,
-      `${this.apiPath}/${projectId}/keys/${key}`
+      `${this.apiPath}/${projectId}/keys/${keyId}`
     );
   }
 }

@@ -1,7 +1,7 @@
 export type Key = {
-  key: string;
-  secret?: string;
-  name: string;
+  id: string;
+  key?: string;
+  comment: string;
   created: Date;
   scopes: Array<string>;
 };

@@ -2,3 +2,4 @@ node_modules
 dist
 out
 .nyc_output
+api.http

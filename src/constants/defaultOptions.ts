@@ -2,5 +2,5 @@
  * Default SDK options
  */
 export const DefaultOptions = {
-  apiUrl: "api.deepgram.com",
+  apiUrl: "dev.brain.deepgram.com",
 };

@@ -5,7 +5,7 @@ export type Project = {
   /**
    * Unique identifier of the project
    */
-  project_uuid: string;
+  id: string;
   /**
    * User provided name of the project
    */

@@ -4,7 +4,7 @@ import { Project, ProjectResponse } from "./types";
 export class Projects {
   constructor(private _credentials: string, private _apiUrl: string) {}
 
-  private apiPath = "/v1/projects";
+  private apiPath = "/projects";
 
   /**
    * Returns all projects accessible by the API key
@@ -13,7 +13,7 @@ export class Projects {
     return _request<ProjectResponse>(
       "GET",
       this._credentials,
-      this._apiUrl || "",
+      this._apiUrl,
       this.apiPath
     );
   }
@@ -26,7 +26,7 @@ export class Projects {
     return _request<Project>(
       "GET",
       this._credentials,
-      this._apiUrl || "",
+      this._apiUrl,
       `${this.apiPath}/${projectId}`
     );
   }
@@ -41,7 +41,7 @@ export class Projects {
       this._credentials,
       this._apiUrl,
       this.apiPath,
-      { name }
+      JSON.stringify({ name })
     );
   }
 
@@ -49,12 +49,12 @@ export class Projects {
    * Deletes the project associated with the provided projectId
    * @param projectId Unique identifier of the project to delete
    */
-  async delete(projectId: string): Promise<void> {
-    return _request<void>(
-      "DELETE",
-      this._credentials,
-      this._apiUrl,
-      `${this.apiPath}/${projectId}`
-    );
-  }
+  // async delete(projectId: string): Promise<void> {
+  //   return _request<void>(
+  //     "DELETE",
+  //     this._credentials,
+  //     this._apiUrl,
+  //     `${this.apiPath}/${projectId}`
+  //   );
+  // }
 }

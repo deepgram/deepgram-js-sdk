@@ -1,5 +1,5 @@
 import { Key } from "./key";
 
 export type KeyResponse = {
-  keys: Array<Key>;
+  api_keys: Array<Key>;
 };
