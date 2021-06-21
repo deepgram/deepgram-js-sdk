@@ -9,26 +9,44 @@ const config = {
 function main() {
 
   return new Promise((resolve, reject) => {
+    (async () => {
 
-    const deepgram = new Deepgram(config.deepgramApiKey);
+      try {
 
-    /** Load file into a buffer */
-    const fileBuffer = fs.readFileSync(config.urlToFile);
+        const deepgram = new Deepgram(config.deepgramApiKey);
 
-    deepgram.transcription.preRecorded({
-      buffer: fileBuffer,
-      mimetype: 'audio/mp3' // or appropriate mimetype of your file 
-    }, {
-      punctuate: true
-    })
-      .then((transcription) => {
+        /** Create a project to test with */
+        const project = await deepgram.projects.create('test project');
+        console.log(`Project created: ${project.id}`);
+
+        /** Create an API key in the project */
+        const apiKey = await deepgram.keys.create(project.id, "test key", ['project:write']);
+        console.log(`Key created: ${apiKey.id}`);
+
+        /** Load file into a buffer */
+        const fileBuffer = fs.readFileSync(config.urlToFile);
+
+        const newDeepgram = new Deepgram(apiKey.key);
+
+        /** Send a pre-recorded file for transcription */
+        const transcription = await newDeepgram.transcription.preRecorded({
+          buffer: fileBuffer,
+          mimetype: 'audio/mp3' // or appropriate mimetype of your file
+        }, {
+          punctuate: true
+        });
         console.log(transcription);
-        resolve();
-      })
-      .catch((err) => {
-        console.log(err);
-        reject();
-      })
+
+        await deepgram.keys.delete(project.id, apiKey.id);
+        console.log(`Key deleted: ${apiKey.id}`);
+
+        await deepgram.projects.delete(project.id);
+        console.log(`Project deleted: ${project.id}`);
+      }
+      catch (err) {
+        console.log(`Err: ${err}`);
+      }
+    })
   });
 }
 

@@ -49,12 +49,12 @@ export class Projects {
    * Deletes the project associated with the provided projectId
    * @param projectId Unique identifier of the project to delete
    */
-  // async delete(projectId: string): Promise<void> {
-  //   return _request<void>(
-  //     "DELETE",
-  //     this._credentials,
-  //     this._apiUrl,
-  //     `${this.apiPath}/${projectId}`
-  //   );
-  // }
+  async delete(projectId: string): Promise<void> {
+    return _request<void>(
+      "DELETE",
+      this._credentials,
+      this._apiUrl,
+      `${this.apiPath}/${projectId}`
+    );
+  }
 }

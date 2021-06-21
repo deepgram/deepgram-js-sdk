@@ -2,14 +2,11 @@
 
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/deepgram/node-sdk/CI/main) ![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
-> This is a pre-release SDK and is very likely to have breaking changes. Feel free to provide
-> feedback via GitHub issues and suggest new features.
-
 Official Node.js SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
 
 To access the API you will need a Deepgram account. Sign up for free at
-[try.deepgram.com][signup].
+[signup][signup].
 
 You can learn more about the full Deepgram API at [https://developers.deepgram.com](https://developers.deepgram.com).
 
@@ -47,7 +44,7 @@ The `transcription` property can handle both pre-recorded and live transcription
 ### Pre-recorded
 
 The `transcription.preRecorded` method handles sending an existing file or
-buffer to the Deepgram API to generate a transcription. Additional options
+buffer to the Deepgram API to generate a transcription. [Additional options](#options)
 can be provided to customize the result.
 
 ```js
@@ -70,11 +67,11 @@ const response = await deepgram.transcription.preRecorded(
 ### Live
 
 The `transcription.live` method provides access to a websocket connection
-to the Deepgram API for generating streaming transcriptions. Additional options
+to the Deepgram API for generating streaming transcriptions. [Additional options](#options)
 can be provided to customize the result.
 
 ```js
-const deepgramSocket = deepgram.transcription.live({ punctuate: true });
+const deepgramLive = deepgram.transcription.live({ punctuate: true });
 
 socket.on("microphone-stream", (stream) => {
   deepgramSocket.send(stream);
@@ -83,7 +80,7 @@ socket.on("microphone-stream", (stream) => {
 /**
  * Receive transcriptions based on sent streams
  */
-deepgramSocket.addListener("transcriptReceived", (transcription) => {
+deepgramLive.addListener("transcriptReceived", (transcription) => {
   console.log(transcription.data);
 });
 ```
@@ -92,12 +89,12 @@ deepgramSocket.addListener("transcriptReceived", (transcription) => {
 
 The following events are fired by the live transcription object:
 
-| Event                | Description                                           | Data                                                |
-| -------------------- | ----------------------------------------------------- | --------------------------------------------------- |
-| `open`               | The websocket connection to Deepgram has been opened. | --                                                  |
-| `close`              | The websocket connection to Deepgram has been closed. | --                                                  |
-| `error`              | An error occurred with the websocket connection       | Error object                                        |
-| `transcriptReceived` | Deepgram has responded with a transcription           | [Transcription Response](#transcription%20response) |
+| Event                | Description                                           | Data                                              |
+| -------------------- | ----------------------------------------------------- | ------------------------------------------------- |
+| `open`               | The websocket connection to Deepgram has been opened. | The DG live transcription object                  |
+| `close`              | The websocket connection to Deepgram has been closed. | WebSocket.CloseEvent                              |
+| `error`              | An error occurred with the websocket connection       | Error object                                      |
+| `transcriptReceived` | Deepgram has responded with a transcription           | [Transcription Response](#transcription-response) |
 
 ### Options
 
@@ -229,7 +226,7 @@ const projects = await deepgram.projects.list();
 {
   projects: [
     {
-      project_uuid: string,
+      id: string,
       name: string,
     },
   ],
@@ -248,7 +245,7 @@ const project = await deepgram.projects.get(PROJECT_ID);
 
 ```ts
 {
-  project_uuid: string,
+  id: string,
   name: string,
 }
 ```
@@ -265,7 +262,7 @@ const project = await deepgram.projects.create(NAME_OF_PROJECT);
 
 ```ts
 {
-  project_uuid: string,
+  id: string,
   name: string,
 }
 ```
@@ -294,8 +291,9 @@ const response = await deepgram.keys.list(PROJECT_ID);
 {
   keys: [
     {
-      key: string,
-      name: string,
+      id: string,
+      comment: string,
+      created: Date,
       scopes: Array<string>
     },
   ];
@@ -315,9 +313,10 @@ const response = await deepgram.keys.create(PROJECT_ID, COMMENT_FOR_KEY);
 
 ```ts
 {
+  id: string,
   key: string,
-  name: string,
-  secret: string,
+  comment: string,
+  created: Date,
   scopes: Array<string>
 }
 ```
@@ -345,7 +344,7 @@ const config = {
 
 The sample demonstrates the following uses:
 
-- Transcribing a file from a url
+- Transcribing a file from a file
 - Creating a project
 - Deleting a project
 - Creating an API key
@@ -371,5 +370,5 @@ project, let us know! You can either:
 
 Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/)
 
-[signup]: https://try.deepgram.com?utm_source=node-sdk&utm_content=readme
+[signup]: https://console.deepgram.com?utm_source=node-sdk&utm_content=readme
 [license]: LICENSE.txt

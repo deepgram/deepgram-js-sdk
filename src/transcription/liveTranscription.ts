@@ -26,11 +26,11 @@ export class LiveTranscription extends EventEmitter {
 
   private _bindSocketEvents(): void {
     this._socket.onopen = () => {
-      this.emit(LiveTranscriptionEvents.Open);
+      this.emit(LiveTranscriptionEvents.Open, this);
     };
 
-    this._socket.onclose = (n) => {
-      this.emit(LiveTranscriptionEvents.Close, n);
+    this._socket.onclose = (event: WebSocket.CloseEvent) => {
+      this.emit(LiveTranscriptionEvents.Close, event);
     };
 
     this._socket.onerror = (event) => {
@@ -65,9 +65,10 @@ export class LiveTranscription extends EventEmitter {
   }
 
   /**
-   * Close the websocket connection to Deepgram
+   * Denote that you are finished sending audio and close
+   * the websocket connection when transcription is finished
    */
-  public close(): void {
+  public finish(): void {
     this._socket.close(1000);
   }
 }
