@@ -68,6 +68,6 @@ export class LiveTranscription extends EventEmitter {
    * Close the websocket connection to Deepgram
    */
   public close(): void {
-    this._socket.close(0);
+    this._socket.close(1000);
   }
 }
