@@ -39,7 +39,7 @@ export const preRecordedTranscription = async (
     "POST",
     apiKey,
     apiUrl,
-    `/transcribe?${querystring.stringify(transcriptionOptions)}`,
+    `/listen?${querystring.stringify(transcriptionOptions)}`,
     isUrlSource(source) ? JSON.stringify(source) : source.buffer,
     isUrlSource(source)
       ? undefined

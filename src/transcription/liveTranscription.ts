@@ -14,7 +14,7 @@ export class LiveTranscription extends EventEmitter {
   ) {
     super(undefined);
     this._socket = new WebSocket(
-      `wss://${apiUrl}/transcribe?${querystring.stringify(options)}`,
+      `wss://${apiUrl}/listen?${querystring.stringify(options)}`,
       {
         headers: {
           Authorization: `Basic ${credentials}`,

@@ -2,8 +2,8 @@ const fs = require('fs');
 const { Deepgram } = require('../dist');
 
 const config = {
-  deepgramApiKey: '043e46d9f63dca7e3723c394d9db25c5f1fd220b',
-  urlToFile: 'test.mp3'
+  deepgramApiKey: 'YOUR_DEEPGRAM_API_KEY',
+  urlToFile: 'https://static.deepgram.com/examples/Bueller-Life-moves-pretty-fast.wav'
 }
 
 function main() {
@@ -20,33 +20,35 @@ function main() {
         console.log(`Project created: ${project.id}`);
 
         /** Create an API key in the project */
-        const apiKey = await deepgram.keys.create(project.id, "test key", ['project:write']);
+        const apiKey = await deepgram.keys.create(project.id, "test key", ['member']);
         console.log(`Key created: ${apiKey.id}`);
-
-        /** Load file into a buffer */
-        const fileBuffer = fs.readFileSync(config.urlToFile);
 
         const newDeepgram = new Deepgram(apiKey.key);
 
         /** Send a pre-recorded file for transcription */
         const transcription = await newDeepgram.transcription.preRecorded({
-          buffer: fileBuffer,
-          mimetype: 'audio/mp3' // or appropriate mimetype of your file
+          url: config.urlToFile
         }, {
           punctuate: true
         });
-        console.log(transcription);
+        console.dir(transcription, { depth: null });
+
+        /** Retrieve & log usage for this project */
+        const usage = await newDeepgram.usage.listRequests(project.id);
+        console.dir(usage, { depth: null });
 
         await deepgram.keys.delete(project.id, apiKey.id);
         console.log(`Key deleted: ${apiKey.id}`);
 
         await deepgram.projects.delete(project.id);
         console.log(`Project deleted: ${project.id}`);
+        resolve();
       }
       catch (err) {
         console.log(`Err: ${err}`);
+        reject(err);
       }
-    })
+    })()
   });
 }
 

@@ -96,7 +96,7 @@ The following events are fired by the live transcription object:
 | `error`              | An error occurred with the websocket connection       | Error object                                      |
 | `transcriptReceived` | Deepgram has responded with a transcription           | [Transcription Response](#transcription-response) |
 
-### Options
+### Transcription Options
 
 Additional transcription options can be provided to both the pre-recorded and
 live transcriptions.
@@ -220,7 +220,7 @@ Retrieve all projects
 const projects = await deepgram.projects.list();
 ```
 
-#### Response
+#### List Projects Response
 
 ```ts
 {
@@ -241,7 +241,7 @@ Retrieves all project based on the provided project id.
 const project = await deepgram.projects.get(PROJECT_ID);
 ```
 
-#### Response
+#### Get a Project Response
 
 ```ts
 {
@@ -258,7 +258,7 @@ Creates a project.
 const project = await deepgram.projects.create(NAME_OF_PROJECT);
 ```
 
-#### Response
+#### Create Project Response
 
 ```ts
 {
@@ -285,7 +285,7 @@ Retrieves all keys for a given project.
 const response = await deepgram.keys.list(PROJECT_ID);
 ```
 
-#### Response
+#### List Keys Response
 
 ```ts
 {
@@ -309,7 +309,7 @@ with a name for the key.
 const response = await deepgram.keys.create(PROJECT_ID, COMMENT_FOR_KEY);
 ```
 
-#### Response
+#### Create Key Response
 
 ```ts
 {
@@ -330,6 +330,85 @@ delete.
 await deepgram.keys.delete(PROJECT_ID, KEY_ID);
 ```
 
+## Usage
+
+### Requests by Project
+
+Retrieves transcription requests for a project based on the provided options.
+
+```js
+const response = await deepgram.usage.listRequests(PROJECT_ID, {
+  limit: 10,
+  // other options are available
+});
+```
+
+#### Requests by Project Options
+
+The options can be provided to both the pre-recorded and
+live transcriptions.
+
+```js
+{
+  // The time to retrieve requests made since
+  // Example: "2020-01-01T00:00:00+00:00"
+  start?: string,
+  // The time to retrieve requests made until
+  // Example: "2021-01-01T00:00:00+00:00"
+  end?: string,
+  // Page of requests to return
+  // Defaults to 0
+  page?: number,
+  // Number of requests to return per page
+  // Defaults to 10. Maximum of 100
+  limit?: number,
+  // Filter by succeeded or failed requests
+  // By default, all requests are returned
+  status?: 'succeeded' | 'failed'
+}
+```
+
+#### Requests by Project Response
+
+```ts
+{
+  page: number,
+  limit: number,
+  requests?: [
+    {
+      id: string;
+      created: string;
+      path: string;
+      accessor: string;
+      response?:  {
+        details: {
+          usd: number;
+          duration: number;
+          total_audio: number;
+          channels: number;
+          streams: number;
+          model: string;
+          method: string;
+          tags: Array<string>;
+          features: Array<string>;
+          config: {
+            diarize: true;
+            multichannel: true;
+          };
+        }
+      }, ||
+      {
+        message?: string;
+      },
+      callback?: {
+        code: number;
+        completed: string;
+      },
+    },
+  ];
+}
+```
+
 ## Samples
 
 A sample js file is in the `sample` directory. To run it, update the config
@@ -337,8 +416,9 @@ located at the top of the file.
 
 ```js
 const config = {
-  deepgramApiKey: "Your Deepgram API Key",
-  urlToFile: "Url to audio file",
+  deepgramApiKey: "YOUR_DEEPGRAM_API_KEY",
+  urlToFile:
+    "https://static.deepgram.com/examples/Bueller-Life-moves-pretty-fast.wav",
 };
 ```
 

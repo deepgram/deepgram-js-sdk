@@ -59,12 +59,17 @@ export function _request<T>(
         });
 
         dgRes.on("end", () => {
-          const dgResJson = JSON.parse(dgResContent);
-          if (dgResJson.error) {
-            console.log(dgResJson);
+          let dgResponse;
+          try {
+            dgResponse = JSON.parse(dgResContent);
+          } catch {
+            dgResponse = { error: dgResContent };
+          }
+
+          if (dgResponse.error) {
             reject(`DG: ${dgResContent}`);
           }
-          resolve(dgResJson);
+          resolve(dgResponse);
         });
 
         dgRes.on("error", (err) => {
@@ -82,7 +87,7 @@ export function _request<T>(
 
       httpRequest.end();
     } catch (err) {
-      reject(err);
+      reject(`DG: ${err}`);
     }
   });
 }

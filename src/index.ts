@@ -2,6 +2,7 @@ import { DefaultOptions } from "./constants";
 import { Keys } from "./keys";
 import { Projects } from "./projects";
 import { Transcriber } from "./transcription";
+import { Usage } from "./usage";
 
 export class Deepgram {
   private _apiUrl: string;
@@ -10,6 +11,7 @@ export class Deepgram {
   keys: Keys;
   projects: Projects;
   transcription: Transcriber;
+  usage: Usage;
 
   constructor(apiKey: string, apiUrl?: string) {
     this._apiKey = apiKey;
@@ -20,6 +22,7 @@ export class Deepgram {
     this.keys = new Keys(this._apiKey, this._apiUrl);
     this.projects = new Projects(this._apiKey, this._apiUrl);
     this.transcription = new Transcriber(this._apiKey, this._apiUrl);
+    this.usage = new Usage(this._apiKey, this._apiUrl);
   }
 
   /**
