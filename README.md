@@ -424,7 +424,8 @@ const config = {
 
 The sample demonstrates the following uses:
 
-- Transcribing a file from a file
+- Transcribing a prerecorded file
+- Retrieving usage for a project
 - Creating a project
 - Deleting a project
 - Creating an API key

@@ -16,7 +16,9 @@ export const mockListKeys = {
 };
 
 export const mockKey = {
+  id: "string",
   key: "string",
-  secret: "string",
-  label: "string",
+  comment: "string",
+  created: "Date",
+  scopes: ["member"],
 };

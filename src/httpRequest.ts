@@ -7,7 +7,7 @@ const _requestOptions = (
   path: string,
   method: string,
   payload?: string | Buffer,
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   override_options?: any
 ): RequestOptions => {
   const options = {
