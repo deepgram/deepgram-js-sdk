@@ -13,7 +13,6 @@ const _requestOptions = (
   const options = {
     host: apiUrl,
     path,
-    port: 8090,
     method,
     headers: {
       "Content-Type": "application/json",

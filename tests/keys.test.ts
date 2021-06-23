@@ -34,7 +34,7 @@ describe("Key tests", () => {
     const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
 
     nock(`https://${fakeUrl}`)
-      .get(`/${fakeProjectId}/keys`)
+      .get(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockInvalidCredentials);
 
     keys.list(fakeProjectId).catch((err) => {
@@ -44,7 +44,7 @@ describe("Key tests", () => {
 
   it("Create resolves", function () {
     nock(`https://${fakeUrl}`)
-      .post(`/${fakeProjectId}/keys`)
+      .post(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockKey);
 
     keys.create(fakeProjectId, "test Comment", ["member"]).then((response) => {
@@ -55,7 +55,7 @@ describe("Key tests", () => {
 
   it("Delete resolves", function () {
     nock(`https://${fakeUrl}`)
-      .delete(`/${fakeProjectId}/keys/${fakeKeyId}`)
+      .delete(`/v1/projects/${fakeProjectId}/keys/${fakeKeyId}`)
       .reply(200);
 
     keys.delete(fakeProjectId, fakeKeyId).then(() => {

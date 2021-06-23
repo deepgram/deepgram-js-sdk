@@ -4,7 +4,7 @@ import { Project, ProjectResponse } from "./types";
 export class Projects {
   constructor(private _credentials: string, private _apiUrl: string) {}
 
-  private apiPath = "/projects";
+  private apiPath = "/v1/projects";
 
   /**
    * Returns all projects accessible by the API key

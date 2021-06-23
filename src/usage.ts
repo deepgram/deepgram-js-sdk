@@ -12,7 +12,7 @@ import {
 export class Usage {
   constructor(private _credentials: string, private _apiUrl: string) {}
 
-  private apiPath = "/projects";
+  private apiPath = "/v1/projects";
 
   /**
    * Retrieves all requests associated with the provided projectId based

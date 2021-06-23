@@ -4,7 +4,7 @@ import { KeyResponse, Key } from "./types";
 export class Keys {
   constructor(private _credentials: string, private _apiUrl: string) {}
 
-  private apiPath = "/projects";
+  private apiPath = "/v1/projects";
 
   /**
    * Retrieves all keys associated with the provided projectId
