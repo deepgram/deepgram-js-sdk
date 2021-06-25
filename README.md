@@ -250,31 +250,6 @@ const project = await deepgram.projects.get(PROJECT_ID);
 }
 ```
 
-### Create Project
-
-Creates a project.
-
-```js
-const project = await deepgram.projects.create(NAME_OF_PROJECT);
-```
-
-#### Create Project Response
-
-```ts
-{
-  id: string,
-  name: string,
-}
-```
-
-### Delete Project
-
-Delete a project.
-
-```js
-await deepgram.projects.delete(PROJECT_ID);
-```
-
 ## Key Management
 
 ### List Keys
@@ -426,8 +401,7 @@ The sample demonstrates the following uses:
 
 - Transcribing a prerecorded file
 - Retrieving usage for a project
-- Creating a project
-- Deleting a project
+- Getting a project
 - Creating an API key
 - Deleting an API key
 

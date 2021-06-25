@@ -15,9 +15,11 @@ function main() {
 
         const deepgram = new Deepgram(config.deepgramApiKey);
 
-        /** Create a project to test with */
-        const project = await deepgram.projects.create('test project');
-        console.log(`Project created: ${project.id}`);
+        /** Get a project to test with */
+        const projects = await deepgram.projects.list();
+        if (projects.projects.length === 0) resolve();
+
+        const project = projects.projects[0];
 
         /** Create an API key in the project */
         const apiKey = await deepgram.keys.create(project.id, "test key", ['member']);
@@ -40,8 +42,6 @@ function main() {
         await deepgram.keys.delete(project.id, apiKey.id);
         console.log(`Key deleted: ${apiKey.id}`);
 
-        await deepgram.projects.delete(project.id);
-        console.log(`Project deleted: ${project.id}`);
         resolve();
       }
       catch (err) {
