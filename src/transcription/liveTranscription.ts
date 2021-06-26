@@ -3,6 +3,7 @@ import querystring from "querystring";
 import WebSocket from "ws";
 import { ConnectionState, LiveTranscriptionEvents } from "../enums";
 import { TranscriptionOptions } from "../types";
+import { userAgent } from "../userAgent";
 
 export class LiveTranscription extends EventEmitter {
   private _socket: WebSocket;
@@ -18,6 +19,7 @@ export class LiveTranscription extends EventEmitter {
       {
         headers: {
           Authorization: `Basic ${credentials}`,
+          "User-Agent": userAgent(),
         },
       }
     );

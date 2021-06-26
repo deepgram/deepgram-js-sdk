@@ -7,6 +7,7 @@ import {
   UsageRequest,
   UsageRequestList,
   UsageRequestListOptions,
+  UsageResponse,
 } from "./types";
 
 export class Usage {
@@ -61,9 +62,9 @@ export class Usage {
   async getUsage(
     projectId: string,
     options?: UsageOptions
-  ): Promise<UsageRequest> {
+  ): Promise<UsageResponse> {
     const requestOptions = { ...{}, ...options };
-    return _request<UsageRequest>(
+    return _request<UsageResponse>(
       "GET",
       this._credentials,
       this._apiUrl,

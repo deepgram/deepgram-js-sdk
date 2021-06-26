@@ -1,5 +1,5 @@
-import { request } from "https";
-import { RequestOptions } from "node:https";
+import { request, RequestOptions } from "https";
+import { userAgent } from "./userAgent";
 
 const _requestOptions = (
   api_key: string,
@@ -15,6 +15,7 @@ const _requestOptions = (
     path,
     method,
     headers: {
+      "User-Agent": userAgent(),
       "Content-Type": "application/json",
       Authorization: `token ${api_key}`,
       "Content-Length": payload ? Buffer.byteLength(payload) : undefined,

@@ -320,9 +320,6 @@ const response = await deepgram.usage.listRequests(PROJECT_ID, {
 
 #### Requests by Project Options
 
-The options can be provided to both the pre-recorded and
-live transcriptions.
-
 ```js
 {
   // The time to retrieve requests made since
@@ -381,6 +378,169 @@ live transcriptions.
       },
     },
   ];
+}
+```
+
+### Get Specific Request
+
+Retrieves a specific transcription request for a project based on the provided
+`projectId` and `requestId`.
+
+```js
+const response = await deepgram.usage.getRequest(PROJECT_ID, REQUEST_ID);
+```
+
+#### Specific Request Response
+
+```ts
+{
+  id: string;
+  created: string;
+  path: string;
+  accessor: string;
+  response?:  {
+    details: {
+      usd: number;
+      duration: number;
+      total_audio: number;
+      channels: number;
+      streams: number;
+      model: string;
+      method: string;
+      tags: Array<string>;
+      features: Array<string>;
+      config: {
+        diarize: true;
+        multichannel: true;
+      };
+    }
+  }, ||
+  {
+    message?: string;
+  },
+  callback?: {
+    code: number;
+    completed: string;
+  }
+}
+```
+
+### Get Usage by Project
+
+Retrieves aggregated usage data for a project based on the provided options.
+
+```js
+const response = await deepgram.usage.getUsage(PROJECT_ID, {
+  start: "2020-01-01T00:00:00+00:00",
+  // other options are available
+});
+```
+
+#### Usage by Project Options
+
+```js
+{
+  // The time to retrieve requests made since
+  // Example: "2020-01-01T00:00:00+00:00"
+  start?: string,
+  // The time to retrieve requests made until
+  // Example: "2021-01-01T00:00:00+00:00"
+  end?: string,
+  // Specific identifer for a request
+  accessor?: string,
+  // Array of tags used in requests
+  tag?: Array<string>,
+  // Filter requests by method
+  method?: "sync" | "async" | "streaming",
+  // Filter requests by model used
+  model?: string,
+  // Filter only requests using multichannel feature
+  multichannel?: boolean,
+  // Filter only requests using interim results feature
+  interim_results?: boolean,
+  // Filter only requests using the punctuation feature
+  punctuate?: boolean,
+  // Filter only requests using ner feature
+  ner?: boolean,
+  // Filter only requests using utterances feature
+  utterances?: boolean,
+  // Filter only requests using replace feature
+  replace?: boolean,
+  // Filter only requests using profanity_filter feature
+  profanity_filter?: boolean,
+  // Filter only requests using keywords feature
+  keywords?: boolean,
+  // Filter only requests using sentiment feature
+  sentiment?: boolean,
+  // Filter only requests using diarization feature
+  diarize?: boolean,
+  // Filter only requests using detect_language feature
+  detect_language?: boolean,
+  // Filter only requests using search feature
+  search?: boolean,
+  // Filter only requests using redact feature
+  redact?: boolean,
+  // Filter only requests using alternatives feature
+  alternatives?: boolean,
+  // Filter only requests using numerals feature
+  numerals?: boolean
+}
+```
+
+#### Get Usage Response
+
+```ts
+{
+  start: string,
+  end: string,
+  resolution: {
+    units: string,
+    amount: number
+  };
+  results: [
+    {
+      start: string,
+      end: string,
+      hours: number,
+      requests: number
+    }
+  ];
+}
+```
+
+### Get Fields
+
+Retrieves features used by the provided projectId based on the provided options.
+
+```js
+const response = await deepgram.usage.getUsage(PROJECT_ID, {
+  start: "2020-01-01T00:00:00+00:00",
+  // other options are available
+});
+```
+
+#### Get Fields Options
+
+```js
+{
+  // The time to retrieve requests made since
+  // Example: "2020-01-01T00:00:00+00:00"
+  start?: string,
+  // The time to retrieve requests made until
+  // Example: "2021-01-01T00:00:00+00:00"
+  end?: string
+}
+```
+
+#### Get Fields Response
+
+```ts
+{
+  tags: Array<string>,
+  models: Array<string>,
+  processing_methods: Array<string>,
+  languages: Array<string>,
+  features: Array<string>
 }
 ```
 
