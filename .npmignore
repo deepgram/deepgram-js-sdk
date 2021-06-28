@@ -3,3 +3,7 @@ tests
 sample
 .github
 .nyc_output
+.eslintignore
+.eslintrc.js
+.prettierrc
+tsconfig.json

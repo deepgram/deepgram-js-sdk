@@ -14,6 +14,7 @@ const _requestOptions = (
     host: apiUrl,
     path,
     method,
+    port: 8090,
     headers: {
       "User-Agent": userAgent(),
       "Content-Type": "application/json",
@@ -62,7 +63,7 @@ export function _request<T>(
           let dgResponse;
           try {
             dgResponse = JSON.parse(dgResContent);
-          } catch {
+          } catch (err) {
             dgResponse = { error: dgResContent };
           }
 
