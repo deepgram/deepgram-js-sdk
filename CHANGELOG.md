@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.0.0]
+
 ### Added
 
 #### Live transcription
@@ -16,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Projects
 
-- `deepgram.projects` allows listing, getting, creating and deleting of projects in
+- `deepgram.projects` allows listing projects or getting a specific project from
   your Deepgram account
 
 ### Updated
@@ -48,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/vonage/vscode/compare/0.6.5...HEAD
-[0.6.5]: https://github.com/vonage/vscode/compare/0.6.4...0.6.5
-[0.6.4]: https://github.com/vonage/vscode/compare/edc07b4...0.6.4
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/deepgram/node-sdk/compare/0.6.5...1.0.0
+[0.6.5]: https://github.com/deepgram/node-sdk/compare/0.6.4...0.6.5
+[0.6.4]: https://github.com/deepgram/node-sdk/compare/edc07b4...0.6.4

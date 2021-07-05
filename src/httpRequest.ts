@@ -14,7 +14,6 @@ const _requestOptions = (
     host: apiUrl,
     path,
     method,
-    port: 8090,
     headers: {
       "User-Agent": userAgent(),
       "Content-Type": "application/json",
