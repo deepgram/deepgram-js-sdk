@@ -2,14 +2,11 @@
 
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/deepgram/node-sdk/CI/main) ![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
-> This is a pre-release SDK and is very likely to have breaking changes. Feel free to provide
-> feedback via GitHub issues and suggest new features.
-
 Official Node.js SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
 
 To access the API you will need a Deepgram account. Sign up for free at
-[try.deepgram.com][signup].
+[signup][signup].
 
 You can learn more about the full Deepgram API at [https://developers.deepgram.com](https://developers.deepgram.com).
 
@@ -34,108 +31,461 @@ const { Deepgram } = require("@deepgram/sdk");
 
 const deepgram = new Deepgram({
   apiKey: DEEPGRAM_API_KEY,
-  apiSecret: DEEPGRAM_API_SECRET,
-  apiUrl: CUSTOM_API_URL, // Optionally used for on-prem customers
+  apiUrl: CUSTOM_API_URL, // Optionally used for on-premises customers
 });
 ```
 
 ## Usage
 
-## Batch Transcription
+## Transcription
 
-The `transcribe` method can receive the url to a file or a buffer with a file
-to transcribe. Additional options can be provided to customize the result.
+The `transcription` property can handle both pre-recorded and live transcriptions.
+
+### Prerecorded Transcription
+
+The `transcription.preRecorded` method handles sending an existing file or
+buffer to the Deepgram API to generate a transcription. [Additional options](#options)
+can be provided to customize the result.
 
 ```js
-const response = await deepgram.transcribe(URL_OR_BUFFER_OF_FILE, {
-  punctuate: true,
-  // other options are available
-});
+// Sending a file
+const fileSource = { url: URL_OF_FILE };
+
+// Sending a buffer
+const bufferSource = { buffer: BUFFER_OF_FILE, mimetype: MIMETYPE_OF_FILE };
+
+// Both fileSource or bufferSource could be provided as the source parameter
+const response = await deepgram.transcription.preRecorded(
+  fileSource | bufferSource,
+  {
+    punctuate: true,
+    // other options are available
+  }
+);
 ```
 
-### Options
+#### Prerecorded Transcription Options
+
+Additional transcription options can be provided for prerecorded transcriptions.
 
 ```js
 {
-  // AI model used to process submitted audio.
-  model?: "general" | "phonecall" |  "meeting" | "<custom-id>",
+  /**
+   * AI model used to process submitted audio.
+   * @default general
+   * @remarks Possible values are general, phonecall, meeting or a custom string
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
+   */
+  model?: Models | string;
 
-  // BCP-47 language tag that hints at the primary spoken language.
-  // Defaults to en-US
-  language?: "en-GB" | "en-IN" | "en-NZ" | "en-US" | "es" | "fr" | "ko" | "pt" | "pt-BR" | "ru" | "tr" | null,
-
-  // Indicates whether to add punctuation and capitalization to the transcript.
-  punctuate?: true | false,
-
-  // Indicates whether to remove profanity from the transcript.
-  profanity_filter?: true | false,
-
-  // Maximum number of transcript alternatives to return.
-  // Defaults to 1
-  alternatives?: integer,
-
-  // Indicates whether to redact sensitive information, replacing redacted
-  // content with asterisks (*).
-  redact?: ["pci", "numbers", "ssn"],
-
-  // Indicates whether to recognize speaker changes.
-  diarize?: true | false,
-
-  // Indicates whether to transcribe each audio channel independently.
-  multichannel?: true | false,
-
-  // Indicates whether to convert numbers from written format (e.g., one) to
-  // numerical format (e.g., 1).
-  numerals?: true | false,
-
-  // Terms or phrases to search for in the submitted audio.
-  search?: [string],
-
-  // Callback URL to provide if you would like your submitted audio to be
-  // processed asynchronously.
-  callback?: string,
-
-  // Keywords to which the model should pay particular attention to boosting
-  // or suppressing to help it understand context.
-  keywords?: [string],
-
-  // Indicates whether Deepgram will segment speech into meaningful semantic
-  // units, which allows the model to interact more naturally and effectively
-  // with speakers' spontaneous speech patterns.
-  utterances?: true | false,
-
-  // Length of time in seconds of silence between words that Deepgram will
-  // use when determining where to split utterances. Used when utterances
-  // is enabled.
-  // Defaults to 0.8 seconds
-  utt_split?: number,
-
-  // Mimetype of the source
-  // Mimetype is required if the provided source is a buffer
-  mimetype?: string,
+  /**
+   * Version of the model to use.
+   * @default latest
+   * @remarks latest OR <version_id>
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
+   */
+  version: string;
+  /**
+   * BCP-47 language tag that hints at the primary spoken language.
+   * @default en-US
+   * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
+   * pt-BR, ru, tr or null
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/language
+   */
+  language?: string;
+  /**
+   * Indicates whether to add punctuation and capitalization to the transcript.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/punctuate
+   */
+  punctuate?: boolean;
+  /**
+   * Indicates whether to remove profanity from the transcript.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
+   */
+  profanity_filter?: boolean;
+  /**
+   * Indicates whether to redact sensitive information, replacing redacted content with asterisks (*).
+   * @remarks Options include:
+   *  `pci`: Redacts sensitive credit card information, including credit card number, expiration date, and CVV
+   *  `numbers` (or `true)`: Aggressively redacts strings of numerals
+   *  `ssn` (*beta*): Redacts social security numbers
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
+   */
+  redact?: Array<string>;
+  /**
+   * Indicates whether to recognize speaker changes. When set to true, each word
+   * in the transcript will be assigned a speaker number starting at 0.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   */
+  diarize?: boolean;
+  /**
+   * Indicates whether to transcribe each audio channel independently. When set
+   * to true, you will receive one transcript for each channel, which means you
+   * can apply a different model to each channel using the model parameter (e.g.,
+   * set model to general:phonecall, which applies the general model to channel
+   * 0 and the phonecall model to channel 1).
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
+   */
+  multichannel?: boolean;
+  /**
+   * Maximum number of transcript alternatives to return. Just like a human listener,
+   * Deepgram can provide multiple possible interpretations of what it hears.
+   * @default 1
+   */
+  alternatives?: number;
+  /**
+   * Indicates whether to convert numbers from written format (e.g., one) to
+   * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
+   * @remarks Converted numbers do not include punctuation. For example,
+   * 999,999 would be transcribed as 999999.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/numerals
+   */
+  numerals?: boolean;
+  /**
+   * Terms or phrases to search for in the submitted audio. Deepgram searches
+   * for acoustic patterns in audio rather than text patterns in transcripts
+   * because we have noticed that acoustic pattern matching is more performant.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/search
+   */
+  search?: Array<string>;
+  /**
+   * Callback URL to provide if you would like your submitted audio to be
+   * processed asynchronously. When passed, Deepgram will immediately respond
+   * with a request_id. When it has finished analyzing the audio, it will send
+   * a POST request to the provided URL with an appropriate HTTP status code.
+   * @remarks You may embed basic authentication credentials in the callback URL.
+   * Only ports 80, 443, 8080, and 8443 can be used for callbacks.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/callback
+   */
+  callback?: string;
+  /**
+   * Keywords to which the model should pay particular attention to boosting
+   * or suppressing to help it understand context. Just like a human listener,
+   * Deepgram can better understand mumbled, distorted, or otherwise
+   * hard-to-decipher speech when it knows the context of the conversation.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/keywords
+   */
+  keywords?: Array<string>;
+  /**
+   * Indicates whether Deepgram will segment speech into meaningful semantic
+   * units, which allows the model to interact more naturally and effectively
+   * with speakers' spontaneous speech patterns. For example, when humans
+   * speak to each other conversationally, they often pause mid-sentence to
+   * reformulate their thoughts, or stop and restart a badly-worded sentence.
+   * When utterances is set to true, these utterances are identified and
+   * returned in the transcript results.
+   *
+   * By default, when utterances is enabled, it starts a new utterance after
+   * 0.8 s of silence. You can customize the length of time used to determine
+   * where to split utterances by submitting the utt_split parameter.
+   * @remarks **BETA FEATURE**
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utterances
+   */
+  utterances?: boolean;
+  /**
+   * Length of time in seconds of silence between words that Deepgram will
+   * use when determining where to split utterances. Used when utterances
+   * is enabled.
+   * @default 0.8 seconds
+   * @remarks **BETA FEATURE**
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
+   */
+  utt_split?: number;
 }
 ```
 
-### Response
+### Live Transcription
+
+The `transcription.live` method provides access to a websocket connection
+to the Deepgram API for generating streaming transcriptions. [Additional options](#options)
+can be provided to customize the result.
+
+```js
+const deepgramLive = deepgram.transcription.live({ punctuate: true });
+
+socket.on("microphone-stream", (stream) => {
+  deepgramSocket.send(stream);
+});
+
+/**
+ * Receive transcriptions based on sent streams
+ */
+deepgramLive.addListener("transcriptReceived", (transcription) => {
+  console.log(transcription.data);
+});
+```
+
+#### Events
+
+The following events are fired by the live transcription object:
+
+| Event                | Description                                           | Data                                              |
+| -------------------- | ----------------------------------------------------- | ------------------------------------------------- |
+| `open`               | The websocket connection to Deepgram has been opened. | The DG live transcription object                  |
+| `close`              | The websocket connection to Deepgram has been closed. | WebSocket.CloseEvent                              |
+| `error`              | An error occurred with the websocket connection       | Error object                                      |
+| `transcriptReceived` | Deepgram has responded with a transcription           | [Transcription Response](#transcription-response) |
+
+#### Live Transcription Options
+
+Additional transcription options can be provided for live transcriptions.
+
+```js
+{
+  /**
+   * AI model used to process submitted audio.
+   * @default general
+   * @remarks Possible values are general, phonecall, meeting or a custom string
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
+   */
+  model?: Models | string;
+
+  /**
+   * Version of the model to use.
+   * @default latest
+   * @remarks latest OR <version_id>
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
+   */
+  version: string;
+  /**
+   * BCP-47 language tag that hints at the primary spoken language.
+   * @default en-US
+   * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
+   * pt-BR, ru, tr or null
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/language
+   */
+  language?: string;
+  /**
+   * Indicates whether to add punctuation and capitalization to the transcript.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/punctuate
+   */
+  punctuate?: boolean;
+  /**
+   * Indicates whether to remove profanity from the transcript.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
+   */
+  profanity_filter?: boolean;
+  /**
+   * Indicates whether to redact sensitive information, replacing redacted content with asterisks (*).
+   * @remarks Options include:
+   *  `pci`: Redacts sensitive credit card information, including credit card number, expiration date, and CVV
+   *  `numbers` (or `true)`: Aggressively redacts strings of numerals
+   *  `ssn` (*beta*): Redacts social security numbers
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
+   */
+  redact?: Array<string>;
+  /**
+   * Indicates whether to recognize speaker changes. When set to true, each word
+   * in the transcript will be assigned a speaker number starting at 0.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   */
+  diarize?: boolean;
+  /**
+   * Indicates whether to transcribe each audio channel independently. When set
+   * to true, you will receive one transcript for each channel, which means you
+   * can apply a different model to each channel using the model parameter (e.g.,
+   * set model to general:phonecall, which applies the general model to channel
+   * 0 and the phonecall model to channel 1).
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
+   */
+  multichannel?: boolean;
+  /**
+   * Maximum number of transcript alternatives to return. Just like a human listener,
+   * Deepgram can provide multiple possible interpretations of what it hears.
+   * @default 1
+   */
+  alternatives?: number;
+  /**
+   * Indicates whether to convert numbers from written format (e.g., one) to
+   * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
+   * @remarks Converted numbers do not include punctuation. For example,
+   * 999,999 would be transcribed as 999999.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/numerals
+   */
+  numerals?: boolean;
+  /**
+   * Terms or phrases to search for in the submitted audio. Deepgram searches
+   * for acoustic patterns in audio rather than text patterns in transcripts
+   * because we have noticed that acoustic pattern matching is more performant.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/search
+   */
+  search?: Array<string>;
+  /**
+   * Callback URL to provide if you would like your submitted audio to be
+   * processed asynchronously. When passed, Deepgram will immediately respond
+   * with a request_id. When it has finished analyzing the audio, it will send
+   * a POST request to the provided URL with an appropriate HTTP status code.
+   * @remarks You may embed basic authentication credentials in the callback URL.
+   * Only ports 80, 443, 8080, and 8443 can be used for callbacks.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/callback
+   */
+  callback?: string;
+  /**
+   * Keywords to which the model should pay particular attention to boosting
+   * or suppressing to help it understand context. Just like a human listener,
+   * Deepgram can better understand mumbled, distorted, or otherwise
+   * hard-to-decipher speech when it knows the context of the conversation.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/keywords
+   */
+  keywords?: Array<string>;
+  /**
+   * Indicates whether the streaming endpoint should send you updates to its
+   * transcription as more audio becomes available. By default, the streaming
+   * endpoint returns regular updates, which means transcription results will
+   * likely change for a period of time. You can avoid receiving these updates
+   * by setting this flag to false.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/interim_results
+   */
+  interim_results?: boolean;
+  /**
+   * Indicates whether Deepgram will detect whether a speaker has finished
+   * speaking (or paused for a significant period of time, indicating the
+   * completion of an idea). When Deepgram detects an endpoint, it assumes
+   * that no additional data will improve its prediction, so it immediately
+   * finalizes the result for the processed time range and returns the
+   * transcript with a speech_final parameter set to true.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/endpointing
+   */
+  endpointing?: boolean;
+  /**
+   * Length of time in milliseconds of silence that voice activation detection
+   * (VAD) will use to detect that a speaker has finished speaking. Used when
+   * endpointing is enabled. Defaults to 10 ms. Deepgram customers may configure
+   * a value between 10 ms and 500 ms; on-premise customers may remove this
+   * restriction.
+   * @default 10
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/vad_turnoff
+   */
+  vad_turnoff?: number;
+  /**
+   * Expected encoding of the submitted streaming audio.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/encoding
+   */
+  encoding?: string;
+  /**
+   * Number of independent audio channels contained in submitted streaming
+   * audio. Only read when a value is provided for encoding.
+   * @default 1
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/channels
+   */
+  channels?: number;
+  /**
+   * Sample rate of submitted streaming audio. Required (and only read)
+   * when a value is provided for encoding.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/sample_rate
+   */
+  sample_rate?: number;
+}
+```
+
+### Transcription Response
+
+```js
+{
+  "metadata": {
+    "request_id": "string",
+    "transaction_key": "string",
+    "sha256": "string",
+    "created": "string",
+    "duration": 0,
+    "channels": 0
+    },
+  "results": {
+    "channels": [
+      {
+        "search": [
+          {
+            "query": "string",
+            "hits": [
+              {
+                "confidence": 0,
+                "start": 0,
+                "end": 0,
+                "snippet": "string"
+              }
+            ]
+           }
+        ],
+        "alternatives": [
+          {
+            "transcript": "string",
+            "confidence": 0,
+            "words": [
+              {
+                "word": "string",
+                "start": 0,
+                "end": 0,
+                "confidence": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Project Management
+
+### List Projects
+
+Retrieve all projects
+
+```js
+const projects = await deepgram.projects.list();
+```
+
+#### List Projects Response
+
+```ts
+{
+  projects: [
+    {
+      id: string,
+      name: string,
+    },
+  ],
+}
+```
+
+### Get a Project
+
+Retrieves all project based on the provided project id.
+
+```js
+const project = await deepgram.projects.get(PROJECT_ID);
+```
+
+#### Get a Project Response
+
+```ts
+{
+  id: string,
+  name: string,
+}
+```
 
 ## Key Management
 
 ### List Keys
 
-Retrieve all keys using the `keys.list` method.
+Retrieves all keys for a given project.
 
 ```js
-const response = await deepgram.keys.list();
+const response = await deepgram.keys.list(PROJECT_ID);
 ```
 
-#### Response
+#### List Keys Response
 
-```js
+```ts
 {
   keys: [
     {
-      key: "API KEY",
-      label: "KEY LABEL",
+      id: string,
+      comment: string,
+      created: Date,
+      scopes: Array<string>
     },
   ];
 }
@@ -143,20 +493,22 @@ const response = await deepgram.keys.list();
 
 ### Create Key
 
-Create a new API key using the `keys.create` method with a label for the
-key.
+Create a new API key for a project using the `keys.create` method
+with a name for the key.
 
 ```js
-const response = await deepgram.keys.create("label for key");
+const response = await deepgram.keys.create(PROJECT_ID, COMMENT_FOR_KEY);
 ```
 
-#### Response
+#### Create Key Response
 
-```js
+```ts
 {
-  key: "API KEY",
-  secret: "API SECRET",
-  label: "LABEL PROVIDED"
+  id: string,
+  key: string,
+  comment: string,
+  created: Date,
+  scopes: Array<string>
 }
 ```
 
@@ -166,25 +518,305 @@ Delete an existing API key using the `keys.delete` method with the key to
 delete.
 
 ```js
-await deepgram.keys.delete("key to delete");
+await deepgram.keys.delete(PROJECT_ID, KEY_ID);
+```
+
+## Usage
+
+### Requests by Project
+
+Retrieves transcription requests for a project based on the provided options.
+
+```js
+const response = await deepgram.usage.listRequests(PROJECT_ID, {
+  limit: 10,
+  // other options are available
+});
+```
+
+#### Requests by Project Options
+
+```js
+{
+  // The time to retrieve requests made since
+  // Example: "2020-01-01T00:00:00+00:00"
+  start?: string,
+  // The time to retrieve requests made until
+  // Example: "2021-01-01T00:00:00+00:00"
+  end?: string,
+  // Page of requests to return
+  // Defaults to 0
+  page?: number,
+  // Number of requests to return per page
+  // Defaults to 10. Maximum of 100
+  limit?: number,
+  // Filter by succeeded or failed requests
+  // By default, all requests are returned
+  status?: 'succeeded' | 'failed'
+}
+```
+
+#### Requests by Project Response
+
+```ts
+{
+  page: number,
+  limit: number,
+  requests?: [
+    {
+      id: string;
+      created: string;
+      path: string;
+      accessor: string;
+      response?:  {
+        details: {
+          usd: number;
+          duration: number;
+          total_audio: number;
+          channels: number;
+          streams: number;
+          model: string;
+          method: string;
+          tags: Array<string>;
+          features: Array<string>;
+          config: {
+            multichannel?: boolean;
+            interim_results?: boolean;
+            punctuate?: boolean;
+            ner?: boolean;
+            utterances?: boolean;
+            replace?: boolean;
+            profanity_filter?: boolean;
+            keywords?: boolean;
+            sentiment?: boolean;
+            diarize?: boolean;
+            detect_language?: boolean;
+            search?: boolean;
+            redact?: boolean;
+            alternatives?: boolean;
+            numerals?: boolean;
+          };
+        }
+      }, ||
+      {
+        message?: string;
+      },
+      callback?: {
+        code: number;
+        completed: string;
+      },
+    },
+  ];
+}
+```
+
+### Get Specific Request
+
+Retrieves a specific transcription request for a project based on the provided
+`projectId` and `requestId`.
+
+```js
+const response = await deepgram.usage.getRequest(PROJECT_ID, REQUEST_ID);
+```
+
+#### Specific Request Response
+
+```ts
+{
+  id: string;
+  created: string;
+  path: string;
+  accessor: string;
+  response?:  {
+    details: {
+      usd: number;
+      duration: number;
+      total_audio: number;
+      channels: number;
+      streams: number;
+      model: string;
+      method: string;
+      tags: Array<string>;
+      features: Array<string>;
+      config: {
+        multichannel?: boolean;
+        interim_results?: boolean;
+        punctuate?: boolean;
+        ner?: boolean;
+        utterances?: boolean;
+        replace?: boolean;
+        profanity_filter?: boolean;
+        keywords?: boolean;
+        sentiment?: boolean;
+        diarize?: boolean;
+        detect_language?: boolean;
+        search?: boolean;
+        redact?: boolean;
+        alternatives?: boolean;
+        numerals?: boolean;
+      };
+    }
+  }, ||
+  {
+    message?: string;
+  },
+  callback?: {
+    code: number;
+    completed: string;
+  }
+}
+```
+
+### Get Usage by Project
+
+Retrieves aggregated usage data for a project based on the provided options.
+
+```js
+const response = await deepgram.usage.getUsage(PROJECT_ID, {
+  start: "2020-01-01T00:00:00+00:00",
+  // other options are available
+});
+```
+
+#### Usage by Project Options
+
+```js
+{
+  // The time to retrieve requests made since
+  // Example: "2020-01-01T00:00:00+00:00"
+  start?: string,
+  // The time to retrieve requests made until
+  // Example: "2021-01-01T00:00:00+00:00"
+  end?: string,
+  // Specific identifer for a request
+  accessor?: string,
+  // Array of tags used in requests
+  tag?: Array<string>,
+  // Filter requests by method
+  method?: "sync" | "async" | "streaming",
+  // Filter requests by model used
+  model?: string,
+  // Filter only requests using multichannel feature
+  multichannel?: boolean,
+  // Filter only requests using interim results feature
+  interim_results?: boolean,
+  // Filter only requests using the punctuation feature
+  punctuate?: boolean,
+  // Filter only requests using ner feature
+  ner?: boolean,
+  // Filter only requests using utterances feature
+  utterances?: boolean,
+  // Filter only requests using replace feature
+  replace?: boolean,
+  // Filter only requests using profanity_filter feature
+  profanity_filter?: boolean,
+  // Filter only requests using keywords feature
+  keywords?: boolean,
+  // Filter only requests using sentiment feature
+  sentiment?: boolean,
+  // Filter only requests using diarization feature
+  diarize?: boolean,
+  // Filter only requests using detect_language feature
+  detect_language?: boolean,
+  // Filter only requests using search feature
+  search?: boolean,
+  // Filter only requests using redact feature
+  redact?: boolean,
+  // Filter only requests using alternatives feature
+  alternatives?: boolean,
+  // Filter only requests using numerals feature
+  numerals?: boolean
+}
+```
+
+#### Get Usage Response
+
+```ts
+{
+  start: string,
+  end: string,
+  resolution: {
+    units: string,
+    amount: number
+  };
+  results: [
+    {
+      start: string,
+      end: string,
+      hours: number,
+      requests: number
+    }
+  ];
+}
+```
+
+### Get Fields
+
+Retrieves features used by the provided projectId based on the provided options.
+
+```js
+const response = await deepgram.usage.getUsage(PROJECT_ID, {
+  start: "2020-01-01T00:00:00+00:00",
+  // other options are available
+});
+```
+
+#### Get Fields Options
+
+```js
+{
+  // The time to retrieve requests made since
+  // Example: "2020-01-01T00:00:00+00:00"
+  start?: string,
+  // The time to retrieve requests made until
+  // Example: "2021-01-01T00:00:00+00:00"
+  end?: string
+}
+```
+
+#### Get Fields Response
+
+```ts
+{
+  tags: Array<string>,
+  models: Array<string>,
+  processing_methods: Array<string>,
+  languages: Array<string>,
+  features: Array<string>
+}
 ```
 
 ## Samples
 
-A sample js file is in the `sample` directory. To run it, update the config
-located at the top of the file.
+To run the sample code, first run the following in your terminal:
+
+```bash
+npm install
+npm build
+```
+
+Then update the config object located at the top of the `index.js`
+file in the sample folder.
 
 ```js
 const config = {
-  deepgramApiKey: "Your Deepgram API Key",
-  deepgramApiSecret: "Your Deepgram API Secret",
-  urlToFile: "Url to audio file",
+  deepgramApiKey: "YOUR_DEEPGRAM_API_KEY",
+  urlToFile:
+    "https://static.deepgram.com/examples/Bueller-Life-moves-pretty-fast.wav",
 };
+```
+
+Finally, run the sample code using the following command in your terminal:
+
+```bash
+node sample/index.js
 ```
 
 The sample demonstrates the following uses:
 
-- Transcribing a file from a url
+- Transcribing a prerecorded file
+- Retrieving usage for a project
+- Getting a project
 - Creating an API key
 - Deleting an API key
 
@@ -208,5 +840,5 @@ project, let us know! You can either:
 
 Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/)
 
-[signup]: https://try.deepgram.com?utm_source=node-sdk&utm_content=readme
+[signup]: https://console.deepgram.com?utm_source=node-sdk&utm_content=readme
 [license]: LICENSE.txt

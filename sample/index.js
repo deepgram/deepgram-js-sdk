@@ -1,46 +1,55 @@
 const { Deepgram } = require('../dist');
 
 const config = {
-  deepgramApiKey: 'Your Deepgram API Key',
-  deepgramApiSecret: 'Your Deepgram API Secret',
-  urlToFile: 'Url to audio file'
+  deepgramApiKey: 'YOUR_DEEPGRAM_API_KEY',
+  urlToFile: 'https://static.deepgram.com/examples/Bueller-Life-moves-pretty-fast.wav'
 }
 
 function main() {
 
   return new Promise((resolve, reject) => {
+    (async () => {
 
-    const deepgram = new Deepgram({ apiKey: config.deepgramApiKey, apiSecret: config.deepgramApiSecret });
+      try {
 
-    deepgram.transcribe(config.urlToFile, { punctuate: true })
-      .then((result) => {
-        console.log(result.results.channels[0]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        const deepgram = new Deepgram(config.deepgramApiKey);
 
-    let key = 'Xwr5JGdWhUciiNLZ';
-    deepgram.keys.create('test')
-      .then((result) => {
-        key = result.key
+        /** Get a project to test with */
+        const projects = await deepgram.projects.list();
+        if (projects.projects.length === 0) resolve();
 
-        if (key) {
-          deepgram.keys.delete(key)
-            .then((result) => {
-              console.log(`Successfully deleted key: ${JSON.stringify(result)}`);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
+        const project = projects.projects[0];
 
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        /** Create an API key in the project */
+        const apiKey = await deepgram.keys.create(project.id, "test key", ['member']);
+        console.log(`Key created: ${apiKey.id}`);
 
+        const newDeepgram = new Deepgram(apiKey.key);
+
+        /** Send a pre-recorded file for transcription */
+        const transcription = await newDeepgram.transcription.preRecorded({
+          url: config.urlToFile
+        }, {
+          punctuate: true
+        });
+        console.dir(transcription, { depth: null });
+
+        /** Retrieve & log usage for this project */
+        const usage = await newDeepgram.usage.listRequests(project.id);
+        console.dir(usage, { depth: null });
+
+        await deepgram.keys.delete(project.id, apiKey.id);
+        console.log(`Key deleted: ${apiKey.id}`);
+
+        resolve();
+      }
+      catch (err) {
+        console.log(`Err: ${err}`);
+        reject(err);
+      }
+    })()
   });
 }
 
 main();
+

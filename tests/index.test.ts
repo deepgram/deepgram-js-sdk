@@ -7,7 +7,7 @@ chai.should();
 describe("Constructor", () => {
   it("Providing no credentials returns error", () => {
     expect(() => {
-      new Deepgram({ apiKey: "", apiSecret: "" });
+      new Deepgram("");
     }).to.throw();
   });
 });

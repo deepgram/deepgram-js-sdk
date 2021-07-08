@@ -1,4 +1,4 @@
-export type ApiMetadata = {
+export type Metadata = {
   request_id: string;
   transaction_key: string;
   sha256: string;

@@ -1,6 +1,4 @@
-export type Keyword =
-  | string
-  | {
-      word: string;
-      boost: number;
-    };
+export type Keyword = {
+  keyword: string;
+  boost?: number;
+};

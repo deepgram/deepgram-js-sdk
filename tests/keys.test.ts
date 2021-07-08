@@ -10,14 +10,18 @@ chai.should();
 
 const fakeCredentials = "testKey:testSecret";
 const fakeUrl = "fake.url";
+const fakeProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
+const fakeKeyId = "ad9c6799-d380-4db7-8c22-92c20a291229";
 
 describe("Key tests", () => {
   const sandbox = Sinon.createSandbox();
 
   let requestStub: Sinon.SinonStub;
+  let keys: Keys;
 
   beforeEach(function () {
     requestStub = Sinon.stub(https, "request");
+    keys = new Keys(fakeCredentials, fakeUrl);
   });
 
   afterEach(function () {
@@ -30,27 +34,31 @@ describe("Key tests", () => {
     const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
 
     nock(`https://${fakeUrl}`)
-      .get("/v2/keys")
+      .get(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockInvalidCredentials);
 
-    Keys.list(fakeCredentials, fakeUrl).catch((err) => {
+    keys.list(fakeProjectId).catch((err) => {
       assert.equal(err, expectedError);
     });
   });
 
   it("Create resolves", function () {
-    nock(`https://${fakeUrl}`).post("/v2/keys").reply(200, mockKey);
+    nock(`https://${fakeUrl}`)
+      .post(`/v1/projects/${fakeProjectId}/keys`)
+      .reply(200, mockKey);
 
-    Keys.create(fakeCredentials, fakeUrl, "testLabel").then((response) => {
+    keys.create(fakeProjectId, "test Comment", ["member"]).then((response) => {
       response.should.deep.eq(mockKey);
       requestStub.calledOnce.should.eq(true);
     });
   });
 
   it("Delete resolves", function () {
-    nock(`https://${fakeUrl}`).delete("/v2/keys").reply(200);
+    nock(`https://${fakeUrl}`)
+      .delete(`/v1/projects/${fakeProjectId}/keys/${fakeKeyId}`)
+      .reply(200);
 
-    Keys.delete(fakeCredentials, fakeUrl, "testLabel").then(() => {
+    keys.delete(fakeProjectId, fakeKeyId).then(() => {
       requestStub.calledOnce.should.eq(true);
     });
   });

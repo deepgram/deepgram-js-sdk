@@ -1,0 +1,23 @@
+export type UsageOptions = {
+  start?: string;
+  end?: string;
+  accessor?: string;
+  tag?: Array<string>;
+  method?: "sync" | "async" | "streaming";
+  model?: string;
+  multichannel?: boolean;
+  interim_results?: boolean;
+  punctuate?: boolean;
+  ner?: boolean;
+  utterances?: boolean;
+  replace?: boolean;
+  profanity_filter?: boolean;
+  keywords?: boolean;
+  sentiment?: boolean;
+  diarize?: boolean;
+  detect_language?: boolean;
+  search?: boolean;
+  redact?: boolean;
+  alternatives?: boolean;
+  numerals?: boolean;
+};

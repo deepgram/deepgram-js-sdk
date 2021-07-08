@@ -3,14 +3,22 @@ import { Models } from "../enums";
 /**
  * Options for transcription
  */
-export type TranscriptionOptions = {
+export type PrerecordedTranscriptionOptions = {
   /**
    * AI model used to process submitted audio.
    * @default general
-   * @remarks Possible values are general, phonecall, meeting or a custom-id
+   * @remarks Possible values are general, phonecall, meeting or a custom string
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
    */
   model?: Models | string;
+
+  /**
+   * Version of the model to use.
+   * @default latest
+   * @remarks latest OR <version_id>
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
+   */
+  version: string;
   /**
    * BCP-47 language tag that hints at the primary spoken language.
    * @default en-US
@@ -29,12 +37,6 @@ export type TranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
    */
   profanity_filter?: boolean;
-  /**
-   * Maximum number of transcript alternatives to return. Just like a human listener,
-   * Deepgram can provide multiple possible interpretations of what it hears.
-   * @default 1
-   */
-  alternatives?: number;
   /**
    * Indicates whether to redact sensitive information, replacing redacted content with asterisks (*).
    * @remarks Options include:
@@ -59,6 +61,12 @@ export type TranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
    */
   multichannel?: boolean;
+  /**
+   * Maximum number of transcript alternatives to return. Just like a human listener,
+   * Deepgram can provide multiple possible interpretations of what it hears.
+   * @default 1
+   */
+  alternatives?: number;
   /**
    * Indicates whether to convert numbers from written format (e.g., one) to
    * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
@@ -117,9 +125,4 @@ export type TranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
    */
   utt_split?: number;
-  /**
-   * Mimetype of the source
-   * @remarks Mimetype is required if the provided source is a buffer
-   */
-  mimetype?: string;
 };
