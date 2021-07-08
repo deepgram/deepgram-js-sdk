@@ -1,4 +1,3 @@
-const fs = require('fs');
 const { Deepgram } = require('../dist');
 
 const config = {

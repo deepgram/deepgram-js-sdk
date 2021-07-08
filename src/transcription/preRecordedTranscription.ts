@@ -1,7 +1,7 @@
 import querystring from "querystring";
 import {
   TranscriptionResponse,
-  TranscriptionOptions,
+  PrerecordedTranscriptionOptions,
   TranscriptionSource,
   UrlSource,
 } from "../types";
@@ -24,7 +24,7 @@ export const preRecordedTranscription = async (
   apiKey: string,
   apiUrl: string,
   source: TranscriptionSource,
-  options?: TranscriptionOptions
+  options?: PrerecordedTranscriptionOptions
 ): Promise<TranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 

@@ -1,5 +1,6 @@
 import {
-  TranscriptionOptions,
+  LiveTranscriptionOptions,
+  PrerecordedTranscriptionOptions,
   TranscriptionResponse,
   TranscriptionSource,
 } from "../types";
@@ -16,7 +17,7 @@ export class Transcriber {
    */
   async preRecorded(
     source: TranscriptionSource,
-    options?: TranscriptionOptions
+    options?: PrerecordedTranscriptionOptions
   ): Promise<TranscriptionResponse> {
     return await preRecordedTranscription(
       this._credentials,
@@ -30,7 +31,7 @@ export class Transcriber {
    * Opens a websocket to Deepgram's API for live transcriptions
    * @param options Options to modify transcriptions
    */
-  live(options?: TranscriptionOptions): LiveTranscription {
+  live(options?: LiveTranscriptionOptions): LiveTranscription {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",

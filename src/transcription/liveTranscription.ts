@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import querystring from "querystring";
 import WebSocket from "ws";
 import { ConnectionState, LiveTranscriptionEvents } from "../enums";
-import { TranscriptionOptions } from "../types";
+import { LiveTranscriptionOptions } from "../types";
 import { userAgent } from "../userAgent";
 
 export class LiveTranscription extends EventEmitter {
@@ -11,7 +11,7 @@ export class LiveTranscription extends EventEmitter {
   constructor(
     credentials: string,
     apiUrl: string,
-    options?: TranscriptionOptions
+    options?: LiveTranscriptionOptions
   ) {
     super(undefined);
     this._socket = new WebSocket(
