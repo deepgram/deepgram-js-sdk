@@ -18,7 +18,7 @@ export class LiveTranscription extends EventEmitter {
       `wss://${apiUrl}/v1/listen?${querystring.stringify(options)}`,
       {
         headers: {
-          Authorization: `Basic ${credentials}`,
+          Authorization: `token ${credentials}`,
           "User-Agent": userAgent(),
         },
       }
@@ -40,7 +40,7 @@ export class LiveTranscription extends EventEmitter {
     };
 
     this._socket.onmessage = (m) => {
-      this.emit(LiveTranscriptionEvents.TranscriptReceived, m);
+      this.emit(LiveTranscriptionEvents.TranscriptReceived, m.data);
     };
   }
 

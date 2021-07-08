@@ -1,7 +1,7 @@
 import querystring from "querystring";
 import {
-  TranscriptionResponse,
   PrerecordedTranscriptionOptions,
+  PrerecordedTranscriptionResponse,
   TranscriptionSource,
   UrlSource,
 } from "../types";
@@ -25,7 +25,7 @@ export const preRecordedTranscription = async (
   apiUrl: string,
   source: TranscriptionSource,
   options?: PrerecordedTranscriptionOptions
-): Promise<TranscriptionResponse> => {
+): Promise<PrerecordedTranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 
   if (
@@ -35,7 +35,7 @@ export const preRecordedTranscription = async (
     throw new Error("DG: Mimetype must be provided if the source is a Buffer");
   }
 
-  return await _request<TranscriptionResponse>(
+  return await _request<PrerecordedTranscriptionResponse>(
     "POST",
     apiKey,
     apiUrl,

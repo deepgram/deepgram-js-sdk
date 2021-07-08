@@ -1,7 +1,7 @@
 import {
   LiveTranscriptionOptions,
   PrerecordedTranscriptionOptions,
-  TranscriptionResponse,
+  PrerecordedTranscriptionResponse,
   TranscriptionSource,
 } from "../types";
 import { LiveTranscription } from "./liveTranscription";
@@ -18,7 +18,7 @@ export class Transcriber {
   async preRecorded(
     source: TranscriptionSource,
     options?: PrerecordedTranscriptionOptions
-  ): Promise<TranscriptionResponse> {
+  ): Promise<PrerecordedTranscriptionResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",

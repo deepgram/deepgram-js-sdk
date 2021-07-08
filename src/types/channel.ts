@@ -8,7 +8,7 @@ export type Channel = {
   /**
    * Searched terms & results
    */
-  search: Array<Search>;
+  search?: Array<Search>;
   alternatives: Array<{
     /**
      * Text of speech identified by API
