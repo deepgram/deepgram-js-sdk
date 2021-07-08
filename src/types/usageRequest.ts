@@ -1,5 +1,5 @@
 import { UsageCallback } from "./usageCallback";
-import { UsageRequestDetail } from "./UsageRequestDetail";
+import { UsageRequestDetail } from "./usageRequestDetail";
 import { UsageRequestMessage } from "./usageRequestMessage";
 
 export type UsageRequest = {

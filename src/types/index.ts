@@ -16,7 +16,7 @@ export * from "./usageField";
 export * from "./usageFieldOptions";
 export * from "./usageOptions";
 export * from "./usageRequest";
-export * from "./UsageRequestDetail";
+export * from "./usageRequestDetail";
 export * from "./usageRequestList";
 export * from "./usageRequestListOptions";
 export * from "./usageResponse";
