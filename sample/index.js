@@ -21,8 +21,8 @@ function main() {
         const project = projects.projects[0];
 
         /** Create an API key in the project */
-        const apiKey = await deepgram.keys.create(project.id, "test key", ['member']);
-        console.log(`Key created: ${apiKey.id}`);
+        const apiKey = await deepgram.keys.create(project.project_id, "test key", ['member']);
+        console.log(`Key created: ${apiKey.api_key_id}`);
 
         const newDeepgram = new Deepgram(apiKey.key);
 
@@ -30,16 +30,17 @@ function main() {
         const transcription = await newDeepgram.transcription.preRecorded({
           url: config.urlToFile
         }, {
-          punctuate: true
+          punctuate: true,
+          utterances: true
         });
         console.dir(transcription, { depth: null });
 
         /** Retrieve & log usage for this project */
-        const usage = await newDeepgram.usage.listRequests(project.id);
+        const usage = await newDeepgram.usage.listRequests(project.project_id);
         console.dir(usage, { depth: null });
 
-        await deepgram.keys.delete(project.id, apiKey.id);
-        console.log(`Key deleted: ${apiKey.id}`);
+        await deepgram.keys.delete(project.project_id, apiKey.api_key_id);
+        console.log(`Key deleted: ${apiKey.api_key_id}`);
 
         resolve();
       }

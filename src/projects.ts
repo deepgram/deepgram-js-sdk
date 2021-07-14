@@ -1,5 +1,5 @@
 import { _request } from "./httpRequest";
-import { Project, ProjectResponse } from "./types";
+import { Project, ProjectPatchResponse, ProjectResponse } from "./types";
 
 export class Projects {
   constructor(private _credentials: string, private _apiUrl: string) {}
@@ -28,6 +28,19 @@ export class Projects {
       this._credentials,
       this._apiUrl,
       `${this.apiPath}/${projectId}`
+    );
+  }
+
+  /**
+   * Update a specific project
+   * @param project project to update
+   */
+  async update(project: Project): Promise<ProjectPatchResponse> {
+    return _request<ProjectPatchResponse>(
+      "PATCH",
+      this._credentials,
+      this._apiUrl,
+      `${this.apiPath}/${project.project_id}`
     );
   }
 }

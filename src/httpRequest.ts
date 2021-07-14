@@ -61,6 +61,7 @@ export function _request<T>(
         dgRes.on("end", () => {
           let dgResponse;
           try {
+            console.log(`content: ${dgResContent}`);
             dgResponse = JSON.parse(dgResContent);
           } catch (err) {
             dgResponse = { error: dgResContent };

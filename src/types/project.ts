@@ -5,9 +5,13 @@ export type Project = {
   /**
    * Unique identifier of the project
    */
-  id: string;
+  project_id: string;
   /**
    * User provided name of the project
    */
-  name: string;
+  name?: string;
+  /**
+   * Name of the company associated with the project. Optional.
+   */
+  company?: string;
 };

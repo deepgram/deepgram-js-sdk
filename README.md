@@ -194,6 +194,62 @@ Additional transcription options can be provided for prerecorded transcriptions.
 }
 ```
 
+#### Prerecorded Transcription Response
+
+```ts
+{
+  request_id?: string;
+  metadata?: {
+    request_id: string;
+    transaction_key: string;
+    sha256: string;
+    created: string;
+    duration: number;
+    channels: number;
+  };
+  results?: {
+    channels: Array<{
+      search?: Array<{
+        query: string;
+        hits: Array<{
+          confidence: number;
+          start: number;
+          end: number;
+          snippet: string;
+        }>;
+      }>;
+      alternatives: Array<{
+        transcript: string;
+        confidence: number;
+        words: Array<{
+          word: string;
+          start: number;
+          end: number;
+          confidence: number;
+          punctuated_word?: string;
+        }>;
+      }>;
+    }>;
+    utterances?: Array<{
+      start: number;
+      end: number;
+      confidence: number;
+      channel: number;
+      transcript: string;
+      words: Array<{
+        word: string;
+        start: number;
+        end: number;
+        confidence: number;
+        punctuated_word?: string;
+      }>;
+      speaker?: number;
+      id: string;
+    }>;
+  };
+};
+```
+
 ### Live Transcription
 
 The `transcription.live` method provides access to a websocket connection
@@ -378,52 +434,38 @@ Additional transcription options can be provided for live transcriptions.
 }
 ```
 
-### Transcription Response
+#### Live Transcription Response
 
-```js
+```ts
 {
-  "metadata": {
-    "request_id": "string",
-    "transaction_key": "string",
-    "sha256": "string",
-    "created": "string",
-    "duration": 0,
-    "channels": 0
-    },
-  "results": {
-    "channels": [
-      {
-        "search": [
-          {
-            "query": "string",
-            "hits": [
-              {
-                "confidence": 0,
-                "start": 0,
-                "end": 0,
-                "snippet": "string"
-              }
-            ]
-           }
-        ],
-        "alternatives": [
-          {
-            "transcript": "string",
-            "confidence": 0,
-            "words": [
-              {
-                "word": "string",
-                "start": 0,
-                "end": 0,
-                "confidence": 0
-              }
-            ]
-          }
-        ]
-      }
-    ]
+  channel_index: Array<number>;
+  duration: number;
+  start: number;
+  is_final: boolean;
+  speech_final: boolean;
+  channel: {
+    search?: Array<{
+      query: string;
+      hits: Array<{
+        confidence: number;
+        start: number;
+        end: number;
+        snippet: string;
+      }>
+    }>,
+    alternatives: Array<{
+      transcript: string;
+      confidence: number;
+      words: Array<{
+        word: string;
+        start: number;
+        end: number;
+        confidence: number;
+        punctuated_word?: string;
+      }>
+    }>
   }
-}
+};
 ```
 
 ## Project Management
@@ -466,6 +508,23 @@ const project = await deepgram.projects.get(PROJECT_ID);
 }
 ```
 
+### Update a Project
+
+Updates a project based on a provided project object. This object must contain
+`project_id` and `name` properties.
+
+```js
+const updateResponse = await deepgram.projects.update(project);
+```
+
+#### Update a Project Response
+
+```ts
+{
+  message: string;
+}
+```
+
 ## Key Management
 
 ### List Keys
@@ -480,11 +539,11 @@ const response = await deepgram.keys.list(PROJECT_ID);
 
 ```ts
 {
-  keys: [
+  api_keys: [
     {
-      id: string,
+      api_key_id: string,
       comment: string,
-      created: Date,
+      created: string,
       scopes: Array<string>
     },
   ];
@@ -504,10 +563,10 @@ const response = await deepgram.keys.create(PROJECT_ID, COMMENT_FOR_KEY);
 
 ```ts
 {
-  id: string,
+  api_key_id: string,
   key: string,
   comment: string,
-  created: Date,
+  created: string,
   scopes: Array<string>
 }
 ```
@@ -564,7 +623,7 @@ const response = await deepgram.usage.listRequests(PROJECT_ID, {
   limit: number,
   requests?: [
     {
-      id: string;
+      request_id: string;
       created: string;
       path: string;
       accessor: string;
@@ -623,7 +682,7 @@ const response = await deepgram.usage.getRequest(PROJECT_ID, REQUEST_ID);
 
 ```ts
 {
-  id: string;
+  request_id: string;
   created: string;
   path: string;
   accessor: string;

@@ -5,7 +5,7 @@ export type Key = {
   /**
    * Unique identifier of the key to use in API requests
    */
-  id: string;
+  api_key_id: string;
   /**
    * API key to send in API requests (Only displayed when first created)
    */
@@ -17,7 +17,7 @@ export type Key = {
   /**
    * Timestamp of the date/time the key was created
    */
-  created: Date;
+  created: string;
   /**
    * Array of scopes assigned to the key
    */

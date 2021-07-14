@@ -9,6 +9,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2]
+
+### Added
+
+- `deepgram.projects.update` will now update a project
+- Prerecorded transcription responses now include utterances
+
+### Updated
+
+- The project type has been modified to the following:
+
+```ts
+{
+  project_id: string;
+  name?: string;
+  company?: string;
+};
+```
+
+- The key type has been modified to the following:
+
+```ts
+{
+  api_key_id: string;
+  key?: string;
+  comment: string;
+  created: string;
+  scopes: Array<string>;
+};
+```
+
+- The usage request type has been modified to the following:
+
+```ts
+{
+  request_id: string;
+  created: string;
+  path: string;
+  accessor: string;
+  response?: UsageRequestDetail | UsageRequestMessage;
+  callback?: UsageCallback;
+};
+```
+
 ## [1.0.0]
 
 ### Added
@@ -52,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.0.0...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.0.2...HEAD
+[1.0.2]: https://github.com/deepgram/node-sdk/compare/1.0.0...1.0.2
 [1.0.0]: https://github.com/deepgram/node-sdk/compare/0.6.5...1.0.0
 [0.6.5]: https://github.com/deepgram/node-sdk/compare/0.6.4...0.6.5
 [0.6.4]: https://github.com/deepgram/node-sdk/compare/edc07b4...0.6.4

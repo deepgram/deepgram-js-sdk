@@ -19,6 +19,6 @@ export const mockKey = {
   id: "string",
   key: "string",
   comment: "string",
-  created: "Date",
+  created: "string",
   scopes: ["member"],
 };
