@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc -p ./",
     "coverage": "nyc npm run test",
-    "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/**/*.ts --write",
-    "test": "mocha -r ts-node/register tests/**/*test.ts --insect",
+    "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
+    "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\""
   },
   "repository": {
