@@ -4,6 +4,8 @@ import {
   PrerecordedTranscriptionResponse,
   TranscriptionSource,
   UrlSource,
+  BufferSource,
+  ReadStreamSource,
 } from "../types";
 import { _request } from "../httpRequest";
 
@@ -11,6 +13,20 @@ function isUrlSource(
   providedSource: TranscriptionSource
 ): providedSource is UrlSource {
   if ((providedSource as UrlSource).url) return true;
+  return false;
+}
+
+function isBufferSource(
+  providedSource: TranscriptionSource
+): providedSource is BufferSource {
+  if ((providedSource as BufferSource).buffer) return true;
+  return false;
+}
+
+function isReadStreamSource(
+  providedSource: TranscriptionSource
+): providedSource is ReadStreamSource {
+  if ((providedSource as ReadStreamSource).stream) return true;
   return false;
 }
 
@@ -32,7 +48,27 @@ export const preRecordedTranscription = async (
     !isUrlSource(source) &&
     (source.mimetype === undefined || source.mimetype.length === 0)
   ) {
-    throw new Error("DG: Mimetype must be provided if the source is a Buffer");
+    throw new Error(
+      "DG: Mimetype must be provided if the source is a Buffer or a ReadStream"
+    );
+  }
+
+  let body;
+  if (isUrlSource(source)) {
+    body = JSON.stringify(source);
+  } else if (isBufferSource(source)) {
+    body = source.buffer;
+  } else if (isReadStreamSource(source)) {
+    body = source.stream;
+  } else {
+    throw new Error("Unknown TranscriptionSource type");
+  }
+
+  const requestOptions: { [name: string]: { [key: string]: string } } = {};
+  if (!isUrlSource(source)) {
+    requestOptions.headers = {
+      "Content-Type": source.mimetype,
+    };
   }
 
   return await _request<PrerecordedTranscriptionResponse>(
@@ -40,13 +76,7 @@ export const preRecordedTranscription = async (
     apiKey,
     apiUrl,
     `/v1/listen?${querystring.stringify(transcriptionOptions)}`,
-    isUrlSource(source) ? JSON.stringify(source) : source.buffer,
-    isUrlSource(source)
-      ? undefined
-      : {
-          headers: {
-            "Content-Type": source.mimetype,
-          },
-        }
+    body,
+    requestOptions
   );
 };

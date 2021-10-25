@@ -53,9 +53,12 @@ const fileSource = { url: URL_OF_FILE };
 // Sending a buffer
 const bufferSource = { buffer: BUFFER_OF_FILE, mimetype: MIMETYPE_OF_FILE };
 
+// Sending a ReadStream
+const streamSource = { stream: fs.createReadStream("/path/to/file"), mimetype: MIMETYPE_OF_FILE };
+
 // Both fileSource or bufferSource could be provided as the source parameter
 const response = await deepgram.transcription.preRecorded(
-  fileSource | bufferSource,
+  fileSource | bufferSource | streamSource,
   {
     punctuate: true,
     // other options are available
