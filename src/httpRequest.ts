@@ -1,3 +1,4 @@
+import { ReadStream } from "fs";
 import { request, RequestOptions } from "https";
 import { userAgent } from "./userAgent";
 
@@ -6,10 +7,15 @@ const _requestOptions = (
   apiUrl: string,
   path: string,
   method: string,
-  payload?: string | Buffer,
+  payload?: string | Buffer | ReadStream,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   override_options?: any
 ): RequestOptions => {
+  const additionalHeaders: { [name: string]: string | number } = {};
+  if (payload && !(payload instanceof ReadStream)) {
+    additionalHeaders["Content-Length"] = Buffer.byteLength(payload);
+  }
+
   const options = {
     host: apiUrl,
     path,
@@ -18,12 +24,9 @@ const _requestOptions = (
       "User-Agent": userAgent(),
       "Content-Type": "application/json",
       Authorization: `token ${api_key}`,
-      "Content-Length": payload ? Buffer.byteLength(payload) : undefined,
+      ...additionalHeaders,
     },
   };
-  if (payload === undefined) {
-    delete options.headers["Content-Length"];
-  }
   let headers = options.headers;
   if (override_options && override_options.headers) {
     headers = { ...headers, ...override_options.headers };
@@ -37,7 +40,7 @@ export function _request<T>(
   api_key: string,
   apiUrl: string,
   path: string,
-  payload?: string | Buffer,
+  payload?: string | Buffer | ReadStream,
   // eslint-disable-next-line @typescript-eslint/ban-types
   options?: Object
 ): Promise<T> {
@@ -82,10 +85,19 @@ export function _request<T>(
       });
 
       if (payload) {
-        httpRequest.write(payload);
+        if (payload instanceof ReadStream) {
+          payload.pipe(httpRequest);
+          payload.on("finish", function () {
+            httpRequest.end();
+          });
+        } else {
+          // It's a buffer
+          httpRequest.write(payload);
+          httpRequest.end();
+        }
+      } else {
+        httpRequest.end();
       }
-
-      httpRequest.end();
     } catch (err) {
       reject(`DG: ${err}`);
     }
