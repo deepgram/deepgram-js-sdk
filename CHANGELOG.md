@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3]
+
+### Added
+
+- In addition to a Url and Buffer, `trascricription.preRecorded` now accepts a
+  ReadStream as a source of the file to transcribe.
+
+### Updated
+
+- Removed a console log that occurred when an HTTP request ended
+
 ## [1.0.2]
 
 ### Added
@@ -96,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.0.2...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.0.3...HEAD
+[1.0.3]: https://github.com/deepgram/node-sdk/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/deepgram/node-sdk/compare/1.0.0...1.0.2
 [1.0.0]: https://github.com/deepgram/node-sdk/compare/0.6.5...1.0.0
 [0.6.5]: https://github.com/deepgram/node-sdk/compare/0.6.4...0.6.5
