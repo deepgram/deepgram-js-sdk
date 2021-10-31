@@ -71,7 +71,7 @@ export const preRecordedTranscription = async (
     };
   }
 
-  return await _request<PrerecordedTranscriptionResponse>(
+  const response = await _request<PrerecordedTranscriptionResponse>(
     "POST",
     apiKey,
     apiUrl,
@@ -79,4 +79,6 @@ export const preRecordedTranscription = async (
     body,
     requestOptions
   );
+
+  return Object.assign(new PrerecordedTranscriptionResponse(), response);
 };
