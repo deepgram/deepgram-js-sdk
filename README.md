@@ -43,7 +43,7 @@ The `transcription` property can handle both pre-recorded and live transcription
 ### Prerecorded Transcription
 
 The `transcription.preRecorded` method handles sending an existing file or
-buffer to the Deepgram API to generate a transcription. [Additional options](#options)
+buffer to the Deepgram API to generate a transcription. [Additional options](#prerecorded-transcription-options)
 can be provided to customize the result.
 
 ```js
@@ -255,7 +255,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
 ### Live Transcription
 
 The `transcription.live` method provides access to a websocket connection
-to the Deepgram API for generating streaming transcriptions. [Additional options](#options)
+to the Deepgram API for generating streaming transcriptions. [Additional options](#live-transcription-options)
 can be provided to customize the result.
 
 ```js
