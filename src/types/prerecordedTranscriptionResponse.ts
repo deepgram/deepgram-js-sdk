@@ -18,19 +18,21 @@ export class PrerecordedTranscriptionResponse {
    * @returns A string with the transcription in the WebVTT format
    */
   public toWebVTT(): string {
+    if (!this.results || !this.results.utterances) {
+      throw new Error(
+        "This function requires a transcript that was generated with the utterances feature."
+      );
+    }
+
     let webVTT = `WEBVTT\n\n`;
 
-    webVTT += `NOTE\nTranscription provided by Deepgram\nRequest Id: ${this.metadata?.request_id}\nCreated: ${this.metadata?.created}\nDuration: ${this.metadata?.duration}\nChannels: ${this.metadata?.channels}\n\n`;  
+    webVTT += `NOTE\nTranscription provided by Deepgram\nRequest Id: ${this.metadata?.request_id}\nCreated: ${this.metadata?.created}\nDuration: ${this.metadata?.duration}\nChannels: ${this.metadata?.channels}\n\n`;
 
-    if (this.results?.utterances) {
-      for (let i = 0; i < this.results.utterances.length; i++) {
-        const utterance = this.results.utterances[i];
-        const start = secondsToTimestamp(utterance.start);
-        const end = secondsToTimestamp(utterance.end);
-        webVTT += `${i + 1}\n${start} --> ${end}\n- ${
-          utterance.transcript
-        }\n\n`;
-      }
+    for (let i = 0; i < this.results.utterances.length; i++) {
+      const utterance = this.results.utterances[i];
+      const start = secondsToTimestamp(utterance.start);
+      const end = secondsToTimestamp(utterance.end);
+      webVTT += `${i + 1}\n${start} --> ${end}\n- ${utterance.transcript}\n\n`;
     }
 
     return webVTT;
