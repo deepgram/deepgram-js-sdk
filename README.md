@@ -5,7 +5,7 @@
 Official Node.js SDK for [Deepgram](https://www.deepgram.com/)'s automated
 speech recognition APIs.
 
-> This SDK only supports the new beta Deepgram API.
+> This SDK only supports hosted usage of api.deepgram.com.
 
 To access the API you will need a Deepgram account. Sign up for free at
 [signup][signup].
@@ -54,7 +54,10 @@ const fileSource = { url: URL_OF_FILE };
 const bufferSource = { buffer: BUFFER_OF_FILE, mimetype: MIMETYPE_OF_FILE };
 
 // Sending a ReadStream
-const streamSource = { stream: fs.createReadStream("/path/to/file"), mimetype: MIMETYPE_OF_FILE };
+const streamSource = {
+  stream: fs.createReadStream("/path/to/file"),
+  mimetype: MIMETYPE_OF_FILE,
+};
 
 // Both fileSource or bufferSource could be provided as the source parameter
 const response = await deepgram.transcription.preRecorded(
