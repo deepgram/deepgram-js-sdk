@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0]
+
+### Added
+
+- Prerecorded transcription responses can now be used to generate WebVTT and
+  SRT caption files. Example:
+
+  ```js
+  const response = await deepgram.transcription.preRecorded(
+    { url: "URL_TO_FILE" },
+    {
+      punctuate: true,
+      utterances: true,
+    }
+  );
+  const webVTT = response.toWebVTT();
+  const SRT = response.toSRT();
+  ```
+
+  The [utterances](https://developers.deepgram.com/documentation/features/utterances/)
+  feature is required to use this functionality.
+
 ## [1.0.3]
 
 ### Added
@@ -107,7 +129,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.0.3...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/deepgram/node-sdk/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/deepgram/node-sdk/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/deepgram/node-sdk/compare/1.0.0...1.0.2
 [1.0.0]: https://github.com/deepgram/node-sdk/compare/0.6.5...1.0.0
