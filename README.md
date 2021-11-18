@@ -79,7 +79,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * AI model used to process submitted audio.
    * @default general
    * @remarks Possible values are general, phonecall, meeting or a custom string
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
+   * @see https://developers.deepgram.com/api-reference/#model-pr
    */
   model?: Models | string;
 
@@ -87,7 +87,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * Version of the model to use.
    * @default latest
    * @remarks latest OR <version_id>
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
+   * @see https://developers.deepgram.com/api-reference/#version-pr
    */
   version: string;
   /**
@@ -95,17 +95,17 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * @default en-US
    * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
    * pt-BR, ru, tr or null
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/language
+   * @see https://developers.deepgram.com/api-reference/#language-pr
    */
   language?: string;
   /**
    * Indicates whether to add punctuation and capitalization to the transcript.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/punctuate
+   * @see https://developers.deepgram.com/api-reference/#punctuate-pr
    */
   punctuate?: boolean;
   /**
    * Indicates whether to remove profanity from the transcript.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
+   * @see https://developers.deepgram.com/api-reference/#profanity-pr
    */
   profanity_filter?: boolean;
   /**
@@ -114,13 +114,13 @@ Additional transcription options can be provided for prerecorded transcriptions.
    *  `pci`: Redacts sensitive credit card information, including credit card number, expiration date, and CVV
    *  `numbers` (or `true)`: Aggressively redacts strings of numerals
    *  `ssn` (*beta*): Redacts social security numbers
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
+   * @see https://developers.deepgram.com/api-reference/#redact-pr
    */
   redact?: Array<string>;
   /**
    * Indicates whether to recognize speaker changes. When set to true, each word
    * in the transcript will be assigned a speaker number starting at 0.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   * @see https://developers.deepgram.com/api-reference/#diarize-pr
    */
   diarize?: boolean;
   /**
@@ -129,13 +129,14 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * can apply a different model to each channel using the model parameter (e.g.,
    * set model to general:phonecall, which applies the general model to channel
    * 0 and the phonecall model to channel 1).
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
+   * @see https://developers.deepgram.com/api-reference/#multichannel-pr
    */
   multichannel?: boolean;
   /**
    * Maximum number of transcript alternatives to return. Just like a human listener,
    * Deepgram can provide multiple possible interpretations of what it hears.
    * @default 1
+   * @see https://developers.deepgram.com/api-reference/#alternatives-pr
    */
   alternatives?: number;
   /**
@@ -143,14 +144,14 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
    * @remarks Converted numbers do not include punctuation. For example,
    * 999,999 would be transcribed as 999999.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/numerals
+   * @see https://developers.deepgram.com/api-reference/#numerals-pr
    */
   numerals?: boolean;
   /**
    * Terms or phrases to search for in the submitted audio. Deepgram searches
    * for acoustic patterns in audio rather than text patterns in transcripts
    * because we have noticed that acoustic pattern matching is more performant.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/search
+   * @see https://developers.deepgram.com/api-reference/#search-pr
    */
   search?: Array<string>;
   /**
@@ -160,7 +161,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * a POST request to the provided URL with an appropriate HTTP status code.
    * @remarks You may embed basic authentication credentials in the callback URL.
    * Only ports 80, 443, 8080, and 8443 can be used for callbacks.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/callback
+   * @see https://developers.deepgram.com/api-reference/#callback-pr
    */
   callback?: string;
   /**
@@ -168,7 +169,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * or suppressing to help it understand context. Just like a human listener,
    * Deepgram can better understand mumbled, distorted, or otherwise
    * hard-to-decipher speech when it knows the context of the conversation.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/keywords
+   * @see https://developers.deepgram.com/api-reference/#keywords-pr
    */
   keywords?: Array<string>;
   /**
@@ -184,7 +185,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * 0.8 s of silence. You can customize the length of time used to determine
    * where to split utterances by submitting the utt_split parameter.
    * @remarks **BETA FEATURE**
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utterances
+   * @see https://developers.deepgram.com/api-reference/#utterances-pr
    */
   utterances?: boolean;
   /**
@@ -193,7 +194,7 @@ Additional transcription options can be provided for prerecorded transcriptions.
    * is enabled.
    * @default 0.8 seconds
    * @remarks **BETA FEATURE**
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
+   * @see https://developers.deepgram.com/api-reference/#utterances-pr
    */
   utt_split?: number;
 }
@@ -297,7 +298,7 @@ Additional transcription options can be provided for live transcriptions.
    * AI model used to process submitted audio.
    * @default general
    * @remarks Possible values are general, phonecall, meeting or a custom string
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
+   * @see https://developers.deepgram.com/api-reference/#model-str
    */
   model?: Models | string;
 
@@ -305,7 +306,7 @@ Additional transcription options can be provided for live transcriptions.
    * Version of the model to use.
    * @default latest
    * @remarks latest OR <version_id>
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
+   * @see https://developers.deepgram.com/api-reference/#version-str
    */
   version: string;
   /**
@@ -313,17 +314,17 @@ Additional transcription options can be provided for live transcriptions.
    * @default en-US
    * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
    * pt-BR, ru, tr or null
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/language
+   * @see https://developers.deepgram.com/api-reference/#language-str
    */
   language?: string;
   /**
    * Indicates whether to add punctuation and capitalization to the transcript.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/punctuate
+   * @see https://developers.deepgram.com/api-reference/#punctuate-str
    */
   punctuate?: boolean;
   /**
    * Indicates whether to remove profanity from the transcript.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
+   * @see https://developers.deepgram.com/api-reference/#profanity-str
    */
   profanity_filter?: boolean;
   /**
@@ -332,13 +333,13 @@ Additional transcription options can be provided for live transcriptions.
    *  `pci`: Redacts sensitive credit card information, including credit card number, expiration date, and CVV
    *  `numbers` (or `true)`: Aggressively redacts strings of numerals
    *  `ssn` (*beta*): Redacts social security numbers
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
+   * @see https://developers.deepgram.com/api-reference/#redact-str
    */
   redact?: Array<string>;
   /**
    * Indicates whether to recognize speaker changes. When set to true, each word
    * in the transcript will be assigned a speaker number starting at 0.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   * @see https://developers.deepgram.com/api-reference/#diarize-str
    */
   diarize?: boolean;
   /**
@@ -347,13 +348,14 @@ Additional transcription options can be provided for live transcriptions.
    * can apply a different model to each channel using the model parameter (e.g.,
    * set model to general:phonecall, which applies the general model to channel
    * 0 and the phonecall model to channel 1).
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
+   * @see https://developers.deepgram.com/api-reference/#multichannel-str
    */
   multichannel?: boolean;
   /**
    * Maximum number of transcript alternatives to return. Just like a human listener,
    * Deepgram can provide multiple possible interpretations of what it hears.
    * @default 1
+   * @see https://developers.deepgram.com/api-reference/#alternatives-str
    */
   alternatives?: number;
   /**
@@ -361,14 +363,14 @@ Additional transcription options can be provided for live transcriptions.
    * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
    * @remarks Converted numbers do not include punctuation. For example,
    * 999,999 would be transcribed as 999999.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/numerals
+   * @see https://developers.deepgram.com/api-reference/#numerals-str
    */
   numerals?: boolean;
   /**
    * Terms or phrases to search for in the submitted audio. Deepgram searches
    * for acoustic patterns in audio rather than text patterns in transcripts
    * because we have noticed that acoustic pattern matching is more performant.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/search
+   * @see https://developers.deepgram.com/api-reference/#search-str
    */
   search?: Array<string>;
   /**
@@ -378,7 +380,7 @@ Additional transcription options can be provided for live transcriptions.
    * a POST request to the provided URL with an appropriate HTTP status code.
    * @remarks You may embed basic authentication credentials in the callback URL.
    * Only ports 80, 443, 8080, and 8443 can be used for callbacks.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/callback
+   * @see https://developers.deepgram.com/api-reference/#callback-str
    */
   callback?: string;
   /**
@@ -386,7 +388,7 @@ Additional transcription options can be provided for live transcriptions.
    * or suppressing to help it understand context. Just like a human listener,
    * Deepgram can better understand mumbled, distorted, or otherwise
    * hard-to-decipher speech when it knows the context of the conversation.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/keywords
+   * @see https://developers.deepgram.com/api-reference/#keywords-str
    */
   keywords?: Array<string>;
   /**
@@ -395,7 +397,7 @@ Additional transcription options can be provided for live transcriptions.
    * endpoint returns regular updates, which means transcription results will
    * likely change for a period of time. You can avoid receiving these updates
    * by setting this flag to false.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/interim_results
+   * @see https://developers.deepgram.com/api-reference/#interim-results-str
    */
   interim_results?: boolean;
   /**
@@ -405,7 +407,7 @@ Additional transcription options can be provided for live transcriptions.
    * that no additional data will improve its prediction, so it immediately
    * finalizes the result for the processed time range and returns the
    * transcript with a speech_final parameter set to true.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/endpointing
+   * @see https://developers.deepgram.com/api-reference/#endpointing-str
    */
   endpointing?: boolean;
   /**
@@ -415,25 +417,25 @@ Additional transcription options can be provided for live transcriptions.
    * a value between 10 ms and 500 ms; on-premise customers may remove this
    * restriction.
    * @default 10
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/vad_turnoff
+   * @see https://developers.deepgram.com/api-reference/#vad-str
    */
   vad_turnoff?: number;
   /**
    * Expected encoding of the submitted streaming audio.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/encoding
+   * @see https://developers.deepgram.com/api-reference/#encoding-str
    */
   encoding?: string;
   /**
    * Number of independent audio channels contained in submitted streaming
    * audio. Only read when a value is provided for encoding.
    * @default 1
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/channels
+   * @see https://developers.deepgram.com/api-reference/#channels-str
    */
   channels?: number;
   /**
    * Sample rate of submitted streaming audio. Required (and only read)
    * when a value is provided for encoding.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/sample_rate
+   * @see https://developers.deepgram.com/api-reference/#samplerate-str
    */
   sample_rate?: number;
 }
