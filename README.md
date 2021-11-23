@@ -77,7 +77,7 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
 
   deepgramSocket.addListener('open', () => {
     mediaRecorder.addEventListener('dataavailable', async (event) => {
-      if (event.data.size > 0 && socket.readyState == 1) {
+      if (event.data.size > 0 && deepgramSocket.readyState == 1) {
         deepgramSocket.send(event.data)
       }
     })
