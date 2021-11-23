@@ -12,8 +12,8 @@ To access the API you will need a Deepgram account. Sign up for free at
 
 ## Documentation
 
-Full documentation of the Node.js SDK can be found at
-[https://developers.deepgram.com/sdks-tools/sdks/node-sdk/](https://developers.deepgram.com/sdks-tools/sdks/node-sdk/).
+Full documentation of the Node.js SDK can be found on the
+[Deepgram Developer Portal](https://developers.deepgram.com/sdks-tools/sdks/node-sdk/).
 
 You can learn more about the full Deepgram API at [https://developers.deepgram.com](https://developers.deepgram.com).
 
