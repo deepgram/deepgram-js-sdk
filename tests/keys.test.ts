@@ -53,6 +53,24 @@ describe("Key tests", () => {
     });
   });
 
+  it("Throws an exception if both expirationDate and timeToLive are provided", function () {
+    const expectedError = `Please provide expirationDate or timeToLive or neither. Providing both is not allowed.`;
+    nock(`https://${fakeUrl}`)
+      .post(`/v1/projects/${fakeProjectId}/keys`)
+      .reply(200, mockKey);
+
+      keys.create(fakeProjectId, "test Comment", ["member"], new Date(), 30).then((response) => {
+        response.should.deep.eq(mockKey);
+        requestStub.calledOnce.should.eq(true);
+      })
+      .then(() => {
+        assert.equal(1, 2);
+      })
+      .catch((err) => {
+        assert.equal(err, expectedError);
+      });     
+  });
+
   it("Delete resolves", function () {
     nock(`https://${fakeUrl}`)
       .delete(`/v1/projects/${fakeProjectId}/keys/${fakeKeyId}`)

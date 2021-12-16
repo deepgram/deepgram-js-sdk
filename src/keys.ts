@@ -38,18 +38,29 @@ export class Keys {
    * @param projectId Unique identifier of the project to create an API key under
    * @param comment Comment to describe the key
    * @param scopes Permission scopes associated with the API key
+   * @param expirationDate Date on which the key you would like to create should expire. 
+   * @param timeToLive Length of time (in seconds) during which the key you would like to create will remain valid.
    */
   async create(
     projectId: string,
     comment: string,
-    scopes: Array<string>
+    scopes: Array<string>,
+    expirationDate?: Date,
+    timeToLive?: number
   ): Promise<Key> {
+
+    /** Throw an error if the user provided both expirationDate and timeToLive */
+    if (expirationDate !== undefined &&
+        timeToLive !== undefined) {
+          throw new Error('Please provide expirationDate or timeToLive or neither. Providing both is not allowed.')
+        }
+
     return _request<Key>(
       "POST",
       this._credentials,
       this._apiUrl,
       `${this.apiPath}/${projectId}/keys`,
-      JSON.stringify({ comment, scopes })
+      JSON.stringify({ comment, scopes, expiration_date: expirationDate, time_to_live_in_seconds: timeToLive })
     );
   }
 

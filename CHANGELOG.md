@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Updated
+
+- Updated the `keys.create` function to allow new `expirationDate` or `timeToLive`
+values. These are optional and one at most can be provided. Providing both will
+throw an error.
+
 ---
 
 ## [1.1.0]
