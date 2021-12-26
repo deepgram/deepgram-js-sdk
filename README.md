@@ -90,7 +90,7 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       console.log(transcript);
     }
   });
-}
+});
 ```
 
 ## Samples
