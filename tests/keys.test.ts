@@ -59,7 +59,12 @@ describe("Key tests", () => {
       .post(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockKey);
 
-      keys.create(fakeProjectId, "test Comment", ["member"], new Date(), 30).then((response) => {
+    keys
+      .create(fakeProjectId, "test Comment", ["member"], {
+        expirationDate: new Date(),
+        timeToLive: 30,
+      })
+      .then((response) => {
         response.should.deep.eq(mockKey);
         requestStub.calledOnce.should.eq(true);
       })
@@ -68,7 +73,49 @@ describe("Key tests", () => {
       })
       .catch((err) => {
         assert.equal(err, expectedError);
-      });     
+      });
+  });
+
+  it("Does not throw if only timeToLive is provided as an option", function () {
+    nock(`https://${fakeUrl}`)
+      .post(`/v1/projects/${fakeProjectId}/keys`)
+      .reply(200, mockKey);
+
+    keys
+      .create(fakeProjectId, "test Comment", ["member"], {
+        timeToLive: 30,
+      })
+      .then((response) => {
+        response.should.deep.eq(mockKey);
+        requestStub.calledOnce.should.eq(true);
+      })
+      .then(() => {
+        assert.equal(1, 1);
+      })
+      .catch((err) => {
+        assert.equal(1, 2);
+      });
+  });
+
+  it("Does not throw if only expirationDate is provided as an option", function () {
+    nock(`https://${fakeUrl}`)
+      .post(`/v1/projects/${fakeProjectId}/keys`)
+      .reply(200, mockKey);
+
+    keys
+      .create(fakeProjectId, "test Comment", ["member"], {
+        expirationDate: new Date(),
+      })
+      .then((response) => {
+        response.should.deep.eq(mockKey);
+        requestStub.calledOnce.should.eq(true);
+      })
+      .then(() => {
+        assert.equal(1, 1);
+      })
+      .catch((err) => {
+        assert.equal(1, 2);
+      });
   });
 
   it("Delete resolves", function () {

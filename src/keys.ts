@@ -1,5 +1,5 @@
 import { _request } from "./httpRequest";
-import { KeyResponse, Key } from "./types";
+import { CreateKeyOptions, KeyResponse, Key } from "./types";
 
 export class Keys {
   constructor(private _credentials: string, private _apiUrl: string) {}
@@ -38,29 +38,40 @@ export class Keys {
    * @param projectId Unique identifier of the project to create an API key under
    * @param comment Comment to describe the key
    * @param scopes Permission scopes associated with the API key
-   * @param expirationDate Date on which the key you would like to create should expire. 
-   * @param timeToLive Length of time (in seconds) during which the key you would like to create will remain valid.
+   * @param options Optional options used when creating API keys
    */
   async create(
     projectId: string,
     comment: string,
     scopes: Array<string>,
-    expirationDate?: Date,
-    timeToLive?: number
+    options?: CreateKeyOptions
   ): Promise<Key> {
-
     /** Throw an error if the user provided both expirationDate and timeToLive */
-    if (expirationDate !== undefined &&
-        timeToLive !== undefined) {
-          throw new Error('Please provide expirationDate or timeToLive or neither. Providing both is not allowed.')
-        }
+    if (
+      options &&
+      options.expirationDate !== undefined &&
+      options.timeToLive !== undefined
+    ) {
+      throw new Error(
+        "Please provide expirationDate or timeToLive or neither. Providing both is not allowed."
+      );
+    }
 
     return _request<Key>(
       "POST",
       this._credentials,
       this._apiUrl,
       `${this.apiPath}/${projectId}/keys`,
-      JSON.stringify({ comment, scopes, expiration_date: expirationDate, time_to_live_in_seconds: timeToLive })
+      JSON.stringify({
+        comment,
+        scopes,
+        expiration_date:
+          options && options.expirationDate
+            ? options.expirationDate
+            : undefined,
+        time_to_live_in_seconds:
+          options && options.timeToLive ? options.timeToLive : undefined,
+      })
     );
   }
 
