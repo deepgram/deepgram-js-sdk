@@ -1,4 +1,5 @@
 export * from "./channel";
+export * from "./createKeyOptions";
 export * from "./hit";
 export * from "./key";
 export * from "./keyResponse";
