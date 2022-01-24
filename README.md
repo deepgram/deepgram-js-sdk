@@ -84,7 +84,7 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
     mediaRecorder.start(1000)
   });
 
-  deepgramSocket.addListener("transcriptReceived", (transcription) => {
+  deepgramSocket.addListener("transcriptReceived", (received) => {
     const transcript = received.channel.alternatives[0].transcript;
     if (transcript && received.is_final) {
       console.log(transcript);
