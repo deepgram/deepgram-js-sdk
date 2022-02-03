@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.1]
+
+### Fixed
+
+- Fixed a bug that caused real-time transcriptions to not close correctly. This
+would result in the user not received the final transcription.
+
 ## [1.2.0]
 
 ### Updated
@@ -137,7 +144,9 @@ throw an error.
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.1.0...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.2.1...HEAD
+[1.2.1]: https://github.com/deepgram/node-sdk/compare/1.2.0...1.2.1
+[1.2.0]: https://github.com/deepgram/node-sdk/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/deepgram/node-sdk/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/deepgram/node-sdk/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/deepgram/node-sdk/compare/1.0.0...1.0.2
