@@ -71,6 +71,6 @@ export class LiveTranscription extends EventEmitter {
    * the websocket connection when transcription is finished
    */
   public finish(): void {
-    this._socket.close(1000);
+    this._socket.send(new Uint8Array(0));
   }
 }
