@@ -4,4 +4,5 @@ export type WordBase = {
   end: number;
   confidence: number;
   punctuated_word?: string;
+  speaker?: number;
 };

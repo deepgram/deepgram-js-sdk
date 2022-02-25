@@ -29,7 +29,8 @@ export type Utterance = {
    */
   words: Array<WordBase>;
   /**
-   * Integer indicating the speaker who is saying the word being processed.
+   * Integer indicating the predicted speaker of the majority of words
+   * in the utterance who is saying the words being processed.
    */
   speaker?: number;
   /**
