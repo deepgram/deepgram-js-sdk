@@ -10,13 +10,19 @@ export class Keys {
    * Retrieves all keys associated with the provided projectId
    * @param projectId Unique identifier of the project containing API keys
    */
-  async list(projectId: string): Promise<KeyResponse> {
-    return _request<KeyResponse>(
+  async list(projectId: string): Promise<{
+    api_keys: Array<Key>;
+  }> {
+    const response = await _request<KeyResponse>(
       "GET",
       this._credentials,
       this._apiUrl,
       `${this.apiPath}/${projectId}/keys`
     );
+
+    const output: Array<Key> = response.api_keys.map(({ api_key }) => api_key);
+
+    return { api_keys: output };
   }
 
   /**
