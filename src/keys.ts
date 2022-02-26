@@ -9,6 +9,7 @@ export class Keys {
   /**
    * Retrieves all keys associated with the provided projectId
    * @param projectId Unique identifier of the project containing API keys
+   * @deprecated Output in later versions expected to be Promise<KeyResponse>
    */
   async list(projectId: string): Promise<{
     api_keys: Array<Key>;
