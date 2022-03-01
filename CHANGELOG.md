@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Getting the list of API keys was returning the wrong type of object. The SDK now returns the correct object type, but also returns what was previously implemented with deprecation notices.
+
 ---
 
 ## [1.2.2]
