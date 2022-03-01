@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepgram/node-sdk.git"
+    "url": "git+https://github.com/deepgram/deepgram-node-sdk.git"
   },
   "keywords": [
     "deepgram",
@@ -27,9 +27,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/deepgram/node-sdk/issues"
+    "url": "https://github.com/deepgram/deepgram-node-sdk/issues"
   },
-  "homepage": "https://github.com/deepgram/node-sdk#readme",
+  "homepage": "https://github.com/deepgram/deepgram-node-sdk#readme",
   "devDependencies": {
     "@types/chai": "^4.2.22",
     "@types/mocha": "^9.0.0",
