@@ -147,5 +147,5 @@ project, let us know! You can either:
 
 Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/)
 
-[signup]: https://console.deepgram.com?utm_source=node-sdk&utm_content=readme
+[signup]: https://console.deepgram.com/signup?utm_medium=github&utm_source=DEVREL&utm_content=node-sdk
 [license]: LICENSE.txt
