@@ -18,7 +18,7 @@ export type PrerecordedTranscriptionOptions = {
    * @remarks latest OR <version_id>
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
    */
-  version: string;
+  version?: string;
   /**
    * BCP-47 language tag that hints at the primary spoken language.
    * @default en-US
