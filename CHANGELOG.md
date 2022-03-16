@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.2.3]
+
 ### Fixed
 
 - Getting the list of API keys was returning the wrong type of object. The SDK now returns the correct object type, but also returns what was previously implemented with deprecation notices.
-
----
+- The `version` parameter was typed as required for both pre-recorded and live transcription. Changed this to be optional.
 
 ## [1.2.2]
 
@@ -155,7 +158,8 @@ throw an error.
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.2.2...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.2.3...HEAD
+[1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/deepgram/node-sdk/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/deepgram/node-sdk/compare/1.1.0...1.2.0
