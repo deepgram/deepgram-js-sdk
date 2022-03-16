@@ -28,3 +28,4 @@ export * from "./usageResponseDetail";
 export * from "./utterance";
 export * from "./wordBase";
 export * from "./message";
+export * from "./scopeList";
