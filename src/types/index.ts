@@ -6,6 +6,7 @@ export * from "./keyResponse";
 export * from "./liveTranscriptionOptions";
 export * from "./liveTranscriptionResponse";
 export * from "./member";
+export * from "./memberList";
 export * from "./metadata";
 export * from "./prerecordedTranscriptionOptions";
 export * from "./prerecordedTranscriptionResponse";
