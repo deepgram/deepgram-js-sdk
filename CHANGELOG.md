@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.3]
+## [1.2.4]
 
 ### Fixed
 
@@ -158,8 +158,8 @@ throw an error.
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.2.3...HEAD
-[1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.3
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.2.4...HEAD
+[1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.4
 [1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/deepgram/node-sdk/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/deepgram/node-sdk/compare/1.1.0...1.2.0
