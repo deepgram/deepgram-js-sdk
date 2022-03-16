@@ -1,4 +1,3 @@
-// import querystring from "querystring";
 import { _request } from "./httpRequest";
 import { MemberList, Message } from "./types";
 
@@ -12,7 +11,6 @@ export class Members {
    * @param projectId Unique identifier of the project
    */
   async listMembers(projectId: string): Promise<MemberList> {
-    console.log("LIST MEMBERS", projectId);
     return _request<MemberList>(
       "GET",
       this._credentials,
@@ -27,7 +25,6 @@ export class Members {
    * @param memberId Unique identifier of the project
    */
   async removeMember(projectId: string, memberId: string): Promise<Message> {
-    console.log("REMOVE MEMBER", projectId, memberId);
     return _request<Message>(
       "DELETE",
       this._credentials,
