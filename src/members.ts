@@ -22,7 +22,7 @@ export class Members {
   /**
    * Retrieves account objects for all of the accounts in the specified project.
    * @param projectId Unique identifier of the project
-   * @param memberId Unique identifier of the project
+   * @param memberId Unique identifier of the member
    */
   async removeMember(projectId: string, memberId: string): Promise<Message> {
     return _request<Message>(

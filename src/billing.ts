@@ -7,7 +7,7 @@ export class Billing {
   private apiPath = "/v1/projects";
 
   /**
-   * Retrieves account objects for all of the accounts in the specified project.
+   * Retrieves list of balance info of the specified project.
    * @param projectId Unique identifier of the project
    */
   async listBalances(projectId: string): Promise<BalanceList> {
@@ -18,6 +18,12 @@ export class Billing {
       `${this.apiPath}/${projectId}/balances`
     );
   }
+
+  /**
+   * Retrieves balance info of a specified balance_id in the specified project.
+   * @param projectId Unique identifier of the project
+   * @param balanceId Unique identifier of the balance
+   */
 
   async getBalance(projectId: string, balanceId: string): Promise<Balance> {
     return _request<Balance>(

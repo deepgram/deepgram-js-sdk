@@ -50,10 +50,10 @@ export class Invitation {
   }
 
   /**
-   * Removes the specified email from the specified project.
+   * Removes the specified email from the invitations on the specified project.
    * @param projectId Unique identifier of the project
-   *
-   * NOTE: This will return successful even if the email does not exist on the project. It is better to handle account removal from the Deepgram console https://console.deepgram.com/
+   * @param email email address of the invitee
+   * NOTE: This will return successful even if the email does not have an invite on the project.
    */
   async delete(projectId: string, email: string): Promise<Message> {
     return _request<Message>(

@@ -7,8 +7,9 @@ export class Scopes {
   private apiPath = "/v1/projects";
 
   /**
-   * Retrieves account objects for all of the accounts in the specified project.
+   * Retrieves scopes of the specified member in the specified project.
    * @param projectId Unique identifier of the project
+   * @param memberId Unique identifier of the member
    */
   async get(projectId: string, memberId: string): Promise<ScopeList> {
     return _request<ScopeList>(
@@ -20,7 +21,7 @@ export class Scopes {
   }
 
   /**
-   * Retrieves account objects for all of the accounts in the specified project.
+   * Updates the scope for the specified member in the specified project.
    * @param projectId Unique identifier of the project
    * @param memberId Unique identifier of the member being updated
    * @param scope string of the scope to update to
