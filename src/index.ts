@@ -6,6 +6,7 @@ import { Usage } from "./usage";
 import { Members } from "./members";
 import { Invitation } from "./invitation";
 import { Billing } from "./billing";
+import { Scopes } from "./scopes";
 
 export class Deepgram {
   private _apiUrl: string;
@@ -18,6 +19,7 @@ export class Deepgram {
   members: Members;
   invitation: Invitation;
   billing: Billing;
+  scopes: Scopes;
 
   constructor(apiKey: string, apiUrl?: string) {
     this._apiKey = apiKey;
@@ -32,6 +34,7 @@ export class Deepgram {
     this.members = new Members(this._apiKey, this._apiUrl);
     this.invitation = new Invitation(this._apiKey, this._apiUrl);
     this.billing = new Billing(this._apiKey, this._apiUrl);
+    this.scopes = new Scopes(this._apiKey, this._apiUrl);
   }
 
   /**

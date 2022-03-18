@@ -32,3 +32,4 @@ export * from "./invitationOptions";
 export * from "./invitationList";
 export * from "./balance";
 export * from "./balanceList";
+export * from "./scopeList";
