@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0]
+
+### Added
+
+- Added Message Class for generic message responses
+- Added member endpoint functionality
+  - This includes the `listMembers` and `removeMember` methods
+  - Added Member and MemberList Class
+- Added scopes endpoint functionality
+  - This includes the `get` and `update` methods
+  - Added ScopeList Class
+- Added invites endpoint functionality
+  - This includes the `list`, `send`, `leave` and `delete` methods
+  - Added InvitationOptions and InvitationList Class
+- Added balances endpoint functionality
+  - This includes the `listBalances` and `getBalance` methods
+  - Added Balance and BalanceList Class
+
 ## [1.2.4]
 
 ### Fixed
@@ -28,15 +46,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed a bug that caused real-time transcriptions to not close correctly. This
-would result in the user not received the final transcription.
+  would result in the user not received the final transcription.
 
 ## [1.2.0]
 
 ### Updated
 
 - Updated the `keys.create` function to allow new `expirationDate` or `timeToLive`
-values. These are optional and one at most can be provided. Providing both will
-throw an error.
+  values. These are optional and one at most can be provided. Providing both will
+  throw an error.
 
 ## [1.1.0]
 
@@ -158,8 +176,9 @@ throw an error.
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.2.4...HEAD
-[1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.4
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.4
+[1.2.4]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.4
 [1.2.2]: https://github.com/deepgram/node-sdk/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/deepgram/node-sdk/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/deepgram/node-sdk/compare/1.1.0...1.2.0
