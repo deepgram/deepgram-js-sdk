@@ -38,7 +38,6 @@
     "@types/ws": "^7.4.7",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "bufferutil": "^4.0.6",
     "chai": "^4.3.4",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
@@ -50,10 +49,11 @@
     "prettier": "^2.4.1",
     "sinon": "^10.0.0",
     "ts-node": "^9.1.1",
-    "typescript": "^4.6.3",
-    "utf-8-validate": "^5.0.9"
+    "typescript": "^4.6.3"
   },
   "dependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9",
     "ws": "^7.5.5"
   }
 }
