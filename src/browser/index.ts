@@ -1,5 +1,5 @@
 import { DefaultOptions } from "../constants";
-
+import { validateOptions } from "../helpers";
 import { Transcriber } from "./transcription";
 
 export class Deepgram {
@@ -12,21 +12,11 @@ export class Deepgram {
     this._apiKey = apiKey;
     this._apiUrl = apiUrl || DefaultOptions.apiUrl;
 
-    this._validateOptions();
+    /**
+     * Ensures that the provided options were provided
+     */
+    validateOptions(this._apiKey, this._apiUrl);
 
     this.transcription = new Transcriber(this._apiKey, this._apiUrl);
-  }
-
-  /**
-   * Ensures that the provided options were provided
-   */
-  private _validateOptions() {
-    if (!this._apiKey || this._apiKey.trim().length === 0) {
-      throw new Error("DG: API key is required");
-    }
-
-    if (!this._apiUrl || this._apiUrl.trim().length === 0) {
-      throw new Error("DG: API url should be a valid url or not provided");
-    }
   }
 }
