@@ -4,7 +4,7 @@ import {
   PrerecordedTranscriptionResponse,
   UrlSource,
 } from "../../types";
-import { _request } from "./httpFetch";
+import { _request } from "../httpFetch";
 
 function isUrlSource(providedSource: UrlSource): providedSource is UrlSource {
   if ((providedSource as UrlSource).url) return true;

@@ -1,5 +1,3 @@
-import { userAgent } from "../../userAgent";
-
 export async function _request<T>(
   method: string,
   api_key: string,
@@ -14,7 +12,6 @@ export async function _request<T>(
       headers: {
         Authorization: `token ${api_key}`,
         "Content-Type": "application/json",
-        "User-Agent": userAgent(),
       },
       body: payload,
     });
