@@ -17,6 +17,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Update Version in User-Agent
+        run: sed -i 's/DG_SDK_VERSION/${{ github.event.release.tag_name }}/g' ./src/userAgent.ts
+
       - name: Build TypeScript
         run: npm run build
 

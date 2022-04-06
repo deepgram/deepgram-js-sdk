@@ -1,13 +1,13 @@
-import path from "path";
+/*
+* The following const is replaced during the CD
+* process to the version from package.json
+*/
+const sdkVersion = "DG_SDK_VERSION";
 
 export function userAgent(): string {
   let agent = "@deepgram/sdk/UNKNOWN node/UNKNOWN";
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const packageDetails = require(path.join(__dirname, "..", "package.json"));
-    agent = `@deepgram/sdk/${
-      packageDetails.version
-    } node/${process.version.replace("v", "")}`;
+    agent = `@deepgram/sdk/${sdkVersion} node/${process.version.replace("v", "")}`;
   } catch (e) {
     console.warn("Could not load package details");
   }
