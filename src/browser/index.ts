@@ -3,7 +3,7 @@ import { validateOptions } from "../helpers";
 import { Transcriber } from "./transcription";
 import { Projects } from "../projects";
 import { Keys } from "../keys";
-// import { Usage } from "../usage";
+import { Usage } from "../usage";
 import { Members } from "../members";
 import { Invitation } from "../invitation";
 import { Billing } from "../billing";
@@ -18,7 +18,7 @@ export class Deepgram {
   transcription: Transcriber;
   projects: Projects;
   keys: Keys;
-  // usage: Usage;
+  usage: Usage;
   members: Members;
   invitation: Invitation;
   billing: Billing;
@@ -36,7 +36,7 @@ export class Deepgram {
     this.transcription = new Transcriber(this._apiKey, this._apiUrl);
     this.projects = new Projects(this._apiKey, this._apiUrl, _request);
     this.keys = new Keys(this._apiKey, this._apiUrl, _request);
-    // this.usage = new Usage(this._apiKey, this._apiUrl);
+    this.usage = new Usage(this._apiKey, this._apiUrl, _request);
     this.members = new Members(this._apiKey, this._apiUrl, _request);
     this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);
     this.billing = new Billing(this._apiKey, this._apiUrl, _request);

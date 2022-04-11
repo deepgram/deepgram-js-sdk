@@ -36,7 +36,7 @@ export class Deepgram {
     this.keys = new Keys(this._apiKey, this._apiUrl, _request);
     this.projects = new Projects(this._apiKey, this._apiUrl, _request);
     this.transcription = new Transcriber(this._apiKey, this._apiUrl);
-    this.usage = new Usage(this._apiKey, this._apiUrl);
+    this.usage = new Usage(this._apiKey, this._apiUrl, _request);
     this.members = new Members(this._apiKey, this._apiUrl, _request);
     this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);
     this.billing = new Billing(this._apiKey, this._apiUrl, _request);
