@@ -7,7 +7,7 @@ import { Keys } from "../keys";
 import { Members } from "../members";
 import { Invitation } from "../invitation";
 import { Billing } from "../billing";
-// import { Scopes } from "../scopes";
+import { Scopes } from "../scopes";
 
 import { _request } from "./httpFetch";
 
@@ -22,7 +22,7 @@ export class Deepgram {
   members: Members;
   invitation: Invitation;
   billing: Billing;
-  // scopes: Scopes;
+  scopes: Scopes;
 
   constructor(apiKey: string, apiUrl?: string) {
     this._apiKey = apiKey;
@@ -40,6 +40,6 @@ export class Deepgram {
     this.members = new Members(this._apiKey, this._apiUrl, _request);
     this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);
     this.billing = new Billing(this._apiKey, this._apiUrl, _request);
-    // this.scopes = new Scopes(this._apiKey, this._apiUrl);
+    this.scopes = new Scopes(this._apiKey, this._apiUrl, _request);
   }
 }
