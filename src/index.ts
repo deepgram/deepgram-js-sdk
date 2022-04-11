@@ -39,7 +39,7 @@ export class Deepgram {
     this.usage = new Usage(this._apiKey, this._apiUrl);
     this.members = new Members(this._apiKey, this._apiUrl, _request);
     this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);
-    this.billing = new Billing(this._apiKey, this._apiUrl);
+    this.billing = new Billing(this._apiKey, this._apiUrl, _request);
     this.scopes = new Scopes(this._apiKey, this._apiUrl);
   }
 }
