@@ -1,8 +1,29 @@
-import { _request } from "./httpRequest";
+import { ReadStream } from "fs";
+
 import { Message, InvitationOptions, InvitationList } from "./types";
 
 export class Invitation {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _request:
+      | ((
+          method: string,
+          api_key: string,
+          apiUrl: string,
+          path: string,
+          payload?: string | Buffer | ReadStream,
+          // eslint-disable-next-line @typescript-eslint/ban-types
+          options?: Object
+        ) => Promise<any>)
+      | ((
+          method: string,
+          api_key: string,
+          apiUrl: string,
+          path: string,
+          payload?: string
+        ) => Promise<any>)
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -11,7 +32,7 @@ export class Invitation {
    * @param projectId Unique identifier of the project
    */
   async list(projectId: string): Promise<InvitationList> {
-    return _request<InvitationList>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -24,7 +45,7 @@ export class Invitation {
    * @param projectId Unique identifier of the project
    */
   async send(projectId: string, options: InvitationOptions): Promise<Message> {
-    return _request<Message>(
+    return this._request(
       "POST",
       this._credentials,
       this._apiUrl,
@@ -41,7 +62,7 @@ export class Invitation {
    * @param projectId Unique identifier of the project
    */
   async leave(projectId: string): Promise<Message> {
-    return _request<Message>(
+    return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
@@ -56,7 +77,7 @@ export class Invitation {
    * NOTE: This will return successful even if the email does not have an invite on the project.
    */
   async delete(projectId: string, email: string): Promise<Message> {
-    return _request<Message>(
+    return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,

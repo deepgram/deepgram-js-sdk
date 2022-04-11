@@ -5,7 +5,7 @@ import { Projects } from "../projects";
 import { Keys } from "../keys";
 // import { Usage } from "../usage";
 import { Members } from "../members";
-// import { Invitation } from "../invitation";
+import { Invitation } from "../invitation";
 // import { Billing } from "../billing";
 // import { Scopes } from "../scopes";
 
@@ -20,7 +20,7 @@ export class Deepgram {
   keys: Keys;
   // usage: Usage;
   members: Members;
-  // invitation: Invitation;
+  invitation: Invitation;
   // billing: Billing;
   // scopes: Scopes;
 
@@ -38,7 +38,7 @@ export class Deepgram {
     this.keys = new Keys(this._apiKey, this._apiUrl, _request);
     // this.usage = new Usage(this._apiKey, this._apiUrl);
     this.members = new Members(this._apiKey, this._apiUrl);
-    // this.invitation = new Invitation(this._apiKey, this._apiUrl);
+    this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);
     // this.billing = new Billing(this._apiKey, this._apiUrl);
     // this.scopes = new Scopes(this._apiKey, this._apiUrl);
   }
