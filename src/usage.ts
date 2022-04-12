@@ -1,6 +1,6 @@
 import querystring from "querystring";
-import { ReadStream } from "fs";
 import {
+  RequestFunction,
   UsageField,
   UsageFieldOptions,
   UsageOptions,
@@ -14,23 +14,7 @@ export class Usage {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
-    private _request:
-      | ((
-          method: string,
-          api_key: string,
-          apiUrl: string,
-          path: string,
-          payload?: string | Buffer | ReadStream,
-          // eslint-disable-next-line @typescript-eslint/ban-types
-          options?: Object
-        ) => Promise<any>)
-      | ((
-          method: string,
-          api_key: string,
-          apiUrl: string,
-          path: string,
-          payload?: string
-        ) => Promise<any>)
+    private _request: RequestFunction
   ) {}
 
   private apiPath = "/v1/projects";
