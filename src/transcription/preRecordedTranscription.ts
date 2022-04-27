@@ -44,15 +44,6 @@ export const preRecordedTranscription = async (
 ): Promise<PrerecordedTranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 
-  if (
-    !isUrlSource(source) &&
-    (source.mimetype === undefined || source.mimetype.length === 0)
-  ) {
-    throw new Error(
-      "DG: Mimetype must be provided if the source is a Buffer or a ReadStream"
-    );
-  }
-
   let body;
   if (isUrlSource(source)) {
     body = JSON.stringify(source);
