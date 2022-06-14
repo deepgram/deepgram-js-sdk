@@ -1,4 +1,4 @@
-import { ReadStream } from "fs";
+import { Readable } from "stream";
 import { request, RequestOptions } from "https";
 import { userAgent } from "./userAgent";
 
@@ -7,12 +7,12 @@ const _requestOptions = (
   apiUrl: string,
   path: string,
   method: string,
-  payload?: string | Buffer | ReadStream,
+  payload?: string | Buffer | Readable,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   override_options?: any
 ): RequestOptions => {
   const additionalHeaders: { [name: string]: string | number } = {};
-  if (payload && !(payload instanceof ReadStream)) {
+  if (payload && !(payload instanceof Readable)) {
     additionalHeaders["Content-Length"] = Buffer.byteLength(payload);
   }
 
@@ -40,7 +40,7 @@ export function _request<T>(
   api_key: string,
   apiUrl: string,
   path: string,
-  payload?: string | Buffer | ReadStream,
+  payload?: string | Buffer | Readable,
   // eslint-disable-next-line @typescript-eslint/ban-types
   options?: Object
 ): Promise<T> {
@@ -85,7 +85,7 @@ export function _request<T>(
       });
 
       if (payload) {
-        if (payload instanceof ReadStream) {
+        if (payload instanceof Readable) {
           payload.pipe(httpRequest);
           payload.on("finish", function () {
             httpRequest.end();
