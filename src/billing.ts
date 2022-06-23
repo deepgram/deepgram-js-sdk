@@ -1,8 +1,11 @@
-import { _request } from "./httpRequest";
-import { BalanceList, Balance } from "./types";
+import { BalanceList, Balance, RequestFunction } from "./types";
 
 export class Billing {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _request: RequestFunction
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -11,7 +14,7 @@ export class Billing {
    * @param projectId Unique identifier of the project
    */
   async listBalances(projectId: string): Promise<BalanceList> {
-    return _request<BalanceList>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -26,7 +29,7 @@ export class Billing {
    */
 
   async getBalance(projectId: string, balanceId: string): Promise<Balance> {
-    return _request<Balance>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,

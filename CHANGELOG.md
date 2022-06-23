@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0]
+
+### Added
+
+- Added Browser compatible versions of the live and preRecorded transcription methods
 ## [1.3.1]
 
 ### Updated
@@ -182,7 +187,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.3.1...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/deepgram/node-sdk/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/deepgram/node-sdk/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/deepgram/node-sdk/compare/1.2.4...1.3.0
 [1.2.4]: https://github.com/deepgram/node-sdk/compare/1.2.2...1.2.4

@@ -1,23 +1,23 @@
-import { DefaultOptions } from "./constants";
-import { Keys } from "./keys";
-import { Projects } from "./projects";
+import { DefaultOptions } from "../constants";
+import { validateOptions } from "../helpers";
 import { Transcriber } from "./transcription";
-import { Usage } from "./usage";
-import { Members } from "./members";
-import { Invitation } from "./invitation";
-import { Billing } from "./billing";
-import { Scopes } from "./scopes";
+import { Projects } from "../projects";
+import { Keys } from "../keys";
+import { Usage } from "../usage";
+import { Members } from "../members";
+import { Invitation } from "../invitation";
+import { Billing } from "../billing";
+import { Scopes } from "../scopes";
 
-import { validateOptions } from "./helpers";
-import { _request } from "./httpRequest";
+import { _request } from "./httpFetch";
 
 export class Deepgram {
   private _apiUrl: string;
   private _apiKey: string;
 
-  keys: Keys;
-  projects: Projects;
   transcription: Transcriber;
+  projects: Projects;
+  keys: Keys;
   usage: Usage;
   members: Members;
   invitation: Invitation;
@@ -33,9 +33,9 @@ export class Deepgram {
      */
     validateOptions(this._apiKey, this._apiUrl);
 
-    this.keys = new Keys(this._apiKey, this._apiUrl, _request);
-    this.projects = new Projects(this._apiKey, this._apiUrl, _request);
     this.transcription = new Transcriber(this._apiKey, this._apiUrl);
+    this.projects = new Projects(this._apiKey, this._apiUrl, _request);
+    this.keys = new Keys(this._apiKey, this._apiUrl, _request);
     this.usage = new Usage(this._apiKey, this._apiUrl, _request);
     this.members = new Members(this._apiKey, this._apiUrl, _request);
     this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);

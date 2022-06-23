@@ -1,8 +1,11 @@
-import { _request } from "./httpRequest";
-import { MemberList, Message } from "./types";
+import { MemberList, Message, RequestFunction } from "./types";
 
 export class Members {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _request: RequestFunction
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -11,7 +14,7 @@ export class Members {
    * @param projectId Unique identifier of the project
    */
   async listMembers(projectId: string): Promise<MemberList> {
-    return _request<MemberList>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -25,7 +28,7 @@ export class Members {
    * @param memberId Unique identifier of the member
    */
   async removeMember(projectId: string, memberId: string): Promise<Message> {
-    return _request<Message>(
+    return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,

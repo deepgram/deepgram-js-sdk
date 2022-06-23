@@ -1,6 +1,6 @@
 import querystring from "querystring";
-import { _request } from "./httpRequest";
 import {
+  RequestFunction,
   UsageField,
   UsageFieldOptions,
   UsageOptions,
@@ -11,7 +11,11 @@ import {
 } from "./types";
 
 export class Usage {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _request: RequestFunction
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -26,7 +30,7 @@ export class Usage {
     options?: UsageRequestListOptions
   ): Promise<UsageRequestList> {
     const requestOptions = { ...{}, ...options };
-    return _request<UsageRequestList>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -45,7 +49,7 @@ export class Usage {
     projectId: string,
     requestId: string
   ): Promise<UsageRequest> {
-    return _request<UsageRequest>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -64,7 +68,7 @@ export class Usage {
     options?: UsageOptions
   ): Promise<UsageResponse> {
     const requestOptions = { ...{}, ...options };
-    return _request<UsageResponse>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -85,7 +89,7 @@ export class Usage {
     options?: UsageFieldOptions
   ): Promise<UsageField> {
     const requestOptions = { ...{}, ...options };
-    return _request<UsageField>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,

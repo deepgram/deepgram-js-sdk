@@ -33,3 +33,6 @@ export * from "./usageResponse";
 export * from "./usageResponseDetail";
 export * from "./utterance";
 export * from "./wordBase";
+export * from "./keyResponseObj";
+export * from "./projectPatchRequest";
+export * from "./requestFunction";

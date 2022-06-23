@@ -21,7 +21,7 @@ describe("Key tests", () => {
 
   beforeEach(function () {
     requestStub = Sinon.stub(https, "request");
-    keys = new Keys(fakeCredentials, fakeUrl);
+    keys = new Keys(fakeCredentials, fakeUrl, requestStub);
   });
 
   afterEach(function () {

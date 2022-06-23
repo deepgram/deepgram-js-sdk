@@ -1,8 +1,11 @@
-import { _request } from "./httpRequest";
-import { ScopeList, Message } from "./types";
+import { ScopeList, Message, RequestFunction } from "./types";
 
 export class Scopes {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _request: RequestFunction
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -12,7 +15,7 @@ export class Scopes {
    * @param memberId Unique identifier of the member
    */
   async get(projectId: string, memberId: string): Promise<ScopeList> {
-    return _request<ScopeList>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -31,7 +34,7 @@ export class Scopes {
     memberId: string,
     scope: string
   ): Promise<Message> {
-    return _request<Message>(
+    return this._request(
       "PUT",
       this._credentials,
       this._apiUrl,
