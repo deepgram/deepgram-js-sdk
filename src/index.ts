@@ -10,7 +10,6 @@ import { Scopes } from "./scopes";
 
 import { validateOptions } from "./helpers";
 import { _request } from "./httpRequest";
-
 export class Deepgram {
   private _apiUrl: string;
   private _apiKey: string;

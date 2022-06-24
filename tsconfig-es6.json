@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ES2015",
+    "outDir": "./bundle",
+    "rootDirs": ["./src/browser"],
+    "strict": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+    // Additional configuration like module type etc.
+  },
+  "mode": "production",
+  "exclude": ["node_modules", "**/*.test.ts", "dist"],
+  "include": ["src/browser"]
+}

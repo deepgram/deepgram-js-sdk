@@ -1,19 +1,22 @@
 {
   "name": "@deepgram/sdk",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "An SDK for the Deepgram automated speech recognition platform",
-  "main": "dist/index.js",
-  "browser": "dist/browser/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run build:lib && npm run build:browser && webpack --config webpack.config.js && npm run bundle",
-    "build:browser": "browserify bundle/browser/index.js -o dist/browser/index.js",
-    "build:lib": "tsc -p .",
+    "build": "npm run build:lib && webpack --config webpack.config.js && npm run bundle",
+    "build:lib": "tsc --project ./tsconfig.json && tsc --project ./tsconfig-es6.json",
     "coverage": "nyc npm run test",
     "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
     "bundle": "dts-generator --project ./ --out dist/index.d.ts"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./browser": {
+      "default": "./dist/browser/index.js"
+    }
   },
   "repository": {
     "type": "git",
