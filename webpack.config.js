@@ -1,6 +1,16 @@
 const path = require("path");
 
-module.exports = {
+const clientConfig = {
+  target: "web", // <=== can be omitted as default is 'web'
+  entry: "./bundle/browser/index.js",
+  output: {
+    path: path.resolve(__dirname, "dist/browser"),
+    filename: "index.js",
+  },
+  //…
+};
+
+const serverConfig = {
   name: "server",
   target: "node",
   entry: "./bundle/index.js",
@@ -12,4 +22,7 @@ module.exports = {
       type: "umd",
     },
   },
+  //…
 };
+
+module.exports = [serverConfig];

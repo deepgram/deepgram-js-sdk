@@ -2,8 +2,6 @@
   "name": "@deepgram/sdk",
   "version": "1.4.1",
   "description": "An SDK for the Deepgram automated speech recognition platform",
-  "main": "dist/index.js",
-  "browser": "dist/browser/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run build:lib && npm run build:browser && webpack --config webpack.config.js && npm run bundle",
@@ -14,6 +12,12 @@
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
     "bundle": "dts-generator --project ./ --out dist/index.d.ts"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./browser": {
+      "default": "./dist/browser/index.js"
+    }
   },
   "repository": {
     "type": "git",
