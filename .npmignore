@@ -7,3 +7,4 @@ sample
 .eslintrc.js
 .prettierrc
 tsconfig.json
+bundle
