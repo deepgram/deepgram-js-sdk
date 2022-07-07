@@ -9,11 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.3]
+
+### Added
+
+- Added `tier` to transcription option types
+
+## [1.4.2]
+
+### Added
+
+- Updated build step to build separate files for browser version
+
+## [1.4.1]
+
+### Added
+
+- Small fix for npm deployment
+
 ## [1.4.0]
 
 ### Added
 
 - Added Browser compatible versions of the live and preRecorded transcription methods
+
 ## [1.3.1]
 
 ### Updated

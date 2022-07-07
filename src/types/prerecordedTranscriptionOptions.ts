@@ -21,7 +21,7 @@ export type PrerecordedTranscriptionOptions = {
   version?: string;
   /**
    * Tier of the model to use.
-   * @default because
+   * @default base
    * @remarks Possible values are base or enhanced
    * @see https://developers.deepgram.com/documentation/features/tier/
    */
