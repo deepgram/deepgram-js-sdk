@@ -20,6 +20,13 @@ export type PrerecordedTranscriptionOptions = {
    */
   version?: string;
   /**
+   * Tier of the model to use.
+   * @default because
+   * @remarks Possible values are base or enhanced
+   * @see https://developers.deepgram.com/documentation/features/tier/
+   */
+  tier?: string;
+  /**
    * BCP-47 language tag that hints at the primary spoken language.
    * @default en-US
    * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
