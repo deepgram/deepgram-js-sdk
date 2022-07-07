@@ -19,6 +19,14 @@ export type LiveTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
    */
   version?: string;
+
+  /**
+   * Tier of the model to use.
+   * @default base
+   * @remarks Possible values are base or enhanced
+   * @see https://developers.deepgram.com/documentation/features/tier/
+   */
+  tier?: string;
   /**
    * BCP-47 language tag that hints at the primary spoken language.
    * @default en-US
