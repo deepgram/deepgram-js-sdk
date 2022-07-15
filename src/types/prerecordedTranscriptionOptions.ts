@@ -19,6 +19,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
    */
   version?: string;
+
   /**
    * Tier of the model to use.
    * @default base
@@ -26,6 +27,14 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/documentation/features/tier/
    */
   tier?: string;
+
+  /**
+   * Terms or phrases to search for in the submitted audio and replace
+   * @remarks Can send multiple instances in query string replace=this:that&replace=thisalso:thatalso. Replacing a term or phrase with nothing will remove the term or phrase from the audio transcript.
+   * @see https://developers.deepgram.com/documentation/features/replace/
+   */
+  replace?: string;
+
   /**
    * BCP-47 language tag that hints at the primary spoken language.
    * @default en-US
