@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.4]
+
+### Added
+
+- Added `replace` to transcription option types
+
 ## [1.4.3]
 
 ### Added
