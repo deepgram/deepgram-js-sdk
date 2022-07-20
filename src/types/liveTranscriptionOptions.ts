@@ -62,12 +62,16 @@ export type LiveTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
    */
   redact?: Array<string>;
+
   /**
-   * Indicates whether to recognize speaker changes. When set to true, each word
+   * Indicates whether to recognize speaker changes. When passed in, each word
    * in the transcript will be assigned a speaker number starting at 0.
+   * Allowed values are either "latest" or "VERSION" where VERSION is the specified version of the diarizer.
+   * If 'true' is passed, it will be assumed to be the old version of the diarizer, and 'speaker_confidence' will not be returned in the response.
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
    */
-  diarize?: boolean;
+  diarize?: string | boolean;
+
   /**
    * Indicates whether to transcribe each audio channel independently. When set
    * to true, you will receive one transcript for each channel, which means you
