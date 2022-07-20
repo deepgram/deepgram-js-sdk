@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.5]
+
+### Updated
+
+- updated `diarize` to allow for 'latest' or 'VERSION' to be passed in
+- updated response for transcription endpoints to include `speaker_confidence` if 'latest' or 'VERSION' is passed in to `diarize`
+
 ## [1.4.4]
 
 ### Added
