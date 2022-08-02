@@ -1,9 +1,9 @@
-import { ReadStream } from "fs";
+import { Readable } from "stream";
 
 export type TranscriptionSource = UrlSource | BufferSource | ReadStreamSource;
 
 export type ReadStreamSource = {
-  stream: ReadStream;
+  stream: Readable;
   mimetype: string;
 };
 
