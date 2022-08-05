@@ -1,6 +1,6 @@
 {
   "name": "@deepgram/sdk",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "An SDK for the Deepgram automated speech recognition platform",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "types": "copyfiles -f bundle/*.d.ts dist"
+    "types": "copyfiles -f bundle/*.d.ts dist && copyfiles -u 1 bundle/**/*.d.ts dist"
   },
   "exports": {
     ".": "./dist/index.js",
