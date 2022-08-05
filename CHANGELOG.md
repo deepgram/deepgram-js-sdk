@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.6]
+
+### Fixed
+
+- Problem with type declarations not exporting Deepgram
+
 ## [1.4.5]
 
 ### Updated
@@ -218,7 +224,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/deepgram/node-sdk/compare/1.4.0...HEAD
+[unreleased]: https://github.com/deepgram/node-sdk/compare/1.4.6...HEAD
+[1.4.6]: https://github.com/deepgram/node-sdk/compare/1.4.5...1.4.6
+[1.4.5]: https://github.com/deepgram/node-sdk/compare/1.4.4...1.4.5
+[1.4.4]: https://github.com/deepgram/node-sdk/compare/1.4.3...1.4.4
+[1.4.3]: https://github.com/deepgram/node-sdk/compare/1.4.2...1.4.3
+[1.4.2]: https://github.com/deepgram/node-sdk/compare/1.4.1...1.4.2
+[1.4.1]: https://github.com/deepgram/node-sdk/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/deepgram/node-sdk/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/deepgram/node-sdk/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/deepgram/node-sdk/compare/1.2.4...1.3.0
