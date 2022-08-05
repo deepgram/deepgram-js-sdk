@@ -10,7 +10,7 @@
     "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "types": "copyfiles -f bundle/*.d.ts dist"
+    "types": "copyfiles -f bundle/*.d.ts dist && copyfiles -u 1 bundle/**/*.d.ts dist"
   },
   "exports": {
     ".": "./dist/index.js",
