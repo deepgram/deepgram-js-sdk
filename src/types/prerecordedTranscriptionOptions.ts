@@ -62,12 +62,24 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
    */
   redact?: Array<string>;
+
   /**
-   * Indicates whether to recognize speaker changes. When set to true, each word
+   * Indicates whether to recognize speaker changes. When passed in, each word
    * in the transcript will be assigned a speaker number starting at 0.
+   * If 'true' is passed, the latest version of the diarizer  will be used.
+   * To use an old version of the diarizer, pass in the version in the `diarize_version` option.
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
    */
   diarize?: boolean;
+
+  /**
+   * Indicates which version of the diarizer to use. When passed in, each word
+   * in the transcript will be assigned a speaker number starting at 0.
+   * Ex: YYYY-MM-DD.X where YYYY-MM-DD is the version date and X is the version number.
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   */
+  diarize_version?: string;
+
   /**
    * Indicates whether to transcribe each audio channel independently. When set
    * to true, you will receive one transcript for each channel, which means you
