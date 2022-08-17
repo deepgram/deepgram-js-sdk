@@ -2,7 +2,7 @@ const path = require("path");
 
 const clientConfig = {
   name: "client",
-  target: "web", // <=== can be omitted as default is 'web'
+  target: "web",
   entry: "./bundle/browser/index.js",
   output: {
     path: path.resolve(__dirname, "dist/browser"),
@@ -14,7 +14,6 @@ const clientConfig = {
   experiments: {
     outputModule: true,
   },
-  //…
 };
 
 const serverConfig = {
@@ -29,7 +28,6 @@ const serverConfig = {
       type: "umd",
     },
   },
-  //…
 };
 
 module.exports = [serverConfig, clientConfig];

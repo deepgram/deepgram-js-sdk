@@ -13,7 +13,7 @@ describe("Transcription: Pre-recorded tests", () => {
     }).catch((e) => {
       try {
         e.message.should.eq(
-          "DG: Mimetype must be provided if the source is a Buffer or a ReadStream"
+          "DG: Mimetype must be provided if the source is a Buffer or a Readable"
         );
         done();
       } catch (assertionError) {
@@ -30,7 +30,7 @@ describe("Transcription: Pre-recorded tests", () => {
     }).catch((e) => {
       try {
         e.message.should.eq(
-          "DG: Mimetype must be provided if the source is a Buffer or a ReadStream"
+          "DG: Mimetype must be provided if the source is a Buffer or a Readable"
         );
         done();
       } catch (assertionError) {

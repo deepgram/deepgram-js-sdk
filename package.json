@@ -1,16 +1,16 @@
 {
   "name": "@deepgram/sdk",
-  "version": "1.4.4",
+  "version": "1.4.8",
   "description": "An SDK for the Deepgram automated speech recognition platform",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run build:lib && webpack --config webpack.config.js && npm run bundle",
+    "build": "npm run build:lib && webpack --config webpack.config.js && npm run types",
     "build:lib": "tsc --project ./tsconfig.json && tsc --project ./tsconfig-es6.json",
     "coverage": "nyc npm run test",
     "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "bundle": "dts-generator --project ./ --out dist/index.d.ts"
+    "types": "copyfiles -f bundle/*.d.ts dist && copyfiles -u 1 bundle/**/*.d.ts dist"
   },
   "exports": {
     ".": "./dist/index.js",
@@ -47,6 +47,7 @@
     "@typescript-eslint/parser": "^4.33.0",
     "browserify": "^17.0.0",
     "chai": "^4.3.4",
+    "copyfiles": "^2.4.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.25.2",
@@ -63,7 +64,6 @@
   },
   "dependencies": {
     "bufferutil": "^4.0.6",
-    "dts-generator": "^3.0.0",
     "utf-8-validate": "^5.0.9",
     "ws": "^7.5.5"
   }
