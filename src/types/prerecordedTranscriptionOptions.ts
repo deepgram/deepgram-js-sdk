@@ -153,4 +153,11 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
    */
   utt_split?: number;
+
+  /**
+   * Indicates whether Deepgram will split audio into paragraphs to improve transcript
+   * readability. When paragraphs is set to true, you must also set either punctuate,
+   * diarize, or multichannel to true.
+   */
+  paragraphs?: boolean;
 };
