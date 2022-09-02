@@ -18,9 +18,14 @@ export async function _request<T>(
       },
       body: payload,
     });
-    const json = await response.json();
+    let json;
+    if (!response.ok) {
+      json = await response.json();
+      throw new Error(`${json.err_code}: ${json.err_msg}`);
+    }
+    json = await response.json();
     return json;
   } catch (err) {
-    throw new Error(`DG: ${err}`);
+    throw `DG: ${err}`;
   }
 }

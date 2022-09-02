@@ -69,6 +69,10 @@ export function _request<T>(
             dgResponse = { error: dgResContent };
           }
 
+          if (dgRes.statusCode && dgRes.statusCode >= 400) {
+            reject(`DG: ${dgResponse.err_code}: ${dgResponse.err_msg}`);
+          }
+
           if (dgResponse.error) {
             reject(`DG: ${dgResContent}`);
           }
