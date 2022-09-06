@@ -1,5 +1,6 @@
 import { ParagraphGroup } from "./paragraphGroup";
 import { WordBase } from "./wordBase";
+import { Summary } from "./summary";
 
 export type Alternative = {
   /**
@@ -14,6 +15,10 @@ export type Alternative = {
    * Array of words included in the transcript
    */
   words: Array<WordBase>;
+  /**
+   * Array of summary objects.
+   */
+  summaries?: Array<Summary>;
   /**
    * Array of paragraph objects.
    */
