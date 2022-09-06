@@ -22,5 +22,9 @@ export type Channel = {
      * Array of words included in the transcript
      */
     words: Array<WordBase>;
+    /**
+     * String indicating the detected language. eg: 'en'
+     */
+    detected_language: string;
   }>;
 };
