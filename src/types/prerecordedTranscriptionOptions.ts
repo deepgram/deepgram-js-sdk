@@ -160,4 +160,11 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/#detect-language-pr
    */
   detect_language?: boolean;
+
+  /**
+   * Indicates whether Deepgram will split audio into paragraphs to improve transcript
+   * readability. When paragraphs is set to true, you must also set either punctuate,
+   * diarize, or multichannel to true.
+   */
+  paragraphs?: boolean;
 };
