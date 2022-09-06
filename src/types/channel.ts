@@ -25,6 +25,6 @@ export type Channel = {
     /**
      * String indicating the detected language. eg: 'en'
      */
-    detected_language: string;
+    detected_language?: string;
   }>;
 };
