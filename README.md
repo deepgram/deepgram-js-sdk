@@ -141,7 +141,7 @@ We love to hear from you so if you have questions, comments or find a bug in the
 project, let us know! You can either:
 
 - [Open an issue](https://github.com/deepgram/node-sdk/issues/new) on this repository
-- Tweet at us! We're [@DeepgramDevs on Twitter](https://twitter.com/DeepgramDevs)
+- Tweet at us! We're [@DeepgramAI on Twitter](https://twitter.com/DeepgramAI)
 
 ## Further Reading
 
