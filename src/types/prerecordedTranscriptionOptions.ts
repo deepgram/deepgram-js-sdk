@@ -160,4 +160,9 @@ export type PrerecordedTranscriptionOptions = {
    * diarize, or multichannel to true.
    */
   paragraphs?: boolean;
+
+  /**
+   * Indicates whether Deepgram will Identify and detect entities in the transcript
+   */
+  detect_entities?: boolean;
 };
