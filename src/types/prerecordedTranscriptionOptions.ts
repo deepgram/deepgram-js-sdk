@@ -160,4 +160,9 @@ export type PrerecordedTranscriptionOptions = {
    * diarize, or multichannel to true.
    */
   paragraphs?: boolean;
+
+  /**
+   * Indicates whether Deepgram will identify and detect topics in the transcript. When set to true, punctuate will automatically be set to true if it is not in the options.
+   */
+  detect_topics?: boolean;
 };

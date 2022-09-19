@@ -1,5 +1,6 @@
 import { ParagraphGroup } from "./paragraphGroup";
 import { WordBase } from "./wordBase";
+import { TopicGroup } from "./topic";
 
 export type Alternative = {
   /**
@@ -18,4 +19,5 @@ export type Alternative = {
    * Array of paragraph objects.
    */
   paragraphs?: Array<ParagraphGroup>;
+  topics?: Array<TopicGroup>;
 };
