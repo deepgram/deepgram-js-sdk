@@ -153,6 +153,13 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
    */
   utt_split?: number;
+  /**
+   * Detects the language of the reocrded audio and passes audio through appropriate model
+   *
+   *
+   * @see https://developers.deepgram.com/api-reference/#detect-language-pr
+   */
+  detect_language?: boolean;
 
   /**
    * Indicates whether Deepgram will split audio into paragraphs to improve transcript

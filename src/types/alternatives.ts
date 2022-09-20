@@ -18,4 +18,8 @@ export type Alternative = {
    * Array of paragraph objects.
    */
   paragraphs?: Array<ParagraphGroup>;
+  /**
+   * String indicating the detected language. eg: 'en'
+   */
+  detected_language?: string;
 };
