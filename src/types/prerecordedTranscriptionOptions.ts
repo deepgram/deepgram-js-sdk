@@ -167,4 +167,8 @@ export type PrerecordedTranscriptionOptions = {
    * diarize, or multichannel to true.
    */
   paragraphs?: boolean;
+  /**
+   * Indicates whether Deepgram should provide summarizations of sections of the provided audio.
+   */
+  summarize?: boolean;
 };
