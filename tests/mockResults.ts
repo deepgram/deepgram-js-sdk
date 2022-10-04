@@ -22,3 +22,15 @@ export const mockKey = {
   created: "string",
   scopes: ["member"],
 };
+
+export const mockInvites = {
+  invites: [
+    {
+      email: "mock@email.com",
+      scope: "mockScope",
+    },
+    {
+      email: "anotherMock@email.com",
+    },
+  ],
+};
