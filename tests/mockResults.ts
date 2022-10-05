@@ -22,3 +22,7 @@ export const mockKey = {
   created: "string",
   scopes: ["member"],
 };
+
+export const mockScopesList = {
+  scopes: ["string", "string"],
+};
