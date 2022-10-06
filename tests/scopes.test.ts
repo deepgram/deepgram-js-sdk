@@ -55,16 +55,16 @@ describe("Scope tests", () => {
 
   it("Update resolves", () => {
     const mockMessage = {
-      message: "message"
+      message: "message",
     };
 
     nock(`https://${fakeUrl}`)
-    .put(`/v1/projects/${fakeProjectId}/members/${fakeMemberId}/scopes`)
-    .reply(200, mockMessage);
+      .put(`/v1/projects/${fakeProjectId}/members/${fakeMemberId}/scopes`)
+      .reply(200, mockMessage);
 
     scopes.update(fakeProjectId, fakeMemberId, "scope").then((response) => {
       response.should.deep.eq(mockMessage);
       requestStub.calledOnce.should.eq(true);
-    })
+    });
   });
 });
