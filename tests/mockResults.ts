@@ -34,3 +34,7 @@ export const mockInvites = {
     },
   ],
 };
+
+export const mockScopesList = {
+  scopes: ["string", "string"],
+};
