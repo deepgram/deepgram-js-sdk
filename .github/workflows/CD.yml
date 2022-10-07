@@ -17,7 +17,7 @@ jobs:
       - name: Update Version in User-Agent
         run: sed -i 's/DG_SDK_VERSION/${{ github.event.release.tag_name }}/g' ./src/userAgent.ts
 
-      - name: Update Version in User-Agent
+      - name: Update Version in package.json
         run: sed -i 's/X.X.X/${{ github.event.release.tag_name }}/g' ./package.json
 
       - name: Install Dependencies
