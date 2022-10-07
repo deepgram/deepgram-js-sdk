@@ -140,7 +140,6 @@ export type PrerecordedTranscriptionOptions = {
    * By default, when utterances is enabled, it starts a new utterance after
    * 0.8 s of silence. You can customize the length of time used to determine
    * where to split utterances by submitting the utt_split parameter.
-   * @remarks **BETA FEATURE**
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utterances
    */
   utterances?: boolean;
@@ -149,7 +148,6 @@ export type PrerecordedTranscriptionOptions = {
    * use when determining where to split utterances. Used when utterances
    * is enabled.
    * @default 0.8 seconds
-   * @remarks **BETA FEATURE**
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
    */
   utt_split?: number;
@@ -167,8 +165,19 @@ export type PrerecordedTranscriptionOptions = {
    * diarize, or multichannel to true.
    */
   paragraphs?: boolean;
+
+  /**
+   * Indicates whether Deepgram will Identify and detect entities in the transcript
+   */
+  detect_entities?: boolean;
+
   /**
    * Indicates whether Deepgram should provide summarizations of sections of the provided audio.
    */
   summarize?: boolean;
+
+  /**
+   * Indicates whether Deepgram will identify and detect topics in the transcript.
+   */
+  detect_topics?: boolean;
 };
