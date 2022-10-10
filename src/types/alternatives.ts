@@ -38,7 +38,8 @@ export type Alternative = {
    * Array of language objects for each language the response has been translated into
    */
   translations?: Array<Translation>;
-   * Array of topic group objects.
-   */
+   /**
+    * Array of topic group objects.
+    */
   topics?: Array<TopicGroup>;
 };
