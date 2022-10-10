@@ -1,6 +1,7 @@
 import { ParagraphGroup } from "./paragraphGroup";
 import { WordBase } from "./wordBase";
 import { Summary } from "./summary";
+import { Translation } from "./translation"
 
 export type Alternative = {
   /**
@@ -27,4 +28,8 @@ export type Alternative = {
    * String indicating the detected language. eg: 'en'
    */
   detected_language?: string;
+  /**
+   * Array of language objects for each language the response has been translated into
+   */
+  translations?: Array<Translation>;
 };

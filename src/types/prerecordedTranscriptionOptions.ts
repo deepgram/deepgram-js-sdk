@@ -171,4 +171,10 @@ export type PrerecordedTranscriptionOptions = {
    * Indicates whether Deepgram should provide summarizations of sections of the provided audio.
    */
   summarize?: boolean;
+  /**
+   * Corresponds to the language code Deepgram will translate the results into
+   * For example, 'es', 'fr', 'ja'
+   * If requests translation in the same language as their ASR request, a 400 will be returned.
+   */
+   translation?: Array<string>;
 };

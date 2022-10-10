@@ -20,4 +20,5 @@ export type UsageOptions = {
   redact?: boolean;
   alternatives?: boolean;
   numerals?: boolean;
+  translation?:boolean;
 };

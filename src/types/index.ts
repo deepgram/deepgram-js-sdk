@@ -25,6 +25,7 @@ export * from "./scopeList";
 export * from "./search";
 export * from "./sentence";
 export * from "./transcriptionSource";
+export * from "./translation";
 export * from "./usageCallback";
 export * from "./usageField";
 export * from "./usageFieldOptions";
