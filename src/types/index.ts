@@ -32,6 +32,7 @@ export * from "./summary";
 export * from "./topic";
 export * from "./topicGroup";
 export * from "./transcriptionSource";
+export * from "./translation";
 export * from "./usageCallback";
 export * from "./usageField";
 export * from "./usageFieldOptions";
