@@ -200,12 +200,12 @@ export type PrerecordedTranscriptionOptions = {
   detect_topics?: boolean;
 
   /**
-   * Inidicates whether Deepgram will identify sentiment in the transcript.
+   * Indicates whether Deepgram will identify sentiment in the transcript.
    */
   analyze_sentiment?: boolean
 
   /**
-   * Inidicates the confidence requirement for non-neutral sentiment. 
+   * Indicates the confidence requirement for non-neutral sentiment. 
    * Setting this variable turns sentiment analysis on.
    */
   sent_thresh?: number
