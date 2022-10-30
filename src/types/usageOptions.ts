@@ -20,10 +20,12 @@ export type UsageOptions = {
   redact?: boolean;
   alternatives?: boolean;
   numerals?: boolean;
-  translation?:boolean;
+  translation?: boolean;
   detect_entities?: boolean;
   detect_topics?: boolean;
   summarize?: boolean;
   paragraphs?: boolean;
   utt_split?: boolean;
+  analyze_sentiment?: boolean;
+  sent_thresh?: boolean;
 };

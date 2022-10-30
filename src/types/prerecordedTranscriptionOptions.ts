@@ -43,19 +43,19 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/language
    */
   language?: string;
-  
+
   /**
    * Indicates whether to add punctuation and capitalization to the transcript.
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/punctuate
    */
   punctuate?: boolean;
-  
+
   /**
    * Indicates whether to remove profanity from the transcript.
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
    */
   profanity_filter?: boolean;
-  
+
   /**
    * Indicates whether to redact sensitive information, replacing redacted content with asterisks (*).
    * @remarks Options include:
@@ -92,14 +92,14 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
    */
   multichannel?: boolean;
-  
+
   /**
    * Maximum number of transcript alternatives to return. Just like a human listener,
    * Deepgram can provide multiple possible interpretations of what it hears.
    * @default 1
    */
   alternatives?: number;
-  
+
   /**
    * Indicates whether to convert numbers from written format (e.g., one) to
    * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
@@ -108,7 +108,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/numerals
    */
   numerals?: boolean;
-  
+
   /**
    * Terms or phrases to search for in the submitted audio. Deepgram searches
    * for acoustic patterns in audio rather than text patterns in transcripts
@@ -116,7 +116,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/search
    */
   search?: Array<string>;
-  
+
   /**
    * Callback URL to provide if you would like your submitted audio to be
    * processed asynchronously. When passed, Deepgram will immediately respond
@@ -127,7 +127,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/callback
    */
   callback?: string;
-  
+
   /**
    * Keywords to which the model should pay particular attention to boosting
    * or suppressing to help it understand context. Just like a human listener,
@@ -136,7 +136,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/keywords
    */
   keywords?: Array<string>;
-  
+
   /**
    * Indicates whether Deepgram will segment speech into meaningful semantic
    * units, which allows the model to interact more naturally and effectively
@@ -152,7 +152,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utterances
    */
   utterances?: boolean;
-  
+
   /**
    * Length of time in seconds of silence between words that Deepgram will
    * use when determining where to split utterances. Used when utterances
@@ -161,7 +161,7 @@ export type PrerecordedTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/utt_split
    */
   utt_split?: number;
-  
+
   /**
    * Detects the language of the recorded audio and passes audio through appropriate model
    *
@@ -186,16 +186,27 @@ export type PrerecordedTranscriptionOptions = {
    * Indicates whether Deepgram should provide summarizations of sections of the provided audio.
    */
   summarize?: boolean;
-  
+
   /**
    * Corresponds to the language code Deepgram will translate the results into
    * For example, 'es', 'fr', 'ja'
    * If requests translation in the same language as their ASR request, a 400 will be returned.
    */
-   translation?: Array<string>;
+  translation?: Array<string>;
 
   /**
    * Indicates whether Deepgram will identify and detect topics in the transcript.
    */
   detect_topics?: boolean;
+
+  /**
+   * Indicates whether Deepgram will identify sentiment in the transcript.
+   */
+  analyze_sentiment?: boolean
+
+  /**
+   * Indicates the confidence requirement for non-neutral sentiment. 
+   * Setting this variable turns sentiment analysis on.
+   */
+  sent_thresh?: number
 };
