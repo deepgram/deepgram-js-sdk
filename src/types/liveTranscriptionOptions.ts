@@ -175,4 +175,11 @@ export type LiveTranscriptionOptions = {
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/sample_rate
    */
   sample_rate?: number;
+
+  /**
+   * Indicates whether Deepgram will split audio into paragraphs to improve transcript
+   * readability. When paragraphs is set to true, you must also set either punctuate,
+   * diarize, or multichannel to true.
+   */
+  paragraphs?: boolean;
 };

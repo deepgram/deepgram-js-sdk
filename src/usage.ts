@@ -30,7 +30,7 @@ export class Usage {
     options?: UsageRequestListOptions
   ): Promise<UsageRequestList> {
     const requestOptions = { ...{}, ...options };
-    return this._request(
+    return await this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -49,7 +49,7 @@ export class Usage {
     projectId: string,
     requestId: string
   ): Promise<UsageRequest> {
-    return this._request(
+    return await this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -68,7 +68,7 @@ export class Usage {
     options?: UsageOptions
   ): Promise<UsageResponse> {
     const requestOptions = { ...{}, ...options };
-    return this._request(
+    return await this._request(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -89,7 +89,7 @@ export class Usage {
     options?: UsageFieldOptions
   ): Promise<UsageField> {
     const requestOptions = { ...{}, ...options };
-    return this._request(
+    return await this._request(
       "GET",
       this._credentials,
       this._apiUrl,
