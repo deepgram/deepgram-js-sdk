@@ -24,8 +24,8 @@ export type UsageRequestDetail = {
       search?: boolean;
       redact?: boolean;
       alternatives?: boolean;
-      numerals?: boolean;
-      translation?:boolean;
+      numbers?: boolean;
+      translation?: boolean;
     };
   };
 };
