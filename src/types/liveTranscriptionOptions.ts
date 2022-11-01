@@ -214,7 +214,9 @@ export type LiveTranscriptionOptions = {
   times: boolean;
 
   /**
-   * Option to indicate to show dictation in the transcript
+   * Option to format punctuated commands
+   * Before - “i went to the store period new paragraph then i went home”
+   * After - “i went to the store. <\n> then i went home”
    */
   dictation?: boolean;
 
