@@ -105,9 +105,14 @@ export type LiveTranscriptionOptions = {
   numbers?: boolean;
 
   /**
+   * Same as numbers. Is the old name for the option. Will eventually be deprecated
+   */
+  numerals?: boolean;
+
+  /**
    * adds spaces between numbers in the transcript
    */
-  numbers_space?: boolean;
+  numbers_spaces?: boolean;
 
   /**
    * Terms or phrases to search for in the submitted audio. Deepgram searches
@@ -207,17 +212,6 @@ export type LiveTranscriptionOptions = {
    * numerical format (e.g., 3:00).
    * 	*/
   times: boolean;
-
-  /**
-   * Combines dates and times into one formatting option format
-   */
-  datetime?: boolean;
-
-  /**
-   * Indicates the format the dates will be converted to. Requires dates to be turned on.
-   * Format string is specified using chrono strftime notation https://docs.rs/chrono/latest/chrono/format/strftime/index.html   *
-   */
-  datetime_format?: number;
 
   /**
    * Option to indicate to show dictation in the transcript
