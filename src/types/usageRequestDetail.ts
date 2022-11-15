@@ -24,6 +24,7 @@ export type UsageRequestDetail = {
       search?: boolean;
       redact?: boolean;
       alternatives?: boolean;
+      numerals?: boolean;
       numbers?: boolean;
       translation?: boolean;
     };
