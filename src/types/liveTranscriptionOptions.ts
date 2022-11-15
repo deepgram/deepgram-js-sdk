@@ -100,9 +100,20 @@ export type LiveTranscriptionOptions = {
    * numerical format (e.g., 1). Deepgram can format numbers up to 999,999.
    * @remarks Converted numbers do not include punctuation. For example,
    * 999,999 would be transcribed as 999999.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/numerals
+   * @see https://developers.deepgram.com/documentation/features/numerals/
+   */
+  numbers?: boolean;
+
+  /**
+   * Same as numbers. Is the old name for the option. Will eventually be deprecated
    */
   numerals?: boolean;
+
+  /**
+   * adds spaces between numbers in the transcript
+   */
+  numbers_spaces?: boolean;
+
   /**
    * Terms or phrases to search for in the submitted audio. Deepgram searches
    * for acoustic patterns in audio rather than text patterns in transcripts
@@ -182,4 +193,35 @@ export type LiveTranscriptionOptions = {
    * diarize, or multichannel to true.
    */
   paragraphs?: boolean;
+
+  /**
+   * Indicates whether to convert dates from written format (e.g., january first) to
+   * numerical format (e.g., 01-01).
+   */
+  dates?: boolean;
+
+  /**
+   * Indicates the format the dates will be converted to. Requires dates to be turned on.
+   * Format string is specified using chrono strftime notation https://docs.rs/chrono/latest/chrono/format/strftime/index.html   *
+   * @example %Y-%m-%d
+   */
+  date_format?: string;
+
+  /**
+   * Indicates whether to convert times from written format (e.g., three oclock) to
+   * numerical format (e.g., 3:00).
+   * 	*/
+  times: boolean;
+
+  /**
+   * Option to format punctuated commands
+   * Before - “i went to the store period new paragraph then i went home”
+   * After - “i went to the store. <\n> then i went home”
+   */
+  dictation?: boolean;
+
+  /**
+   * Option to format measurements in the transcript
+   * */
+  measurements?: boolean;
 };

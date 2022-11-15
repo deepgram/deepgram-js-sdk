@@ -20,6 +20,7 @@ export type UsageOptions = {
   redact?: boolean;
   alternatives?: boolean;
   numerals?: boolean;
+  numbers?: boolean;
   translation?: boolean;
   detect_entities?: boolean;
   detect_topics?: boolean;
