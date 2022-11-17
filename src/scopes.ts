@@ -4,6 +4,7 @@ export class Scopes {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -19,6 +20,7 @@ export class Scopes {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/members/${memberId}/scopes`
     );
   }
@@ -38,6 +40,7 @@ export class Scopes {
       "PUT",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectID}/members/${memberId}/scopes`,
       JSON.stringify({
         scope,

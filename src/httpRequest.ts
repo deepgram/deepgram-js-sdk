@@ -1,10 +1,12 @@
 import { Readable } from "stream";
-import { request, RequestOptions } from "https";
+import https, { RequestOptions } from "https";
+import http from "http";
 import { userAgent } from "./userAgent";
 
 const _requestOptions = (
-  api_key: string,
+  apiKey: string,
   apiUrl: string,
+  requireSSL: boolean,
   path: string,
   method: string,
   payload?: string | Buffer | Readable,
@@ -18,12 +20,13 @@ const _requestOptions = (
 
   const options = {
     host: apiUrl,
+    protocol: requireSSL ? "https" : "http",
     path,
     method,
     headers: {
       "User-Agent": userAgent(),
       "Content-Type": "application/json",
-      Authorization: `token ${api_key}`,
+      Authorization: `token ${apiKey}`,
       ...additionalHeaders,
     },
   };
@@ -37,16 +40,18 @@ const _requestOptions = (
 
 export function _request<T>(
   method: string,
-  api_key: string,
-  apiUrl: string,
+  apiKey: string,
+  apiURL: string,
+  requireSSL: boolean,
   path: string,
   payload?: string | Buffer | Readable,
   // eslint-disable-next-line @typescript-eslint/ban-types
   options?: Object
 ): Promise<T> {
   const requestOptions = _requestOptions(
-    api_key,
-    apiUrl,
+    apiKey,
+    apiURL,
+    requireSSL,
     path,
     method,
     payload,
@@ -54,7 +59,9 @@ export function _request<T>(
   );
   return new Promise((resolve, reject) => {
     try {
-      const httpRequest = request(requestOptions, (dgRes) => {
+      const httpClient = requireSSL ? https : http;
+
+      const httpRequest = httpClient.request(requestOptions, (dgRes) => {
         let dgResContent = "";
 
         dgRes.on("data", (chunk) => {

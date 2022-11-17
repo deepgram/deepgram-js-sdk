@@ -15,12 +15,14 @@ function isUrlSource(providedSource: UrlSource): providedSource is UrlSource {
  * Transcribes audio from a url
  * @param credentials Base64 encoded API key & secret
  * @param apiUrl url string of Deepgram's API
+ * @param requireSSL Whether the request should use HTTPS or HTTP
  * @param source Url or Buffer of file to transcribe
  * @param options Options to modify transcriptions
  */
 export const preRecordedTranscription = async (
   apiKey: string,
   apiUrl: string,
+  requireSSL: boolean,
   source: UrlSource,
   options?: PrerecordedTranscriptionOptions
 ): Promise<PrerecordedTranscriptionResponse> => {
@@ -35,6 +37,7 @@ export const preRecordedTranscription = async (
     "POST",
     apiKey,
     apiUrl,
+    requireSSL,
     `/v1/listen?${querystring.stringify(transcriptionOptions)}`,
     body
   );

@@ -26,7 +26,7 @@ describe("Usage tests", () => {
 
   beforeEach(() => {
     requestStub = Sinon.stub(https, "request");
-    usage = new Usage(fakeCredentials, fakeUrl, requestStub);
+    usage = new Usage(fakeCredentials, fakeUrl, true, requestStub);
   });
 
   afterEach(() => {

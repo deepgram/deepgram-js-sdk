@@ -10,6 +10,7 @@ export class Projects {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -19,7 +20,13 @@ export class Projects {
    * Returns all projects accessible by the API key
    */
   async list(): Promise<ProjectResponse> {
-    return this._request("GET", this._credentials, this._apiUrl, this.apiPath);
+    return this._request(
+      "GET",
+      this._credentials,
+      this._apiUrl,
+      this._requireSSL,
+      this.apiPath
+    );
   }
 
   /**
@@ -31,6 +38,7 @@ export class Projects {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}`
     );
   }
@@ -47,6 +55,7 @@ export class Projects {
       "PATCH",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${project.project_id}`,
       JSON.stringify(payload)
     );

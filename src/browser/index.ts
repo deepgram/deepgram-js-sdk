@@ -14,6 +14,7 @@ import { _request } from "./httpFetch";
 export class Deepgram {
   private _apiUrl: string;
   private _apiKey: string;
+  private _requireSSL: boolean;
 
   transcription: Transcriber;
   projects: Projects;
@@ -24,22 +25,23 @@ export class Deepgram {
   billing: Billing;
   scopes: Scopes;
 
-  constructor(apiKey: string, apiUrl?: string) {
+  constructor(apiKey: string, apiUrl?: string, requireSSL?: boolean) {
     this._apiKey = apiKey;
     this._apiUrl = apiUrl || DefaultOptions.apiUrl;
+    this._requireSSL = requireSSL || DefaultOptions.requireSSL;
 
     /**
      * Ensures that the provided options were provided
      */
     validateOptions(this._apiKey, this._apiUrl);
 
-    this.transcription = new Transcriber(this._apiKey, this._apiUrl);
-    this.projects = new Projects(this._apiKey, this._apiUrl, _request);
-    this.keys = new Keys(this._apiKey, this._apiUrl, _request);
-    this.usage = new Usage(this._apiKey, this._apiUrl, _request);
-    this.members = new Members(this._apiKey, this._apiUrl, _request);
-    this.invitation = new Invitation(this._apiKey, this._apiUrl, _request);
-    this.billing = new Billing(this._apiKey, this._apiUrl, _request);
-    this.scopes = new Scopes(this._apiKey, this._apiUrl, _request);
+    this.transcription = new Transcriber(this._apiKey, this._apiUrl, this._requireSSL);
+    this.projects = new Projects(this._apiKey, this._apiUrl, this._requireSSL, _request);
+    this.keys = new Keys(this._apiKey, this._apiUrl, this._requireSSL, _request);
+    this.usage = new Usage(this._apiKey, this._apiUrl, this._requireSSL, _request);
+    this.members = new Members(this._apiKey, this._apiUrl, this._requireSSL, _request);
+    this.invitation = new Invitation(this._apiKey, this._apiUrl, this._requireSSL, _request);
+    this.billing = new Billing(this._apiKey, this._apiUrl, this._requireSSL, _request);
+    this.scopes = new Scopes(this._apiKey, this._apiUrl, this._requireSSL, _request);
   }
 }

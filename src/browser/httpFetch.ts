@@ -4,10 +4,12 @@ export async function _request<T>(
   method: string,
   api_key: string,
   apiUrl: string,
+  requireSSL: boolean,
   path: string,
   payload?: string
 ): Promise<T> {
-  const url = `https://${apiUrl}${path}`;
+  const protocol = requireSSL ? "https" : "http";
+  const url = `${protocol}://${apiUrl}${path}`;
   try {
     const response = await fetch(url, {
       method: method,

@@ -8,7 +8,11 @@ import { LiveTranscription } from "./liveTranscription";
 import { preRecordedTranscription } from "./preRecordedTranscription";
 
 export class Transcriber {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _requireSSL: boolean
+  ) {}
 
   /**
    * Transcribes prerecorded audio from a file or buffer
@@ -22,6 +26,7 @@ export class Transcriber {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
+      this._requireSSL,
       source,
       options
     );
@@ -35,6 +40,7 @@ export class Transcriber {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",
+      this._requireSSL,
       options
     );
   }

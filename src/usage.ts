@@ -14,6 +14,7 @@ export class Usage {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -34,6 +35,7 @@ export class Usage {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/requests?${querystring.stringify(
         requestOptions
       )}`
@@ -53,6 +55,7 @@ export class Usage {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/requests/${requestId}`
     );
   }
@@ -72,6 +75,7 @@ export class Usage {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/usage?${querystring.stringify(
         requestOptions
       )}`
@@ -93,6 +97,7 @@ export class Usage {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/usage/fields?${querystring.stringify(
         requestOptions
       )}`

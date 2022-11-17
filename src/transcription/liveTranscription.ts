@@ -11,11 +11,15 @@ export class LiveTranscription extends EventEmitter {
   constructor(
     credentials: string,
     apiUrl: string,
+    requireSSL: boolean,
     options?: LiveTranscriptionOptions
   ) {
     super(undefined);
+
+    const protocol = requireSSL ? "wss" : "ws";
+
     this._socket = new WebSocket(
-      `wss://${apiUrl}/v1/listen?${querystring.stringify(options)}`,
+      `${protocol}://${apiUrl}/v1/listen?${querystring.stringify(options)}`,
       {
         headers: {
           Authorization: `token ${credentials}`,

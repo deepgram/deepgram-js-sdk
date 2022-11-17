@@ -21,7 +21,7 @@ describe("Scope tests", () => {
 
   beforeEach(function () {
     requestStub = Sinon.stub(https, "request");
-    scopes = new Scopes(fakeCredentials, fakeUrl, requestStub);
+    scopes = new Scopes(fakeCredentials, fakeUrl, true, requestStub);
   });
 
   afterEach(function () {

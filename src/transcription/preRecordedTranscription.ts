@@ -39,6 +39,7 @@ function isReadStreamSource(
 export const preRecordedTranscription = async (
   apiKey: string,
   apiUrl: string,
+  requireSSL: boolean,
   source: TranscriptionSource,
   options?: PrerecordedTranscriptionOptions
 ): Promise<PrerecordedTranscriptionResponse> => {
@@ -75,6 +76,7 @@ export const preRecordedTranscription = async (
     "POST",
     apiKey,
     apiUrl,
+    requireSSL,
     `/v1/listen?${querystring.stringify(transcriptionOptions)}`,
     body,
     requestOptions
