@@ -7,7 +7,7 @@ chai.should();
 
 describe("Transcription: Pre-recorded tests", () => {
   it("Providing buffer without mimetype will return error", (done) => {
-    preRecordedTranscription("testKey:testSecret", "fakeUrl", {
+    preRecordedTranscription("testKey:testSecret", "fakeUrl", true, {
       buffer: Buffer.allocUnsafe(100),
       mimetype: "",
     }).catch((e) => {
@@ -24,7 +24,7 @@ describe("Transcription: Pre-recorded tests", () => {
   });
 
   it("Providing readstream without mimetype will return error", (done) => {
-    preRecordedTranscription("testKey:testSecret", "fakeUrl", {
+    preRecordedTranscription("testKey:testSecret", "fakeUrl", true, {
       stream: createReadStream("/dev/null"),
       mimetype: "",
     }).catch((e) => {

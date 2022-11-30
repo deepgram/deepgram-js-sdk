@@ -4,6 +4,7 @@ export class Members {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -18,6 +19,7 @@ export class Members {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/members`
     );
   }
@@ -32,6 +34,7 @@ export class Members {
       "DELETE",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/members/${memberId}`
     );
   }

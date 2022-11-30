@@ -3,8 +3,9 @@ export type RequestFunction = NodeRequest | BrowserRequest;
 
 export type NodeRequest = (
   method: string,
-  api_key: string,
+  apiKey: string,
   apiUrl: string,
+  requireSSL: boolean,
   path: string,
   payload?: string | Buffer | ReadStream,
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -14,8 +15,9 @@ export type NodeRequest = (
 
 export type BrowserRequest = (
   method: string,
-  api_key: string,
+  apiKey: string,
   apiUrl: string,
+  requireSSL: boolean,
   path: string,
   payload?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

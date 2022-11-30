@@ -20,7 +20,7 @@ describe("Invitation tests", () => {
 
   beforeEach(() => {
     requestStub = Sinon.stub(https, "request");
-    invitation = new Invitation(fakeCredentials, fakeUrl, requestStub);
+    invitation = new Invitation(fakeCredentials, fakeUrl, true, requestStub);
   });
 
   afterEach(() => {

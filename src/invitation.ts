@@ -9,6 +9,7 @@ export class Invitation {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -23,6 +24,7 @@ export class Invitation {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/invites`
     );
   }
@@ -36,6 +38,7 @@ export class Invitation {
       "POST",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/invites`,
       JSON.stringify({
         email: options.email,
@@ -53,6 +56,7 @@ export class Invitation {
       "DELETE",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/leave`
     );
   }
@@ -68,6 +72,7 @@ export class Invitation {
       "DELETE",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/invites/${email}`
     );
   }

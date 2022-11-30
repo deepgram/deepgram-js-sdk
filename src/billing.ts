@@ -4,6 +4,7 @@ export class Billing {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -18,6 +19,7 @@ export class Billing {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/balances`
     );
   }
@@ -33,6 +35,7 @@ export class Billing {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/balances/${balanceId}`
     );
   }

@@ -10,6 +10,7 @@ export class Keys {
   constructor(
     private _credentials: string,
     private _apiUrl: string,
+    private _requireSSL: boolean,
     private _request: RequestFunction
   ) {}
 
@@ -24,6 +25,7 @@ export class Keys {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys`
     );
 
@@ -47,6 +49,7 @@ export class Keys {
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys/${keyId}`
     );
   }
@@ -79,6 +82,7 @@ export class Keys {
       "POST",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys`,
       JSON.stringify({
         comment,
@@ -103,6 +107,7 @@ export class Keys {
       "DELETE",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys/${keyId}`
     );
   }

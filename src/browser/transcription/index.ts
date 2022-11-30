@@ -8,7 +8,7 @@ import querystring from "querystring";
 import { preRecordedTranscription } from "./preRecordedTranscription";
 
 export class Transcriber {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(private _credentials: string, private _apiUrl: string, private _requireSSL: boolean) { }
 
   /**
    * Transcribes prerecorded audio from a file or buffer
@@ -22,6 +22,7 @@ export class Transcriber {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
+      this._requireSSL || true,
       source,
       options
     );
@@ -32,8 +33,10 @@ export class Transcriber {
    * @param options Options to modify transcriptions
    */
   live(options?: LiveTranscriptionOptions): WebSocket {
+    const protocol = this._requireSSL ? "wss" : "ws";
+
     return new WebSocket(
-      `wss://${this._apiUrl}/v1/listen?${querystring.stringify(options)}`,
+      `${protocol}://${this._apiUrl}/v1/listen?${querystring.stringify(options)}`,
       ["token", this._credentials]
     );
   }
