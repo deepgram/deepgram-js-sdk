@@ -202,7 +202,7 @@ export type PrerecordedTranscriptionOptions = {
    * For example, 'es', 'fr', 'ja'
    * If requests translation in the same language as their ASR request, a 400 will be returned.
    */
-  translation?: Array<string>;
+  translate?: Array<string>;
 
   /**
    * Indicates whether Deepgram will identify and detect topics in the transcript.
