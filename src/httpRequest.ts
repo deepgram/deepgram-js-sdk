@@ -20,7 +20,7 @@ const _requestOptions = (
 
   const options = {
     host: apiUrl,
-    protocol: requireSSL ? "https" : "http",
+    protocol: requireSSL ? "https:" : "http:",
     path,
     method,
     headers: {
