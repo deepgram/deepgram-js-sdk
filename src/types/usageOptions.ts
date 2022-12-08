@@ -21,7 +21,7 @@ export type UsageOptions = {
   alternatives?: boolean;
   numerals?: boolean;
   numbers?: boolean;
-  translation?: boolean;
+  translate?: boolean;
   detect_entities?: boolean;
   detect_topics?: boolean;
   summarize?: boolean;
