@@ -218,7 +218,7 @@ export type PrerecordedTranscriptionOptions = {
    * Indicates the confidence requirement for non-neutral sentiment.
    * Setting this variable turns sentiment analysis on.
    */
-  sent_thresh?: number;
+  sentiment_threshold?: number;
 
   /**
    * Indicates whether to convert dates from written format (e.g., january first) to

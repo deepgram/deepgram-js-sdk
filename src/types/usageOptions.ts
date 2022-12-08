@@ -28,5 +28,5 @@ export type UsageOptions = {
   paragraphs?: boolean;
   utt_split?: boolean;
   analyze_sentiment?: boolean;
-  sent_thresh?: boolean;
+  sentiment_threshold?: boolean;
 };
