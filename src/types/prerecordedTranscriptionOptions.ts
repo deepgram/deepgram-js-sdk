@@ -250,4 +250,12 @@ export type PrerecordedTranscriptionOptions = {
    * Option to format measurements in the transcript
    * */
   measurements?: boolean;
+
+
+  /**
+   * Indicates whether to use Smart Format on the transcript. When enabled,
+   * Smart Format will add punctuation and formatting to entities like dates, times,
+   * tracking numbers, and more.
+   * */
+  smart_format?: boolean;
 };

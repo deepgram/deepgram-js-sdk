@@ -28,5 +28,6 @@ export type UsageOptions = {
   paragraphs?: boolean;
   utt_split?: boolean;
   analyze_sentiment?: boolean;
+  smart_format?: boolean;
   sentiment_threshold?: boolean;
 };
