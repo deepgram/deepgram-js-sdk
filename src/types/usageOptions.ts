@@ -29,4 +29,5 @@ export type UsageOptions = {
   utt_split?: boolean;
   analyze_sentiment?: boolean;
   sent_thresh?: boolean;
+  smart_format?: boolean;
 };
