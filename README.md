@@ -75,7 +75,7 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
   });
   const deepgramSocket = deepgram.transcription.live({ punctuate: true });
 
-  deepgramSocket.addListener('open', () => {
+  deepgramSocket.addEventListener('open', () => {
     mediaRecorder.addEventListener('dataavailable', async (event) => {
       if (event.data.size > 0 && deepgramSocket.readyState == 1) {
         deepgramSocket.send(event.data)
@@ -84,7 +84,8 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
     mediaRecorder.start(1000)
   });
 
-  deepgramSocket.addListener("transcriptReceived", (received) => {
+  deepgramSocket.addEventListener("message", (message) => {
+    const received = JSON.parse(message.data);
     const transcript = received.channel.alternatives[0].transcript;
     if (transcript && received.is_final) {
       console.log(transcript);
