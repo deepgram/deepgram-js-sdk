@@ -21,13 +21,13 @@ export type UsageOptions = {
   alternatives?: boolean;
   numerals?: boolean;
   numbers?: boolean;
-  translation?: boolean;
+  translate?: boolean;
   detect_entities?: boolean;
   detect_topics?: boolean;
   summarize?: boolean;
   paragraphs?: boolean;
   utt_split?: boolean;
   analyze_sentiment?: boolean;
-  sent_thresh?: boolean;
   smart_format?: boolean;
+  sentiment_threshold?: boolean;
 };

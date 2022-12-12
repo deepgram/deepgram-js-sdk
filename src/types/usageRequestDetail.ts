@@ -26,8 +26,8 @@ export type UsageRequestDetail = {
       alternatives?: boolean;
       numerals?: boolean;
       numbers?: boolean;
-      translation?: boolean;
       smart_format?: boolean;
+      translate?: boolean;
     };
   };
 };

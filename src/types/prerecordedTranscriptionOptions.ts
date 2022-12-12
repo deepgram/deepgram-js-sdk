@@ -202,7 +202,7 @@ export type PrerecordedTranscriptionOptions = {
    * For example, 'es', 'fr', 'ja'
    * If requests translation in the same language as their ASR request, a 400 will be returned.
    */
-  translation?: Array<string>;
+  translate?: Array<string>;
 
   /**
    * Indicates whether Deepgram will identify and detect topics in the transcript.
@@ -218,7 +218,7 @@ export type PrerecordedTranscriptionOptions = {
    * Indicates the confidence requirement for non-neutral sentiment.
    * Setting this variable turns sentiment analysis on.
    */
-  sent_thresh?: number;
+  sentiment_threshold?: number;
 
   /**
    * Indicates whether to convert dates from written format (e.g., january first) to
