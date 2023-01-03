@@ -48,6 +48,17 @@ export class LiveTranscription extends EventEmitter {
     };
   }
 
+  public toggleNumerals(toggle: boolean): void {
+    this._socket.send(
+      JSON.stringify({
+        type: "Configure",
+        processors: {
+          numerals: toggle,
+        },
+      })
+    );
+  }
+
   /**
    * Returns the ready state of the websocket connection
    */
