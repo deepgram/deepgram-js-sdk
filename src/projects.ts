@@ -60,4 +60,18 @@ export class Projects {
       JSON.stringify(payload)
     );
   }
+
+  /**
+   * Delete a specific project
+   * @param project project to delete
+   * */
+  async delete(projectId: string): Promise<void> {
+    return this._request(
+      "DELETE",
+      this._credentials,
+      this._apiUrl,
+      this._requireSSL,
+      `${this.apiPath}/${projectId}`
+    );
+  }
 }

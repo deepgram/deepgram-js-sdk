@@ -251,11 +251,17 @@ export type PrerecordedTranscriptionOptions = {
    * */
   measurements?: boolean;
 
-
   /**
    * Indicates whether to use Smart Format on the transcript. When enabled,
    * Smart Format will add punctuation and formatting to entities like dates, times,
    * tracking numbers, and more.
    * */
   smart_format?: boolean;
+
+  /**
+   * allows you to label your API requests for the purpose of identification during usage reporting.
+   * You can also apply tags to API Keys; if you do, any tags applied to the API Key running the API request
+   * will also be applied to the request itself.
+   * */
+  tag?: Array<string>;
 };
