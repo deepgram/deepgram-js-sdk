@@ -189,6 +189,7 @@ export type PrerecordedTranscriptionOptions = {
 
   /**
    * Indicates whether Deepgram will Identify and detect entities in the transcript
+   * This is a beta feature and is is subject to change. Right now, pass in the string "latest" instead of a boolean value
    */
   detect_entities?: boolean;
 
@@ -251,11 +252,17 @@ export type PrerecordedTranscriptionOptions = {
    * */
   measurements?: boolean;
 
-
   /**
    * Indicates whether to use Smart Format on the transcript. When enabled,
    * Smart Format will add punctuation and formatting to entities like dates, times,
    * tracking numbers, and more.
    * */
   smart_format?: boolean;
+
+  /**
+   * allows you to label your API requests for the purpose of identification during usage reporting.
+   * You can also apply tags to API Keys; if you do, any tags applied to the API Key running the API request
+   * will also be applied to the request itself.
+   * */
+  tag?: Array<string>;
 };

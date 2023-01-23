@@ -10,4 +10,9 @@ export type CreateKeyOptions = {
    * Length of time (in seconds) during which the key you would like to create will remain valid.
    */
   timeToLive?: number;
+
+  /**
+   * Tags associated with the key you would like to create
+   * */
+  tags?: string[];
 };
