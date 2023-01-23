@@ -189,6 +189,7 @@ export type PrerecordedTranscriptionOptions = {
 
   /**
    * Indicates whether Deepgram will Identify and detect entities in the transcript
+   * This is a beta feature and is is subject to change. Right now, pass in the string "latest" instead of a boolean value
    */
   detect_entities?: boolean;
 
