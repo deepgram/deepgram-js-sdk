@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import querystring from "querystring";
 import WebSocket from "ws";
 import { ConnectionState, LiveTranscriptionEvents } from "../enums";
-import { LiveTranscriptionOptions } from "../types";
+import { LiveTranscriptionOptions, ToggleConfigOptions } from "../types";
 import { userAgent } from "../userAgent";
 
 export class LiveTranscription extends EventEmitter {
@@ -48,13 +48,11 @@ export class LiveTranscription extends EventEmitter {
     };
   }
 
-  public toggleNumerals(toggle: boolean): void {
+  public configure(config: ToggleConfigOptions): void {
     this._socket.send(
       JSON.stringify({
         type: "Configure",
-        processors: {
-          numerals: toggle,
-        },
+        processors: config,
       })
     );
   }

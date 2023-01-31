@@ -29,6 +29,7 @@ export * from "./scopeList";
 export * from "./search";
 export * from "./sentence";
 export * from "./summary";
+export * from "./toggleConfigOptions";
 export * from "./topic";
 export * from "./topicGroup";
 export * from "./transcriptionSource";
