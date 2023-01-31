@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import querystring from "querystring";
 import WebSocket from "ws";
 import { ConnectionState, LiveTranscriptionEvents } from "../enums";
-import { LiveTranscriptionOptions } from "../types";
+import { LiveTranscriptionOptions, ToggleConfigOptions } from "../types";
 import { userAgent } from "../userAgent";
 
 export class LiveTranscription extends EventEmitter {
@@ -46,6 +46,15 @@ export class LiveTranscription extends EventEmitter {
     this._socket.onmessage = (m) => {
       this.emit(LiveTranscriptionEvents.TranscriptReceived, m.data);
     };
+  }
+
+  public configure(config: ToggleConfigOptions): void {
+    this._socket.send(
+      JSON.stringify({
+        type: "Configure",
+        processors: config,
+      })
+    );
   }
 
   /**
