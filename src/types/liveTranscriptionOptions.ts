@@ -61,7 +61,7 @@ export type LiveTranscriptionOptions = {
    *  `ssn` (*beta*): Redacts social security numbers
    * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
    */
-  redact?: Array<string>;
+  redact?: string | boolean;
 
   /**
    * Indicates whether to recognize speaker changes. When passed in, each word
