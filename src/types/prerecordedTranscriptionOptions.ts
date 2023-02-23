@@ -238,7 +238,7 @@ export type PrerecordedTranscriptionOptions = {
    * Indicates whether to convert times from written format (e.g., three oclock) to
    * numerical format (e.g., 3:00).
    * 	*/
-  times: boolean;
+  times?: boolean;
 
   /**
    * Option to format punctuated commands
