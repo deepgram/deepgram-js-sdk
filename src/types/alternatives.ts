@@ -30,10 +30,7 @@ export type Alternative = {
    * Array of entity objects.
    */
   entities?: Array<Entity>;
-  /**
-   * String indicating the detected language. eg: 'en'
-   */
-  detected_language?: string;
+
   /**
    * Array of language objects for each language the response has been translated into
    */

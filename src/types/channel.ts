@@ -13,4 +13,8 @@ export type Channel = {
    * Transcription alternatives
    */
   alternatives: Array<Alternative>;
+  /**
+   * String indicating the detected language. eg: 'en'
+   */
+  detected_language?: string;
 };
