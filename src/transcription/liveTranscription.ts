@@ -36,6 +36,7 @@ export class LiveTranscription extends EventEmitter {
     };
 
     this._socket.onclose = (event: WebSocket.CloseEvent) => {
+      // changing the event.target to any to access the private _req property that isn't available on the WebSocket.CloseEvent type
       const newTarget: any = event.target;
       if (newTarget["_req"]) {
         const dgErrorIndex =
