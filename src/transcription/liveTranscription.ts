@@ -37,8 +37,11 @@ export class LiveTranscription extends EventEmitter {
 
     this._socket.onclose = (event: WebSocket.CloseEvent) => {
       const newTarget: any = event.target;
-      const dgErrorIndex = newTarget["_req"].res.rawHeaders.indexOf("dg-error");
-      event.reason = newTarget["_req"].res.rawHeaders[dgErrorIndex + 1];
+      if (newTarget["_req"]) {
+        const dgErrorIndex =
+          newTarget["_req"].res.rawHeaders.indexOf("dg-error");
+        event.reason = newTarget["_req"].res.rawHeaders[dgErrorIndex + 1];
+      }
       this.emit(LiveTranscriptionEvents.Close, event);
     };
 
