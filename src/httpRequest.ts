@@ -78,9 +78,9 @@ export function _request<T>(
 
           if (dgRes.statusCode && dgRes.statusCode >= 400) {
             if (dgResponse.error) {
-              reject(`DG: ${dgResponse.error}: ${dgResponse.reason}`);
+              reject(`DG: ${JSON.stringify(dgResponse)}`);
             } else {
-              reject(`DG: ${dgResponse.err_msg}`);
+              reject(`DG: ${JSON.stringify(dgResponse)}`);
             }
           }
 
