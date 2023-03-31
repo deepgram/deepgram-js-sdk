@@ -8,7 +8,7 @@ export type LiveTranscriptionOptions = {
    * AI model used to process submitted audio.
    * @default general
    * @remarks Possible values are general, phonecall, meeting or a custom string
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/model
+   * @see https://developers.deepgram.com/documentation/features/model/
    */
   model?: Models | string;
 
@@ -16,7 +16,7 @@ export type LiveTranscriptionOptions = {
    * Version of the model to use.
    * @default latest
    * @remarks latest OR <version_id>
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/version
+   * @see https://developers.deepgram.com/documentation/features/version/
    */
   version?: string;
 
@@ -40,17 +40,17 @@ export type LiveTranscriptionOptions = {
    * @default en-US
    * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
    * pt-BR, ru, tr or null
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/language
+   * @see https://developers.deepgram.com/documentation/features/language/
    */
   language?: string;
   /**
    * Indicates whether to add punctuation and capitalization to the transcript.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/punctuate
+   * @see https://developers.deepgram.com/documentation/features/punctuate/
    */
   punctuate?: boolean;
   /**
    * Indicates whether to remove profanity from the transcript.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/profanity_filter
+   * @see https://developers.deepgram.com/documentation/features/profanity-filter/
    */
   profanity_filter?: boolean;
   /**
@@ -59,7 +59,7 @@ export type LiveTranscriptionOptions = {
    *  `pci`: Redacts sensitive credit card information, including credit card number, expiration date, and CVV
    *  `numbers` (or `true)`: Aggressively redacts strings of numerals
    *  `ssn` (*beta*): Redacts social security numbers
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/redact
+   * @see https://developers.deepgram.com/documentation/features/redact/
    */
   redact?: Array<string> | Array<boolean> | boolean;
 
@@ -68,7 +68,7 @@ export type LiveTranscriptionOptions = {
    * in the transcript will be assigned a speaker number starting at 0.
    * If 'true' is passed, the latest version of the diarizer  will be used.
    * To use an old version of the diarizer, pass in the version in the `diarize_version` option.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   * @see https://developers.deepgram.com/documentation/features/diarize/
    */
   diarize?: boolean;
 
@@ -76,7 +76,7 @@ export type LiveTranscriptionOptions = {
    * Indicates which version of the diarizer to use. When passed in, each word
    * in the transcript will be assigned a speaker number starting at 0.
    * Ex: YYYY-MM-DD.X where YYYY-MM-DD is the version date and X is the version number.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/diarize
+   * @see https://developers.deepgram.com/documentation/features/diarize/
    */
   diarize_version?: string;
 
@@ -86,7 +86,7 @@ export type LiveTranscriptionOptions = {
    * can apply a different model to each channel using the model parameter (e.g.,
    * set model to general:phonecall, which applies the general model to channel
    * 0 and the phonecall model to channel 1).
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/multichannel
+   * @see https://developers.deepgram.com/documentation/features/multichannel/
    */
   multichannel?: boolean;
   /**
@@ -118,7 +118,7 @@ export type LiveTranscriptionOptions = {
    * Terms or phrases to search for in the submitted audio. Deepgram searches
    * for acoustic patterns in audio rather than text patterns in transcripts
    * because we have noticed that acoustic pattern matching is more performant.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/search
+   * @see https://developers.deepgram.com/documentation/features/search/
    */
   search?: Array<string>;
   /**
@@ -128,7 +128,7 @@ export type LiveTranscriptionOptions = {
    * a POST request to the provided URL with an appropriate HTTP status code.
    * @remarks You may embed basic authentication credentials in the callback URL.
    * Only ports 80, 443, 8080, and 8443 can be used for callbacks.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/callback
+   * @see https://developers.deepgram.com/documentation/features/callback/
    */
   callback?: string;
   /**
@@ -136,7 +136,7 @@ export type LiveTranscriptionOptions = {
    * or suppressing to help it understand context. Just like a human listener,
    * Deepgram can better understand mumbled, distorted, or otherwise
    * hard-to-decipher speech when it knows the context of the conversation.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeAudio/properties/keywords
+   * @see https://developers.deepgram.com/documentation/features/keywords/
    */
   keywords?: Array<string>;
   /**
@@ -145,7 +145,7 @@ export type LiveTranscriptionOptions = {
    * endpoint returns regular updates, which means transcription results will
    * likely change for a period of time. You can avoid receiving these updates
    * by setting this flag to false.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/interim_results
+   * @see https://developers.deepgram.com/documentation/features/interim-results/
    */
   interim_results?: boolean;
   /**
@@ -155,7 +155,7 @@ export type LiveTranscriptionOptions = {
    * that no additional data will improve its prediction, so it immediately
    * finalizes the result for the processed time range and returns the
    * transcript with a speech_final parameter set to true.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/endpointing
+   * @see https://developers.deepgram.com/documentation/features/endpointing/
    */
   endpointing?: boolean;
   /**
@@ -165,25 +165,24 @@ export type LiveTranscriptionOptions = {
    * a value between 10 ms and 500 ms; on-premise customers may remove this
    * restriction.
    * @default 10
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/vad_turnoff
    */
   vad_turnoff?: number;
   /**
    * Expected encoding of the submitted streaming audio.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/encoding
+   * @see https://developers.deepgram.com/documentation/features/encoding/
    */
   encoding?: string;
   /**
    * Number of independent audio channels contained in submitted streaming
    * audio. Only read when a value is provided for encoding.
    * @default 1
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/channels
+   * @see https://developers.deepgram.com/documentation/features/channels/
    */
   channels?: number;
   /**
    * Sample rate of submitted streaming audio. Required (and only read)
    * when a value is provided for encoding.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/sample_rate
+   * @see https://developers.deepgram.com/documentation/features/sample-rate/
    */
   sample_rate?: number;
 
