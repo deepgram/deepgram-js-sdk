@@ -155,9 +155,10 @@ export type LiveTranscriptionOptions = {
    * that no additional data will improve its prediction, so it immediately
    * finalizes the result for the processed time range and returns the
    * transcript with a speech_final parameter set to true.
-   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/endpointing
+   * @see https://developers.deepgram.com/api-reference/speech-recognition-api#operation/transcribeStreamingAudio/properties/
+   
    */
-  endpointing?: boolean;
+  endpointing?: boolean | number;
   /**
    * Length of time in milliseconds of silence that voice activation detection
    * (VAD) will use to detect that a speaker has finished speaking. Used when
