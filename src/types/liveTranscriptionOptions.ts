@@ -239,4 +239,6 @@ export type LiveTranscriptionOptions = {
    * will also be applied to the request itself.
    * */
   tag?: Array<string>;
+
+  ner?: boolean;
 };
