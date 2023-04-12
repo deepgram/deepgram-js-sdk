@@ -211,6 +211,11 @@ export type PrerecordedTranscriptionOptions = {
   detect_topics?: boolean;
 
   /**
+   * Indicates whether Deepgram will identify sentiment in the audio.
+   */
+  sentiment?: boolean;
+
+  /**
    * Indicates whether Deepgram will identify sentiment in the transcript.
    */
   analyze_sentiment?: boolean;
@@ -265,4 +270,6 @@ export type PrerecordedTranscriptionOptions = {
    * will also be applied to the request itself.
    * */
   tag?: Array<string>;
+
+  ner?: boolean;
 };
