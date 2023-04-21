@@ -18,14 +18,14 @@ export class Transcriber {
   async preRecorded(
     source: TranscriptionSource,
     options?: PrerecordedTranscriptionOptions,
-    endpoint?: string = "v1/listen"
+    endpoint: string = "v1/listen"
   ): Promise<PrerecordedTranscriptionResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
       source,
-      options,
-      endpoint
+      endpoint,
+      options
     );
   }
 
