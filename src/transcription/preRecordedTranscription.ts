@@ -40,7 +40,8 @@ export const preRecordedTranscription = async (
   apiKey: string,
   apiUrl: string,
   source: TranscriptionSource,
-  options?: PrerecordedTranscriptionOptions
+  options?: PrerecordedTranscriptionOptions,
+  endpoint?: string
 ): Promise<PrerecordedTranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 
@@ -75,7 +76,7 @@ export const preRecordedTranscription = async (
     "POST",
     apiKey,
     apiUrl,
-    `/v1/listen?${querystring.stringify(transcriptionOptions)}`,
+    `/${endpoint}?${querystring.stringify(transcriptionOptions)}`,
     body,
     requestOptions
   );
