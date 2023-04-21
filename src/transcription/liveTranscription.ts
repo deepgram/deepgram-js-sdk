@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import querystring from "querystring";
 import WebSocket from "ws";
 import { ConnectionState, LiveTranscriptionEvents } from "../enums";
-import { LiveTranscriptionOptions } from "../types";
+import { LiveTranscriptionOptions, ToggleConfigOptions } from "../types";
 import { userAgent } from "../userAgent";
 
 export class LiveTranscription extends EventEmitter {
@@ -11,11 +11,15 @@ export class LiveTranscription extends EventEmitter {
   constructor(
     credentials: string,
     apiUrl: string,
+    requireSSL: boolean,
     options?: LiveTranscriptionOptions
   ) {
     super(undefined);
+
+    const protocol = requireSSL ? "wss" : "ws";
+
     this._socket = new WebSocket(
-      `wss://${apiUrl}/v1/listen?${querystring.stringify(options)}`,
+      `${protocol}://${apiUrl}/v1/listen?${querystring.stringify(options)}`,
       {
         headers: {
           Authorization: `token ${credentials}`,
@@ -32,6 +36,13 @@ export class LiveTranscription extends EventEmitter {
     };
 
     this._socket.onclose = (event: WebSocket.CloseEvent) => {
+      // changing the event.target to any to access the private _req property that isn't available on the WebSocket.CloseEvent type
+      const newTarget: any = event.target;
+      if (newTarget["_req"]) {
+        const dgErrorIndex =
+          newTarget["_req"].res.rawHeaders.indexOf("dg-error");
+        event.reason = newTarget["_req"].res.rawHeaders[dgErrorIndex + 1];
+      }
       this.emit(LiveTranscriptionEvents.Close, event);
     };
 
@@ -42,6 +53,15 @@ export class LiveTranscription extends EventEmitter {
     this._socket.onmessage = (m) => {
       this.emit(LiveTranscriptionEvents.TranscriptReceived, m.data);
     };
+  }
+
+  public configure(config: ToggleConfigOptions): void {
+    this._socket.send(
+      JSON.stringify({
+        type: "Configure",
+        processors: config,
+      })
+    );
   }
 
   /**

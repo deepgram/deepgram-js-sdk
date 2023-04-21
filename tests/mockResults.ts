@@ -22,3 +22,57 @@ export const mockKey = {
   created: "string",
   scopes: ["member"],
 };
+
+export const mockInvites = {
+  invites: [
+    {
+      email: "mock@email.com",
+      scope: "mockScope",
+    },
+    {
+      email: "anotherMock@email.com",
+    },
+  ],
+};
+
+export const mockScopesList = {
+  scopes: ["string", "string"],
+};
+
+export const mockUsageRequest = {
+  request_id: "string",
+  created: "string",
+  path: "string",
+  accessor: "string",
+};
+
+export const mockUsageRequestList = {
+  page: 1,
+  limit: 42,
+  requests: [mockUsageRequest],
+};
+
+export const mockUsageResponseDetail = {
+  start: "string",
+  end: "string",
+  hours: 42,
+  requests: 42,
+};
+
+export const mockUsageResponse = {
+  start: "string",
+  end: "string",
+  resolution: {
+    units: "string",
+    amount: 42,
+  },
+  results: [mockUsageResponseDetail],
+};
+
+export const mockUsageField = {
+  tags: ["string"],
+  models: ["string"],
+  processing_methods: ["string"],
+  languages: ["string"],
+  features: ["string"],
+};

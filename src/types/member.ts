@@ -1,6 +1,7 @@
 export type Member = {
-  id: string;
-  name: string;
-  scopes: Array<string>;
+  member_id: string;
+  first_name?: string;
+  last_name?: string;
+  scopes?: Array<string>;
   email: string;
 };

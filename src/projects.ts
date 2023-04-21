@@ -1,8 +1,18 @@
-import { _request } from "./httpRequest";
-import { Project, ProjectPatchResponse, ProjectResponse } from "./types";
+import {
+  Project,
+  ProjectPatchResponse,
+  ProjectResponse,
+  ProjectPatchRequest,
+  RequestFunction,
+} from "./types";
 
 export class Projects {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _requireSSL: boolean,
+    private _request: RequestFunction
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -10,10 +20,11 @@ export class Projects {
    * Returns all projects accessible by the API key
    */
   async list(): Promise<ProjectResponse> {
-    return _request<ProjectResponse>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       this.apiPath
     );
   }
@@ -23,10 +34,11 @@ export class Projects {
    * @param projectId Unique identifier of the project to retrieve
    */
   async get(projectId: string): Promise<Project> {
-    return _request<Project>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}`
     );
   }
@@ -35,12 +47,31 @@ export class Projects {
    * Update a specific project
    * @param project project to update
    */
-  async update(project: Project): Promise<ProjectPatchResponse> {
-    return _request<ProjectPatchResponse>(
+  async update(
+    project: Project,
+    payload: ProjectPatchRequest
+  ): Promise<ProjectPatchResponse> {
+    return this._request(
       "PATCH",
       this._credentials,
       this._apiUrl,
-      `${this.apiPath}/${project.project_id}`
+      this._requireSSL,
+      `${this.apiPath}/${project.project_id}`,
+      JSON.stringify(payload)
+    );
+  }
+
+  /**
+   * Delete a specific project
+   * @param project project to delete
+   * */
+  async delete(projectId: string): Promise<void> {
+    return this._request(
+      "DELETE",
+      this._credentials,
+      this._apiUrl,
+      this._requireSSL,
+      `${this.apiPath}/${projectId}`
     );
   }
 }

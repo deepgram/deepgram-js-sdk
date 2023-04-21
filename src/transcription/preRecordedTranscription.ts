@@ -39,6 +39,7 @@ function isReadStreamSource(
 export const preRecordedTranscription = async (
   apiKey: string,
   apiUrl: string,
+  requireSSL: boolean,
   source: TranscriptionSource,
   endpoint: string,
   options?: PrerecordedTranscriptionOptions
@@ -50,7 +51,7 @@ export const preRecordedTranscription = async (
     (source.mimetype === undefined || source.mimetype.length === 0)
   ) {
     throw new Error(
-      "DG: Mimetype must be provided if the source is a Buffer or a ReadStream"
+      "DG: Mimetype must be provided if the source is a Buffer or a Readable"
     );
   }
 
@@ -76,6 +77,7 @@ export const preRecordedTranscription = async (
     "POST",
     apiKey,
     apiUrl,
+    requireSSL,
     `/${endpoint}?${querystring.stringify(transcriptionOptions)}`,
     body,
     requestOptions

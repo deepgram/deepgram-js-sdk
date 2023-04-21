@@ -25,6 +25,9 @@ export type UsageRequestDetail = {
       redact?: boolean;
       alternatives?: boolean;
       numerals?: boolean;
+      numbers?: boolean;
+      smart_format?: boolean;
+      translate?: boolean;
     };
   };
 };

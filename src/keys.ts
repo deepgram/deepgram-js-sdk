@@ -1,8 +1,18 @@
-import { _request } from "./httpRequest";
-import { CreateKeyOptions, KeyResponse, Key } from "./types";
+import {
+  CreateKeyOptions,
+  KeyResponse,
+  Key,
+  KeyResponseObj,
+  RequestFunction,
+} from "./types";
 
 export class Keys {
-  constructor(private _credentials: string, private _apiUrl: string) {}
+  constructor(
+    private _credentials: string,
+    private _apiUrl: string,
+    private _requireSSL: boolean,
+    private _request: RequestFunction
+  ) {}
 
   private apiPath = "/v1/projects";
 
@@ -11,12 +21,22 @@ export class Keys {
    * @param projectId Unique identifier of the project containing API keys
    */
   async list(projectId: string): Promise<KeyResponse> {
-    return _request<KeyResponse>(
+    const response = await this._request(
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys`
     );
+
+    const output = response.api_keys.map((apiKey: KeyResponseObj) => {
+      return {
+        ...apiKey,
+        ...apiKey.api_key,
+      };
+    });
+
+    return { api_keys: output };
   }
 
   /**
@@ -25,10 +45,11 @@ export class Keys {
    * @param keyId Unique identifier for the key to retrieve
    */
   async get(projectId: string, keyId: string): Promise<Key> {
-    return _request<Key>(
+    return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys/${keyId}`
     );
   }
@@ -57,10 +78,11 @@ export class Keys {
       );
     }
 
-    return _request<Key>(
+    return this._request(
       "POST",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys`,
       JSON.stringify({
         comment,
@@ -81,10 +103,11 @@ export class Keys {
    * @param keyId Unique identifier for the key to delete
    */
   async delete(projectId: string, keyId: string): Promise<void> {
-    return _request<void>(
+    return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
+      this._requireSSL,
       `${this.apiPath}/${projectId}/keys/${keyId}`
     );
   }

@@ -19,18 +19,18 @@ describe("Key tests", () => {
   let requestStub: Sinon.SinonStub;
   let keys: Keys;
 
-  beforeEach(function () {
+  beforeEach(() => {
     requestStub = Sinon.stub(https, "request");
-    keys = new Keys(fakeCredentials, fakeUrl);
+    keys = new Keys(fakeCredentials, fakeUrl, true, requestStub);
   });
 
-  afterEach(function () {
+  afterEach(() => {
     requestStub.restore();
     nock.restore();
     sandbox.restore();
   });
 
-  it("Errors are thrown", function () {
+  it("Errors are thrown", () => {
     const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
 
     nock(`https://${fakeUrl}`)
@@ -42,7 +42,7 @@ describe("Key tests", () => {
     });
   });
 
-  it("Create resolves", function () {
+  it("Create resolves", () => {
     nock(`https://${fakeUrl}`)
       .post(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockKey);
@@ -53,7 +53,7 @@ describe("Key tests", () => {
     });
   });
 
-  it("Throws an exception if both expirationDate and timeToLive are provided", function () {
+  it("Throws an exception if both expirationDate and timeToLive are provided", () => {
     const expectedError = `Please provide expirationDate or timeToLive or neither. Providing both is not allowed.`;
     nock(`https://${fakeUrl}`)
       .post(`/v1/projects/${fakeProjectId}/keys`)
@@ -76,7 +76,7 @@ describe("Key tests", () => {
       });
   });
 
-  it("Does not throw if only timeToLive is provided as an option", function () {
+  it("Does not throw if only timeToLive is provided as an option", () => {
     nock(`https://${fakeUrl}`)
       .post(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockKey);
@@ -97,7 +97,7 @@ describe("Key tests", () => {
       });
   });
 
-  it("Does not throw if only expirationDate is provided as an option", function () {
+  it("Does not throw if only expirationDate is provided as an option", () => {
     nock(`https://${fakeUrl}`)
       .post(`/v1/projects/${fakeProjectId}/keys`)
       .reply(200, mockKey);
@@ -118,7 +118,7 @@ describe("Key tests", () => {
       });
   });
 
-  it("Delete resolves", function () {
+  it("Delete resolves", () => {
     nock(`https://${fakeUrl}`)
       .delete(`/v1/projects/${fakeProjectId}/keys/${fakeKeyId}`)
       .reply(200);

@@ -75,7 +75,7 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
   });
   const deepgramSocket = deepgram.transcription.live({ punctuate: true });
 
-  deepgramSocket.addListener('open', () => {
+  deepgramSocket.addEventListener('open', () => {
     mediaRecorder.addEventListener('dataavailable', async (event) => {
       if (event.data.size > 0 && deepgramSocket.readyState == 1) {
         deepgramSocket.send(event.data)
@@ -84,7 +84,8 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
     mediaRecorder.start(1000)
   });
 
-  deepgramSocket.addListener("transcriptReceived", (received) => {
+  deepgramSocket.addEventListener("message", (message) => {
+    const received = JSON.parse(message.data);
     const transcript = received.channel.alternatives[0].transcript;
     if (transcript && received.is_final) {
       console.log(transcript);
@@ -141,11 +142,11 @@ We love to hear from you so if you have questions, comments or find a bug in the
 project, let us know! You can either:
 
 - [Open an issue](https://github.com/deepgram/node-sdk/issues/new) on this repository
-- Tweet at us! We're [@DeepgramDevs on Twitter](https://twitter.com/DeepgramDevs)
+- Tweet at us! We're [@DeepgramAI on Twitter](https://twitter.com/DeepgramAI)
 
 ## Further Reading
 
 Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/)
 
-[signup]: https://console.deepgram.com?utm_source=node-sdk&utm_content=readme
+[signup]: https://console.deepgram.com/signup?utm_medium=github&utm_source=DEVREL&utm_content=node-sdk
 [license]: LICENSE.txt
