@@ -22,15 +22,15 @@ export class Transcriber {
   async preRecorded(
     source: TranscriptionSource,
     options?: PrerecordedTranscriptionOptions,
-    endpoint: string = "v1/listen"
+    endpoint?: string
   ): Promise<PrerecordedTranscriptionResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
       this._requireSSL,
       source,
-      endpoint,
-      options
+      options,
+      endpoint
     );
   }
 

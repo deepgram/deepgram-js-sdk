@@ -41,8 +41,8 @@ export const preRecordedTranscription = async (
   apiUrl: string,
   requireSSL: boolean,
   source: TranscriptionSource,
-  endpoint: string,
-  options?: PrerecordedTranscriptionOptions
+  options?: PrerecordedTranscriptionOptions,
+  endpoint: string = "v1/listen"
 ): Promise<PrerecordedTranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 
