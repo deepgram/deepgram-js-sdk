@@ -12,31 +12,42 @@ export class Billing {
 
   /**
    * Retrieves list of balance info of the specified project.
-   * @param projectId Unique identifier of the project
+   * @param projectId string
+   * @param endpoint string
+   * @returns Promise<BalanceList>
    */
-  async listBalances(projectId: string): Promise<BalanceList> {
+  async listBalances(
+    projectId: string,
+    endpoint = "v1/listen"
+  ): Promise<BalanceList> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/balances`
+      `/${endpoint}/${projectId}/balances`
     );
   }
 
   /**
+   *
    * Retrieves balance info of a specified balance_id in the specified project.
-   * @param projectId Unique identifier of the project
-   * @param balanceId Unique identifier of the balance
+   * @param projectId string
+   * @param balanceId string
+   * @param endpoint string
+   * @returns Promise<Balance>
    */
-
-  async getBalance(projectId: string, balanceId: string): Promise<Balance> {
+  async getBalance(
+    projectId: string,
+    balanceId: string,
+    endpoint = "v1/listen"
+  ): Promise<Balance> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/balances/${balanceId}`
+      `/${endpoint}/${projectId}/balances/${balanceId}`
     );
   }
 }
