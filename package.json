@@ -29,9 +29,17 @@
     "sdk"
   ],
   "author": {
-    "name": "Michael Jolley",
-    "email": "michael.jolley@deepgram.com"
+    "name": "DevRel Team",
+    "email": "devrel@deepgram.com"
   },
+  "contributors": [
+    "Brian Barrow",
+    "Brian Hillis",
+    "Luke Oliff",
+    "Michael Jolley",
+    "Sandra Rodgers",
+    "Shir Goldberg"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/deepgram/deepgram-node-sdk/issues"
