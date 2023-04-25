@@ -39,6 +39,17 @@ export const mockScopesList = {
   scopes: ["string", "string"],
 };
 
+export const mockBillingBalance = {
+  balance_id: "uuid",
+  amount: 0,
+  units: "string",
+  purchase: "string",
+};
+
+export const mockBillingRequestList = {
+  balances: [mockBillingBalance],
+};
+
 export const mockUsageRequest = {
   request_id: "string",
   created: "string",
