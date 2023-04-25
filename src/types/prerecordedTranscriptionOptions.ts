@@ -148,6 +148,13 @@ export type PrerecordedTranscriptionOptions = {
   keywords?: Array<string>;
 
   /**
+   * Support for out-of-vocabulary (OOV) keyword boosting when processing streaming audio is 
+   * currently in beta; to fall back to previous keyword behavior append the query parameter 
+   * keyword_boost=legacy to your API request.
+   */
+  keyword_boost?: string;
+
+  /**
    * Indicates whether Deepgram will segment speech into meaningful semantic
    * units, which allows the model to interact more naturally and effectively
    * with speakers' spontaneous speech patterns. For example, when humans
