@@ -42,7 +42,7 @@ export const preRecordedTranscription = async (
   requireSSL: boolean,
   source: TranscriptionSource,
   options?: PrerecordedTranscriptionOptions,
-  endpoint: string = "v1/listen"
+  endpoint = "v1/listen"
 ): Promise<PrerecordedTranscriptionResponse> => {
   const transcriptionOptions = { ...{}, ...options };
 
