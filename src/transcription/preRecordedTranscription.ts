@@ -9,6 +9,10 @@ import {
 } from "../types";
 import { _request } from "../httpRequest";
 
+/**
+ * @param providedSource TranscriptionSource
+ * @returns boolean
+ */
 function isUrlSource(
   providedSource: TranscriptionSource
 ): providedSource is UrlSource {
@@ -16,6 +20,10 @@ function isUrlSource(
   return false;
 }
 
+/**
+ * @param providedSource TranscriptionSource
+ * @returns boolean
+ */
 function isBufferSource(
   providedSource: TranscriptionSource
 ): providedSource is BufferSource {
@@ -23,6 +31,10 @@ function isBufferSource(
   return false;
 }
 
+/**
+ * @param providedSource TranscriptionSource
+ * @returns boolean
+ */
 function isReadStreamSource(
   providedSource: TranscriptionSource
 ): providedSource is ReadStreamSource {
@@ -32,9 +44,14 @@ function isReadStreamSource(
 
 /**
  * Transcribes audio from a file or buffer
- * @param credentials Base64 encoded API key & secret
- * @param source Url or Buffer of file to transcribe
- * @param options Options to modify transcriptions
+ *
+ * @param apiKey string
+ * @param apiUrl string
+ * @param requireSSL boolean
+ * @param source TranscriptionSource
+ * @param options PrerecordedTranscriptionOptions
+ * @param options string
+ * @returns Promise<PrerecordedTranscriptionResponse>
  */
 export const preRecordedTranscription = async (
   apiKey: string,
