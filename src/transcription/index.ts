@@ -38,12 +38,16 @@ export class Transcriber {
    * Opens a websocket to Deepgram's API for live transcriptions
    * @param options Options to modify transcriptions
    */
-  live(options?: LiveTranscriptionOptions): LiveTranscription {
+  live(
+    options?: LiveTranscriptionOptions,
+    endpoint?: string
+  ): LiveTranscription {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",
       this._requireSSL,
-      options
+      options,
+      endpoint
     );
   }
 }
