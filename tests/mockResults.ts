@@ -7,11 +7,10 @@ export const mockApiDomain = "api.deepgram.test";
 export const mockProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
 
 export const mockInvalidCredentials = {
-  error: "Unauthorized",
-  reason: "Invalid or missing credentials.",
-  transaction_key:
-    "cAQ7O8zj1aasdfajxJLB3XKV6UWuDFP9BY6xPBn8XwHIg1v44BW3OeqiRNzRTD7bR91ftt/dUOiW5ZyfizfD6D5jHcRoLf6qRVznV4lGo80gYA63UpN/ieQO4DRXN4OxWq/oSwFRdQo+WZcfom57+RUTew3RJSpZnawYPvhcn5zwrBgVf0rcz+nzRFdm7JAE4hZ5hVonO5gDOPWc=",
-  request_id: "Yjradagaga0eilP713sCYoCxV1",
+  category: "UNAUTHORIZED",
+  message: "Authentication failed.",
+  details: "Check that you are using the correct credentials.",
+  request_id: "74d9ea89-d5fc-4c8d-9e21-b95c9b8a51c2",
 };
 
 export const mockListKeys = {

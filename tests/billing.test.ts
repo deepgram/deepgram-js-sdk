@@ -20,14 +20,12 @@ describe("Billing tests", () => {
   });
 
   it("Errors are thrown", () => {
-    const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
-
     nock(`https://${mockApiDomain}`)
       .get(`/v1/projects/${mockProjectId}/billing`)
-      .reply(200, mockInvalidCredentials);
+      .reply(403, mockInvalidCredentials);
 
     deepgram.billing.listBalances(mockProjectId).catch((err) => {
-      assert.equal(err, expectedError);
+      assert.equal(err, mockInvalidCredentials);
     });
   });
 
