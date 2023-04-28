@@ -13,11 +13,7 @@ import nock from "nock";
 chai.should();
 
 describe("Billing tests", () => {
-  let deepgram: Deepgram;
-
-  beforeEach(() => {
-    deepgram = new Deepgram(mockApiKey, mockApiDomain);
-  });
+  let deepgram: Deepgram = new Deepgram(mockApiKey, mockApiDomain);
 
   afterEach(() => {
     nock.restore();
