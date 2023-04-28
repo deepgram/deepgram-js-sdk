@@ -8,8 +8,6 @@ export class Billing {
     private _request: RequestFunction
   ) {}
 
-  private apiPath = "/v1/projects";
-
   /**
    * Retrieves list of balance info of the specified project.
    * @param projectId string
