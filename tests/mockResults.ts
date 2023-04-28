@@ -6,6 +6,12 @@ export const mockApiDomain = "api.deepgram.test";
 
 export const mockProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
 
+export const mockRequestId = "1153a5df-ddbd-4424-ba85-920d071e18be";
+
+export const mockEmail = "email@email.com";
+
+export const mockScope = "read:mock";
+
 export const mockInvalidCredentials = {
   category: "UNAUTHORIZED",
   message: "Authentication failed.",
@@ -30,20 +36,21 @@ export const mockKey = {
   scopes: ["member"],
 };
 
+export const mockMessageResponse = {
+  message: "string",
+};
+
+export const mockInvite = {
+  email: mockEmail,
+  scope: mockScope,
+};
+
 export const mockInvites = {
-  invites: [
-    {
-      email: "mock@email.com",
-      scope: "mockScope",
-    },
-    {
-      email: "anotherMock@email.com",
-    },
-  ],
+  invites: [mockInvite, mockInvite],
 };
 
 export const mockScopesList = {
-  scopes: ["string", "string"],
+  scopes: [mockScope, mockScope],
 };
 
 export const mockBillingBalance = {

@@ -1,6 +1,7 @@
 import chai, { assert } from "chai";
 import { Deepgram } from "../src";
 import {
+  mockRequestId,
   mockProjectId,
   mockApiDomain,
   mockApiKey,
@@ -40,8 +41,6 @@ describe("Billing tests", () => {
   });
 
   it("Get request resolves", () => {
-    const mockRequestId = "1234-abcd";
-
     nock(`https://${mockApiDomain}`)
       .get(`/v1/projects/${mockProjectId}/requests/${mockRequestId}`)
       .reply(200, mockBillingBalance);
@@ -64,8 +63,6 @@ describe("Billing tests", () => {
   });
 
   it("Custom endpoint: Get request resolves", () => {
-    const mockRequestId = "1234-abcd";
-
     nock(`https://${mockApiDomain}`)
       .get(`/test/${mockProjectId}/requests/${mockRequestId}`)
       .reply(200, mockBillingBalance);
