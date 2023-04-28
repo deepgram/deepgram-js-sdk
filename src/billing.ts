@@ -18,7 +18,7 @@ export class Billing {
    */
   async listBalances(
     projectId: string,
-    endpoint = "v1/listen"
+    endpoint = "v1/projects"
   ): Promise<BalanceList> {
     return this._request(
       "GET",
@@ -40,7 +40,7 @@ export class Billing {
   async getBalance(
     projectId: string,
     balanceId: string,
-    endpoint = "v1/listen"
+    endpoint = "v1/projects"
   ): Promise<Balance> {
     return this._request(
       "GET",
