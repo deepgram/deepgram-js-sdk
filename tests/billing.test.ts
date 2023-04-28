@@ -1,95 +1,85 @@
 import chai, { assert } from "chai";
-import Sinon from "sinon";
+import { Deepgram } from "../src";
 import {
+  mockProjectId,
+  mockApiDomain,
+  mockApiKey,
   mockInvalidCredentials,
   mockBillingRequestList,
   mockBillingBalance,
 } from "./mockResults";
 import nock from "nock";
-import https from "https";
-
-import { Billing } from "../src/billing";
 
 chai.should();
 
-const fakeCredentials = "testKey:testSecret";
-const fakeUrl = "fake.url";
-const fakeProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
-
 describe("Billing tests", () => {
-  const sandbox = Sinon.createSandbox();
-
-  let requestStub: Sinon.SinonStub;
-  let billing: Billing;
+  let deepgram: Deepgram;
 
   beforeEach(() => {
-    requestStub = Sinon.stub(https, "request");
-    billing = new Billing(fakeCredentials, fakeUrl, true, requestStub);
+    deepgram = new Deepgram(mockApiKey, mockApiDomain);
   });
 
   afterEach(() => {
-    requestStub.restore();
     nock.restore();
-    sandbox.restore();
   });
 
   it("Errors are thrown", () => {
     const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
 
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/billing`)
+    nock(`https://${mockApiDomain}`)
+      .get(`/v1/projects/${mockProjectId}/billing`)
       .reply(200, mockInvalidCredentials);
 
-    billing.listBalances(fakeProjectId).catch((err) => {
+    deepgram.billing.listBalances(mockProjectId).catch((err) => {
       assert.equal(err, expectedError);
     });
   });
 
   it("List requests resolves", () => {
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}`)
+    nock(`https://${mockApiDomain}`)
+      .get(`/v1/projects/${mockProjectId}`)
       .reply(200, mockBillingRequestList);
 
-    billing.listBalances(fakeProjectId).then((response) => {
+    deepgram.billing.listBalances(mockProjectId).then((response) => {
       response.should.deep.eq(mockBillingRequestList);
-      requestStub.calledOnce.should.eq(true);
     });
   });
 
   it("Get request resolves", () => {
     const mockRequestId = "1234-abcd";
 
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/requests/${mockRequestId}`)
+    nock(`https://${mockApiDomain}`)
+      .get(`/v1/projects/${mockProjectId}/requests/${mockRequestId}`)
       .reply(200, mockBillingBalance);
 
-    billing.getBalance(fakeProjectId, mockRequestId).then((request) => {
-      request.should.deep.eq(mockBillingBalance);
-      requestStub.calledOnce.should.eq(true);
-    });
+    deepgram.billing
+      .getBalance(mockProjectId, mockRequestId)
+      .then((request) => {
+        request.should.deep.eq(mockBillingBalance);
+      });
   });
 
   it("Custom endpoint: List requests resolves", () => {
-    nock(`https://${fakeUrl}`)
-      .get(`/test/${fakeProjectId}`)
+    nock(`https://${mockApiDomain}`)
+      .get(`/test/${mockProjectId}`)
       .reply(200, mockBillingRequestList);
 
-    billing.listBalances(fakeProjectId, "test").then((response) => {
+    deepgram.billing.listBalances(mockProjectId, "test").then((response) => {
       response.should.deep.eq(mockBillingRequestList);
-      requestStub.calledOnce.should.eq(true);
     });
   });
 
   it("Custom endpoint: Get request resolves", () => {
     const mockRequestId = "1234-abcd";
 
-    nock(`https://${fakeUrl}`)
-      .get(`/test/${fakeProjectId}/requests/${mockRequestId}`)
+    nock(`https://${mockApiDomain}`)
+      .get(`/test/${mockProjectId}/requests/${mockRequestId}`)
       .reply(200, mockBillingBalance);
 
-    billing.getBalance(fakeProjectId, mockRequestId, "test").then((request) => {
-      request.should.deep.eq(mockBillingBalance);
-      requestStub.calledOnce.should.eq(true);
-    });
+    deepgram.billing
+      .getBalance(mockProjectId, mockRequestId, "test")
+      .then((request) => {
+        request.should.deep.eq(mockBillingBalance);
+      });
   });
 });

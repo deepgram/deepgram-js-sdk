@@ -1,3 +1,11 @@
+export const mockApiKey = "testKey";
+
+export const mockApiSecret = "testSecret";
+
+export const mockApiDomain = "api.deepgram.test";
+
+export const mockProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
+
 export const mockInvalidCredentials = {
   error: "Unauthorized",
   reason: "Invalid or missing credentials.",
