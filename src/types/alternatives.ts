@@ -25,7 +25,7 @@ export type Alternative = {
   /**
    * Array of paragraph objects.
    */
-  paragraphs?: Array<ParagraphGroup>;
+  paragraphs?: ParagraphGroup;
   /**
    * Array of entity objects.
    */
