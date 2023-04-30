@@ -4,19 +4,25 @@ export const mockApiSecret = "testSecret";
 
 export const mockApiDomain = "api.deepgram.test";
 
-export const mockProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
+export const mockUuid = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
 
-export const mockRequestId = "1153a5df-ddbd-4424-ba85-920d071e18be";
+export const mockProjectId = mockUuid;
+
+export const mockRequestId = mockUuid;
 
 export const mockEmail = "email@email.com";
 
 export const mockScope = "read:mock";
 
+export const mockTag = "string";
+
+export const mockDate = new Date().toISOString();
+
 export const mockInvalidCredentials = {
   category: "UNAUTHORIZED",
   message: "Authentication failed.",
   details: "Check that you are using the correct credentials.",
-  request_id: "74d9ea89-d5fc-4c8d-9e21-b95c9b8a51c2",
+  request_id: mockRequestId,
 };
 
 export const mockListKeys = {
@@ -26,14 +32,6 @@ export const mockListKeys = {
       label: "string",
     },
   ],
-};
-
-export const mockKey = {
-  id: "string",
-  key: "string",
-  comment: "string",
-  created: "string",
-  scopes: ["member"],
 };
 
 export const mockMessageResponse = {
@@ -53,8 +51,31 @@ export const mockScopesList = {
   scopes: [mockScope, mockScope],
 };
 
+export const mockTags = [mockTag];
+
+export const mockProjectKey = {
+  member: {
+    member_id: mockUuid,
+    email: mockEmail,
+    first_name: "string",
+    last_name: "string",
+  },
+  api_key: {
+    api_key_id: mockUuid,
+    comment: "string",
+    scopes: mockScopesList,
+    tags: mockTags,
+    created: mockDate,
+    expiration_date: mockDate,
+  },
+};
+
+export const mockProjectKeysList = {
+  api_keys: [mockProjectKey],
+};
+
 export const mockBillingBalance = {
-  balance_id: "uuid",
+  balance_id: mockUuid,
   amount: 0,
   units: "string",
   purchase: "string",
@@ -95,7 +116,7 @@ export const mockUsageResponse = {
 };
 
 export const mockUsageField = {
-  tags: ["string"],
+  tags: mockTags,
   models: ["string"],
   processing_methods: ["string"],
   languages: ["string"],

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run build:lib && webpack --config webpack.config.js && npm run types",
     "build:lib": "tsc --project ./tsconfig.json && tsc --project ./tsconfig-es6.json",
-    "coverage": "nyc npm run test",
+    "coverage": "nyc --reporter=lcovonly --reporter=text --reporter=text-summary npm run test",
     "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",

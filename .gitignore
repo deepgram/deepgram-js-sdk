@@ -5,3 +5,4 @@ out
 api.http
 *.tgz
 bundle
+coverage
