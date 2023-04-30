@@ -75,7 +75,6 @@ describe("Key tests", () => {
 
     deepgram.keys
       .delete(mockProjectId, mockUuid)
-      .then(() => {})
       .then(() => {
         assert.equal(1, 1);
       })
@@ -123,7 +122,6 @@ describe("Key tests", () => {
 
     deepgram.keys
       .delete(mockProjectId, mockUuid, "test")
-      .then(() => {})
       .then(() => {
         assert.equal(1, 1);
       })
