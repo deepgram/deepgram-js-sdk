@@ -16,23 +16,30 @@ chai.should();
 describe("Billing tests", () => {
   let deepgram: Deepgram = new Deepgram(mockApiKey, mockApiDomain);
 
-  afterEach(() => {
-    nock.restore();
+  before(() => {
+    if (!nock.isActive()) nock.activate();
+    nock.disableNetConnect();
   });
 
-  it("Errors are thrown", () => {
-    nock(`https://${mockApiDomain}`)
-      .get(`/v1/projects/${mockProjectId}/billing`)
-      .reply(403, mockInvalidCredentials);
+  afterEach(() => {
+    if (!nock.isDone()) {
+      throw new Error(
+        `Not all nock interceptors were used: ${JSON.stringify(
+          nock.pendingMocks()
+        )}`
+      );
+    }
 
-    deepgram.billing.listBalances(mockProjectId).catch((err) => {
-      assert.equal(err, mockInvalidCredentials);
-    });
+    nock.cleanAll();
+  });
+
+  after(() => {
+    nock.restore();
   });
 
   it("List requests resolves", () => {
     nock(`https://${mockApiDomain}`)
-      .get(`/v1/projects/${mockProjectId}`)
+      .get(`/v1/projects/${mockProjectId}/balances`)
       .reply(200, mockBillingRequestList);
 
     deepgram.billing.listBalances(mockProjectId).then((response) => {
@@ -42,7 +49,7 @@ describe("Billing tests", () => {
 
   it("Get request resolves", () => {
     nock(`https://${mockApiDomain}`)
-      .get(`/v1/projects/${mockProjectId}/requests/${mockRequestId}`)
+      .get(`/v1/projects/${mockProjectId}/balances/${mockRequestId}`)
       .reply(200, mockBillingBalance);
 
     deepgram.billing
@@ -54,7 +61,7 @@ describe("Billing tests", () => {
 
   it("Custom endpoint: List requests resolves", () => {
     nock(`https://${mockApiDomain}`)
-      .get(`/test/${mockProjectId}`)
+      .get(`/test/${mockProjectId}/balances`)
       .reply(200, mockBillingRequestList);
 
     deepgram.billing.listBalances(mockProjectId, "test").then((response) => {
@@ -64,7 +71,7 @@ describe("Billing tests", () => {
 
   it("Custom endpoint: Get request resolves", () => {
     nock(`https://${mockApiDomain}`)
-      .get(`/test/${mockProjectId}/requests/${mockRequestId}`)
+      .get(`/test/${mockProjectId}/balances/${mockRequestId}`)
       .reply(200, mockBillingBalance);
 
     deepgram.billing

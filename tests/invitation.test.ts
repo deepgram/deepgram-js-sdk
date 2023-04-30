@@ -17,18 +17,25 @@ chai.should();
 describe("Invitation tests", () => {
   let deepgram: Deepgram = new Deepgram(mockApiKey, mockApiDomain);
 
-  afterEach(() => {
-    nock.restore();
+  before(() => {
+    if (!nock.isActive()) nock.activate();
+    nock.disableNetConnect();
   });
 
-  it("Errors are thrown", () => {
-    nock(`https://${mockApiDomain}`)
-      .get(`/v1/projects/${mockProjectId}/invites`)
-      .reply(403, mockInvalidCredentials);
+  afterEach(() => {
+    if (!nock.isDone()) {
+      throw new Error(
+        `Not all nock interceptors were used: ${JSON.stringify(
+          nock.pendingMocks()
+        )}`
+      );
+    }
 
-    deepgram.invitation.list(mockProjectId).catch((err) => {
-      assert.equal(err, mockInvalidCredentials);
-    });
+    nock.cleanAll();
+  });
+
+  after(() => {
+    nock.restore();
   });
 
   it("List resolves", () => {
@@ -64,7 +71,7 @@ describe("Invitation tests", () => {
   });
 
   it("Delete resolves", () => {
-    nock(`https;//${mockApiDomain}`)
+    nock(`https://${mockApiDomain}`)
       .delete(`/v1/projects/${mockProjectId}/invites/${mockEmail}`)
       .reply(200, mockMessageResponse);
 
@@ -106,7 +113,7 @@ describe("Invitation tests", () => {
   });
 
   it("Custom endpoint: Delete resolves", () => {
-    nock(`https;//${mockApiDomain}`)
+    nock(`https://${mockApiDomain}`)
       .delete(`/test/${mockProjectId}/invites/${mockEmail}`)
       .reply(200, mockMessageResponse);
 

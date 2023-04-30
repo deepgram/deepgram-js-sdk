@@ -9,7 +9,6 @@ export class Billing {
   ) {}
 
   /**
-   * Retrieves list of balance info of the specified project.
    * @param projectId string
    * @param endpoint string
    * @returns Promise<BalanceList>
@@ -28,8 +27,6 @@ export class Billing {
   }
 
   /**
-   *
-   * Retrieves balance info of a specified balance_id in the specified project.
    * @param projectId string
    * @param balanceId string
    * @param endpoint string
