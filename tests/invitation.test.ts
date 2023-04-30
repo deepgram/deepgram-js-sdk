@@ -1,4 +1,4 @@
-import chai, { assert } from "chai";
+import chai from "chai";
 import { Deepgram } from "../src";
 import {
   mockEmail,
@@ -7,7 +7,6 @@ import {
   mockProjectId,
   mockApiDomain,
   mockApiKey,
-  mockInvalidCredentials,
   mockInvites,
 } from "./mockResults";
 import nock from "nock";

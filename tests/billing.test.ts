@@ -1,11 +1,10 @@
-import chai, { assert } from "chai";
+import chai from "chai";
 import { Deepgram } from "../src";
 import {
   mockRequestId,
   mockProjectId,
   mockApiDomain,
   mockApiKey,
-  mockInvalidCredentials,
   mockBillingRequestList,
   mockBillingBalance,
 } from "./mockResults";
