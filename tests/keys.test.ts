@@ -138,9 +138,6 @@ describe("Key tests", () => {
         expirationDate: new Date(),
         timeToLive: 30,
       })
-      .then((response) => {
-        response.should.deep.eq(mockProjectKey);
-      })
       .then(() => {
         assert.equal(1, 2);
       })

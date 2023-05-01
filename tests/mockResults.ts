@@ -122,3 +122,15 @@ export const mockUsageField = {
   languages: ["string"],
   features: ["string"],
 };
+
+export const mockMember = {
+  member_id: mockUuid,
+  scopes: [mockScope],
+  email: mockEmail,
+  first_name: "string",
+  last_name: "string",
+};
+
+export const mockMembers = {
+  members: [mockMember],
+};
