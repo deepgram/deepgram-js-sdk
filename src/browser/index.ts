@@ -26,6 +26,7 @@ export class Deepgram {
   scopes: Scopes;
 
   constructor(apiKey: string, apiUrl?: string, requireSSL?: boolean) {
+    console.warn("Deepgram Browser SDK will be deprecated in the future and is no longer receiving support. Please use the Node SDK instead in your backend code and connect to it.")
     this._apiKey = apiKey;
     this._apiUrl = apiUrl || DefaultOptions.apiUrl;
     this._requireSSL = requireSSL || DefaultOptions.requireSSL;
