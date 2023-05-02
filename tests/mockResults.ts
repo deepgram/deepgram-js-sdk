@@ -1,4 +1,9 @@
-import { Project, ProjectPatchRequest, ProjectResponse } from "../src/types";
+import {
+  Project,
+  ProjectPatchRequest,
+  ProjectResponse,
+  ScopeList,
+} from "../src/types";
 
 export const mockApiKey = "testKey";
 
@@ -14,7 +19,7 @@ export const mockRequestId = mockUuid;
 
 export const mockEmail = "email@email.com";
 
-export const mockScope = "read:mock";
+export const mockScope: string = "read:mock";
 
 export const mockTag = "string";
 
@@ -49,7 +54,7 @@ export const mockInvites = {
   invites: [mockInvite, mockInvite],
 };
 
-export const mockScopesList = {
+export const mockScopesList: ScopeList = {
   scopes: [mockScope, mockScope],
 };
 
