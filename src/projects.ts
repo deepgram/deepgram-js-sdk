@@ -14,64 +14,68 @@ export class Projects {
     private _request: RequestFunction
   ) {}
 
-  private apiPath = "/v1/projects";
-
   /**
-   * Returns all projects accessible by the API key
+   * @param endpoint string
+   * @returns Promise<ProjectResponse>
    */
-  async list(): Promise<ProjectResponse> {
+  async list(endpoint = "v1/projects"): Promise<ProjectResponse> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      this.apiPath
+      `/${endpoint}`
     );
   }
 
   /**
-   * Retrieves a specific project based on the provided projectId
-   * @param projectId Unique identifier of the project to retrieve
+   * @param projectId string
+   * @param endpoint string
+   * @returns Promise<Project>
    */
-  async get(projectId: string): Promise<Project> {
+  async get(projectId: string, endpoint = "v1/projects"): Promise<Project> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}`
+      `/${endpoint}/${projectId}`
     );
   }
 
   /**
-   * Update a specific project
-   * @param project project to update
+   * @param project Project
+   * @param payload ProjectPatchRequest
+   * @param endpoint string
+   * @returns Promise<ProjectPatchResponse>
    */
   async update(
     project: Project,
-    payload: ProjectPatchRequest
+    payload: ProjectPatchRequest,
+    endpoint = "v1/projects"
   ): Promise<ProjectPatchResponse> {
     return this._request(
       "PATCH",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${project.project_id}`,
+      `/${endpoint}/${project.project_id}`,
       JSON.stringify(payload)
     );
   }
 
   /**
-   * Delete a specific project
-   * @param project project to delete
-   * */
-  async delete(projectId: string): Promise<void> {
+   * @param projectId string
+   * @param endpoint string
+   * @returns Promise<void>
+   */
+  async delete(projectId: string, endpoint = "v1/projects"): Promise<void> {
     return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}`
+      `/${endpoint}/${projectId}`
     );
   }
 }

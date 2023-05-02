@@ -1,3 +1,5 @@
+import { Project, ProjectPatchRequest, ProjectResponse } from "../src/types";
+
 export const mockApiKey = "testKey";
 
 export const mockApiSecret = "testSecret";
@@ -133,4 +135,19 @@ export const mockMember = {
 
 export const mockMembers = {
   members: [mockMember],
+};
+
+export const mockProject: Project = {
+  project_id: mockUuid,
+  name: "string",
+  company: "string",
+};
+
+export const mockProjects: ProjectResponse = {
+  projects: [mockProject],
+};
+
+export const mockProjectUpdate: ProjectPatchRequest = {
+  name: "string",
+  company: "string",
 };
