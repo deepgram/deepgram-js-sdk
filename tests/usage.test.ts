@@ -147,4 +147,58 @@ describe("Projects tests", () => {
         response.should.deep.eq(mockUsageField);
       });
   });
+
+  it("Custom endpoint: List requests w/options resolves", () => {
+    const mockOptions = { ...{}, ...mockUsageRequestListOptions };
+
+    nock(`https://${mockApiDomain}`)
+      .get(`/test/${mockUuid}/requests?${querystring.stringify(mockOptions)}`)
+      .reply(200, mockUsageRequestList);
+
+    deepgram.usage
+      .listRequests(mockUuid, mockUsageRequestListOptions, "test")
+      .then((response) => {
+        response.should.deep.eq(mockUsageRequestList);
+      });
+  });
+
+  it("Custom endpoint: Get request resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .get(`/test/${mockUuid}/requests/${mockUuid}`)
+      .reply(200, mockUsageRequest);
+
+    deepgram.usage.getRequest(mockUuid, mockUuid, "test").then((response) => {
+      response.should.deep.eq(mockUsageRequest);
+    });
+  });
+
+  it("Custom endpoint: Get usage w/ options resolves", () => {
+    const mockOptions = { ...{}, ...mockUsageOptions };
+
+    nock(`https://${mockApiDomain}`)
+      .get(`/test/${mockUuid}/usage?${querystring.stringify(mockOptions)}`)
+      .reply(200, mockUsage);
+
+    deepgram.usage
+      .getUsage(mockUuid, mockUsageOptions, "test")
+      .then((response) => {
+        response.should.deep.eq(mockUsage);
+      });
+  });
+
+  it("Custom endpoint: Get fields w/ options resolves", () => {
+    const mockOptions = { ...{}, ...mockUsageFieldOptions };
+
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/test/${mockUuid}/usage/fields?${querystring.stringify(mockOptions)}`
+      )
+      .reply(200, mockUsageField);
+
+    deepgram.usage
+      .getFields(mockUuid, mockUsageFieldOptions, "test")
+      .then((response) => {
+        response.should.deep.eq(mockUsageField);
+      });
+  });
 });
