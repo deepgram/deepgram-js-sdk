@@ -3,6 +3,14 @@ import {
   ProjectPatchRequest,
   ProjectResponse,
   ScopeList,
+  UsageField,
+  UsageFieldOptions,
+  UsageOptions,
+  UsageRequest,
+  UsageRequestList,
+  UsageRequestListOptions,
+  UsageResponse,
+  UsageResponseDetail,
 } from "../src/types";
 
 export const mockApiKey = "testKey";
@@ -92,42 +100,90 @@ export const mockBillingRequestList = {
   balances: [mockBillingBalance],
 };
 
-export const mockUsageRequest = {
+export const mockUsageRequestListOptions: UsageRequestListOptions = {
+  start: "string",
+  end: "string",
+  page: 1,
+  limit: 10,
+  status: "succeeded",
+};
+
+export const mockUsageRequest: UsageRequest = {
   request_id: "string",
   created: "string",
   path: "string",
   accessor: "string",
+  response: mockMessageResponse,
 };
 
-export const mockUsageRequestList = {
+export const mockUsageRequestList: UsageRequestList = {
   page: 1,
-  limit: 42,
+  limit: 10,
   requests: [mockUsageRequest],
 };
 
-export const mockUsageResponseDetail = {
+export const mockUsageOptions: UsageOptions = {
   start: "string",
   end: "string",
-  hours: 42,
-  requests: 42,
+  accessor: "string",
+  tag: [mockTag],
+  method: "sync",
+  model: "string",
+  multichannel: true,
+  interim_results: true,
+  punctuate: true,
+  ner: true,
+  utterances: true,
+  replace: true,
+  profanity_filter: true,
+  keywords: true,
+  sentiment: true,
+  diarize: true,
+  detect_language: true,
+  search: true,
+  redact: true,
+  alternatives: true,
+  numerals: true,
+  numbers: true,
+  translate: true,
+  detect_entities: true,
+  detect_topics: true,
+  summarize: true,
+  paragraphs: true,
+  utt_split: true,
+  analyze_sentiment: true,
+  smart_format: true,
+  sentiment_threshold: true,
 };
 
-export const mockUsageResponse = {
+export const mockUsageResponseDetail: UsageResponseDetail = {
+  start: "string",
+  end: "string",
+  hours: 1,
+  requests: 1,
+};
+
+export const mockUsage: UsageResponse = {
   start: "string",
   end: "string",
   resolution: {
     units: "string",
-    amount: 42,
+    amount: 1,
   },
   results: [mockUsageResponseDetail],
 };
 
-export const mockUsageField = {
-  tags: mockTags,
+export const mockUsageField: UsageField = {
+  tags: [mockTag],
   models: ["string"],
   processing_methods: ["string"],
   languages: ["string"],
   features: ["string"],
+};
+
+export const mockUsageFieldOptions: UsageFieldOptions = {
+  start: "string",
+  end: "string",
 };
 
 export const mockMember = {

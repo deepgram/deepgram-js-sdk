@@ -1,95 +1,150 @@
 import chai, { assert } from "chai";
-import Sinon from "sinon";
+import { Deepgram } from "../src";
+import querystring from "querystring";
 import {
-  mockInvalidCredentials,
+  mockApiDomain,
+  mockApiKey,
+  mockMessageResponse,
+  mockUsage,
   mockUsageField,
-  mockUsageRequestList,
+  mockUsageFieldOptions,
+  mockUsageOptions,
   mockUsageRequest,
-  mockUsageResponse,
+  mockUsageRequestList,
+  mockUsageRequestListOptions,
+  mockUuid,
 } from "./mockResults";
 import nock from "nock";
-import https from "https";
-
-import { Usage } from "../src/usage";
 
 chai.should();
 
-const fakeCredentials = "testKey:testSecret";
-const fakeUrl = "fake.url";
-const fakeProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
+describe("Projects tests", () => {
+  let deepgram: Deepgram = new Deepgram(mockApiKey, mockApiDomain);
 
-describe("Usage tests", () => {
-  const sandbox = Sinon.createSandbox();
-
-  let requestStub: Sinon.SinonStub;
-  let usage: Usage;
-
-  beforeEach(() => {
-    requestStub = Sinon.stub(https, "request");
-    usage = new Usage(fakeCredentials, fakeUrl, true, requestStub);
+  before(() => {
+    if (!nock.isActive()) nock.activate();
+    nock.disableNetConnect();
   });
 
   afterEach(() => {
-    requestStub.restore();
-    nock.restore();
-    sandbox.restore();
+    if (!nock.isDone()) {
+      throw new Error(
+        `Not all nock interceptors were used: ${JSON.stringify(
+          nock.pendingMocks()
+        )}`
+      );
+    }
+
+    nock.cleanAll();
   });
 
-  it("Errors are thrown", () => {
-    const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
-
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/requests?`)
-      .reply(200, mockInvalidCredentials);
-
-    usage.listRequests(fakeProjectId).catch((err) => {
-      assert.equal(err, expectedError);
-    });
+  after(() => {
+    nock.restore();
   });
 
   it("List requests resolves", () => {
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}`)
+    const mockOptions = { ...{}, ...{} };
+
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/v1/projects/${mockUuid}/requests?${querystring.stringify(
+          mockOptions
+        )}`
+      )
       .reply(200, mockUsageRequestList);
 
-    usage.listRequests(fakeProjectId).then((response) => {
+    deepgram.usage.listRequests(mockUuid).then((response) => {
       response.should.deep.eq(mockUsageRequestList);
-      requestStub.calledOnce.should.eq(true);
     });
   });
 
-  it("Get request resolves", () => {
-    const mockRequestId = "1234-abcd";
+  it("List requests w/options resolves", () => {
+    const mockOptions = { ...{}, ...mockUsageRequestListOptions };
 
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/requests/${mockRequestId}`)
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/v1/projects/${mockUuid}/requests?${querystring.stringify(
+          mockOptions
+        )}`
+      )
+      .reply(200, mockUsageRequestList);
+
+    deepgram.usage
+      .listRequests(mockUuid, mockUsageRequestListOptions)
+      .then((response) => {
+        response.should.deep.eq(mockUsageRequestList);
+      });
+  });
+
+  it("Get request resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .get(`/v1/projects/${mockUuid}/requests/${mockUuid}`)
       .reply(200, mockUsageRequest);
 
-    usage.getRequest(fakeProjectId, mockRequestId).then((request) => {
-      request.should.deep.eq(mockUsageRequest);
-      requestStub.calledOnce.should.eq(true);
+    deepgram.usage.getRequest(mockUuid, mockUuid).then((response) => {
+      response.should.deep.eq(mockUsageRequest);
     });
   });
 
   it("Get usage resolves", () => {
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/usage?`)
-      .reply(200, mockUsageResponse);
+    const mockOptions = { ...{}, ...{} };
 
-    usage.getUsage(fakeProjectId).then((response) => {
-      response.should.deep.eq(mockUsageResponse);
-      requestStub.calledOnce.should.eq(true);
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/v1/projects/${mockUuid}/usage?${querystring.stringify(mockOptions)}`
+      )
+      .reply(200, mockUsage);
+
+    deepgram.usage.getUsage(mockUuid).then((response) => {
+      response.should.deep.eq(mockUsage);
+    });
+  });
+
+  it("Get usage resolves w/ options resolves", () => {
+    const mockOptions = { ...{}, ...mockUsageOptions };
+
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/v1/projects/${mockUuid}/usage?${querystring.stringify(mockOptions)}`
+      )
+      .reply(200, mockUsage);
+
+    deepgram.usage.getUsage(mockUuid, mockUsageOptions).then((response) => {
+      response.should.deep.eq(mockUsage);
     });
   });
 
   it("Get fields resolves", () => {
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/usage/fields?`)
+    const mockOptions = { ...{}, ...{} };
+
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/v1/projects/${mockUuid}/usage/fields?${querystring.stringify(
+          mockOptions
+        )}`
+      )
       .reply(200, mockUsageField);
 
-    usage.getFields(fakeProjectId).then((response) => {
+    deepgram.usage.getFields(mockUuid).then((response) => {
       response.should.deep.eq(mockUsageField);
-      requestStub.calledOnce.should.eq(true);
     });
+  });
+
+  it("Get fields w/ options resolves", () => {
+    const mockOptions = { ...{}, ...mockUsageFieldOptions };
+
+    nock(`https://${mockApiDomain}`)
+      .get(
+        `/v1/projects/${mockUuid}/usage/fields?${querystring.stringify(
+          mockOptions
+        )}`
+      )
+      .reply(200, mockUsageField);
+
+    deepgram.usage
+      .getFields(mockUuid, mockUsageFieldOptions)
+      .then((response) => {
+        response.should.deep.eq(mockUsageField);
+      });
   });
 });
