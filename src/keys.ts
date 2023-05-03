@@ -4,6 +4,7 @@ import {
   Key,
   KeyResponseObj,
   RequestFunction,
+  ErrorResponse
 } from "./types";
 
 export class Keys {
@@ -20,7 +21,7 @@ export class Keys {
    * Retrieves all keys associated with the provided projectId
    * @param projectId Unique identifier of the project containing API keys
    */
-  async list(projectId: string): Promise<KeyResponse> {
+  async list(projectId: string): Promise<KeyResponse | ErrorResponse> {
     const response = await this._request(
       "GET",
       this._credentials,
@@ -44,7 +45,7 @@ export class Keys {
    * @param projectId Unique identifier of the project containing API keys
    * @param keyId Unique identifier for the key to retrieve
    */
-  async get(projectId: string, keyId: string): Promise<Key> {
+  async get(projectId: string, keyId: string): Promise<Key | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -66,7 +67,7 @@ export class Keys {
     comment: string,
     scopes: Array<string>,
     options?: CreateKeyOptions
-  ): Promise<Key> {
+  ): Promise<Key | ErrorResponse> {
     /** Throw an error if the user provided both expirationDate and timeToLive */
     if (
       options &&
@@ -102,7 +103,10 @@ export class Keys {
    * @param projectId Unique identifier of the project to create an API key under
    * @param keyId Unique identifier for the key to delete
    */
-  async delete(projectId: string, keyId: string): Promise<void> {
+  async delete(
+    projectId: string,
+    keyId: string
+  ): Promise<void | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,

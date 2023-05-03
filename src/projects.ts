@@ -4,6 +4,7 @@ import {
   ProjectResponse,
   ProjectPatchRequest,
   RequestFunction,
+  ErrorResponse
 } from "./types";
 
 export class Projects {
@@ -19,7 +20,7 @@ export class Projects {
   /**
    * Returns all projects accessible by the API key
    */
-  async list(): Promise<ProjectResponse> {
+  async list(): Promise<ProjectResponse | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -33,7 +34,7 @@ export class Projects {
    * Retrieves a specific project based on the provided projectId
    * @param projectId Unique identifier of the project to retrieve
    */
-  async get(projectId: string): Promise<Project> {
+  async get(projectId: string): Promise<Project | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -50,7 +51,7 @@ export class Projects {
   async update(
     project: Project,
     payload: ProjectPatchRequest
-  ): Promise<ProjectPatchResponse> {
+  ): Promise<ProjectPatchResponse | ErrorResponse> {
     return this._request(
       "PATCH",
       this._credentials,
@@ -65,7 +66,7 @@ export class Projects {
    * Delete a specific project
    * @param project project to delete
    * */
-  async delete(projectId: string): Promise<void> {
+  async delete(projectId: string): Promise<void | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,

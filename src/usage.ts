@@ -8,6 +8,7 @@ import {
   UsageRequestList,
   UsageRequestListOptions,
   UsageResponse,
+  ErrorResponse
 } from "./types";
 
 export class Usage {
@@ -29,7 +30,7 @@ export class Usage {
   async listRequests(
     projectId: string,
     options?: UsageRequestListOptions
-  ): Promise<UsageRequestList> {
+  ): Promise<UsageRequestList | ErrorResponse> {
     const requestOptions = { ...{}, ...options };
     return await this._request(
       "GET",
@@ -69,7 +70,7 @@ export class Usage {
   async getUsage(
     projectId: string,
     options?: UsageOptions
-  ): Promise<UsageResponse> {
+  ): Promise<UsageResponse | ErrorResponse> {
     const requestOptions = { ...{}, ...options };
     return await this._request(
       "GET",
@@ -91,7 +92,7 @@ export class Usage {
   async getFields(
     projectId: string,
     options?: UsageFieldOptions
-  ): Promise<UsageField> {
+  ): Promise<UsageField | ErrorResponse> {
     const requestOptions = { ...{}, ...options };
     return await this._request(
       "GET",

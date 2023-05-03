@@ -3,6 +3,7 @@ import {
   PrerecordedTranscriptionOptions,
   PrerecordedTranscriptionResponse,
   TranscriptionSource,
+  ErrorResponse
 } from "../types";
 import { LiveTranscription } from "./liveTranscription";
 import { preRecordedTranscription } from "./preRecordedTranscription";
@@ -22,7 +23,7 @@ export class Transcriber {
   async preRecorded(
     source: TranscriptionSource,
     options?: PrerecordedTranscriptionOptions
-  ): Promise<PrerecordedTranscriptionResponse> {
+  ): Promise<PrerecordedTranscriptionResponse | ErrorResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
@@ -36,7 +37,7 @@ export class Transcriber {
    * Opens a websocket to Deepgram's API for live transcriptions
    * @param options Options to modify transcriptions
    */
-  live(options?: LiveTranscriptionOptions): LiveTranscription {
+  live(options?: LiveTranscriptionOptions): LiveTranscription | ErrorResponse {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",

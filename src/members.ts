@@ -1,4 +1,4 @@
-import { MemberList, Message, RequestFunction } from "./types";
+import { MemberList, Message, RequestFunction, ErrorResponse } from "./types";
 
 export class Members {
   constructor(
@@ -14,7 +14,7 @@ export class Members {
    * Retrieves account objects for all of the accounts in the specified project.
    * @param projectId Unique identifier of the project
    */
-  async listMembers(projectId: string): Promise<MemberList> {
+  async listMembers(projectId: string): Promise<MemberList | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -29,7 +29,10 @@ export class Members {
    * @param projectId Unique identifier of the project
    * @param memberId Unique identifier of the member
    */
-  async removeMember(projectId: string, memberId: string): Promise<Message> {
+  async removeMember(
+    projectId: string,
+    memberId: string
+  ): Promise<Message | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,

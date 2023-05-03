@@ -3,6 +3,7 @@ import {
   InvitationOptions,
   InvitationList,
   RequestFunction,
+  ErrorResponse
 } from "./types";
 
 export class Invitation {
@@ -19,7 +20,7 @@ export class Invitation {
    * Lists all the current invites of a specified project.
    * @param projectId Unique identifier of the project
    */
-  async list(projectId: string): Promise<InvitationList> {
+  async list(projectId: string): Promise<InvitationList | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -33,7 +34,10 @@ export class Invitation {
    * Sends an invitation to join the specified project.
    * @param projectId Unique identifier of the project
    */
-  async send(projectId: string, options: InvitationOptions): Promise<Message> {
+  async send(
+    projectId: string,
+    options: InvitationOptions
+  ): Promise<Message | ErrorResponse> {
     return this._request(
       "POST",
       this._credentials,
@@ -51,7 +55,7 @@ export class Invitation {
    * Removes the authenticated account from the specified project.
    * @param projectId Unique identifier of the project
    */
-  async leave(projectId: string): Promise<Message> {
+  async leave(projectId: string): Promise<Message | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,
@@ -67,7 +71,10 @@ export class Invitation {
    * @param email email address of the invitee
    * NOTE: This will return successful even if the email does not have an invite on the project.
    */
-  async delete(projectId: string, email: string): Promise<Message> {
+  async delete(
+    projectId: string,
+    email: string
+  ): Promise<Message | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,

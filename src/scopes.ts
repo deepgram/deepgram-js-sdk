@@ -1,4 +1,4 @@
-import { ScopeList, Message, RequestFunction } from "./types";
+import { ScopeList, Message, RequestFunction, ErrorResponse } from "./types";
 
 export class Scopes {
   constructor(
@@ -15,7 +15,10 @@ export class Scopes {
    * @param projectId Unique identifier of the project
    * @param memberId Unique identifier of the member
    */
-  async get(projectId: string, memberId: string): Promise<ScopeList> {
+  async get(
+    projectId: string,
+    memberId: string
+  ): Promise<ScopeList | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -35,7 +38,7 @@ export class Scopes {
     projectID: string,
     memberId: string,
     scope: string
-  ): Promise<Message> {
+  ): Promise<Message | ErrorResponse> {
     return this._request(
       "PUT",
       this._credentials,

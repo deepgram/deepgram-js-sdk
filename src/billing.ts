@@ -1,4 +1,4 @@
-import { BalanceList, Balance, RequestFunction } from "./types";
+import { BalanceList, Balance, RequestFunction, ErrorResponse } from "./types";
 
 export class Billing {
   constructor(
@@ -14,7 +14,7 @@ export class Billing {
    * Retrieves list of balance info of the specified project.
    * @param projectId Unique identifier of the project
    */
-  async listBalances(projectId: string): Promise<BalanceList> {
+  async listBalances(projectId: string): Promise<BalanceList | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -30,7 +30,10 @@ export class Billing {
    * @param balanceId Unique identifier of the balance
    */
 
-  async getBalance(projectId: string, balanceId: string): Promise<Balance> {
+  async getBalance(
+    projectId: string,
+    balanceId: string
+  ): Promise<Balance | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
