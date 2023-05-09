@@ -15,9 +15,11 @@ export class Keys {
   ) {}
 
   /**
-   * @param projectId string
-   * @param endpoint string
-   * @returns Promise<KeyResponse>
+   * Retrieves all keys associated with the provided project_id.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<KeyResponse>}
    */
   async list(
     projectId: string,
@@ -42,10 +44,12 @@ export class Keys {
   }
 
   /**
-   * @param projectId string
-   * @param keyId string
-   * @param endpoint string
-   * @returns Promise<Key>
+   * Retrieves a specific key associated with the provided project_id.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} keyId Unique identifier of the key
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Key>}
    */
   async get(
     projectId: string,
@@ -62,12 +66,14 @@ export class Keys {
   }
 
   /**
-   * @param projectId string
-   * @param comment string
-   * @param scopes Array<string>
-   * @param options CreateKeyOptions
-   * @param endpoint string
-   * @returns Promise<Key>
+   * Creates an API key with the provided scopes.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} comment Comment to describe the key
+   * @param {Array<string>} scopes Permission scopes associated with the API key
+   * @param {CreateKeyOptions} options Options used when creating API keys
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Key>}
    */
   async create(
     projectId: string,
@@ -107,10 +113,12 @@ export class Keys {
   }
 
   /**
-   * @param projectId string
-   * @param keyId string
-   * @param endpoint string
-   * @returns Promise<void>
+   * Deletes an API key.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} keyId Unique identifier of the key
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<void>}
    */
   async delete(
     projectId: string,

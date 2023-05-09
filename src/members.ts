@@ -9,9 +9,11 @@ export class Members {
   ) {}
 
   /**
-   * @param projectId string
-   * @param endpoint string
-   * @returns Promise<MemberList>
+   * Retrieves account objects for all of the accounts in the specified project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<MemberList>}
    */
   async listMembers(
     projectId: string,
@@ -27,10 +29,12 @@ export class Members {
   }
 
   /**
-   * @param projectId string
-   * @param memberId string
-   * @param endpoint string
-   * @returns Promise<Message>
+   * Retrieves account objects for all of the accounts in the specified project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} memberId Unique identifier of the member
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Message>}
    */
   async removeMember(
     projectId: string,

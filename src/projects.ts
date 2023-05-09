@@ -15,8 +15,10 @@ export class Projects {
   ) {}
 
   /**
-   * @param endpoint string
-   * @returns Promise<ProjectResponse>
+   * Returns all projects accessible by the API key.
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<ProjectResponse>}
    */
   async list(endpoint = "v1/projects"): Promise<ProjectResponse> {
     return this._request(
@@ -29,9 +31,11 @@ export class Projects {
   }
 
   /**
-   * @param projectId string
-   * @param endpoint string
-   * @returns Promise<Project>
+   * Retrieves a specific project based on the provided project_id.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Project>}
    */
   async get(projectId: string, endpoint = "v1/projects"): Promise<Project> {
     return this._request(
@@ -44,10 +48,12 @@ export class Projects {
   }
 
   /**
-   * @param project Project
-   * @param payload ProjectPatchRequest
-   * @param endpoint string
-   * @returns Promise<ProjectPatchResponse>
+   * Update a project.
+   * @param {Project} project Project to update
+   * @param {ProjectPatchRequest} payload Details to change as an object
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<ProjectPatchResponse>}
    */
   async update(
     project: Project,
@@ -65,9 +71,11 @@ export class Projects {
   }
 
   /**
-   * @param projectId string
-   * @param endpoint string
-   * @returns Promise<void>
+   * Delete a project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<void>}
    */
   async delete(projectId: string, endpoint = "v1/projects"): Promise<void> {
     return this._request(

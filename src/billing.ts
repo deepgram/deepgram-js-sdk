@@ -9,9 +9,11 @@ export class Billing {
   ) {}
 
   /**
-   * @param projectId string
-   * @param endpoint string
-   * @returns Promise<BalanceList>
+   * Retrieves list of balance info of the specified project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<BalanceList>}
    */
   async listBalances(
     projectId: string,
@@ -27,10 +29,12 @@ export class Billing {
   }
 
   /**
-   * @param projectId string
-   * @param balanceId string
-   * @param endpoint string
-   * @returns Promise<Balance>
+   * Retrieves balance info of a specified balance_id in the specified project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} balanceId Unique identifier of the balance
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Balance>}
    */
   async getBalance(
     projectId: string,

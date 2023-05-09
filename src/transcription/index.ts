@@ -15,9 +15,12 @@ export class Transcriber {
   ) {}
 
   /**
-   * Transcribes prerecorded audio from a file or buffer
-   * @param source Url or Buffer of file to transcribe
-   * @param options Options to modify transcriptions
+   * Transcribes prerecorded audio from a file or buffer.
+   * @param {TranscriptionSource} source Source of audio to transcribe
+   * @param {PrerecordedTranscriptionOptions} options Options used to toggle transcription features
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<PrerecordedTranscriptionResponse>}
    */
   async preRecorded(
     source: TranscriptionSource,
@@ -36,7 +39,10 @@ export class Transcriber {
 
   /**
    * Opens a websocket to Deepgram's API for live transcriptions
-   * @param options Options to modify transcriptions
+   * @param {LiveTranscriptionOptions} options Options used to toggle transcription features
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {LiveTranscription}
    */
   live(
     options?: LiveTranscriptionOptions,

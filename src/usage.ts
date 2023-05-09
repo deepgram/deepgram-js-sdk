@@ -19,10 +19,12 @@ export class Usage {
   ) {}
 
   /**
-   * @param projectId string
-   * @param options UsageRequestListOptions
-   * @param endpoint string
-   * @returns Promise<UsageRequestList>
+   * Retrieves all requests associated with the provided project_id based on the provided options.
+   * @param {string} projectId Unique identifier of the project
+   * @param {UsageRequestListOptions} options Additional filter options
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<UsageRequestList>}
    */
   async listRequests(
     projectId: string,
@@ -42,10 +44,12 @@ export class Usage {
   }
 
   /**
-   * @param projectId string
-   * @param requestId string
-   * @param endpoint string
-   * @returns Promise<UsageRequest>
+   * Retrieves a specific request associated with the provided project_id.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} requestId Unique identifier of the request
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<UsageRequest>}
    */
   async getRequest(
     projectId: string,
@@ -62,10 +66,12 @@ export class Usage {
   }
 
   /**
-   * @param projectId string
-   * @param options UsageOptions
-   * @param endpoint string
-   * @returns Promise<UsageResponse>
+   * Retrieves usage associated with the provided project_id based on the provided options.
+   * @param {string} projectId Unique identifier of the project
+   * @param {UsageOptions} options Options to filter usage
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<UsageResponse>}
    */
   async getUsage(
     projectId: string,
@@ -83,10 +89,12 @@ export class Usage {
   }
 
   /**
-   * @param projectId string
-   * @param options UsageFieldOptions
-   * @param endpoint string
-   * @returns Promise<UsageField>
+   * Retrieves features used by the provided project_id based on the provided options.
+   * @param {string} projectId Unique identifier of the project
+   * @param {UsageFieldOptions} options Options to filter usage
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<UsageField>}
    */
   async getFields(
     projectId: string,

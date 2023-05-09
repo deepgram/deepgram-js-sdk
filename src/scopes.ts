@@ -9,10 +9,12 @@ export class Scopes {
   ) {}
 
   /**
-   * @param projectId string
-   * @param memberId string
-   * @param endpoint string
-   * @returns Promise<ScopeList>
+   * Retrieves scopes of the specified member in the specified project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} memberId Unique identifier of the member
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<ScopeList>}
    */
   async get(
     projectId: string,
@@ -29,11 +31,13 @@ export class Scopes {
   }
 
   /**
-   * @param projectID string
-   * @param memberId string
-   * @param scope string
-   * @param endpoint string
-   * @returns Promise<Message>
+   * Updates the scope for the specified member in the specified project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} memberId Unique identifier of the member
+   * @param {string} scope Scope to update the member to
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Message>}
    */
   async update(
     projectID: string,
