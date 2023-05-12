@@ -12,14 +12,15 @@ export class LiveTranscription extends EventEmitter {
     credentials: string,
     apiUrl: string,
     requireSSL: boolean,
-    options?: LiveTranscriptionOptions
+    options?: LiveTranscriptionOptions,
+    endpoint = "v1/listen"
   ) {
     super(undefined);
 
     const protocol = requireSSL ? "wss" : "ws";
 
     this._socket = new WebSocket(
-      `${protocol}://${apiUrl}/v1/listen?${querystring.stringify(options)}`,
+      `${protocol}://${apiUrl}/${endpoint}?${querystring.stringify(options)}`,
       {
         headers: {
           Authorization: `token ${credentials}`,

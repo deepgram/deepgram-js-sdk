@@ -8,35 +8,45 @@ export class Billing {
     private _request: RequestFunction
   ) {}
 
-  private apiPath = "/v1/projects";
-
   /**
    * Retrieves list of balance info of the specified project.
-   * @param projectId Unique identifier of the project
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<BalanceList>}
    */
-  async listBalances(projectId: string): Promise<BalanceList> {
+  async listBalances(
+    projectId: string,
+    endpoint = "v1/projects"
+  ): Promise<BalanceList> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/balances`
+      `/${endpoint}/${projectId}/balances`
     );
   }
 
   /**
    * Retrieves balance info of a specified balance_id in the specified project.
-   * @param projectId Unique identifier of the project
-   * @param balanceId Unique identifier of the balance
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} balanceId Unique identifier of the balance
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Balance>}
    */
-
-  async getBalance(projectId: string, balanceId: string): Promise<Balance> {
+  async getBalance(
+    projectId: string,
+    balanceId: string,
+    endpoint = "v1/projects"
+  ): Promise<Balance> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/balances/${balanceId}`
+      `/${endpoint}/${projectId}/balances/${balanceId}`
     );
   }
 }

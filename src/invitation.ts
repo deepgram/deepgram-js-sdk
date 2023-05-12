@@ -13,33 +13,45 @@ export class Invitation {
     private _request: RequestFunction
   ) {}
 
-  private apiPath = "/v1/projects";
-
   /**
    * Lists all the current invites of a specified project.
-   * @param projectId Unique identifier of the project
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<InvitationList>}
    */
-  async list(projectId: string): Promise<InvitationList> {
+  async list(
+    projectId: string,
+    endpoint = "v1/projects"
+  ): Promise<InvitationList> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/invites`
+      `/${endpoint}/${projectId}/invites`
     );
   }
 
   /**
    * Sends an invitation to join the specified project.
-   * @param projectId Unique identifier of the project
+   * @param {string} projectId Unique identifier of the project
+   * @param {InvitationOptions} options Used to define the email and scope of the invitee
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Message>}
    */
-  async send(projectId: string, options: InvitationOptions): Promise<Message> {
+  async send(
+    projectId: string,
+    options: InvitationOptions,
+    endpoint = "v1/projects"
+  ): Promise<Message> {
     return this._request(
       "POST",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/invites`,
+      `/${endpoint}/${projectId}/invites`,
       JSON.stringify({
         email: options.email,
         scope: options.scope,
@@ -49,31 +61,41 @@ export class Invitation {
 
   /**
    * Removes the authenticated account from the specified project.
-   * @param projectId Unique identifier of the project
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Message>}
    */
-  async leave(projectId: string): Promise<Message> {
+  async leave(projectId: string, endpoint = "v1/projects"): Promise<Message> {
     return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/leave`
+      `/${endpoint}/${projectId}/leave`
     );
   }
 
   /**
    * Removes the specified email from the invitations on the specified project.
-   * @param projectId Unique identifier of the project
-   * @param email email address of the invitee
    * NOTE: This will return successful even if the email does not have an invite on the project.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} email Email of the invite to delete
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Message>}
    */
-  async delete(projectId: string, email: string): Promise<Message> {
+  async delete(
+    projectId: string,
+    email: string,
+    endpoint = "v1/projects"
+  ): Promise<Message> {
     return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/invites/${email}`
+      `/${endpoint}/${projectId}/invites/${email}`
     );
   }
 }
