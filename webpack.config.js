@@ -1,22 +1,8 @@
 const path = require("path");
 
-const clientConfig = {
-  name: "client",
-  target: "web",
-  entry: "./bundle/browser/index.js",
-  output: {
-    path: path.resolve(__dirname, "dist/browser"),
-    filename: "index.js",
-    library: {
-      type: "module",
-    },
-  },
-  experiments: {
-    outputModule: true,
-  },
-};
 
-const serverConfig = {
+
+module.exports = {
   name: "server",
   target: "node",
   entry: "./bundle/index.js",
@@ -30,4 +16,4 @@ const serverConfig = {
   },
 };
 
-module.exports = [serverConfig, clientConfig];
+
