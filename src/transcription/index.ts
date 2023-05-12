@@ -16,33 +16,45 @@ export class Transcriber {
   ) {}
 
   /**
-   * Transcribes prerecorded audio from a file or buffer
-   * @param source Url or Buffer of file to transcribe
-   * @param options Options to modify transcriptions
+   * Transcribes prerecorded audio from a file or buffer.
+   * @param {TranscriptionSource} source Source of audio to transcribe
+   * @param {PrerecordedTranscriptionOptions} options Options used to toggle transcription features
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<PrerecordedTranscriptionResponse | ErrorResponse>}
    */
   async preRecorded(
     source: TranscriptionSource,
-    options?: PrerecordedTranscriptionOptions
+    options?: PrerecordedTranscriptionOptions,
+    endpoint?: string
   ): Promise<PrerecordedTranscriptionResponse | ErrorResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
       this._requireSSL,
       source,
-      options
+      options,
+      endpoint
     );
   }
 
   /**
    * Opens a websocket to Deepgram's API for live transcriptions
-   * @param options Options to modify transcriptions
+   * @param {LiveTranscriptionOptions} options Options used to toggle transcription features
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {LiveTranscription | ErrorResponse}
    */
-  live(options?: LiveTranscriptionOptions): LiveTranscription | ErrorResponse {
+  live(
+    options?: LiveTranscriptionOptions,
+    endpoint?: string
+  ): LiveTranscription | ErrorResponse {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",
       this._requireSSL,
-      options
+      options,
+      endpoint
     );
   }
 }

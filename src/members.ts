@@ -8,37 +8,45 @@ export class Members {
     private _request: RequestFunction
   ) {}
 
-  private apiPath = "/v1/projects";
-
   /**
    * Retrieves account objects for all of the accounts in the specified project.
-   * @param projectId Unique identifier of the project
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<MemberList | ErrorResponse>}
    */
-  async listMembers(projectId: string): Promise<MemberList | ErrorResponse> {
+  async listMembers(
+    projectId: string,
+    endpoint = "v1/projects"
+  ): Promise<MemberList | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/members`
+      `/${endpoint}/${projectId}/members`
     );
   }
 
   /**
    * Retrieves account objects for all of the accounts in the specified project.
-   * @param projectId Unique identifier of the project
-   * @param memberId Unique identifier of the member
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} memberId Unique identifier of the member
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Message | ErrorResponse>}
    */
   async removeMember(
     projectId: string,
-    memberId: string
+    memberId: string,
+    endpoint = "v1/projects"
   ): Promise<Message | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/members/${memberId}`
+      `/${endpoint}/${projectId}/members/${memberId}`
     );
   }
 }

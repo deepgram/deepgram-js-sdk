@@ -15,19 +15,23 @@ export class Keys {
     private _request: RequestFunction
   ) {}
 
-  private apiPath = "/v1/projects";
-
   /**
-   * Retrieves all keys associated with the provided projectId
-   * @param projectId Unique identifier of the project containing API keys
+   * Retrieves all keys associated with the provided project_id.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<KeyResponse>}
    */
-  async list(projectId: string): Promise<KeyResponse | ErrorResponse> {
+  async list(
+    projectId: string,
+    endpoint = "v1/projects"
+  ): Promise<KeyResponse | ErrorResponse> {
     const response = await this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/keys`
+      `/${endpoint}/${projectId}/keys`
     );
 
     const output = response.api_keys.map((apiKey: KeyResponseObj) => {
@@ -41,32 +45,43 @@ export class Keys {
   }
 
   /**
-   * Retrieves a specific key associated with the provided projectId
-   * @param projectId Unique identifier of the project containing API keys
-   * @param keyId Unique identifier for the key to retrieve
+   * Retrieves a specific key associated with the provided project_id.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} keyId Unique identifier of the key
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Key>}
    */
-  async get(projectId: string, keyId: string): Promise<Key | ErrorResponse> {
+  async get(
+    projectId: string,
+    keyId: string,
+    endpoint = "v1/projects"
+  ): Promise<Key | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/keys/${keyId}`
+      `/${endpoint}/${projectId}/keys/${keyId}`
     );
   }
 
   /**
-   * Creates an API key with the provided scopes
-   * @param projectId Unique identifier of the project to create an API key under
-   * @param comment Comment to describe the key
-   * @param scopes Permission scopes associated with the API key
-   * @param options Optional options used when creating API keys
+   * Creates an API key with the provided scopes.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} comment Comment to describe the key
+   * @param {Array<string>} scopes Permission scopes associated with the API key
+   * @param {CreateKeyOptions} options Options used when creating API keys
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<Key>}
    */
   async create(
     projectId: string,
     comment: string,
     scopes: Array<string>,
-    options?: CreateKeyOptions
+    options?: CreateKeyOptions,
+    endpoint = "v1/projects"
   ): Promise<Key | ErrorResponse> {
     /** Throw an error if the user provided both expirationDate and timeToLive */
     if (
@@ -84,7 +99,7 @@ export class Keys {
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/keys`,
+      `/${endpoint}/${projectId}/keys`,
       JSON.stringify({
         comment,
         scopes,
@@ -99,20 +114,24 @@ export class Keys {
   }
 
   /**
-   * Deletes an API key
-   * @param projectId Unique identifier of the project to create an API key under
-   * @param keyId Unique identifier for the key to delete
+   * Deletes an API key.
+   * @param {string} projectId Unique identifier of the project
+   * @param {string} keyId Unique identifier of the key
+   * @param {string} endpoint Custom API endpoint
+   *
+   * @returns {Promise<void>}
    */
   async delete(
     projectId: string,
-    keyId: string
+    keyId: string,
+    endpoint = "v1/projects"
   ): Promise<void | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `${this.apiPath}/${projectId}/keys/${keyId}`
+      `/${endpoint}/${projectId}/keys/${keyId}`
     );
   }
 }
