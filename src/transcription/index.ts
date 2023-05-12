@@ -3,6 +3,7 @@ import {
   PrerecordedTranscriptionOptions,
   PrerecordedTranscriptionResponse,
   TranscriptionSource,
+  ErrorResponse
 } from "../types";
 import { LiveTranscription } from "./liveTranscription";
 import { preRecordedTranscription } from "./preRecordedTranscription";
@@ -20,13 +21,13 @@ export class Transcriber {
    * @param {PrerecordedTranscriptionOptions} options Options used to toggle transcription features
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<PrerecordedTranscriptionResponse>}
+   * @returns {Promise<PrerecordedTranscriptionResponse | ErrorResponse>}
    */
   async preRecorded(
     source: TranscriptionSource,
     options?: PrerecordedTranscriptionOptions,
     endpoint?: string
-  ): Promise<PrerecordedTranscriptionResponse> {
+  ): Promise<PrerecordedTranscriptionResponse | ErrorResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",
@@ -42,12 +43,12 @@ export class Transcriber {
    * @param {LiveTranscriptionOptions} options Options used to toggle transcription features
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {LiveTranscription}
+   * @returns {LiveTranscription | ErrorResponse}
    */
   live(
     options?: LiveTranscriptionOptions,
     endpoint?: string
-  ): LiveTranscription {
+  ): LiveTranscription | ErrorResponse {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",

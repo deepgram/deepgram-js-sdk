@@ -4,6 +4,7 @@ import {
   ProjectResponse,
   ProjectPatchRequest,
   RequestFunction,
+  ErrorResponse
 } from "./types";
 
 export class Projects {
@@ -18,9 +19,12 @@ export class Projects {
    * Returns all projects accessible by the API key.
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<ProjectResponse>}
+   * @returns {Promise<ProjectResponse | ErrorResponse>}
    */
-  async list(endpoint = "v1/projects"): Promise<ProjectResponse> {
+
+  async list(
+    endpoint = "v1/projects"
+  ): Promise<ProjectResponse | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -35,9 +39,12 @@ export class Projects {
    * @param {string} projectId Unique identifier of the project
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<Project>}
+   * @returns {Promise<Project | ErrorResponse>}
    */
-  async get(projectId: string, endpoint = "v1/projects"): Promise<Project> {
+  async get(
+    projectId: string,
+    endpoint = "v1/projects"
+  ): Promise<Project | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -53,13 +60,14 @@ export class Projects {
    * @param {ProjectPatchRequest} payload Details to change as an object
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<ProjectPatchResponse>}
+   * @returns {Promise<ProjectPatchResponse | ErrorResponse>}
    */
   async update(
     project: Project,
+
     payload: ProjectPatchRequest,
     endpoint = "v1/projects"
-  ): Promise<ProjectPatchResponse> {
+  ): Promise<ProjectPatchResponse | ErrorResponse> {
     return this._request(
       "PATCH",
       this._credentials,
@@ -75,9 +83,12 @@ export class Projects {
    * @param {string} projectId Unique identifier of the project
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<void>}
+   * @returns {Promise<void | ErrorResponse>}
    */
-  async delete(projectId: string, endpoint = "v1/projects"): Promise<void> {
+  async delete(
+    projectId: string,
+    endpoint = "v1/projects"
+  ): Promise<void | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,

@@ -8,6 +8,7 @@ import {
   UsageRequestList,
   UsageRequestListOptions,
   UsageResponse,
+  ErrorResponse
 } from "./types";
 
 export class Usage {
@@ -24,13 +25,13 @@ export class Usage {
    * @param {UsageRequestListOptions} options Additional filter options
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<UsageRequestList>}
+   * @returns {Promise<UsageRequestList | ErrorResponse>}
    */
   async listRequests(
     projectId: string,
     options?: UsageRequestListOptions,
     endpoint = "v1/projects"
-  ): Promise<UsageRequestList> {
+  ): Promise<UsageRequestList | ErrorResponse> {
     const requestOptions = { ...{}, ...options };
     return await this._request(
       "GET",
@@ -71,13 +72,13 @@ export class Usage {
    * @param {UsageOptions} options Options to filter usage
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<UsageResponse>}
+   * @returns {Promise<UsageResponse | ErrorResponse>}
    */
   async getUsage(
     projectId: string,
     options?: UsageOptions,
     endpoint = "v1/projects"
-  ): Promise<UsageResponse> {
+  ): Promise<UsageResponse | ErrorResponse> {
     const requestOptions = { ...{}, ...options };
     return await this._request(
       "GET",
@@ -94,13 +95,13 @@ export class Usage {
    * @param {UsageFieldOptions} options Options to filter usage
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<UsageField>}
+   * @returns {Promise<UsageField | ErrorResponse>}
    */
   async getFields(
     projectId: string,
     options?: UsageFieldOptions,
     endpoint = "v1/projects"
-  ): Promise<UsageField> {
+  ): Promise<UsageField | ErrorResponse> {
     const requestOptions = { ...{}, ...options };
     return await this._request(
       "GET",

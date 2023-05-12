@@ -1,4 +1,4 @@
-import { MemberList, Message, RequestFunction } from "./types";
+import { MemberList, Message, RequestFunction, ErrorResponse } from "./types";
 
 export class Members {
   constructor(
@@ -13,12 +13,12 @@ export class Members {
    * @param {string} projectId Unique identifier of the project
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<MemberList>}
+   * @returns {Promise<MemberList | ErrorResponse>}
    */
   async listMembers(
     projectId: string,
     endpoint = "v1/projects"
-  ): Promise<MemberList> {
+  ): Promise<MemberList | ErrorResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -34,13 +34,13 @@ export class Members {
    * @param {string} memberId Unique identifier of the member
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<Message>}
+   * @returns {Promise<Message | ErrorResponse>}
    */
   async removeMember(
     projectId: string,
     memberId: string,
     endpoint = "v1/projects"
-  ): Promise<Message> {
+  ): Promise<Message | ErrorResponse> {
     return this._request(
       "DELETE",
       this._credentials,
