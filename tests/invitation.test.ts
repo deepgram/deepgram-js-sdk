@@ -1,95 +1,125 @@
-import chai, { assert } from "chai";
-import Sinon from "sinon";
-import { mockInvalidCredentials, mockInvites } from "./mockResults";
+import chai from "chai";
+import { Deepgram } from "../src";
+import {
+  mockEmail,
+  mockScope,
+  mockMessageResponse,
+  mockProjectId,
+  mockApiDomain,
+  mockApiKey,
+  mockInvites,
+} from "./mockResults";
 import nock from "nock";
-import https from "https";
-
-import { Invitation } from "../src/invitation";
 
 chai.should();
 
-const fakeCredentials = "testKey:testSecret";
-const fakeUrl = "fake.url";
-const fakeProjectId = "27e92bb2-8edc-4fdf-9a16-b56c78d39c5b";
-
 describe("Invitation tests", () => {
-  const sandbox = Sinon.createSandbox();
+  let deepgram: Deepgram = new Deepgram(mockApiKey, mockApiDomain);
 
-  let requestStub: Sinon.SinonStub;
-  let invitation: Invitation;
-
-  beforeEach(() => {
-    requestStub = Sinon.stub(https, "request");
-    invitation = new Invitation(fakeCredentials, fakeUrl, true, requestStub);
+  before(() => {
+    if (!nock.isActive()) nock.activate();
+    nock.disableNetConnect();
   });
 
   afterEach(() => {
-    requestStub.restore();
-    nock.restore();
-    sandbox.restore();
+    if (!nock.isDone()) {
+      throw new Error(
+        `Not all nock interceptors were used: ${JSON.stringify(
+          nock.pendingMocks()
+        )}`
+      );
+    }
+
+    nock.cleanAll();
   });
 
-  it("Errors are thrown", () => {
-    const expectedError = `DG: ${JSON.stringify(mockInvalidCredentials)}`;
-
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/invites`)
-      .reply(200, mockInvalidCredentials);
-
-    invitation.list(fakeProjectId).catch((err) => {
-      assert.equal(err, expectedError);
-    });
+  after(() => {
+    nock.restore();
   });
 
   it("List resolves", () => {
-    nock(`https://${fakeUrl}`)
-      .get(`/v1/projects/${fakeProjectId}/invites`)
+    nock(`https://${mockApiDomain}`)
+      .get(`/v1/projects/${mockProjectId}/invites`)
       .reply(200, mockInvites);
 
-    invitation.list(fakeProjectId).then((response) => {
+    deepgram.invitation.list(mockProjectId).then((response) => {
       response.should.deep.eq(mockInvites);
-      requestStub.calledOnce.should.eq(true);
     });
   });
 
   it("Send resolves", () => {
-    const resMessage = "Invite sent!";
-    const inviteOptions = mockInvites.invites[0];
+    nock(`https://${mockApiDomain}`)
+      .post(`/v1/projects/${mockProjectId}/invites`)
+      .reply(200, mockMessageResponse);
 
-    nock(`https://${fakeUrl}`)
-      .post(`/v1/projects/${fakeProjectId}/invites`)
-      .reply(200, resMessage);
-
-    invitation.send(fakeProjectId, inviteOptions).then((response) => {
-      response.should.eq(resMessage);
-      requestStub.calledOnce.should.eq(true);
-    });
+    deepgram.invitation
+      .send(mockProjectId, { email: mockEmail, scope: mockScope })
+      .then((response) => {
+        response.should.eq(mockMessageResponse);
+      });
   });
 
   it("Leave resolves", () => {
-    const resMessage = "Account removed";
+    nock(`https://${mockApiDomain}`)
+      .delete(`/v1/projects/${mockProjectId}/leave`)
+      .reply(200, mockMessageResponse);
 
-    nock(`https://${fakeUrl}`)
-      .delete(`/v1/projects/${fakeProjectId}/leave`)
-      .reply(200, resMessage);
-
-    invitation.leave(fakeProjectId).then((response) => {
-      response.should.eq(resMessage);
-      requestStub.calledOnce.should.eq(true);
+    deepgram.invitation.leave(mockProjectId).then((response) => {
+      response.should.eq(mockMessageResponse);
     });
   });
 
   it("Delete resolves", () => {
-    const resMessage = "Email removed";
-    const mockEmail = "uninvited@hotmail.com";
+    nock(`https://${mockApiDomain}`)
+      .delete(`/v1/projects/${mockProjectId}/invites/${mockEmail}`)
+      .reply(200, mockMessageResponse);
 
-    nock(`https;//${fakeUrl}`)
-      .delete(`/v1/projects/${fakeProjectId}/invites/${mockEmail}`)
-      .reply(200, resMessage);
-
-    invitation.delete(fakeProjectId, mockEmail).then((response) => {
-      response.should.eq(resMessage);
-      requestStub.calledOnce.should.eq(true);
+    deepgram.invitation.delete(mockProjectId, mockEmail).then((response) => {
+      response.should.eq(mockMessageResponse);
     });
+  });
+
+  it("Custom endpoint: List resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .get(`/test/${mockProjectId}/invites`)
+      .reply(200, mockInvites);
+
+    deepgram.invitation.list(mockProjectId, "test").then((response) => {
+      response.should.deep.eq(mockInvites);
+    });
+  });
+
+  it("Custom endpoint: Send resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .post(`/test/${mockProjectId}/invites`)
+      .reply(200, mockMessageResponse);
+
+    deepgram.invitation
+      .send(mockProjectId, { email: mockEmail, scope: mockScope }, "test")
+      .then((response) => {
+        response.should.eq(mockMessageResponse);
+      });
+  });
+
+  it("Custom endpoint: Leave resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .delete(`/test/${mockProjectId}/leave`)
+      .reply(200, mockMessageResponse);
+
+    deepgram.invitation.leave(mockProjectId, "test").then((response) => {
+      response.should.eq(mockMessageResponse);
+    });
+  });
+
+  it("Custom endpoint: Delete resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .delete(`/test/${mockProjectId}/invites/${mockEmail}`)
+      .reply(200, mockMessageResponse);
+
+    deepgram.invitation
+      .delete(mockProjectId, mockEmail, "test")
+      .then((response) => {
+        response.should.eq(mockMessageResponse);
+      });
   });
 });

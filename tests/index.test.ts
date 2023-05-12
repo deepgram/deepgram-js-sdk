@@ -1,5 +1,4 @@
 import chai, { expect } from "chai";
-
 import { Deepgram } from "../src";
 
 chai.should();
