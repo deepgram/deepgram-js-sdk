@@ -68,31 +68,7 @@ const response = await deepgram.transcription.preRecorded(streamSource, {
 
 ### Transcribe Audio in Real-Time
 
-```js
-navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-  const mediaRecorder = new MediaRecorder(stream, {
-    mimeType: 'audio/webm',
-  });
-  const deepgramSocket = deepgram.transcription.live({ punctuate: true });
-
-  deepgramSocket.addEventListener('open', () => {
-    mediaRecorder.addEventListener('dataavailable', async (event) => {
-      if (event.data.size > 0 && deepgramSocket.readyState == 1) {
-        deepgramSocket.send(event.data)
-      }
-    })
-    mediaRecorder.start(1000)
-  });
-
-  deepgramSocket.addEventListener("message", (message) => {
-    const received = JSON.parse(message.data);
-    const transcript = received.channel.alternatives[0].transcript;
-    if (transcript && received.is_final) {
-      console.log(transcript);
-    }
-  });
-});
-```
+See an example real time project at https://github.com/deepgram-devs/node-live-example, or visit this [Getting Started guide](https://developers.deepgram.com/documentation/getting-started/streaming/)
 
 ## Samples
 
