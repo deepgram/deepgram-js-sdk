@@ -29,7 +29,7 @@ export class Members {
   }
 
   /**
-   * Retrieves account objects for all of the accounts in the specified project.
+   * Removes member account for specified member_id.
    * @param {string} projectId Unique identifier of the project
    * @param {string} memberId Unique identifier of the member
    * @param {string} endpoint Custom API endpoint
