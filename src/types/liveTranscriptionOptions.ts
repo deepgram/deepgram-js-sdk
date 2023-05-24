@@ -249,4 +249,9 @@ export type LiveTranscriptionOptions = {
   tag?: Array<string>;
 
   ner?: boolean;
+
+  /**
+   * allow arbitrary unknown key/value pairs to be passed through the SDK to the API
+   */
+  [key: string]: unknown;
 };
