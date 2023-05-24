@@ -4,7 +4,8 @@ import {
   ProjectResponse,
   ProjectPatchRequest,
   RequestFunction,
-  ErrorResponse
+  ErrorResponse,
+  Message
 } from "./types";
 
 export class Projects {
@@ -83,7 +84,7 @@ export class Projects {
    * @param {string} projectId Unique identifier of the project
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<void | ErrorResponse>}
+   * @returns {Promise<Message | ErrorResponse>}
    */
   async delete(
     projectId: string,
