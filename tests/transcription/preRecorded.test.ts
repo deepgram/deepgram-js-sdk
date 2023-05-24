@@ -140,7 +140,7 @@ describe("Pre-recorded transcription tests", () => {
       });
   });
 
-  it("Transcribe URL source with abitrary options", () => {
+  it("Transcribe URL source with arbitrary options", () => {
     const mockOptions = { ...{ blah: "test" }, ...mockPrerecordedOptions };
 
     nock(`https://${mockApiDomain}`)
