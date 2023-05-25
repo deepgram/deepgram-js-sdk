@@ -47,4 +47,3 @@ export * from "./usageResponseDetail";
 export * from "./utterance";
 export * from "./wordBase";
 export * from "./error";
-export * from "../transcription/liveTranscription";

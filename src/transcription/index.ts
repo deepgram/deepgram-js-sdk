@@ -3,10 +3,12 @@ import {
   PrerecordedTranscriptionOptions,
   PrerecordedTranscriptionResponse,
   TranscriptionSource,
-  ErrorResponse
+  ErrorResponse,
 } from "../types";
 import { LiveTranscription } from "./liveTranscription";
 import { preRecordedTranscription } from "./preRecordedTranscription";
+
+export { LiveTranscriptionOptions, PrerecordedTranscriptionOptions };
 
 export class Transcriber {
   constructor(
