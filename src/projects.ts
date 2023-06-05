@@ -5,7 +5,7 @@ import {
   ProjectPatchRequest,
   RequestFunction,
   ErrorResponse,
-  Message
+  Message,
 } from "./types";
 
 export class Projects {
@@ -64,17 +64,23 @@ export class Projects {
    * @returns {Promise<ProjectPatchResponse | ErrorResponse>}
    */
   async update(
-    project: Project,
-
+    project: string | Project,
     payload: ProjectPatchRequest,
     endpoint = "v1/projects"
   ): Promise<ProjectPatchResponse | ErrorResponse> {
+    const projectObj = project as Project;
+    let projectId = project as string;
+
+    if (projectObj.project_id) {
+      projectId = projectObj.project_id;
+    }
+
     return this._request(
       "PATCH",
       this._credentials,
       this._apiUrl,
       this._requireSSL,
-      `/${endpoint}/${project.project_id}`,
+      `/${endpoint}/${projectId}`,
       JSON.stringify(payload)
     );
   }
