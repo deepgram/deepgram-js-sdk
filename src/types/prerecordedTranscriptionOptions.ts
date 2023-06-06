@@ -148,8 +148,8 @@ export type PrerecordedTranscriptionOptions = {
   keywords?: Array<string>;
 
   /**
-   * Support for out-of-vocabulary (OOV) keyword boosting when processing streaming audio is 
-   * currently in beta; to fall back to previous keyword behavior append the query parameter 
+   * Support for out-of-vocabulary (OOV) keyword boosting when processing streaming audio is
+   * currently in beta; to fall back to previous keyword behavior append the query parameter
    * keyword_boost=legacy to your API request.
    */
   keyword_boost?: string;
@@ -279,4 +279,9 @@ export type PrerecordedTranscriptionOptions = {
   tag?: Array<string>;
 
   ner?: boolean;
+
+  /**
+   * allow arbitrary unknown key/value pairs to be passed through the SDK to the API
+   */
+  [key: string]: unknown;
 };

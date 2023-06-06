@@ -39,9 +39,11 @@ const { Deepgram } = require("@deepgram/sdk");
 const deepgram = new Deepgram(DEEPGRAM_API_KEY);
 ```
 
-## Examples
+# Examples
 
-### Transcribe an Existing File
+## Transcription
+
+### Pre-recorded
 
 #### Remote Files
 
@@ -69,6 +71,353 @@ const response = await deepgram.transcription.preRecorded(streamSource, {
 ### Transcribe Audio in Real-Time
 
 See an example real time project at https://github.com/deepgram-devs/node-live-example, or visit this [Getting Started guide](https://developers.deepgram.com/documentation/getting-started/streaming/)
+
+### Usage
+
+#### listRequests
+Retrieves all requests associated with the provided project_id based on the provided options.
+```js
+deepgram.usage
+  .listRequests("84b227ad-dfac-4096-82f6-f7397006050b", {
+    start: "2022-07-01",
+    end: "2022-07-28",
+  })
+  .then((response) => {
+    console.log("Usage: ", response);
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+#### getRequest
+Retrieves a specific request associated with the provided project_id.
+```js
+deepgram.usage
+  .getRequest(
+    // projectId
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+    // requestId
+    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
+  )
+  .then((response) => {
+    fs.writeFileSync(
+      `usage.json`,
+      JSON.stringify(response),
+      () => `Wrote json`
+    );
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+#### getUsage
+Retrieves usage associated with the provided project_id based on the provided options.
+```js 
+deepgram.usage
+  .getUsage("84b227ad-dfac-4096-82f6-f7397006050b", {
+    punctuate: true,
+    diarize: true
+  })
+  .then((response) => {
+    console.log("Usage: ", response);
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+### getFields
+Retrieves features used by the provided project_id based on the provided options.
+```js
+deepgram.usage
+  .getFields("84b227ad-dfac-4096-82f6-f7397006050b", {
+    start: "2022-07-01",
+    end: "2022-07-28",
+  })
+  .then((response) => {
+    console.log("Usage: ", response);
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+### Scopes
+#### get
+Retrieves scopes of the specified member in the specified project.
+```js
+deepgram.scopes
+  .get(
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
+  )
+  .then((response) => {
+    fs.writeFileSync(
+      `scope.json`,
+      JSON.stringify(response),
+      () => `Wrote json`
+    );
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+#### update
+Updates the scope for the specified member in the specified project.
+```js
+deepgram.scopes
+  .update(
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+    "f12cc224-282b-4de4-90f1-651d5fdf04f1",
+    "member:read"
+  )
+  .then((response) => {
+    console.log({response})
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+### Projects
+#### list
+Returns all projects accessible by the API key.
+```js
+deepgram.projects
+  .list()
+  .then((response) => {
+    console.log("list", response);
+  })
+  .catch((err) => {
+    console.log("err", err);
+  });
+```
+
+#### get
+Retrieves a specific project based on the provided project_id.
+```js
+deepgram.projects
+  .get("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((response) => {
+    console.log("list", response);
+  })
+  .catch((err) => {
+    console.log("err", err);
+  });
+```
+
+#### update
+Update a project.
+```js
+deepgram.projects
+  .update(
+    { project_id: "84b227ad-dfac-4096-82f6-f7397006050b" },
+    {
+      name: "A new name",
+    }
+  )
+  .then((response) => {
+    console.log("list", response);
+  })
+  .catch((err) => {
+    console.log("err", err);
+  });
+```
+
+#### delete
+Delete a project.
+```js
+deepgram.projects
+  .delete("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((response) => {
+    console.log("delete", response);
+  })
+  .catch((err) => {
+    console.log("err", err);
+  });
+```
+
+### Members
+
+#### listMembers
+Retrieves account objects for all of the accounts in the specified project.
+```js
+deepgram.members
+  .listMembers("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((response) => {
+    console.log("Members: ", response);
+  })
+  .catch((err) => {
+    console.log("Members ERROR: ", err);
+  });
+```
+
+#### deleteMembers
+Removes member account for specified member_id.
+```js
+ deepgram.members
+  .removeMember(
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
+  )
+  .then((response) => {
+    console.log("Member DELETED: ", response);
+  })
+  .catch((err) => {
+    console.log("Member DELETED ERROR: ", err);
+  });
+```
+
+### Keys
+#### list
+Retrieves all keys associated with the provided project_id.
+```js
+deepgram.keys
+  .list("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((res) => {
+    console.log({ res });
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+#### get
+Retrieves a specific key associated with the provided project_id.
+```js
+deepgram.keys
+  .get(
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
+    )
+  .then((res) => {
+    console.log({ res });
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+#### create
+Creates an API key with the provided scopes.
+```js
+deepgram.keys
+  .create(
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+     "Temporary key",
+    ["usage"],
+    {
+      timeToLive: 5000,
+    }
+  )
+  .then((res) => {
+    console.log({ res });
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+#### delete
+Deletes a specific key associated with the provided project_id.
+```js
+deepgram.keys
+  .delete(
+    "84b227ad-dfac-4096-82f6-f7397006050b",
+    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
+  )
+  .then((response) => {
+    console.log("KEY DELTED: ", response);
+  })
+  .catch((err) => {
+    console.log("KEY DELETED ERROR: ", err);
+  });
+```
+
+### Invitations
+#### list
+Retrieves all invitations associated with the provided project_id.
+```js
+deepgram.invitations
+  .list("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((res) => {
+    console.log({ res });
+  })
+  .catch((err) => {
+    console.log("ERROR: ", err);
+  });
+```
+
+#### send
+Sends an invitation to the provided email address.
+```js
+deepgram.invitation
+  .send("84b227ad-dfac-4096-82f6-f7397006050b", {
+    email: "user@email.com",
+    scope: "member",
+  })
+  .then((response) => {
+    console.log("Invitation sent: ", response);
+  })
+  .catch((err) => {
+    console.log("Invitation ERROR: ", err);
+  });
+```
+
+#### leave
+Removes the authenticated user from the project.
+```js
+deepgram.invitation
+  .leave("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((response) => {
+    console.log({response});
+  })
+  .catch((err) => {
+    console.log("Invitation leave ERROR: ", err);
+  });
+```
+
+#### delete
+Removes the specified invitation from the project.
+```js
+deepgram.invitation
+  .delete("84b227ad-dfac-4096-82f6-f7397006050b", "user@email.com")
+  .then((response) => {
+    console.log({response});
+  })
+  .catch((err) => {
+    console.log("Invitation delete ERROR: ", err);
+  });
+```
+
+### Billing
+#### listBalances
+Retrieves the list of balance info for the specified project.
+```js
+deepgram.billing
+  .listBalances("84b227ad-dfac-4096-82f6-f7397006050b")
+  .then((response) => {
+    console.log({response});
+  })
+  .catch((err) => {
+    console.log("Billing listBalances ERROR: ", err);
+  });
+```
+
+#### getBalance
+Retrieves the balance info for the specified project and balance_id.
+```js
+deepgram.billing
+  .getBalance("84b227ad-dfac-4096-82f6-f7397006050b", "21b98377-657e-471a-b75e-299fb99ec2c3")
+  .then((response) => {
+    console.log({response});
+  })
+  .catch((err) => {
+    console.log("Billing getBalance ERROR: ", err);
+  });
+```
 
 ## Samples
 

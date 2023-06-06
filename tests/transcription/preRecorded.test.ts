@@ -139,4 +139,18 @@ describe("Pre-recorded transcription tests", () => {
         response.should.deep.eq(mockPrerecordedResponse);
       });
   });
+
+  it("Transcribe URL source with arbitrary options", () => {
+    const mockOptions = { ...{ blah: "test" }, ...mockPrerecordedOptions };
+
+    nock(`https://${mockApiDomain}`)
+      .post(`/v1/listen?${querystring.stringify(mockOptions)}`)
+      .reply(200, mockPrerecordedResponse);
+
+    deepgram.transcription
+      .preRecorded(mockUrlSource, mockOptions)
+      .then((response) => {
+        response.should.deep.eq(mockPrerecordedResponse);
+      });
+  });
 });
