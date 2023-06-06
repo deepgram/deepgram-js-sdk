@@ -14,6 +14,7 @@ import { _request } from "./httpRequest";
 export class Deepgram {
   private _apiUrl: string;
   private _apiKey: string;
+  private _port: number;
   private _requireSSL: boolean;
 
   keys: Keys;
@@ -25,10 +26,11 @@ export class Deepgram {
   billing: Billing;
   scopes: Scopes;
 
-  constructor(apiKey: string, apiUrl?: string, requireSSL?: boolean) {
+  constructor(apiKey: string, apiUrl?: string, port?: number, requireSSL?: boolean) {
     this._apiKey = apiKey;
-    this._apiUrl = apiUrl || DefaultOptions.apiUrl;
-    this._requireSSL = requireSSL || DefaultOptions.requireSSL;
+    this._apiUrl = apiUrl ?? DefaultOptions.apiUrl;
+    this._requireSSL = requireSSL ?? DefaultOptions.requireSSL;
+    this._port = port;
 
     /**
      * Ensures that the provided options were provided
