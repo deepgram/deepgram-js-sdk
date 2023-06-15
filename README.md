@@ -7,7 +7,7 @@ Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Start building w
 > This SDK only supports hosted usage of api.deepgram.com.
 ## Getting an API Key
 
-👋 To access the Deepgram API you will need a Deepgram API Key. [Get one for free!](https://console.deepgram.com/signup?jump=keys)
+🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
 ## Documentation
 
 Complete documentation of the Node.js SDK can be found at [Deepgram Docs](https://developers.deepgram.com/sdks-tools/sdks/node-sdk/).
