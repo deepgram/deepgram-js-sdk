@@ -2,20 +2,17 @@
 
 [![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
-Official Node.js SDK for [Deepgram](https://www.deepgram.com/)'s automated
-speech recognition APIs.
+Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Start building with our powerful transcription & speech understanding API.
 
 > This SDK only supports hosted usage of api.deepgram.com.
+## Getting an API Key
 
-To access the API you will need a Deepgram account. Sign up for free at
-[signup][signup].
-
+🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
 ## Documentation
 
-Full documentation of the Node.js SDK can be found on the
-[Deepgram Developer Portal](https://developers.deepgram.com/sdks-tools/sdks/node-sdk/).
+Complete documentation of the Node.js SDK can be found at [Deepgram Docs](https://developers.deepgram.com/docs/node-sdk).
 
-You can learn more about the full Deepgram API at [https://developers.deepgram.com](https://developers.deepgram.com).
+You can learn more about the Deepgram API at [developers.deepgram.com](https://developers.deepgram.com/docs).
 
 ## Installation
 
@@ -113,7 +110,7 @@ deepgram.usage
 
 #### getUsage
 Retrieves usage associated with the provided project_id based on the provided options.
-```js 
+```js
 deepgram.usage
   .getUsage("84b227ad-dfac-4096-82f6-f7397006050b", {
     punctuate: true,
@@ -466,12 +463,8 @@ To make sure our community is safe for all, be sure to review and agree to our
 We love to hear from you so if you have questions, comments or find a bug in the
 project, let us know! You can either:
 
-- [Open an issue](https://github.com/deepgram/node-sdk/issues/new) on this repository
-- Tweet at us! We're [@DeepgramAI on Twitter](https://twitter.com/DeepgramAI)
+- [Open an issue in this repository](https://github.com/deepgram/node-sdk/issues/new)
+- [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
+- [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
 
-## Further Reading
-
-Check out the Developer Documentation at [https://developers.deepgram.com/](https://developers.deepgram.com/)
-
-[signup]: https://console.deepgram.com/signup?utm_medium=github&utm_source=DEVREL&utm_content=node-sdk
 [license]: LICENSE.txt
