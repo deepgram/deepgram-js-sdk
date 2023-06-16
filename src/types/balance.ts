@@ -3,4 +3,6 @@ export type Balance = {
   amount: number;
   units: string;
   purchase: string;
+  err_code?: string;
+  err_msg?: string;
 };

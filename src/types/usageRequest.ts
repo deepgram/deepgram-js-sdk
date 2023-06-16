@@ -9,4 +9,6 @@ export type UsageRequest = {
   accessor: string;
   response?: UsageRequestDetail | UsageRequestMessage;
   callback?: UsageCallback;
+  err_code?: string;
+  err_msg?: string;
 };
