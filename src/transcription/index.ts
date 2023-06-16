@@ -21,13 +21,13 @@ export class Transcriber {
    * @param {PrerecordedTranscriptionOptions} options Options used to toggle transcription features
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<PrerecordedTranscriptionResponse | ErrorResponse>}
+   * @returns {Promise<PrerecordedTranscriptionResponse>}
    */
   async preRecorded(
     source: TranscriptionSource,
     options?: PrerecordedTranscriptionOptions,
     endpoint?: string
-  ): Promise<PrerecordedTranscriptionResponse | ErrorResponse> {
+  ): Promise<PrerecordedTranscriptionResponse> {
     return await preRecordedTranscription(
       this._credentials,
       this._apiUrl || "",

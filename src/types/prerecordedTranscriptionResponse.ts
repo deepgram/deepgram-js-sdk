@@ -4,6 +4,8 @@ import { Utterance } from "./utterance";
 import { secondsToTimestamp } from "../helpers";
 
 export class PrerecordedTranscriptionResponse {
+  err_code?: string;
+  err_msg?: string;
   request_id?: string;
   metadata?: Metadata;
   results?: {
