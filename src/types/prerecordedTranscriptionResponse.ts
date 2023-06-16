@@ -36,7 +36,7 @@ export class PrerecordedTranscriptionResponse {
     lines.push(`Channels: ${this.metadata?.channels}`);
     lines.push("");
 
-    const chunk = (arr: any[], length) => {
+    const chunk = (arr: any[], length: number) => {
       const res: any[] = [];
 
       for (let i = 0; i < arr.length; i += length) {
