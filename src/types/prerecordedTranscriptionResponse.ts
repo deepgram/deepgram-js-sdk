@@ -13,12 +13,11 @@ export class PrerecordedTranscriptionResponse {
   };
 
   /**
-   * Converts the transcription to the WebVTT format
-   * @remarks In order to translate the transcription to WebVTT, the utterances
-   * feature must be used.
-   * @returns A string with the transcription in the WebVTT format
+   * Returns a VTT formatted string based on the transcription response.
+   * @param {number} lineLength The maximum line length. Default: 8
+   * @returns {string}
    */
-  public toWebVTT(length = 14): string {
+  public toWebVTT(lineLength = 8): string {
     if (!this.results || !this.results.utterances) {
       throw new Error(
         "This function requires a transcript that was generated with the utterances feature."
@@ -65,7 +64,7 @@ export class PrerecordedTranscriptionResponse {
     };
 
     this.results.utterances.forEach((utterance) => {
-      lines.push(limitedUtterance(utterance, length));
+      lines.push(limitedUtterance(utterance, lineLength));
     });
 
     return lines.join("\n");
