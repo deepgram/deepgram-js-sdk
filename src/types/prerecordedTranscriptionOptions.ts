@@ -203,7 +203,7 @@ export type PrerecordedTranscriptionOptions = {
   /**
    * Indicates whether Deepgram should provide summarizations of sections of the provided audio.
    */
-  summarize?: boolean;
+  summarize?: boolean | string;
 
   /**
    * Corresponds to the language code Deepgram will translate the results into

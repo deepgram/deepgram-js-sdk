@@ -24,7 +24,7 @@ export type UsageOptions = {
   translate?: boolean;
   detect_entities?: boolean;
   detect_topics?: boolean;
-  summarize?: boolean;
+  summarize?: boolean | string;
   paragraphs?: boolean;
   utt_split?: boolean;
   analyze_sentiment?: boolean;

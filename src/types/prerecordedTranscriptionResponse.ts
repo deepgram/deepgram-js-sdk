@@ -13,6 +13,9 @@ export class PrerecordedTranscriptionResponse {
     channels: Array<Channel>;
     utterances?: Array<Utterance>;
   };
+  summary?: {
+    short: string;
+  };
 
   /**
    * Returns a VTT formatted string based on the transcription response.
