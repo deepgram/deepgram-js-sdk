@@ -1,3 +1,8 @@
-export function secondsToTimestamp(seconds: number): string {
-  return new Date(seconds * 1000).toISOString().substr(11, 12);
+import dayjs from "dayjs";
+
+export function secondsToTimestamp(
+  seconds: number,
+  format = "HH:mm:ss.SSS"
+): string {
+  return dayjs(seconds * 1000).format(format);
 }
