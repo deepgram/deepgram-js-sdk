@@ -18,7 +18,7 @@ export class PrerecordedTranscriptionResponse {
    * feature must be used.
    * @returns A string with the transcription in the WebVTT format
    */
-  public toWebVTT(length: number = 14): string {
+  public toWebVTT(length = 14): string {
     if (!this.results || !this.results.utterances) {
       throw new Error(
         "This function requires a transcript that was generated with the utterances feature."
