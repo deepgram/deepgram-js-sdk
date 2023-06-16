@@ -54,10 +54,15 @@ export class PrerecordedTranscriptionResponse {
         const firstWord = words[0];
         const lastWord = words[words.length - 1];
 
-        limitedLines.push(`${firstWord.start} --> ${lastWord.end}`);
         limitedLines.push(
-          ...words.map((word) => word.punctuated_word ?? word.word)
+          `${secondsToTimestamp(firstWord.start)} --> ${secondsToTimestamp(
+            lastWord.end
+          )}`
         );
+        limitedLines.push(
+          words.map((word) => word.punctuated_word ?? word.word).join(" ")
+        );
+        limitedLines.push("");
       });
 
       return limitedLines.join("\n");
