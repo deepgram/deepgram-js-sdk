@@ -27,8 +27,8 @@ export class Deepgram {
 
   constructor(apiKey: string, apiUrl?: string, requireSSL?: boolean) {
     this._apiKey = apiKey;
-    this._apiUrl = apiUrl || DefaultOptions.apiUrl;
-    this._requireSSL = requireSSL || DefaultOptions.requireSSL;
+    this._apiUrl = apiUrl ?? DefaultOptions.apiUrl;
+    this._requireSSL = requireSSL ?? DefaultOptions.requireSSL;
 
     /**
      * Ensures that the provided options were provided
