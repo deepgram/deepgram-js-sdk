@@ -57,7 +57,7 @@ export class Projects {
 
   /**
    * Update a project.
-   * @param {Project} project Project to update
+   * @param {string | Project} project Project to update
    * @param {ProjectPatchRequest} payload Details to change as an object
    * @param {string} endpoint Custom API endpoint
    *
