@@ -5,7 +5,6 @@ import {
   ProjectPatchRequest,
   RequestFunction,
   ErrorResponse,
-  Message,
 } from "./types";
 
 export class Projects {
