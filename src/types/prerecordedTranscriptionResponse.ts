@@ -2,6 +2,7 @@ import { Metadata } from "./metadata";
 import { Channel } from "./channel";
 import { Utterance } from "./utterance";
 import { secondsToTimestamp } from "../helpers";
+import { WordBase } from "./wordBase";
 
 export class PrerecordedTranscriptionResponse {
   request_id?: string;
@@ -12,54 +13,123 @@ export class PrerecordedTranscriptionResponse {
   };
 
   /**
-   * Converts the transcription to the WebVTT format
-   * @remarks In order to translate the transcription to WebVTT, the utterances
-   * feature must be used.
-   * @returns A string with the transcription in the WebVTT format
+   * Returns a VTT formatted string based on the transcription response.
+   * @param {number} lineLength The maximum line length. Default: 8
+   * @returns {string}
    */
-  public toWebVTT(): string {
+  public toWebVTT(lineLength = 8): string {
     if (!this.results || !this.results.utterances) {
       throw new Error(
         "This function requires a transcript that was generated with the utterances feature."
       );
     }
 
-    let webVTT = `WEBVTT\n\n`;
+    const lines: string[] = [];
+    lines.push("WEBVTT");
+    lines.push("");
+    lines.push("NOTE");
+    lines.push("Transcription provided by Deepgram");
+    lines.push(`Request Id: ${this.metadata?.request_id}`);
+    lines.push(`Created: ${this.metadata?.created}`);
+    lines.push(`Duration: ${this.metadata?.duration}`);
+    lines.push(`Channels: ${this.metadata?.channels}`);
+    lines.push("");
 
-    webVTT += `NOTE\nTranscription provided by Deepgram\nRequest Id: ${this.metadata?.request_id}\nCreated: ${this.metadata?.created}\nDuration: ${this.metadata?.duration}\nChannels: ${this.metadata?.channels}\n\n`;
+    const chunk = (arr: any[], length: number) => {
+      const res: any[] = [];
 
-    for (let i = 0; i < this.results.utterances.length; i++) {
-      const utterance = this.results.utterances[i];
-      const start = secondsToTimestamp(utterance.start);
-      const end = secondsToTimestamp(utterance.end);
-      webVTT += `${i + 1}\n${start} --> ${end}\n- ${utterance.transcript}\n\n`;
-    }
+      for (let i = 0; i < arr.length; i += length) {
+        const chunkarr = arr.slice(i, i + length);
+        res.push(chunkarr);
+      }
 
-    return webVTT;
+      return res;
+    };
+
+    const limitedUtterance = (utterance: Utterance, length: number): string => {
+      const wordChunks = chunk(utterance.words, length);
+      const limitedLines: string[] = [];
+
+      wordChunks.forEach((words: WordBase[]) => {
+        const firstWord = words[0];
+        const lastWord = words[words.length - 1];
+
+        limitedLines.push(
+          `${secondsToTimestamp(firstWord.start)} --> ${secondsToTimestamp(
+            lastWord.end
+          )}`
+        );
+        limitedLines.push(
+          words.map((word) => word.punctuated_word ?? word.word).join(" ")
+        );
+        limitedLines.push("");
+      });
+
+      return limitedLines.join("\n");
+    };
+
+    this.results.utterances.forEach((utterance) => {
+      lines.push(limitedUtterance(utterance, lineLength));
+    });
+
+    return lines.join("\n");
   }
 
   /**
-   * Converts the transcription to the SRT format
-   * @remarks In order to translate the transcription to SRT, the utterances
-   * feature must be used.
-   * @returns A string with the transcription in the SRT format
+   * Returns a SRT formatted string based on the transcription response.
+   * @param {number} lineLength The maximum line length. Default: 8
+   * @returns {string}
    */
-  public toSRT(): string {
+  public toSRT(lineLength = 8): string {
     if (!this.results || !this.results.utterances) {
       throw new Error(
         "This function requires a transcript that was generated with the utterances feature."
       );
     }
 
-    let srt = "";
+    const lines: string[] = [];
 
-    for (let i = 0; i < this.results.utterances.length; i++) {
-      const utterance = this.results.utterances[i];
-      const start = secondsToTimestamp(utterance.start).replace(".", ",");
-      const end = secondsToTimestamp(utterance.end).replace(".", ",");
-      srt += `${i + 1}\n${start} --> ${end}\n${utterance.transcript}\n\n`;
-    }
+    const chunk = (arr: any[], length: number) => {
+      const res: any[] = [];
 
-    return srt;
+      for (let i = 0; i < arr.length; i += length) {
+        const chunkarr = arr.slice(i, i + length);
+        res.push(chunkarr);
+      }
+
+      return res;
+    };
+
+    let entry = 1;
+
+    const limitedUtterance = (utterance: Utterance, length: number): string => {
+      const wordChunks = chunk(utterance.words, length);
+      const limitedLines: string[] = [];
+
+      wordChunks.forEach((words: WordBase[]) => {
+        const firstWord = words[0];
+        const lastWord = words[words.length - 1];
+
+        limitedLines.push((entry++).toString());
+        limitedLines.push(
+          `${secondsToTimestamp(
+            firstWord.start,
+            "HH:mm:ss,SSS"
+          )} --> ${secondsToTimestamp(lastWord.end, "HH:mm:ss,SSS")}`
+        );
+        limitedLines.push(
+          words.map((word) => word.punctuated_word ?? word.word).join(" ")
+        );
+        limitedLines.push("");
+      });
+
+      return limitedLines.join("\n");
+    };
+
+    this.results.utterances.forEach((utterance) => {
+      lines.push(limitedUtterance(utterance, lineLength));
+    });
+
+    return lines.join("\n");
   }
 }
