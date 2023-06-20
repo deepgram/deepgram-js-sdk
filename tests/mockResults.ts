@@ -259,6 +259,14 @@ export const mockMetaData: Metadata = {
   created: "string",
   duration: 1,
   channels: 1,
+  model_info: {
+    "b05e2505-2e49-4644-8e58-7878767ca60b": {
+      name: "fake",
+      version: "version",
+      arch: "arch",
+    },
+  },
+  models: ["string", "another string"],
 };
 
 export const mockHit: Hit = {
