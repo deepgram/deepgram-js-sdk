@@ -58,7 +58,7 @@ describe("Projects tests", () => {
     });
   });
 
-  it("Update project resolves", () => {
+  it("Update project w/ object resolves", () => {
     nock(`https://${mockApiDomain}`)
       .patch(`/v1/projects/${mockUuid}`)
       .reply(200, mockMessageResponse);
@@ -68,6 +68,16 @@ describe("Projects tests", () => {
       .then((response) => {
         response.should.deep.eq(mockMessageResponse);
       });
+  });
+
+  it("Update project w/ ID resolves", () => {
+    nock(`https://${mockApiDomain}`)
+      .patch(`/v1/projects/${mockUuid}`)
+      .reply(200, mockMessageResponse);
+
+    deepgram.projects.update(mockUuid, mockProjectUpdate).then((response) => {
+      response.should.deep.eq(mockMessageResponse);
+    });
   });
 
   it("Delete project resolves", () => {

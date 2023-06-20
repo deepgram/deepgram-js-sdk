@@ -12,7 +12,7 @@ import nock from "nock";
 
 chai.should();
 
-describe("Projects tests", () => {
+describe("Scopes tests", () => {
   let deepgram: Deepgram = new Deepgram(mockApiKey, mockApiDomain);
 
   before(() => {
