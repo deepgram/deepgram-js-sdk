@@ -266,7 +266,7 @@ export const mockMetaData: Metadata = {
       arch: "arch",
     },
   },
-  models: ["string", "another string"],
+  models: ["string", "another string", "yet another string"],
 };
 
 export const mockHit: Hit = {
