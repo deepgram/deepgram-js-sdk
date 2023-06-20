@@ -3,7 +3,7 @@ import {
   PrerecordedTranscriptionOptions,
   PrerecordedTranscriptionResponse,
   TranscriptionSource,
-  ErrorResponse
+  ErrorResponse,
 } from "../types";
 import { LiveTranscription } from "./liveTranscription";
 import { preRecordedTranscription } from "./preRecordedTranscription";
@@ -43,12 +43,12 @@ export class Transcriber {
    * @param {LiveTranscriptionOptions} options Options used to toggle transcription features
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {LiveTranscription | ErrorResponse}
+   * @returns {LiveTranscription}
    */
   live(
     options?: LiveTranscriptionOptions,
     endpoint?: string
-  ): LiveTranscription | ErrorResponse {
+  ): LiveTranscription {
     return new LiveTranscription(
       this._credentials,
       this._apiUrl || "",
