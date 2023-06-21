@@ -12,6 +12,9 @@ export class PrerecordedTranscriptionResponse {
   results?: {
     channels: Array<Channel>;
     utterances?: Array<Utterance>;
+    summary?: {
+      short: string;
+    };
   };
 
   /**

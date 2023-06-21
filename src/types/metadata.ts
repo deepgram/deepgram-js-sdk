@@ -5,4 +5,12 @@ export type Metadata = {
   created: string;
   duration: number;
   channels: number;
+  model_info: {
+    [key: string]: {
+      name: string;
+      version: string;
+      arch: string;
+    };
+  };
+  models: Array<string>;
 };
