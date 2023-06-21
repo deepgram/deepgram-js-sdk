@@ -4,453 +4,352 @@
 
 Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Start building with our powerful transcription & speech understanding API.
 
-> This SDK only supports hosted usage of api.deepgram.com.
-## Getting an API Key
+> ### Deprecated JS Browser SDK
+>
+> As of version 2.x, the JS Browser SDK was removed from the Node SDK and will become an independent Client SDK.
+> To use the older SDK, please `npm i @deepgram/sdk@1.2.1` and use `@deepgram/sdk/browser`.
+
+- [Deepgram Node.js SDK](#deepgram-nodejs-sdk)
+- [Getting an API Key](#getting-an-api-key)
+- [Installation](#installation)
+- [Constructor](#constructor)
+- [Transcription](#transcription)
+  - [Remote Files](#remote-files)
+  - [Local Files](#local-files)
+  - [Live Audio](#live-audio)
+- [Projects](#projects)
+  - [Get Projects](#get-projects)
+  - [Get Project](#get-project)
+  - [Update Project](#update-project)
+  - [Delete Project](#delete-project)
+- [Keys](#keys)
+  - [List Keys](#list-keys)
+  - [Get Key](#get-key)
+  - [Create Key](#create-key)
+  - [Delete Key](#delete-key)
+- [Members](#members)
+  - [Get Members](#get-members)
+  - [Remove Member](#remove-member)
+- [Scopes](#scopes)
+  - [Get Member Scopes](#get-member-scopes)
+  - [Update Scope](#update-scope)
+- [Invitations](#invitations)
+  - [List Invites](#list-invites)
+  - [Send Invite](#send-invite)
+  - [Delete Invite](#delete-invite)
+  - [Leave Project](#leave-project)
+- [Usage](#usage)
+  - [Get All Requests](#get-all-requests)
+  - [Get Request](#get-request)
+  - [Summarize Usage](#summarize-usage)
+  - [Get Fields](#get-fields)
+- [Billing](#billing)
+  - [Get All Balances](#get-all-balances)
+  - [Get Balance](#get-balance)
+- [Development and Contributing](#development-and-contributing)
+- [Getting Help](#getting-help)
+
+# Getting an API Key
 
 🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
-## Documentation
 
-Complete documentation of the Node.js SDK can be found at [Deepgram Docs](https://developers.deepgram.com/docs/node-sdk).
-
-You can learn more about the Deepgram API at [developers.deepgram.com](https://developers.deepgram.com/docs).
-
-## Installation
-
-### With NPM
+# Installation
 
 ```bash
 npm install @deepgram/sdk
+# - or -
+# yarn add @deepgram/sdk
 ```
 
-### With Yarn
-
-```bash
-yarn add @deepgram/sdk
-```
-
-## Constructor
+# Constructor
 
 ```js
 const { Deepgram } = require("@deepgram/sdk");
+// - or -
+// import { Deepgram } from "@deepgram/sdk";
 
 const deepgram = new Deepgram(DEEPGRAM_API_KEY);
 ```
 
-# Examples
+# Transcription
 
-## Transcription
-
-### Pre-recorded
-
-#### Remote Files
+## Remote Files
 
 ```js
-const fileSource = { url: URL_OF_FILE };
-
-const response = await deepgram.transcription.preRecorded(fileSource, {
-  punctuate: true,
-});
+const response = await deepgram.transcription.preRecorded(
+  { url: URL_OF_FILE },
+  options
+);
 ```
 
-#### Local Files
+[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+
+## Local Files
 
 ```js
-const streamSource = {
-  stream: fs.createReadStream("/path/to/file"),
-  mimetype: MIMETYPE_OF_FILE,
-};
-
-const response = await deepgram.transcription.preRecorded(streamSource, {
-  punctuate: true,
-});
+const response = await deepgram.transcription.preRecorded(
+  {
+    stream: fs.createReadStream("/path/to/file"),
+    mimetype: MIMETYPE_OF_FILE,
+  },
+  options
+);
 ```
 
-### Transcribe Audio in Real-Time
+[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-See an example real time project at https://github.com/deepgram-devs/node-live-example, or visit this [Getting Started guide](https://developers.deepgram.com/documentation/getting-started/streaming/)
+## Live Audio
 
-### Usage
-
-#### listRequests
-Retrieves all requests associated with the provided project_id based on the provided options.
 ```js
-deepgram.usage
-  .listRequests("84b227ad-dfac-4096-82f6-f7397006050b", {
-    start: "2022-07-01",
-    end: "2022-07-28",
-  })
-  .then((response) => {
-    console.log("Usage: ", response);
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
-```
-#### getRequest
-Retrieves a specific request associated with the provided project_id.
-```js
-deepgram.usage
-  .getRequest(
-    // projectId
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-    // requestId
-    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
-  )
-  .then((response) => {
-    fs.writeFileSync(
-      `usage.json`,
-      JSON.stringify(response),
-      () => `Wrote json`
-    );
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
+const ws = dg.transcription.live(options);
+
+// source.addListener('got-some-audio', async (event) => {
+ws.send(event);
+// })
 ```
 
-#### getUsage
-Retrieves usage associated with the provided project_id based on the provided options.
-```js
-deepgram.usage
-  .getUsage("84b227ad-dfac-4096-82f6-f7397006050b", {
-    punctuate: true,
-    diarize: true
-  })
-  .then((response) => {
-    console.log("Usage: ", response);
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
-```
+See an example, here: [https://github.com/deepgram-devs/node-live-example](https://github.com/deepgram-devs/node-live-example).
 
-### getFields
-Retrieves features used by the provided project_id based on the provided options.
-```js
-deepgram.usage
-  .getFields("84b227ad-dfac-4096-82f6-f7397006050b", {
-    start: "2022-07-01",
-    end: "2022-07-28",
-  })
-  .then((response) => {
-    console.log("Usage: ", response);
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
-```
+[See our API reference for more info](https://developers.deepgram.com/reference/streaming).
 
-### Scopes
-#### get
-Retrieves scopes of the specified member in the specified project.
-```js
-deepgram.scopes
-  .get(
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
-  )
-  .then((response) => {
-    fs.writeFileSync(
-      `scope.json`,
-      JSON.stringify(response),
-      () => `Wrote json`
-    );
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
-```
+# Projects
 
-#### update
-Updates the scope for the specified member in the specified project.
-```js
-deepgram.scopes
-  .update(
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-    "f12cc224-282b-4de4-90f1-651d5fdf04f1",
-    "member:read"
-  )
-  .then((response) => {
-    console.log({response})
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
-```
+## Get Projects
 
-### Projects
-#### list
 Returns all projects accessible by the API key.
+
 ```js
-deepgram.projects
-  .list()
-  .then((response) => {
-    console.log("list", response);
-  })
-  .catch((err) => {
-    console.log("err", err);
-  });
+const result = await deepgram.projects.list();
 ```
 
-#### get
+[See our API reference for more info](https://developers.deepgram.com/reference/get-projects).
+
+## Get Project
+
 Retrieves a specific project based on the provided project_id.
+
 ```js
-deepgram.projects
-  .get("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((response) => {
-    console.log("list", response);
-  })
-  .catch((err) => {
-    console.log("err", err);
-  });
+const result = await deepgram.projects.get(project_id);
 ```
 
-#### update
+[See our API reference for more info](https://developers.deepgram.com/reference/get-project).
+
+## Update Project
+
 Update a project.
+
 ```js
-deepgram.projects
-  .update(
-    { project_id: "84b227ad-dfac-4096-82f6-f7397006050b" },
-    {
-      name: "A new name",
-    }
-  )
-  .then((response) => {
-    console.log("list", response);
-  })
-  .catch((err) => {
-    console.log("err", err);
-  });
+const result = await deepgram.projects.update(project_id, options);
 ```
 
-#### delete
+[See our API reference for more info](https://developers.deepgram.com/reference/update-project).
+
+## Delete Project
+
 Delete a project.
+
 ```js
-deepgram.projects
-  .delete("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((response) => {
-    console.log("delete", response);
-  })
-  .catch((err) => {
-    console.log("err", err);
-  });
+await deepgram.projects.delete(project_id);
 ```
 
-### Members
+[See our API reference for more info](https://developers.deepgram.com/reference/delete-project).
 
-#### listMembers
-Retrieves account objects for all of the accounts in the specified project.
-```js
-deepgram.members
-  .listMembers("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((response) => {
-    console.log("Members: ", response);
-  })
-  .catch((err) => {
-    console.log("Members ERROR: ", err);
-  });
-```
+# Keys
 
-#### deleteMembers
-Removes member account for specified member_id.
-```js
- deepgram.members
-  .removeMember(
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
-  )
-  .then((response) => {
-    console.log("Member DELETED: ", response);
-  })
-  .catch((err) => {
-    console.log("Member DELETED ERROR: ", err);
-  });
-```
+## List Keys
 
-### Keys
-#### list
 Retrieves all keys associated with the provided project_id.
+
 ```js
-deepgram.keys
-  .list("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((res) => {
-    console.log({ res });
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
+const result = await deepgram.keys.list(project_id);
 ```
 
-#### get
+[See our API reference for more info](https://developers.deepgram.com/reference/list-keys).
+
+## Get Key
+
 Retrieves a specific key associated with the provided project_id.
+
 ```js
-deepgram.keys
-  .get(
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
-    )
-  .then((res) => {
-    console.log({ res });
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
+const result = await deepgram.keys.get(project_id, key_id);
 ```
 
-#### create
+[See our API reference for more info](https://developers.deepgram.com/reference/get-key).
+
+## Create Key
+
 Creates an API key with the provided scopes.
+
 ```js
-deepgram.keys
-  .create(
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-     "Temporary key",
-    ["usage"],
-    {
-      timeToLive: 5000,
-    }
-  )
-  .then((res) => {
-    console.log({ res });
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
+let scopes = ["member", "etc"];
+const result = await deepgram.keys.create(project_id, comment, scopes, options);
 ```
 
-#### delete
+[See our API reference for more info](https://developers.deepgram.com/reference/create-key).
+
+## Delete Key
+
 Deletes a specific key associated with the provided project_id.
+
 ```js
-deepgram.keys
-  .delete(
-    "84b227ad-dfac-4096-82f6-f7397006050b",
-    "f12cc224-282b-4de4-90f1-651d5fdf04f1"
-  )
-  .then((response) => {
-    console.log("KEY DELTED: ", response);
-  })
-  .catch((err) => {
-    console.log("KEY DELETED ERROR: ", err);
-  });
+await deepgram.keys.delete(project_id, key_id);
 ```
 
-### Invitations
-#### list
+[See our API reference for more info](https://developers.deepgram.com/reference/delete-key).
+
+# Members
+
+## Get Members
+
+Retrieves account objects for all of the accounts in the specified project_id.
+
+```js
+const result = await deepgram.members.listMembers(project_id);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/get-members).
+
+## Remove Member
+
+Removes member account for specified member_id.
+
+```js
+const result = await deepgram.members.removeMember(project_id, member_id);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/remove-member).
+
+# Scopes
+
+## Get Member Scopes
+
+Retrieves scopes of the specified member in the specified project.
+
+```js
+const result = await deepgram.scopes.get(project_id, member_id);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/get-member-scopes).
+
+## Update Scope
+
+Updates the scope for the specified member in the specified project.
+
+```js
+let scope = "member:read";
+const result = await deepgram.scopes.update(project_id, member_id, scope);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/update-scope).
+
+# Invitations
+
+## List Invites
+
 Retrieves all invitations associated with the provided project_id.
+
 ```js
-deepgram.invitations
-  .list("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((res) => {
-    console.log({ res });
-  })
-  .catch((err) => {
-    console.log("ERROR: ", err);
-  });
+const result = await deepgram.invitations.list(project_id);
 ```
 
-#### send
+[See our API reference for more info](https://developers.deepgram.com/reference/list-invites).
+
+## Send Invite
+
 Sends an invitation to the provided email address.
+
 ```js
-deepgram.invitation
-  .send("84b227ad-dfac-4096-82f6-f7397006050b", {
-    email: "user@email.com",
-    scope: "member",
-  })
-  .then((response) => {
-    console.log("Invitation sent: ", response);
-  })
-  .catch((err) => {
-    console.log("Invitation ERROR: ", err);
-  });
+const result = await deepgram.invitation.send(project_id, options);
 ```
 
-#### leave
-Removes the authenticated user from the project.
-```js
-deepgram.invitation
-  .leave("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((response) => {
-    console.log({response});
-  })
-  .catch((err) => {
-    console.log("Invitation leave ERROR: ", err);
-  });
-```
+[See our API reference for more info](https://developers.deepgram.com/reference/send-invites).
 
-#### delete
+## Delete Invite
+
 Removes the specified invitation from the project.
+
 ```js
-deepgram.invitation
-  .delete("84b227ad-dfac-4096-82f6-f7397006050b", "user@email.com")
-  .then((response) => {
-    console.log({response});
-  })
-  .catch((err) => {
-    console.log("Invitation delete ERROR: ", err);
-  });
+let email = "devrel@deepgram.com";
+const result = await deepgram.invitation.delete(project_id, email);
 ```
 
-### Billing
-#### listBalances
+[See our API reference for more info](https://developers.deepgram.com/reference/delete-invite).
+
+## Leave Project
+
+Removes the authenticated user from the project.
+
+```js
+const result = await deepgram.invitation.leave(project_id);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/leave-project).
+
+# Usage
+
+## Get All Requests
+
+Retrieves all requests associated with the provided project_id based on the provided options.
+
+```js
+const result = await deepgram.usage.listRequests(project_id, options);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/get-all-requests).
+
+## Get Request
+
+Retrieves a specific request associated with the provided project_id.
+
+```js
+const result = await deepgram.usage.getRequest(project_id, request_id);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/get-request).
+
+## Summarize Usage
+
+Retrieves usage associated with the provided project_id based on the provided options.
+
+```js
+const result = await deepgram.usage.getUsage(project_id, options);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/summarize-usage).
+
+## Get Fields
+
+Lists the features, models, tags, languages, and processing method used for requests in the specified project.
+
+```js
+const result = await deepgram.usage.getFields(project_id, options);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
+
+# Billing
+
+## Get All Balances
+
 Retrieves the list of balance info for the specified project.
+
 ```js
-deepgram.billing
-  .listBalances("84b227ad-dfac-4096-82f6-f7397006050b")
-  .then((response) => {
-    console.log({response});
-  })
-  .catch((err) => {
-    console.log("Billing listBalances ERROR: ", err);
-  });
+const result = await deepgram.billing.listBalances(project_id);
 ```
 
-#### getBalance
+[See our API reference for more info](https://developers.deepgram.com/reference/get-all-balances).
+
+## Get Balance
+
 Retrieves the balance info for the specified project and balance_id.
-```js
-deepgram.billing
-  .getBalance("84b227ad-dfac-4096-82f6-f7397006050b", "21b98377-657e-471a-b75e-299fb99ec2c3")
-  .then((response) => {
-    console.log({response});
-  })
-  .catch((err) => {
-    console.log("Billing getBalance ERROR: ", err);
-  });
-```
-
-## Samples
-
-To run the sample code, first run the following in your terminal:
-
-```bash
-npm install
-npm build
-```
-
-Then update the config object located at the top of the `index.js`
-file in the sample folder.
 
 ```js
-const config = {
-  deepgramApiKey: "YOUR_DEEPGRAM_API_KEY",
-  urlToFile:
-    "https://static.deepgram.com/examples/Bueller-Life-moves-pretty-fast.wav",
-};
+const result = await deepgram.billing.getBalance(project_id, balance_id);
 ```
 
-Finally, run the sample code using the following command in your terminal:
+[See our API reference for more info](https://developers.deepgram.com/reference/get-balance).
 
-```bash
-node sample/index.js
-```
-
-The sample demonstrates the following uses:
-
-- Transcribing a prerecorded file
-- Retrieving usage for a project
-- Getting a project
-- Creating an API key
-- Deleting an API key
-
-## Development and Contributing
+# Development and Contributing
 
 Interested in contributing? We ❤️ pull requests!
 
@@ -458,7 +357,7 @@ To make sure our community is safe for all, be sure to review and agree to our
 [Code of Conduct](./CODE_OF_CONDUCT.md). Then see the
 [Contribution](./CONTRIBUTING.md) guidelines for more information.
 
-## Getting Help
+# Getting Help
 
 We love to hear from you so if you have questions, comments or find a bug in the
 project, let us know! You can either:
@@ -466,5 +365,3 @@ project, let us know! You can either:
 - [Open an issue in this repository](https://github.com/deepgram/node-sdk/issues/new)
 - [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
 - [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
-
-[license]: LICENSE.txt
