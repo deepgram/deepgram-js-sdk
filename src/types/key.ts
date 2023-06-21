@@ -22,4 +22,6 @@ export type Key = {
    * Array of scopes assigned to the key
    */
   scopes: Array<string>;
+  err_code?: string;
+  err_msg?: string;
 };

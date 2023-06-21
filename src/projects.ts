@@ -19,12 +19,10 @@ export class Projects {
    * Returns all projects accessible by the API key.
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<ProjectResponse | ErrorResponse>}
+   * @returns {Promise<ProjectResponse>}
    */
 
-  async list(
-    endpoint = "v1/projects"
-  ): Promise<ProjectResponse | ErrorResponse> {
+  async list(endpoint = "v1/projects"): Promise<ProjectResponse> {
     return this._request(
       "GET",
       this._credentials,
@@ -39,12 +37,9 @@ export class Projects {
    * @param {string} projectId Unique identifier of the project
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<Project | ErrorResponse>}
+   * @returns {Promise<Project>}
    */
-  async get(
-    projectId: string,
-    endpoint = "v1/projects"
-  ): Promise<Project | ErrorResponse> {
+  async get(projectId: string, endpoint = "v1/projects"): Promise<Project> {
     return this._request(
       "GET",
       this._credentials,
@@ -60,13 +55,13 @@ export class Projects {
    * @param {ProjectPatchRequest} payload Details to change as an object
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<ProjectPatchResponse | ErrorResponse>}
+   * @returns {Promise<ProjectPatchResponse>}
    */
   async update(
     project: string | Project,
     payload: ProjectPatchRequest,
     endpoint = "v1/projects"
-  ): Promise<ProjectPatchResponse | ErrorResponse> {
+  ): Promise<ProjectPatchResponse> {
     const projectObj = project as Project;
     let projectId = project as string;
 
@@ -89,7 +84,7 @@ export class Projects {
    * @param {string} projectId Unique identifier of the project
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<Message | ErrorResponse>}
+   * @returns {Promise<void | ErrorResponse>}
    */
   async delete(
     projectId: string,

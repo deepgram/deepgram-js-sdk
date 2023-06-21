@@ -4,7 +4,7 @@ import {
   Key,
   KeyResponseObj,
   RequestFunction,
-  ErrorResponse
+  ErrorResponse,
 } from "./types";
 
 export class Keys {
@@ -25,7 +25,7 @@ export class Keys {
   async list(
     projectId: string,
     endpoint = "v1/projects"
-  ): Promise<KeyResponse | ErrorResponse> {
+  ): Promise<KeyResponse> {
     const response = await this._request(
       "GET",
       this._credentials,
@@ -56,7 +56,7 @@ export class Keys {
     projectId: string,
     keyId: string,
     endpoint = "v1/projects"
-  ): Promise<Key | ErrorResponse> {
+  ): Promise<Key> {
     return this._request(
       "GET",
       this._credentials,
@@ -82,7 +82,7 @@ export class Keys {
     scopes: Array<string>,
     options?: CreateKeyOptions,
     endpoint = "v1/projects"
-  ): Promise<Key | ErrorResponse> {
+  ): Promise<Key> {
     /** Throw an error if the user provided both expirationDate and timeToLive */
     if (
       options &&

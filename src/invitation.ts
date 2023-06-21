@@ -3,7 +3,6 @@ import {
   InvitationOptions,
   InvitationList,
   RequestFunction,
-  ErrorResponse
 } from "./types";
 
 export class Invitation {
@@ -24,7 +23,7 @@ export class Invitation {
   async list(
     projectId: string,
     endpoint = "v1/projects"
-  ): Promise<InvitationList | ErrorResponse> {
+  ): Promise<InvitationList> {
     return this._request(
       "GET",
       this._credentials,
@@ -46,7 +45,7 @@ export class Invitation {
     projectId: string,
     options: InvitationOptions,
     endpoint = "v1/projects"
-  ): Promise<Message | ErrorResponse> {
+  ): Promise<Message> {
     return this._request(
       "POST",
       this._credentials,
@@ -67,10 +66,7 @@ export class Invitation {
    *
    * @returns {Promise<Message>}
    */
-  async leave(
-    projectId: string,
-    endpoint = "v1/projects"
-  ): Promise<Message | ErrorResponse> {
+  async leave(projectId: string, endpoint = "v1/projects"): Promise<Message> {
     return this._request(
       "DELETE",
       this._credentials,
@@ -93,7 +89,7 @@ export class Invitation {
     projectId: string,
     email: string,
     endpoint = "v1/projects"
-  ): Promise<Message | ErrorResponse> {
+  ): Promise<Message> {
     return this._request(
       "DELETE",
       this._credentials,

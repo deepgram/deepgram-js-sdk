@@ -14,4 +14,6 @@ export type Project = {
    * Name of the company associated with the project. Optional.
    */
   company?: string;
+  err_code?: string;
+  err_msg?: string;
 };

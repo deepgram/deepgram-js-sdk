@@ -5,6 +5,8 @@ import { secondsToTimestamp } from "../helpers";
 import { WordBase } from "./wordBase";
 
 export class PrerecordedTranscriptionResponse {
+  err_code?: string;
+  err_msg?: string;
   request_id?: string;
   metadata?: Metadata;
   results?: {

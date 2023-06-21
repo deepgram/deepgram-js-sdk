@@ -1,4 +1,4 @@
-import { ScopeList, Message, RequestFunction, ErrorResponse } from "./types";
+import { ScopeList, Message, RequestFunction } from "./types";
 
 export class Scopes {
   constructor(
@@ -14,13 +14,13 @@ export class Scopes {
    * @param {string} memberId Unique identifier of the member
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<ScopeList | ErrorResponse>}
+   * @returns {Promise<ScopeList>}
    */
   async get(
     projectId: string,
     memberId: string,
     endpoint = "v1/projects"
-  ): Promise<ScopeList | ErrorResponse> {
+  ): Promise<ScopeList> {
     return this._request(
       "GET",
       this._credentials,
@@ -37,14 +37,14 @@ export class Scopes {
    * @param {string} scope Scope to update the member to
    * @param {string} endpoint Custom API endpoint
    *
-   * @returns {Promise<Message | ErrorResponse>}
+   * @returns {Promise<Message>}
    */
   async update(
     projectID: string,
     memberId: string,
     scope: string,
     endpoint = "v1/projects"
-  ): Promise<Message | ErrorResponse> {
+  ): Promise<Message> {
     return this._request(
       "PUT",
       this._credentials,

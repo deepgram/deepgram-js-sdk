@@ -8,4 +8,6 @@ export type UsageResponse = {
     amount: number;
   };
   results: Array<UsageResponseDetail>;
+  err_code?: string;
+  err_msg?: string;
 };
