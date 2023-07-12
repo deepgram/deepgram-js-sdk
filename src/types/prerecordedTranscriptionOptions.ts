@@ -29,13 +29,6 @@ export type PrerecordedTranscriptionOptions = {
   tier?: string;
 
   /**
-   * Terms or phrases to search for in the submitted audio and replace
-   * @remarks Can send multiple instances in query string replace=this:that&replace=thisalso:thatalso. Replacing a term or phrase with nothing will remove the term or phrase from the audio transcript.
-   * @see https://developers.deepgram.com/documentation/features/replace/
-   */
-  replace?: string;
-
-  /**
    * BCP-47 language tag that hints at the primary spoken language.
    * @default en-US
    * @remarks Possible values are en-GB, en-IN, en-NZ, en-US, es, fr, ko, pt,
@@ -120,14 +113,6 @@ export type PrerecordedTranscriptionOptions = {
   numbers_spaces?: boolean;
 
   /**
-   * Terms or phrases to search for in the submitted audio. Deepgram searches
-   * for acoustic patterns in audio rather than text patterns in transcripts
-   * because we have noticed that acoustic pattern matching is more performant.
-   * @see https://developers.deepgram.com/documentation/features/search/
-   */
-  search?: Array<string>;
-
-  /**
    * Callback URL to provide if you would like your submitted audio to be
    * processed asynchronously. When passed, Deepgram will immediately respond
    * with a request_id. When it has finished analyzing the audio, it will send
@@ -139,13 +124,28 @@ export type PrerecordedTranscriptionOptions = {
   callback?: string;
 
   /**
+   * Terms or phrases to search for in the submitted audio and replace
+   * @remarks Can send multiple instances in query string replace=this:that&replace=thisalso:thatalso. Replacing a term or phrase with nothing will remove the term or phrase from the audio transcript.
+   * @see https://developers.deepgram.com/documentation/features/replace/
+   */
+  replace?: string[] | string;
+
+  /**
+   * Terms or phrases to search for in the submitted audio. Deepgram searches
+   * for acoustic patterns in audio rather than text patterns in transcripts
+   * because we have noticed that acoustic pattern matching is more performant.
+   * @see https://developers.deepgram.com/documentation/features/search/
+   */
+  search?: string[] | string;
+
+  /**
    * Keywords to which the model should pay particular attention to boosting
    * or suppressing to help it understand context. Just like a human listener,
    * Deepgram can better understand mumbled, distorted, or otherwise
    * hard-to-decipher speech when it knows the context of the conversation.
    * @see https://developers.deepgram.com/documentation/features/keywords/
    */
-  keywords?: Array<string>;
+  keywords?: string[] | string;
 
   /**
    * Support for out-of-vocabulary (OOV) keyword boosting when processing streaming audio is
