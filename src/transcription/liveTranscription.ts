@@ -68,6 +68,14 @@ export class LiveTranscription extends EventEmitter {
     );
   }
 
+  public keepAlive(): void {
+    this._socket.send(
+      JSON.stringify({
+        type: "KeepAlive"
+      })
+    );
+  }
+
   /**
    * Returns the ready state of the websocket connection
    */
