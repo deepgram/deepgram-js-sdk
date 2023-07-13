@@ -13,6 +13,7 @@ export class PrerecordedTranscriptionResponse {
     channels: Array<Channel>;
     utterances?: Array<Utterance>;
     summary?: {
+      result: "success" | "failure";
       short: string;
     };
   };

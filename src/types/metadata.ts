@@ -1,3 +1,5 @@
+import { Warning } from "./warning";
+
 export type Metadata = {
   request_id: string;
   transaction_key: string;
@@ -12,5 +14,6 @@ export type Metadata = {
       arch: string;
     };
   };
+  warnings: Array<Warning>;
   models: Array<string>;
 };
