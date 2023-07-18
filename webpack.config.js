@@ -1,19 +1,27 @@
 const path = require("path");
 
-
-
 module.exports = {
-  name: "server",
-  target: "node",
-  entry: "./bundle/index.js",
+  entry: "./src/index.ts",
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    path: path.resolve(__dirname, "dist/umd"),
+    filename: "deepgram.js",
     library: {
-      name: "dg-node-sdk",
       type: "umd",
+      name: "deepgram",
     },
   },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        loader: "ts-loader",
+        options: {
+          transpileOnly: true,
+        },
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".ts", ".js", ".json"],
+  },
 };
-
-
