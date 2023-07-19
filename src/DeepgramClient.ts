@@ -1,14 +1,6 @@
-import { DEFAULT_URL } from "./lib/constants";
+import { DEFAULT_URL, DEFAULT_OPTIONS } from "./lib/constants";
 import { applySettingDefaults, stripTrailingSlash } from "./lib/helpers";
 import type { DeepgramClientOptions } from "@type/DeepgramClientOptions";
-
-const DEFAULT_GLOBAL_OPTIONS = {
-  url: DEFAULT_URL,
-};
-
-const DEFAULTS = {
-  global: DEFAULT_GLOBAL_OPTIONS,
-};
 
 /**
  * Deepgram Client.
@@ -26,11 +18,11 @@ export default class DeepgramClient {
    */
   constructor(
     protected deepgramKey: string,
-    options: DeepgramClientOptions | undefined = DEFAULTS
+    options: DeepgramClientOptions | undefined = DEFAULT_OPTIONS
   ) {
     if (!deepgramKey) throw new Error("deepgramKey is required.");
 
-    const settings = applySettingDefaults(options, DEFAULTS);
+    const settings = applySettingDefaults(options, DEFAULT_OPTIONS);
 
     if (!settings.global.url)
       throw new Error(
