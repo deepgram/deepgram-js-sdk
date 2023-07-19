@@ -7,10 +7,10 @@ Documentation: https://developers.deepgram.com/docs/deepgram-sdks
 <!-- TypeDoc: https://deepgram.github.io/deepgram-node-sdk/v2/ -->
 
 - [Getting an API Key](#getting-an-api-key)
-  - [Usage](#usage)
-    - [UMD](#umd)
-    - [ESM](#esm)
-    - [Custom `fetch` implementation](#custom-fetch-implementation)
+- [Usage](#usage)
+  - [UMD](#umd)
+  - [ESM](#esm)
+  - [Custom `fetch` implementation](#custom-fetch-implementation)
 - [Transcription](#transcription)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
@@ -51,7 +51,7 @@ Documentation: https://developers.deepgram.com/docs/deepgram-sdks
 
 🔑 To interactive the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
 
-## Usage
+# Usage
 
 First of all, you need to install the library:
 
