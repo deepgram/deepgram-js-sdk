@@ -1,4 +1,4 @@
-import chai, { expect } from "chai";
+import { expect } from "chai";
 import { createClient } from "../src";
 import DeepgramClient from "../src/DeepgramClient";
 import { faker } from "@faker-js/faker";
@@ -7,7 +7,7 @@ import { stripTrailingSlash } from "../src/lib/helpers";
 
 const deepgram = createClient(faker.string.alphanumeric(40));
 
-it("it should create the client connection", () => {
+it("it should create the client object", () => {
   expect(deepgram).to.not.be.undefined;
   expect(deepgram).is.instanceOf(DeepgramClient);
 });
@@ -29,7 +29,7 @@ it("it should throw an error if invalid options are provided", () => {
   );
 });
 
-it("it should create the client connection with a custom domain", () => {
+it("it should create the client object with a custom domain", () => {
   const customDomain = faker.internet.url();
   const client = createClient(faker.string.alphanumeric(40), {
     global: { url: customDomain },
