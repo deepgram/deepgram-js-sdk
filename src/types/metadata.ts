@@ -14,6 +14,6 @@ export type Metadata = {
       arch: string;
     };
   };
-  warnings: Array<Warning>;
+  warnings?: Array<Warning>;
   models: Array<string>;
 };
