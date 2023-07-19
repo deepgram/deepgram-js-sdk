@@ -1,75 +1,126 @@
-# Deepgram Node.js SDK
+# Deepgram JavaScript SDK
 
-[![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
+An isomorphic JavaScript SDK for [Deepgram](https://www.deepgram.com/).
 
-Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Start building with our powerful transcription & speech understanding API.
-> This SDK only supports hosted usage of api.deepgram.com.
+Documentation: https://developers.deepgram.com/docs/deepgram-sdks
 
-> ### Deprecated JS Browser SDK
->
-> As of version 2.x, the JS Browser SDK was removed from the Node SDK and will become an independent Client SDK.
-> To use the older SDK, please `npm i @deepgram/sdk@1.2.1` and use `@deepgram/sdk/browser`.
+<!-- TypeDoc: https://deepgram.github.io/deepgram-node-sdk/v2/ -->
 
-* [Deepgram Node.js SDK](#deepgram-nodejs-sdk)
-* [Getting an API Key](#getting-an-api-key)
-* [Installation](#installation)
-* [Constructor](#constructor)
-* [Transcription](#transcription)
-  * [Remote Files](#remote-files)
-  * [Local Files](#local-files)
-  * [Live Audio](#live-audio)
-* [Projects](#projects)
-  * [Get Projects](#get-projects)
-  * [Get Project](#get-project)
-  * [Update Project](#update-project)
-  * [Delete Project](#delete-project)
-* [Keys](#keys)
-  * [List Keys](#list-keys)
-  * [Get Key](#get-key)
-  * [Create Key](#create-key)
-  * [Delete Key](#delete-key)
-* [Members](#members)
-  * [Get Members](#get-members)
-  * [Remove Member](#remove-member)
-* [Scopes](#scopes)
-  * [Get Member Scopes](#get-member-scopes)
-  * [Update Scope](#update-scope)
-* [Invitations](#invitations)
-  * [List Invites](#list-invites)
-  * [Send Invite](#send-invite)
-  * [Delete Invite](#delete-invite)
-  * [Leave Project](#leave-project)
-* [Usage](#usage)
-  * [Get All Requests](#get-all-requests)
-  * [Get Request](#get-request)
-  * [Summarize Usage](#summarize-usage)
-  * [Get Fields](#get-fields)
-* [Billing](#billing)
-  * [Get All Balances](#get-all-balances)
-  * [Get Balance](#get-balance)
-* [Development and Contributing](#development-and-contributing)
-* [Getting Help](#getting-help)
+- [Getting an API Key](#getting-an-api-key)
+  - [Usage](#usage)
+    - [UMD](#umd)
+    - [ESM](#esm)
+    - [Custom `fetch` implementation](#custom-fetch-implementation)
+- [Transcription](#transcription)
+  - [Remote Files](#remote-files)
+  - [Local Files](#local-files)
+  - [Live Audio](#live-audio)
+- [Projects](#projects)
+  - [Get Projects](#get-projects)
+  - [Get Project](#get-project)
+  - [Update Project](#update-project)
+  - [Delete Project](#delete-project)
+- [Keys](#keys)
+  - [List Keys](#list-keys)
+  - [Get Key](#get-key)
+  - [Create Key](#create-key)
+  - [Delete Key](#delete-key)
+- [Members](#members)
+  - [Get Members](#get-members)
+  - [Remove Member](#remove-member)
+- [Scopes](#scopes)
+  - [Get Member Scopes](#get-member-scopes)
+  - [Update Scope](#update-scope)
+- [Invitations](#invitations)
+  - [List Invites](#list-invites)
+  - [Send Invite](#send-invite)
+  - [Delete Invite](#delete-invite)
+  - [Leave Project](#leave-project)
+- [Usage](#usage-1)
+  - [Get All Requests](#get-all-requests)
+  - [Get Request](#get-request)
+  - [Summarize Usage](#summarize-usage)
+  - [Get Fields](#get-fields)
+- [Billing](#billing)
+  - [Get All Balances](#get-all-balances)
+  - [Get Balance](#get-balance)
+- [Development and Contributing](#development-and-contributing)
+- [Getting Help](#getting-help)
 
 # Getting an API Key
 
-🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
+🔑 To interactive the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
 
-# Installation
+## Usage
 
-```bash
+First of all, you need to install the library:
+
+```sh
 npm install @deepgram/sdk
-# - or -
-# yarn add @deepgram/sdk
 ```
 
-# Constructor
+Then you're able to import the library and configure it.
 
 ```js
-const { Deepgram } = require("@deepgram/sdk");
-// - or -
-// import { Deepgram } from "@deepgram/sdk";
+import { createClient } from "@deepgram/sdk";
 
-const deepgram = new Deepgram(DEEPGRAM_API_KEY);
+// Create a deepgram client for interacting with the API
+const deepgram = createClient("DEEPGRAM_API_KEY");
+```
+
+### UMD
+
+You can now use plain `<script>`s to import the Deepgram SDK from CDNs, like:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
+```
+
+or even:
+
+```html
+<script src="https://unpkg.com/@deepgram/sdk"></script>
+```
+
+Then you can use it from a global `deepgram` variable:
+
+```html
+<script>
+  const { createClient } = deepgram;
+  const _deepgram = createClient("DEEPGRAM_API_KEY");
+
+  console.log("Deepgram instance: ", _deepgram);
+  // ...
+</script>
+```
+
+### ESM
+
+You can now use type="module" `<script>`s to import deepgram from CDNs, like:
+
+```html
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
+  const deepgram = createClient("DEEPGRAM_API_KEY");
+
+  console.log("Deepgram instance: ", deepgram);
+  // ...
+</script>
+```
+
+### Custom `fetch` implementation
+
+`@deepgram/sdk` uses the [`cross-fetch`](https://www.npmjs.com/package/cross-fetch) library to make HTTP requests, but an alternative `fetch` implementation can be provided as an option. This is most useful in environments where `cross-fetch` is not compatible, for instance Cloudflare Workers:
+
+```js
+import { createClient } from "@deepgram/sdk";
+
+// Provide a custom `fetch` implementation as an option
+const supabase = createClient("DEEPGRAM_API_KEY", {
+  global: {
+    fetch: (...args) => fetch(...args),
+  },
+});
 ```
 
 # Transcription
@@ -77,10 +128,7 @@ const deepgram = new Deepgram(DEEPGRAM_API_KEY);
 ## Remote Files
 
 ```js
-const response = await deepgram.transcription.preRecorded(
-  { url: URL_OF_FILE },
-  options
-);
+const response = await deepgram.transcription.preRecorded({ url: URL_OF_FILE }, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
