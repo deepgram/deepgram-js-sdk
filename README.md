@@ -116,7 +116,7 @@ You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 import { createClient } from "@deepgram/sdk";
 
 // Provide a custom `fetch` implementation as an option
-const supabase = createClient("DEEPGRAM_API_KEY", {
+const deepgram = createClient("DEEPGRAM_API_KEY", {
   global: {
     fetch: (...args) => fetch(...args),
   },
