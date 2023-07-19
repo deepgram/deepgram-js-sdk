@@ -45,8 +45,7 @@
     "coverage": "nyc --reporter=lcovonly --reporter=text --reporter=text-summary npm run test",
     "test": "mocha -r ts-node/register test/*test.ts test/**/*test.ts --insect",
     "docs": "typedoc --entryPoints src/index.ts --out docs/v2 --includes src/**/*.ts",
-    "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals",
-    "postinstall": "husky install"
+    "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
   },
   "dependencies": {
     "cross-fetch": "^3.1.5"
