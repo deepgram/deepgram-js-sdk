@@ -42,12 +42,15 @@
     "build:module": "tsc -p tsconfig.module.json",
     "build:umd": "webpack --mode=production",
     "docs": "typedoc --entryPoints src/index.ts --out docs/v2 --includes src/**/*.ts",
-    "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
+    "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals",
+    "postinstall": "husky install"
   },
   "dependencies": {
     "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.7",
+    "@commitlint/config-conventional": "^17.6.7",
     "@types/chai": "^4.2.22",
     "@types/mocha": "^9.0.0",
     "chai": "^4.3.4",
@@ -68,7 +71,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "jsdelivr": "dist/umd/deepgram.js",
