@@ -1,8 +1,10 @@
-import { DeepgramClientOptions } from "@type/DeepgramClientOptions";
+import type { DeepgramClientOptions } from "./types/DeepgramClientOptions";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
+
+export const isBrowser = () => typeof window !== "undefined";
 
 export function applySettingDefaults(
   options: DeepgramClientOptions,

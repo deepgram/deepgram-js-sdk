@@ -1,5 +1,5 @@
-import { DeepgramClientOptions } from "@type/DeepgramClientOptions";
 import DeepgramClient from "./DeepgramClient";
+import type { DeepgramClientOptions } from "./lib/types/DeepgramClientOptions";
 
 /**
  * Creates a new Deepgram Client.

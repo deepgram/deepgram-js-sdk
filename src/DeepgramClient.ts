@@ -1,6 +1,9 @@
-import { DEFAULT_URL, DEFAULT_OPTIONS } from "./lib/constants";
 import { applySettingDefaults, stripTrailingSlash } from "./lib/helpers";
-import type { DeepgramClientOptions } from "@type/DeepgramClientOptions";
+import { DEFAULT_URL, DEFAULT_OPTIONS } from "./lib/constants";
+import { fetchWithAuth } from "./lib/fetch";
+import type { DeepgramClientOptions } from "./lib/types/DeepgramClientOptions";
+import type { Fetch } from "./lib/types/Fetch";
+import { TranscriptionClient } from "./packages/TranscriptionClient";
 
 /**
  * Deepgram Client.
@@ -10,11 +13,15 @@ import type { DeepgramClientOptions } from "@type/DeepgramClientOptions";
 export default class DeepgramClient {
   protected apiUrl: string;
   protected wsUrl: string;
+  protected fetch?: Fetch;
+  protected headers: Record<string, string>;
 
   /**
    * Create a new client for interacting with the Deepgram API.
    * @param deepgramKey The Deepgram API which is supplied when you create a new project in your console dashboard.
    * @param options.global.url You can override the default API URL to interact with On-prem and other Deepgram environments.
+   * @param options.global.fetch A custom fetch implementation.
+   * @param options.global.headers Any additional headers to send with each network request.
    */
   constructor(
     protected deepgramKey: string,
@@ -33,5 +40,11 @@ export default class DeepgramClient {
 
     this.apiUrl = _deepgramUrl;
     this.wsUrl = `${_deepgramUrl}`.replace(/^http/i, "ws");
+    this.fetch = fetchWithAuth(deepgramKey, settings.global?.fetch);
+    this.headers = settings.global?.headers ?? {};
+  }
+
+  get transcription() {
+    return new TranscriptionClient(this.apiUrl, this.headers, this.fetch);
   }
 }
