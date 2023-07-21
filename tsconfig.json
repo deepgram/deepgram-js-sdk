@@ -17,9 +17,6 @@
 
     "forceConsistentCasingInFileNames": true,
     "stripInternal": true,
-    "allowSyntheticDefaultImports": true,
-    "paths": {
-      "@type/*": ["./src/lib/types/*"]
-    }
+    "allowSyntheticDefaultImports": true
   }
 }
