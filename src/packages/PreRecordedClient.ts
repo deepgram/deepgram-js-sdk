@@ -9,6 +9,7 @@ import type { Fetch } from "../lib/types/Fetch";
 import type { PreRecordedOptions } from "../lib/types/TranscriptionOptions";
 import type { PreRecordedResponse } from "../lib/types/PreRecordedResponse";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
+import { appendSearchParams } from "../lib/helpers";
 
 export class PreRecordedClient extends AbstractRestfulClient {
   constructor(apiUrl: string, headers: Record<string, string>, fetch?: Fetch) {
@@ -54,30 +55,13 @@ export class PreRecordedClient extends AbstractRestfulClient {
         this.headers["Content-Type"] = source.mimetype;
       }
 
-      if (!this.fetch) {
-        throw new DeepgramError("Invalid fetch configuration");
-      }
-
       const transcriptionOptions: PreRecordedOptions = { ...{}, ...options };
       const url = new URL(endpoint, this.apiUrl);
+      appendSearchParams(url.searchParams, transcriptionOptions);
 
-      Object.keys(transcriptionOptions).forEach((i) => {
-        if (Array.isArray(transcriptionOptions[i])) {
-          const arrayParams = transcriptionOptions[i] as Array<any>;
-          arrayParams.forEach((param) => {
-            url.searchParams.append(i, String(param));
-          });
-        } else {
-          url.searchParams.append(i, String(transcriptionOptions[i]));
-        }
+      const result: PreRecordedResponse = await this.post(this.fetch as Fetch, url, body, {
+        headers: this.headers,
       });
-
-      const result: PreRecordedResponse = await this.post(
-        this.fetch,
-        `${this.apiUrl}/${endpoint}`,
-        body,
-        { headers: this.headers }
-      );
 
       return { result, error: null };
     } catch (error) {

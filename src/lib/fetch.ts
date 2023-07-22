@@ -35,3 +35,11 @@ export const fetchWithAuth = (deepgramKey: string, customFetch?: Fetch): Fetch =
     return fetch(input, { ...init, headers });
   };
 };
+
+export const resolveResponse = async () => {
+  if (typeof Response === "undefined") {
+    return (await import("cross-fetch")).Response;
+  }
+
+  return Response;
+};

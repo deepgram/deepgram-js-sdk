@@ -1,7 +1,6 @@
 import { Readable } from "stream";
 import { DeepgramApiError, DeepgramUnknownError } from "../lib/errors";
-import { resolveFetch } from "../lib/fetch";
-import { resolveResponse } from "../lib/helpers";
+import { resolveFetch, resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 
 export class AbstractRestfulClient {
@@ -56,7 +55,7 @@ export class AbstractRestfulClient {
   protected async _handleRequest(
     fetcher: Fetch,
     method: RequestMethodType,
-    url: string,
+    url: string | URL,
     options?: FetchOptions,
     parameters?: FetchParameters,
     body?: string | Buffer | Readable
@@ -75,7 +74,7 @@ export class AbstractRestfulClient {
 
   protected async get(
     fetcher: Fetch,
-    url: string,
+    url: string | URL,
     options?: FetchOptions,
     parameters?: FetchParameters
   ): Promise<any> {
@@ -84,7 +83,7 @@ export class AbstractRestfulClient {
 
   protected async post(
     fetcher: Fetch,
-    url: string,
+    url: string | URL,
     body: string | Buffer | Readable,
     options?: FetchOptions,
     parameters?: FetchParameters
@@ -94,7 +93,7 @@ export class AbstractRestfulClient {
 
   protected async put(
     fetcher: Fetch,
-    url: string,
+    url: string | URL,
     body: string | Buffer | Readable,
     options?: FetchOptions,
     parameters?: FetchParameters
@@ -104,7 +103,7 @@ export class AbstractRestfulClient {
 
   protected async remove(
     fetcher: Fetch,
-    url: string,
+    url: string | URL,
     body: string | Buffer | Readable,
     options?: FetchOptions,
     parameters?: FetchParameters
