@@ -21,3 +21,11 @@ export function applySettingDefaults(
     },
   };
 }
+
+export const resolveResponse = async () => {
+  if (typeof Response === "undefined") {
+    return (await import("cross-fetch")).Response;
+  }
+
+  return Response;
+};

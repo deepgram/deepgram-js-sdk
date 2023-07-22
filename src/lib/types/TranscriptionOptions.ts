@@ -1,7 +1,7 @@
 /**
  * Options for transcription
  */
-interface TranscriptionOptions {
+interface TranscriptionOptions extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/model
    */

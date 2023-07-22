@@ -41,10 +41,10 @@ export default class DeepgramClient {
     this.apiUrl = _deepgramUrl;
     this.wsUrl = `${_deepgramUrl}`.replace(/^http/i, "ws");
     this.fetch = fetchWithAuth(deepgramKey, settings.global?.fetch);
-    this.headers = settings.global?.headers ?? {};
+    this.headers = settings.global?.headers ?? ({} as Record<string, string>);
   }
 
-  get transcription() {
-    return new TranscriptionClient(this.apiUrl, this.headers, this.fetch);
+  get transcription(): TranscriptionClient {
+    return new TranscriptionClient(this.apiUrl, this.wsUrl, this.headers, this.fetch);
   }
 }

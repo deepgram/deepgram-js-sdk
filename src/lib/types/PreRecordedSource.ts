@@ -2,16 +2,16 @@ import { Readable } from "stream";
 
 export type PreRecordedSource = UrlSource | BufferSource | ReadStreamSource;
 
-export type ReadStreamSource = {
+export interface ReadStreamSource {
   stream: Readable;
   mimetype: string;
-};
+}
 
-export type UrlSource = {
+export interface UrlSource {
   url: string;
-};
+}
 
-export type BufferSource = {
+export interface BufferSource {
   buffer: Buffer;
   mimetype: string;
-};
+}

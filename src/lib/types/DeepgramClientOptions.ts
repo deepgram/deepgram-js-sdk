@@ -1,6 +1,6 @@
 import type { Fetch } from "./Fetch";
 
-export type DeepgramClientOptions = {
+export interface DeepgramClientOptions {
   global: {
     /**
      * A custom `fetch` implementation.
@@ -17,4 +17,4 @@ export type DeepgramClientOptions = {
      */
     url: string;
   };
-};
+}
