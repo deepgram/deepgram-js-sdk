@@ -1,9 +1,9 @@
-export type PreRecordedResponse = {
+export interface PreRecordedResponse {
   metadata: Metadata;
   results: Result;
-};
+}
 
-type Alternative = {
+interface Alternative {
   transcript: string;
   confidence: number;
   words: Array<WordBase>;
@@ -12,30 +12,30 @@ type Alternative = {
   entities?: Array<Entity>;
   translations?: Array<Translation>;
   topics?: Array<TopicGroup>;
-};
+}
 
-type Channel = {
+interface Channel {
   search?: Array<Search>;
   alternatives: Array<Alternative>;
   detected_language?: string;
-};
+}
 
-type Entity = {
+interface Entity {
   label: string;
   value: string;
   confidence: number;
   start_word: number;
   end_word: number;
-};
+}
 
-type Hit = {
+interface Hit {
   confidence: number;
   start: number;
   end: number;
   snippet: string;
-};
+}
 
-type Metadata = {
+interface Metadata {
   transaction_key: string;
   request_id: string;
   sha256: string;
@@ -45,72 +45,71 @@ type Metadata = {
   models: Array<string>;
   model_info: Record<string, ModelInfo>;
   warnings?: Array<Warning>;
-};
+}
 
-type ModelInfo = {
+interface ModelInfo {
   name: string;
   version: string;
   arch: string;
-};
+}
 
-type Paragraph = {
+interface Paragraph {
   sentences: Array<Sentence>;
   start: number;
   end: number;
   num_words: number;
-};
+}
 
-type ParagraphGroup = {
+interface ParagraphGroup {
   transcript: string;
   paragraphs: Array<Paragraph>;
-};
+}
 
-type Result = {
+interface Result {
   channels: Array<Channel>;
   utterances?: Array<Utterance>;
   summary?: TranscriptionSummary;
-};
+}
 
-type Search = {
+interface Search {
   query: string;
   hits: Array<Hit>;
-};
+}
 
-type Sentence = {
+interface Sentence {
   text: string;
   start: number;
   end: number;
-};
+}
 
-type Summary = {
+interface Summary {
   summary?: string;
   start_word?: number;
   end_word?: number;
-};
-
-type TranscriptionSummary = {
+}
+interface TranscriptionSummary {
   result: string;
   short: string;
-};
+}
 
-type Topic = {
+interface Topic {
   topic: string;
   confidence: number;
-};
+}
 
-type TopicGroup = {
+interface TopicGroup {
   topics: Array<Topic>;
   text: string;
   start_word: number;
   end_word: number;
-};
+}
 
-type Translation = {
+interface Translation {
   language: string;
   translation: string;
-};
+}
 
-type Utterance = {
+interface Utterance {
   start: number;
   end: number;
   confidence: number;
@@ -119,15 +118,15 @@ type Utterance = {
   words: Array<WordBase>;
   speaker?: number;
   id: string;
-};
+}
 
-type Warning = {
+interface Warning {
   parameter: string;
   type: string;
   message: string;
-};
+}
 
-type WordBase = {
+interface WordBase {
   word: string;
   start: number;
   end: number;
@@ -135,4 +134,4 @@ type WordBase = {
   punctuated_word?: string;
   speaker?: number;
   speaker_confidence?: number;
-};
+}

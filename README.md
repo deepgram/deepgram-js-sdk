@@ -8,42 +8,43 @@ Documentation: https://developers.deepgram.com/docs/deepgram-sdks
 
 - [Getting an API Key](#getting-an-api-key)
 - [Usage](#usage)
-  - [UMD](#umd)
-  - [ESM](#esm)
-  - [Custom `fetch` implementation](#custom-fetch-implementation)
-- [Transcription](#transcription)
-  - [Remote Files](#remote-files)
-  - [Local Files](#local-files)
-  - [Live Audio](#live-audio)
-- [Projects](#projects)
-  - [Get Projects](#get-projects)
-  - [Get Project](#get-project)
-  - [Update Project](#update-project)
-  - [Delete Project](#delete-project)
-- [Keys](#keys)
-  - [List Keys](#list-keys)
-  - [Get Key](#get-key)
-  - [Create Key](#create-key)
-  - [Delete Key](#delete-key)
-- [Members](#members)
-  - [Get Members](#get-members)
-  - [Remove Member](#remove-member)
-- [Scopes](#scopes)
-  - [Get Member Scopes](#get-member-scopes)
-  - [Update Scope](#update-scope)
-- [Invitations](#invitations)
-  - [List Invites](#list-invites)
-  - [Send Invite](#send-invite)
-  - [Delete Invite](#delete-invite)
-  - [Leave Project](#leave-project)
-- [Usage](#usage-1)
-  - [Get All Requests](#get-all-requests)
-  - [Get Request](#get-request)
-  - [Summarize Usage](#summarize-usage)
-  - [Get Fields](#get-fields)
-- [Billing](#billing)
-  - [Get All Balances](#get-all-balances)
-  - [Get Balance](#get-balance)
+  - [Installation](#installation)
+    - [UMD](#umd)
+    - [ESM](#esm)
+    - [Custom `fetch` implementation](#custom-fetch-implementation)
+  - [Transcription](#transcription)
+    - [Remote Files](#remote-files)
+    - [Local Files](#local-files)
+    - [Live Audio](#live-audio)
+  - [Projects](#projects)
+    - [Get Projects](#get-projects)
+    - [Get Project](#get-project)
+    - [Update Project](#update-project)
+    - [Delete Project](#delete-project)
+  - [Keys](#keys)
+    - [List Keys](#list-keys)
+    - [Get Key](#get-key)
+    - [Create Key](#create-key)
+    - [Delete Key](#delete-key)
+  - [Members](#members)
+    - [Get Members](#get-members)
+    - [Remove Member](#remove-member)
+  - [Scopes](#scopes)
+    - [Get Member Scopes](#get-member-scopes)
+    - [Update Scope](#update-scope)
+  - [Invitations](#invitations)
+    - [List Invites](#list-invites)
+    - [Send Invite](#send-invite)
+    - [Delete Invite](#delete-invite)
+    - [Leave Project](#leave-project)
+  - [Usage](#usage-1)
+    - [Get All Requests](#get-all-requests)
+    - [Get Request](#get-request)
+    - [Summarize Usage](#summarize-usage)
+    - [Get Fields](#get-fields)
+  - [Billing](#billing)
+    - [Get All Balances](#get-all-balances)
+    - [Get Balance](#get-balance)
 - [Development and Contributing](#development-and-contributing)
 - [Getting Help](#getting-help)
 
@@ -53,15 +54,21 @@ Documentation: https://developers.deepgram.com/docs/deepgram-sdks
 
 # Usage
 
+## Installation
+
 First of all, you need to install the library:
 
 ```sh
+# yarn add @deepgram/sdk
+# - or -
 npm install @deepgram/sdk
 ```
 
 Then you're able to import the library and configure it.
 
 ```js
+// const { createClient } from "@deepgram/sdk";
+// - or -
 import { createClient } from "@deepgram/sdk";
 
 // Create a deepgram client for interacting with the API
@@ -123,9 +130,9 @@ const deepgram = createClient("DEEPGRAM_API_KEY", {
 });
 ```
 
-# Transcription
+## Transcription
 
-## Remote Files
+### Remote Files
 
 ```js
 const response = await deepgram.transcription.preRecorded({ url: URL_OF_FILE }, options);
@@ -133,7 +140,7 @@ const response = await deepgram.transcription.preRecorded({ url: URL_OF_FILE }, 
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-## Local Files
+### Local Files
 
 ```js
 const response = await deepgram.transcription.preRecorded(
@@ -147,7 +154,7 @@ const response = await deepgram.transcription.preRecorded(
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-## Live Audio
+### Live Audio
 
 ```js
 const ws = dg.transcription.live(options);
@@ -161,9 +168,9 @@ See an example, here: [https://github.com/deepgram-devs/node-live-example](https
 
 [See our API reference for more info](https://developers.deepgram.com/reference/streaming).
 
-# Projects
+## Projects
 
-## Get Projects
+### Get Projects
 
 Returns all projects accessible by the API key.
 
@@ -173,7 +180,7 @@ const result = await deepgram.projects.list();
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-projects).
 
-## Get Project
+### Get Project
 
 Retrieves a specific project based on the provided project_id.
 
@@ -183,7 +190,7 @@ const result = await deepgram.projects.get(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-project).
 
-## Update Project
+### Update Project
 
 Update a project.
 
@@ -193,7 +200,7 @@ const result = await deepgram.projects.update(project_id, options);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/update-project).
 
-## Delete Project
+### Delete Project
 
 Delete a project.
 
@@ -203,9 +210,9 @@ await deepgram.projects.delete(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-project).
 
-# Keys
+## Keys
 
-## List Keys
+### List Keys
 
 Retrieves all keys associated with the provided project_id.
 
@@ -215,7 +222,7 @@ const result = await deepgram.keys.list(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/list-keys).
 
-## Get Key
+### Get Key
 
 Retrieves a specific key associated with the provided project_id.
 
@@ -225,7 +232,7 @@ const result = await deepgram.keys.get(project_id, key_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-key).
 
-## Create Key
+### Create Key
 
 Creates an API key with the provided scopes.
 
@@ -236,7 +243,7 @@ const result = await deepgram.keys.create(project_id, comment, scopes, options);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/create-key).
 
-## Delete Key
+### Delete Key
 
 Deletes a specific key associated with the provided project_id.
 
@@ -246,9 +253,9 @@ await deepgram.keys.delete(project_id, key_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-key).
 
-# Members
+## Members
 
-## Get Members
+### Get Members
 
 Retrieves account objects for all of the accounts in the specified project_id.
 
@@ -258,7 +265,7 @@ const result = await deepgram.members.listMembers(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-members).
 
-## Remove Member
+### Remove Member
 
 Removes member account for specified member_id.
 
@@ -268,9 +275,9 @@ const result = await deepgram.members.removeMember(project_id, member_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/remove-member).
 
-# Scopes
+## Scopes
 
-## Get Member Scopes
+### Get Member Scopes
 
 Retrieves scopes of the specified member in the specified project.
 
@@ -280,7 +287,7 @@ const result = await deepgram.scopes.get(project_id, member_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-member-scopes).
 
-## Update Scope
+### Update Scope
 
 Updates the scope for the specified member in the specified project.
 
@@ -291,9 +298,9 @@ const result = await deepgram.scopes.update(project_id, member_id, scope);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/update-scope).
 
-# Invitations
+## Invitations
 
-## List Invites
+### List Invites
 
 Retrieves all invitations associated with the provided project_id.
 
@@ -303,7 +310,7 @@ const result = await deepgram.invitations.list(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/list-invites).
 
-## Send Invite
+### Send Invite
 
 Sends an invitation to the provided email address.
 
@@ -313,7 +320,7 @@ const result = await deepgram.invitation.send(project_id, options);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/send-invites).
 
-## Delete Invite
+### Delete Invite
 
 Removes the specified invitation from the project.
 
@@ -324,7 +331,7 @@ const result = await deepgram.invitation.delete(project_id, email);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-invite).
 
-## Leave Project
+### Leave Project
 
 Removes the authenticated user from the project.
 
@@ -334,9 +341,9 @@ const result = await deepgram.invitation.leave(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/leave-project).
 
-# Usage
+## Usage
 
-## Get All Requests
+### Get All Requests
 
 Retrieves all requests associated with the provided project_id based on the provided options.
 
@@ -346,7 +353,7 @@ const result = await deepgram.usage.listRequests(project_id, options);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-all-requests).
 
-## Get Request
+### Get Request
 
 Retrieves a specific request associated with the provided project_id.
 
@@ -356,7 +363,7 @@ const result = await deepgram.usage.getRequest(project_id, request_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-request).
 
-## Summarize Usage
+### Summarize Usage
 
 Retrieves usage associated with the provided project_id based on the provided options.
 
@@ -366,7 +373,7 @@ const result = await deepgram.usage.getUsage(project_id, options);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/summarize-usage).
 
-## Get Fields
+### Get Fields
 
 Lists the features, models, tags, languages, and processing method used for requests in the specified project.
 
@@ -376,9 +383,9 @@ const result = await deepgram.usage.getFields(project_id, options);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
 
-# Billing
+## Billing
 
-## Get All Balances
+### Get All Balances
 
 Retrieves the list of balance info for the specified project.
 
@@ -388,7 +395,7 @@ const result = await deepgram.billing.listBalances(project_id);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-all-balances).
 
-## Get Balance
+### Get Balance
 
 Retrieves the balance info for the specified project and balance_id.
 
