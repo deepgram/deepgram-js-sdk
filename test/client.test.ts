@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { faker } from "@faker-js/faker";
 import { stripTrailingSlash } from "../src/lib/helpers";
 import DeepgramClient from "../src/DeepgramClient";
+import { TranscriptionClient } from "../src/packages/TranscriptionClient";
 
 const deepgram = createClient(faker.string.alphanumeric(40));
 
@@ -11,6 +12,11 @@ describe("testing creation of a deepgram client object", () => {
   it("it should create the client object", () => {
     expect(deepgram).to.not.be.undefined;
     expect(deepgram).is.instanceOf(DeepgramClient);
+  });
+
+  it("it should provide provide access to a transcription client", () => {
+    expect(deepgram.transcription).to.not.be.undefined;
+    expect(deepgram.transcription).is.instanceOf(TranscriptionClient);
   });
 
   it("it should have the default URL when no custom URL option is provided", () => {
@@ -58,5 +64,21 @@ describe("testing creation of a deepgram client object", () => {
     expect(client).is.instanceOf(DeepgramClient);
     expect(apiUrl).to.equal(stripTrailingSlash(customDomain));
     expect(wsUrl).to.equal(stripTrailingSlash(customDomain).replace(/^http/i, "ws"));
+  });
+
+  it("it should allow for the supply of a custom fetch", () => {
+    const client = createClient(faker.string.alphanumeric(40), {
+      global: { fetch: (...args) => fetch(...args) },
+    });
+
+    expect(client).is.instanceOf(DeepgramClient);
+  });
+
+  it("it should allow for the supply of a custom header", () => {
+    const client = createClient(faker.string.alphanumeric(40), {
+      global: { headers: { "X-dg-test": "testing" } },
+    });
+
+    expect(client).is.instanceOf(DeepgramClient);
   });
 });

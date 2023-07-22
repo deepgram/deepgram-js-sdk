@@ -1,4 +1,5 @@
 import type { DeepgramClientOptions } from "./types/DeepgramClientOptions";
+import { TranscriptionOptions } from "./types/TranscriptionOptions";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -22,10 +23,18 @@ export function applySettingDefaults(
   };
 }
 
-export const resolveResponse = async () => {
-  if (typeof Response === "undefined") {
-    return (await import("cross-fetch")).Response;
-  }
-
-  return Response;
-};
+export function appendSearchParams(
+  searchParams: URLSearchParams,
+  options: TranscriptionOptions
+): void {
+  Object.keys(options).forEach((i) => {
+    if (Array.isArray(options[i])) {
+      const arrayParams = options[i] as Array<any>;
+      arrayParams.forEach((param) => {
+        searchParams.append(i, String(param));
+      });
+    } else {
+      searchParams.append(i, String(options[i]));
+    }
+  });
+}
