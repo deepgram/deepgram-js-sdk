@@ -48,7 +48,8 @@
     "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
   },
   "dependencies": {
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^3.1.5",
+    "isomorphic-ws": "^5.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.7",
@@ -56,10 +57,12 @@
     "@faker-js/faker": "^8.0.2",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^9.1.1",
+    "@types/ws": "^8.5.5",
     "chai": "^4.3.7",
     "cross-env": "^7.0.3",
     "husky": "^4.3.0",
     "mocha": "^9.2.2",
+    "mock-socket": "^9.2.1",
     "nock": "^13.3.2",
     "nodemon": "^3.0.1",
     "npm-run-all": "^4.1.5",
@@ -74,7 +77,8 @@
     "typedoc": "^0.22.16",
     "typescript": "^4.5.5",
     "webpack": "^5.69.1",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "ws": "^8.13.0"
   },
   "husky": {
     "hooks": {
