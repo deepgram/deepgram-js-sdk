@@ -1,4 +1,5 @@
-import crossFetch, { Headers as CrossFetchHeaders } from "cross-fetch";
+import crossFetch from "cross-fetch";
+import { resolveHeadersConstructor } from "./helpers";
 import type { Fetch } from "./types/Fetch";
 
 export const resolveFetch = (customFetch?: Fetch): Fetch => {
@@ -11,14 +12,6 @@ export const resolveFetch = (customFetch?: Fetch): Fetch => {
     _fetch = fetch;
   }
   return (...args) => _fetch(...args);
-};
-
-export const resolveHeadersConstructor = () => {
-  if (typeof Headers === "undefined") {
-    return CrossFetchHeaders;
-  }
-
-  return Headers;
 };
 
 export const fetchWithAuth = (deepgramKey: string, customFetch?: Fetch): Fetch => {

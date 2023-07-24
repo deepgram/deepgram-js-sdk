@@ -1,6 +1,6 @@
-import { Readable } from "stream";
 import { DeepgramApiError, DeepgramUnknownError } from "../lib/errors";
-import { resolveFetch, resolveResponse } from "../lib/fetch";
+import { Readable } from "stream";
+import { resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 
 export class AbstractRestfulClient {
@@ -11,7 +11,7 @@ export class AbstractRestfulClient {
   constructor(apiUrl: string, headers: Record<string, string>, fetch?: Fetch) {
     this.apiUrl = apiUrl;
     this.headers = headers;
-    this.fetch = resolveFetch(fetch);
+    this.fetch = fetch;
   }
 
   protected _getErrorMessage(err: any): string {

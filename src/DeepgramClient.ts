@@ -1,9 +1,10 @@
-import { applySettingDefaults, stripTrailingSlash } from "./lib/helpers";
+import { applySettingDefaults, stripTrailingSlash, wsWithAuth } from "./lib/helpers";
 import { DEFAULT_URL, DEFAULT_OPTIONS } from "./lib/constants";
 import { fetchWithAuth } from "./lib/fetch";
+import { TranscriptionClient } from "./packages/TranscriptionClient";
 import type { DeepgramClientOptions } from "./lib/types/DeepgramClientOptions";
 import type { Fetch } from "./lib/types/Fetch";
-import { TranscriptionClient } from "./packages/TranscriptionClient";
+import { WebSocket } from "isomorphic-ws";
 
 /**
  * Deepgram Client.
@@ -15,6 +16,7 @@ export default class DeepgramClient {
   protected wsUrl: string;
   protected fetch?: Fetch;
   protected headers: Record<string, string>;
+  protected ws?: (url: string, options: any) => WebSocket;
 
   /**
    * Create a new client for interacting with the Deepgram API.
@@ -22,6 +24,7 @@ export default class DeepgramClient {
    * @param options.global.url You can override the default API URL to interact with On-prem and other Deepgram environments.
    * @param options.global.fetch A custom fetch implementation.
    * @param options.global.headers Any additional headers to send with each network request.
+   * @param options.global.ws A custom `ws` class.
    */
   constructor(
     protected deepgramKey: string,
@@ -40,11 +43,12 @@ export default class DeepgramClient {
 
     this.apiUrl = _deepgramUrl;
     this.wsUrl = `${_deepgramUrl}`.replace(/^http/i, "ws");
-    this.fetch = fetchWithAuth(deepgramKey, settings.global?.fetch);
     this.headers = settings.global?.headers ?? {};
+    this.fetch = fetchWithAuth(deepgramKey, settings.global?.fetch);
+    this.ws = wsWithAuth(deepgramKey, settings.global?.ws);
   }
 
   get transcription(): TranscriptionClient {
-    return new TranscriptionClient(this.apiUrl, this.wsUrl, this.headers, this.fetch);
+    return new TranscriptionClient(this.apiUrl, this.wsUrl, this.headers, this.fetch, this.ws);
   }
 }

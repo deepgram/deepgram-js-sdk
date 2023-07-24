@@ -1,4 +1,6 @@
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
+import { appendSearchParams } from "../lib/helpers";
+import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   BufferSource,
   ReadStreamSource,
@@ -8,8 +10,6 @@ import type {
 import type { Fetch } from "../lib/types/Fetch";
 import type { PreRecordedOptions } from "../lib/types/TranscriptionOptions";
 import type { PreRecordedResponse } from "../lib/types/PreRecordedResponse";
-import { DeepgramError, isDeepgramError } from "../lib/errors";
-import { appendSearchParams } from "../lib/helpers";
 
 export class PreRecordedClient extends AbstractRestfulClient {
   constructor(apiUrl: string, headers: Record<string, string>, fetch?: Fetch) {
