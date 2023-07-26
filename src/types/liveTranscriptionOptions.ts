@@ -253,6 +253,11 @@ export type LiveTranscriptionOptions = {
   ner?: boolean;
 
   /**
+   * @see https://developers.deepgram.com/docs/filler-words
+   */
+  filler_words?: boolean;
+
+  /**
    * allow arbitrary unknown key/value pairs to be passed through the SDK to the API
    */
   [key: string]: unknown;
