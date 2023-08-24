@@ -1,0 +1,15 @@
+{
+  "name": "examples-streaming",
+  "version": "1.0.0",
+  "description": "A sample project for running local tests in the Deepgram node SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "@deepgram/sdk": "file:../../",
+    "cross-fetch": "^4.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
