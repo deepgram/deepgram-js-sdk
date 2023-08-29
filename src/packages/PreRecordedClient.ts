@@ -1,28 +1,36 @@
+// import { LiveClient } from "./LiveClient";
+// import WebSocket from "isomorphic-ws";
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
-import { appendSearchParams } from "../lib/helpers";
+import {
+  appendSearchParams,
+  isBufferSource,
+  isReadStreamSource,
+  isUrlSource,
+} from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
-import type {
-  BufferSource,
-  ReadStreamSource,
-  PreRecordedSource,
-  UrlSource,
-} from "../lib/types/PreRecordedSource";
 import type { Fetch } from "../lib/types/Fetch";
-import type { PreRecordedOptions } from "../lib/types/TranscriptionOptions";
-import type { PreRecordedResponse } from "../lib/types/PreRecordedResponse";
+import type { FileSource, UrlSource } from "../lib/types/PrerecordedSource";
+import type { PrerecordedOptions } from "../lib/types/TranscriptionOptions";
+import type { Readable } from "stream";
+import type { SyncPrerecordedResponse } from "../lib/types/SyncPrerecordedResponse";
+import type { AsyncPrerecordedResponse } from "../lib/types/AsyncPrerecordedResponse";
 
-export class PreRecordedClient extends AbstractRestfulClient {
-  constructor(apiUrl: string, headers: Record<string, string>, fetch?: Fetch) {
-    super(apiUrl, headers, fetch);
-  }
-
-  async listen(
-    source: PreRecordedSource,
-    options?: PreRecordedOptions,
+export class PrerecordedClient extends AbstractRestfulClient {
+  /**
+   * Make a synchronous request to transcribe a prerecorded file with a URL.
+   *
+   * @param source An object containing the URL of the target source.
+   * @param options An object containing all of the options for transcription.
+   * @param endpoint Which API endpoint to hit. Could differ between environments.
+   * @returns {SyncPrerecordedResponse}
+   */
+  async transcribeUrl(
+    source: UrlSource,
+    options?: PrerecordedOptions,
     endpoint = "v1/listen"
   ): Promise<
     | {
-        result: PreRecordedResponse;
+        result: SyncPrerecordedResponse;
         error: null;
       }
     | {
@@ -31,39 +39,9 @@ export class PreRecordedClient extends AbstractRestfulClient {
       }
   > {
     try {
-      if (
-        !this._isUrlSource(source) &&
-        (source.mimetype === undefined || source.mimetype.length === 0)
-      ) {
-        throw new DeepgramError(
-          "Mimetype must be provided if the source is a Buffer or a Readable"
-        );
-      }
+      const body = this._getPrerecordedUrlBody(source);
 
-      let body;
-      if (this._isUrlSource(source)) {
-        body = JSON.stringify(source);
-      } else if (this._isBufferSource(source)) {
-        body = source.buffer;
-      } else if (this._isReadStreamSource(source)) {
-        body = source.stream;
-      } else {
-        throw new DeepgramError("Unknown transcription source type");
-      }
-
-      if (!this._isUrlSource(source)) {
-        this.headers["Content-Type"] = source.mimetype;
-      }
-
-      const transcriptionOptions: PreRecordedOptions = { ...{}, ...options };
-      const url = new URL(endpoint, this.apiUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
-
-      const result: PreRecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
-
-      return { result, error: null };
+      return await this._makeSyncPrerecordedRequest(options, endpoint, body);
     } catch (error) {
       if (isDeepgramError(error)) {
         return { result: null, error };
@@ -73,23 +51,173 @@ export class PreRecordedClient extends AbstractRestfulClient {
     }
   }
 
-  private _isUrlSource(providedSource: PreRecordedSource): providedSource is UrlSource {
-    if ((providedSource as UrlSource).url) return true;
+  /**
+   * Make a synchronous request to transcribe a prerecorded local file.
+   *
+   * @param source An object containing the body and mimetype of the target source.
+   * @param options An object containing all of the options for transcription.
+   * @param endpoint Which API endpoint to hit. Could differ between environments.
+   * @returns {SyncPrerecordedResponse}
+   */
+  async transcribeFile(
+    source: FileSource,
+    options?: PrerecordedOptions,
+    endpoint = "v1/listen"
+  ): Promise<
+    | {
+        result: SyncPrerecordedResponse;
+        error: null;
+      }
+    | {
+        result: null;
+        error: DeepgramError;
+      }
+  > {
+    try {
+      this._setFileMimetypeHeaders(source);
 
-    return false;
+      const body = this._getPrerecordedFileBody(source);
+
+      return await this._makeSyncPrerecordedRequest(options, endpoint, body);
+    } catch (error) {
+      if (isDeepgramError(error)) {
+        return { result: null, error };
+      }
+
+      throw error;
+    }
   }
 
-  private _isBufferSource(providedSource: PreRecordedSource): providedSource is BufferSource {
-    if ((providedSource as BufferSource).buffer) return true;
+  async transcribeUrlCallback(
+    source: UrlSource,
+    callback: string,
+    options?: PrerecordedOptions,
+    endpoint = "v1/listen"
+  ): Promise<
+    | {
+        result: AsyncPrerecordedResponse;
+        error: null;
+      }
+    | {
+        result: null;
+        error: DeepgramError;
+      }
+  > {
+    try {
+      const body = this._getPrerecordedUrlBody(source);
 
-    return false;
+      return await this._makeAsyncPrerecordedRequest(options, callback, endpoint, body);
+    } catch (error) {
+      if (isDeepgramError(error)) {
+        return { result: null, error };
+      }
+
+      throw error;
+    }
   }
 
-  private _isReadStreamSource(
-    providedSource: PreRecordedSource
-  ): providedSource is ReadStreamSource {
-    if ((providedSource as ReadStreamSource).stream) return true;
+  async transcribeFileCallback(
+    source: FileSource,
+    callback: string,
+    options?: PrerecordedOptions,
+    endpoint = "v1/listen"
+  ): Promise<
+    | {
+        result: AsyncPrerecordedResponse;
+        error: null;
+      }
+    | {
+        result: null;
+        error: DeepgramError;
+      }
+  > {
+    try {
+      this._setFileMimetypeHeaders(source);
 
-    return false;
+      const body = this._getPrerecordedFileBody(source);
+
+      return await this._makeAsyncPrerecordedRequest(options, callback, endpoint, body);
+    } catch (error) {
+      if (isDeepgramError(error)) {
+        return { result: null, error };
+      }
+
+      throw error;
+    }
+  }
+
+  private _setFileMimetypeHeaders(source: FileSource) {
+    if (source.mimetype === undefined || source.mimetype.length === 0) {
+      throw new DeepgramError("Mimetype must be provided if the source is a Buffer or a Readable");
+    }
+
+    this.headers["Content-Type"] = source.mimetype;
+  }
+
+  private _getPrerecordedUrlBody(source: UrlSource) {
+    let body;
+    if (isUrlSource(source)) {
+      body = JSON.stringify(source);
+    } else {
+      throw new DeepgramError("Unknown transcription source type");
+    }
+
+    return body;
+  }
+
+  private _getPrerecordedFileBody(source: FileSource) {
+    let body;
+    if (isBufferSource(source)) {
+      body = source.buffer;
+    } else if (isReadStreamSource(source)) {
+      body = source.stream;
+    } else {
+      throw new DeepgramError("Unknown transcription source type");
+    }
+
+    return body;
+  }
+
+  private async _makeSyncPrerecordedRequest(
+    options: PrerecordedOptions | undefined,
+    endpoint: string,
+    body: string | Buffer | Readable
+  ) {
+    if (options !== undefined && "callback" in options) {
+      throw new DeepgramError(
+        "Callback cannot be provided as an option to a synchronous transcription. Use `asyncPrerecordedUrl` or `asyncPrerecordedFile` instead."
+      );
+    }
+
+    const transcriptionOptions: PrerecordedOptions = { ...{}, ...options };
+
+    // todo: we should pass the url and params/options to the abstract requester, so it can decide which protocol to use with fetch options
+    const url = this.url;
+    appendSearchParams(url.searchParams, transcriptionOptions);
+
+    const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
+      headers: this.headers,
+    });
+
+    return { result, error: null };
+  }
+
+  private async _makeAsyncPrerecordedRequest(
+    options: PrerecordedOptions | undefined,
+    callback: string,
+    endpoint: string,
+    body: string | Buffer | Readable
+  ) {
+    const transcriptionOptions: PrerecordedOptions = { ...options, ...{ callback } };
+
+    // todo: we should pass the url and params/options to the abstract requester, so it can decide which protocol to use with fetch options
+    const url = this.url;
+    appendSearchParams(url.searchParams, transcriptionOptions);
+
+    const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
+      headers: this.headers,
+    });
+
+    return { result, error: null };
   }
 }

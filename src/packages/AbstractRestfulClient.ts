@@ -4,12 +4,12 @@ import { resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 
 export class AbstractRestfulClient {
-  protected apiUrl: string;
+  protected url: URL;
   protected headers: Record<string, string>;
   protected fetch?: Fetch;
 
-  constructor(apiUrl: string, headers: Record<string, string>, fetch?: Fetch) {
-    this.apiUrl = apiUrl;
+  constructor(url: URL, headers: Record<string, string>, fetch?: Fetch) {
+    this.url = url;
     this.headers = headers;
     this.fetch = fetch;
   }
@@ -49,7 +49,7 @@ export class AbstractRestfulClient {
 
     params.headers = { "Content-Type": "application/json", ...options?.headers };
     params.body = body;
-    return { ...params, ...parameters };
+    return { ...params, ...parameters, duplex: "half" };
   }
 
   protected async _handleRequest(

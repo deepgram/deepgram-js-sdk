@@ -1,4 +1,4 @@
-export interface PreRecordedResponse {
+export interface SyncPrerecordedResponse {
   metadata: Metadata;
   results: Result;
 }

@@ -1,5 +1,5 @@
 import { Readable } from "stream";
-import { ReadStreamSource } from "../../src/lib/types/PreRecordedSource";
+import { ReadStreamSource } from "../../src/lib/types/PrerecordedSource";
 
 export const mockReadable = new Readable();
 mockReadable._read = () => {};

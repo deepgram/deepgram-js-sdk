@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import type { PreRecordedResponse } from "../../src/lib/types/PreRecordedResponse";
+import type { SyncPrerecordedResponse } from "../../src/lib/types/SyncPrerecordedResponse";
 
-const transcription: PreRecordedResponse = {
+const transcription: SyncPrerecordedResponse = {
   metadata: {
     transaction_key: faker.string.alpha(20),
     request_id: faker.string.uuid(),

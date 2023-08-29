@@ -1,4 +1,4 @@
-import { BufferSource } from "../../src/lib/types/PreRecordedSource";
+import { BufferSource } from "../../src/lib/types/PrerecordedSource";
 
 export const mockBuffer: Buffer = Buffer.from("string");
 

@@ -1,10 +1,10 @@
 import { applySettingDefaults, stripTrailingSlash, wsWithAuth } from "./lib/helpers";
 import { DEFAULT_URL, DEFAULT_OPTIONS } from "./lib/constants";
 import { fetchWithAuth } from "./lib/fetch";
-import { TranscriptionClient } from "./packages/TranscriptionClient";
+import { ListenClient } from "./packages/ListenClient";
 import type { DeepgramClientOptions } from "./lib/types/DeepgramClientOptions";
 import type { Fetch } from "./lib/types/Fetch";
-import { WebSocket } from "isomorphic-ws";
+// import { WebSocket } from "isomorphic-ws";
 
 /**
  * Deepgram Client.
@@ -12,11 +12,10 @@ import { WebSocket } from "isomorphic-ws";
  * An isomorphic Javascript client for interacting with the Deepgram API.
  */
 export default class DeepgramClient {
-  protected apiUrl: string;
-  protected wsUrl: string;
+  protected url: URL;
   protected fetch?: Fetch;
   protected headers: Record<string, string>;
-  protected ws?: (url: string, options: any) => WebSocket;
+  // protected ws?: (url: string, options: any) => WebSocket;
 
   /**
    * Create a new client for interacting with the Deepgram API.
@@ -34,21 +33,25 @@ export default class DeepgramClient {
 
     const settings = applySettingDefaults(options, DEFAULT_OPTIONS);
 
-    if (!settings.global.url)
+    if (!settings.global.url) {
       throw new Error(
         `An API URL is required. It should be set to ${DEFAULT_URL} by default. No idea what happened!`
       );
+    }
 
-    const _deepgramUrl = stripTrailingSlash(settings.global.url);
+    let url = settings.global.url;
 
-    this.apiUrl = _deepgramUrl;
-    this.wsUrl = `${_deepgramUrl}`.replace(/^http/i, "ws");
+    if (!/^https?:\/\//i.test(url)) {
+      url = "https://" + url;
+    }
+
+    this.url = new URL(stripTrailingSlash(url));
     this.headers = settings.global?.headers ?? {};
     this.fetch = fetchWithAuth(deepgramKey, settings.global?.fetch);
-    this.ws = wsWithAuth(deepgramKey, settings.global?.ws);
+    // this.ws = wsWithAuth(deepgramKey, settings.global?.ws);
   }
 
-  get transcription(): TranscriptionClient {
-    return new TranscriptionClient(this.apiUrl, this.wsUrl, this.headers, this.fetch, this.ws);
+  get listen(): ListenClient {
+    return new ListenClient(this.url, this.headers, this.fetch /*, this.ws*/);
   }
 }

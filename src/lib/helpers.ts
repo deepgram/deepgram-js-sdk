@@ -2,6 +2,12 @@ import { Headers as CrossFetchHeaders } from "cross-fetch";
 import WebSocket from "isomorphic-ws";
 import type { DeepgramClientOptions } from "./types/DeepgramClientOptions";
 import type { TranscriptionOptions } from "./types/TranscriptionOptions";
+import type {
+  BufferSource,
+  PrerecordedSource,
+  ReadStreamSource,
+  UrlSource,
+} from "./types/PrerecordedSource";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -64,4 +70,26 @@ export const wsWithAuth = (
 
     return new WebSocket(url, options);
   };
+};
+
+export const isUrlSource = (providedSource: PrerecordedSource): providedSource is UrlSource => {
+  if ((providedSource as UrlSource).url) return true;
+
+  return false;
+};
+
+export const isBufferSource = (
+  providedSource: PrerecordedSource
+): providedSource is BufferSource => {
+  if ((providedSource as BufferSource).buffer) return true;
+
+  return false;
+};
+
+export const isReadStreamSource = (
+  providedSource: PrerecordedSource
+): providedSource is ReadStreamSource => {
+  if ((providedSource as ReadStreamSource).stream) return true;
+
+  return false;
 };
