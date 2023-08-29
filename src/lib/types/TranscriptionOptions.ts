@@ -86,7 +86,7 @@ interface TranscriptionOptions extends Record<string, unknown> {
   [key: string]: unknown;
 }
 
-interface PreRecordedOptions extends TranscriptionOptions {
+interface PrerecordedOptions extends TranscriptionOptions {
   /**
    * @see https://developers.deepgram.com/docs/detect-entities
    */
@@ -155,4 +155,4 @@ interface LiveOptions extends TranscriptionOptions {
   interim_results?: boolean;
 }
 
-export type { TranscriptionOptions, PreRecordedOptions, LiveOptions };
+export type { TranscriptionOptions, PrerecordedOptions, LiveOptions };

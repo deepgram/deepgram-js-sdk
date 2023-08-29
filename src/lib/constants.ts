@@ -7,7 +7,7 @@ export const DEFAULT_HEADERS = {
   "Content-Type": "application/json",
 };
 
-export const DEFAULT_URL = "https://api.deepgram.com";
+export const DEFAULT_URL = "api.deepgram.com";
 
 export const DEFAULT_GLOBAL_OPTIONS = {
   url: DEFAULT_URL,

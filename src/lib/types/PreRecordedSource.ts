@@ -1,6 +1,8 @@
 import { Readable } from "stream";
 
-export type PreRecordedSource = UrlSource | BufferSource | ReadStreamSource;
+export type PrerecordedSource = UrlSource | BufferSource | ReadStreamSource;
+
+export type FileSource = BufferSource | ReadStreamSource;
 
 export interface ReadStreamSource {
   stream: Readable;

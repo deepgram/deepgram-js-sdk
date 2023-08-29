@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { faker } from "@faker-js/faker";
 import { stripTrailingSlash } from "../src/lib/helpers";
 import DeepgramClient from "../src/DeepgramClient";
-import { TranscriptionClient } from "../src/packages/TranscriptionClient";
+import { ListenClient } from "../src/packages/ListenClient";
 
 const deepgram = createClient(faker.string.alphanumeric(40));
 
@@ -15,15 +15,15 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should provide provide access to a transcription client", () => {
-    expect(deepgram.transcription).to.not.be.undefined;
-    expect(deepgram.transcription).is.instanceOf(TranscriptionClient);
+    expect(deepgram.listen).to.not.be.undefined;
+    expect(deepgram.listen).is.instanceOf(ListenClient);
   });
 
   it("it should have the default URL when no custom URL option is provided", () => {
     // @ts-ignore
-    const apiUrl = deepgram.apiUrl;
+    const url = deepgram.url.hostname;
 
-    expect(apiUrl).to.equal(DEFAULT_URL);
+    expect(url).to.equal(DEFAULT_URL);
   });
 
   it("it should throw an error if no valid apiKey is provided", () => {
@@ -37,33 +37,29 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should create the client object with a custom domain", () => {
-    const customDomain = faker.internet.url({ appendSlash: false });
+    const customDomain = `api.${faker.internet.domainName()}`;
     const client = createClient(faker.string.alphanumeric(40), {
       global: { url: customDomain },
     });
 
     // @ts-ignore
-    const apiUrl = client.apiUrl;
+    const url = client.url.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(apiUrl).to.equal(customDomain);
+    expect(url).to.equal(customDomain);
   });
 
   it("it should strip trailing slashes off the API URL if they're supplied", () => {
-    const customDomain = faker.internet.url({ appendSlash: true });
+    const customDomain = `api.${faker.internet.domainName()}/`;
     const client = createClient(faker.string.alphanumeric(40), {
       global: { url: customDomain },
     });
 
     // @ts-ignore
-    const apiUrl = client.apiUrl;
-
-    // @ts-ignore
-    const wsUrl = client.wsUrl;
+    const url = client.url.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(apiUrl).to.equal(stripTrailingSlash(customDomain));
-    expect(wsUrl).to.equal(stripTrailingSlash(customDomain).replace(/^http/i, "ws"));
+    expect(url).to.equal(stripTrailingSlash(customDomain));
   });
 
   it("it should allow for the supply of a custom fetch", () => {

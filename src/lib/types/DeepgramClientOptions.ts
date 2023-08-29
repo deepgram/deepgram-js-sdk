@@ -19,7 +19,7 @@ export interface DeepgramClientOptions {
     headers?: Record<string, string>;
 
     /**
-     * The URL used to interact with production, On-prem and other Deepgram environments. Defaults to `https://api.deepgram.com`.
+     * The URL used to interact with production, On-prem and other Deepgram environments. Defaults to `api.deepgram.com`.
      */
     url?: string;
   };
