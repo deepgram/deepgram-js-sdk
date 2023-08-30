@@ -11,7 +11,8 @@
     "lint": "eslint ./src --ext .ts && prettier --config .prettierrc src/*.ts src/**/*.ts --write",
     "test": "mocha -r ts-node/register tests/*test.ts tests/**/*test.ts --insect",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "types": "copyfiles -f \"bundle/*.d.ts\" dist && copyfiles -u 1 \"bundle/**/*.d.ts\" dist"
+    "types": "copyfiles -f \"bundle/*.d.ts\" dist && copyfiles -u 1 \"bundle/**/*.d.ts\" dist",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -53,6 +54,7 @@
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.25.2",
+    "husky": "^8.0.3",
     "mocha": "^9.1.3",
     "mock-websocket": "^0.0.7",
     "nock": "^13.3.1",
