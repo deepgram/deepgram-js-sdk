@@ -10,26 +10,28 @@ import type { Fetch } from "./lib/types/Fetch";
  * Deepgram Client.
  *
  * An isomorphic Javascript client for interacting with the Deepgram API.
+ * @see https://developers.deepgram.com
  */
 export default class DeepgramClient {
+  protected key: string;
   protected url: URL;
   protected fetch?: Fetch;
   protected headers: Record<string, string>;
   // protected ws?: (url: string, options: any) => WebSocket;
 
-  /**
-   * Create a new client for interacting with the Deepgram API.
-   * @param deepgramKey The Deepgram API which is supplied when you create a new project in your console dashboard.
-   * @param options.global.url You can override the default API URL to interact with On-prem and other Deepgram environments.
-   * @param options.global.fetch A custom fetch implementation.
-   * @param options.global.headers Any additional headers to send with each network request.
-   * @param options.global.ws A custom `ws` class.
-   */
   constructor(
-    protected deepgramKey: string,
+    protected apiKey: string,
     options: DeepgramClientOptions | undefined = DEFAULT_OPTIONS
   ) {
-    if (!deepgramKey) throw new Error("deepgramKey is required.");
+    this.key = apiKey;
+
+    if (!apiKey) {
+      this.key = process.env.DEEPGRAM_API_KEY as string;
+    }
+
+    if (!this.key) {
+      if (!apiKey) throw new Error("A deepgram API key is required");
+    }
 
     const settings = applySettingDefaults(options, DEFAULT_OPTIONS);
 
@@ -47,8 +49,8 @@ export default class DeepgramClient {
 
     this.url = new URL(stripTrailingSlash(url));
     this.headers = settings.global?.headers ?? {};
-    this.fetch = fetchWithAuth(deepgramKey, settings.global?.fetch);
-    // this.ws = wsWithAuth(deepgramKey, settings.global?.ws);
+    this.fetch = fetchWithAuth(this.key, settings.global?.fetch);
+    // this.ws = wsWithAuth(key, settings.global?.ws);
   }
 
   get listen(): ListenClient {

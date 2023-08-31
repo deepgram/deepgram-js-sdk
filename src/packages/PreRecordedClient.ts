@@ -16,14 +16,6 @@ import type { SyncPrerecordedResponse } from "../lib/types/SyncPrerecordedRespon
 import type { AsyncPrerecordedResponse } from "../lib/types/AsyncPrerecordedResponse";
 
 export class PrerecordedClient extends AbstractRestfulClient {
-  /**
-   * Make a synchronous request to transcribe a prerecorded file with a URL.
-   *
-   * @param source An object containing the URL of the target source.
-   * @param options An object containing all of the options for transcription.
-   * @param endpoint Which API endpoint to hit. Could differ between environments.
-   * @returns {SyncPrerecordedResponse}
-   */
   async transcribeUrl(
     source: UrlSource,
     options?: PrerecordedOptions,
@@ -51,14 +43,6 @@ export class PrerecordedClient extends AbstractRestfulClient {
     }
   }
 
-  /**
-   * Make a synchronous request to transcribe a prerecorded local file.
-   *
-   * @param source An object containing the body and mimetype of the target source.
-   * @param options An object containing all of the options for transcription.
-   * @param endpoint Which API endpoint to hit. Could differ between environments.
-   * @returns {SyncPrerecordedResponse}
-   */
   async transcribeFile(
     source: FileSource,
     options?: PrerecordedOptions,

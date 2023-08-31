@@ -60,6 +60,7 @@
     "@types/ws": "^8.5.5",
     "chai": "^4.3.7",
     "cross-env": "^7.0.3",
+    "fetch-mock": "^9.11.0",
     "husky": "^4.3.0",
     "mocha": "^9.2.2",
     "mock-socket": "^9.2.1",
