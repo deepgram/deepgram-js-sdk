@@ -177,6 +177,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
     // todo: we should pass the url and params/options to the abstract requester, so it can decide which protocol to use with fetch options
     const url = this.url;
+    url.pathname = endpoint;
     appendSearchParams(url.searchParams, transcriptionOptions);
 
     const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
@@ -196,6 +197,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
     // todo: we should pass the url and params/options to the abstract requester, so it can decide which protocol to use with fetch options
     const url = this.url;
+    url.pathname = endpoint;
     appendSearchParams(url.searchParams, transcriptionOptions);
 
     const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
