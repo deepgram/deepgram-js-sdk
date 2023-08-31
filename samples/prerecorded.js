@@ -4,7 +4,7 @@ const fs = require("fs");
 const url = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const { error } = await deepgram.listen.syncPrerecordedUrl(
+  const { error } = await deepgram.listen.prerecorded.transcribeUrl(
     {
       url: "https://dpgr.am/spacewalk.wav",
     },
@@ -20,7 +20,7 @@ const url = async () => {
 const readstream = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const { error } = await deepgram.listen.syncPrerecordedFile(
+  const { error } = await deepgram.listen.prerecorded.transcribeFile(
     {
       stream: fs.createReadStream("./samples/nasa.mp4"),
       mimetype: "audio/mp4",
@@ -37,7 +37,7 @@ const readstream = async () => {
 const buffer = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const { error } = await deepgram.listen.syncPrerecordedFile(
+  const { error } = await deepgram.listen.prerecorded.transcribeFile(
     {
       buffer: fs.readFileSync("./samples/nasa.mp4"),
       mimetype: "audio/mp4",
