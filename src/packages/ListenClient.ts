@@ -1,5 +1,7 @@
 import { PrerecordedClient } from "./PrerecordedClient";
+// import { LiveClient } from "./LiveClient";
 import type { Fetch } from "../lib/types/Fetch";
+// import type { LiveOptions } from "../lib/types/TranscriptionOptions";
 
 export class ListenClient {
   protected url: URL;
@@ -18,7 +20,7 @@ export class ListenClient {
     return new PrerecordedClient(this.url, this.headers, this.fetch);
   }
 
-  // get live() {
-  //   return new LiveClient(this.wsUrl, this.headers, this.ws);
+  // public live(options: LiveOptions) {
+  //   return new LiveClient(this.url, this.headers, this.fetch);
   // }
 }

@@ -5,6 +5,7 @@ import { faker } from "@faker-js/faker";
 import { stripTrailingSlash } from "../src/lib/helpers";
 import DeepgramClient from "../src/DeepgramClient";
 import { ListenClient } from "../src/packages/ListenClient";
+import { customDomain } from "./mocks";
 
 const deepgram = createClient(faker.string.alphanumeric(40));
 
@@ -27,7 +28,7 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should throw an error if no valid apiKey is provided", () => {
-    expect(() => createClient("")).to.throw("deepgramKey is required");
+    expect(() => createClient("")).to.throw("A deepgram API key is required");
   });
 
   it("it should throw an error if invalid options are provided", () => {
@@ -37,7 +38,6 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should create the client object with a custom domain", () => {
-    const customDomain = `api.${faker.internet.domainName()}`;
     const client = createClient(faker.string.alphanumeric(40), {
       global: { url: customDomain },
     });
@@ -50,16 +50,16 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should strip trailing slashes off the API URL if they're supplied", () => {
-    const customDomain = `api.${faker.internet.domainName()}/`;
+    const domain = `${customDomain}/`;
     const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: customDomain },
+      global: { url: domain },
     });
 
     // @ts-ignore
     const url = client.url.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal(stripTrailingSlash(customDomain));
+    expect(url).to.equal(stripTrailingSlash(domain));
   });
 
   it("it should allow for the supply of a custom fetch", () => {
