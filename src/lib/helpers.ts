@@ -33,7 +33,7 @@ export function applySettingDefaults(
 
 export function appendSearchParams(
   searchParams: URLSearchParams,
-  options: TranscriptionOptions
+  options: Record<string, unknown>
 ): void {
   Object.keys(options).forEach((i) => {
     if (Array.isArray(options[i])) {

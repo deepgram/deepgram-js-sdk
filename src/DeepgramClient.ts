@@ -4,6 +4,8 @@ import { fetchWithAuth } from "./lib/fetch";
 import { ListenClient } from "./packages/ListenClient";
 import type { DeepgramClientOptions } from "./lib/types/DeepgramClientOptions";
 import type { Fetch } from "./lib/types/Fetch";
+import { ManageClient } from "./packages/ManageClient";
+import { OnPremClient } from "./packages/OnPremClient";
 // import { WebSocket } from "isomorphic-ws";
 
 /**
@@ -55,5 +57,13 @@ export default class DeepgramClient {
 
   get listen(): ListenClient {
     return new ListenClient(this.url, this.headers, this.fetch /*, this.ws*/);
+  }
+
+  get project(): ManageClient {
+    return new ManageClient(this.url, this.headers, this.fetch);
+  }
+
+  get onprem(): OnPremClient {
+    return new OnPremClient(this.url, this.headers, this.fetch);
   }
 }
