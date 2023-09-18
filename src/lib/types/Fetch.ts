@@ -7,7 +7,7 @@ export interface FetchOptions {
   noResolveJson?: boolean;
 }
 
-export type RequestMethodType = "GET" | "POST" | "PUT" | "DELETE";
+export type RequestMethodType = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export interface FetchParameters {
   /**

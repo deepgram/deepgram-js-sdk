@@ -101,13 +101,22 @@ export class AbstractRestfulClient {
     return this._handleRequest(fetcher, "PUT", url, options, parameters, body);
   }
 
-  protected async remove(
+  protected async patch(
     fetcher: Fetch,
     url: string | URL,
     body: string | Buffer | Readable,
     options?: FetchOptions,
     parameters?: FetchParameters
   ): Promise<any> {
-    return this._handleRequest(fetcher, "DELETE", url, options, parameters, body);
+    return this._handleRequest(fetcher, "PATCH", url, options, parameters, body);
+  }
+
+  protected async delete(
+    fetcher: Fetch,
+    url: string | URL,
+    options?: FetchOptions,
+    parameters?: FetchParameters
+  ): Promise<any> {
+    return this._handleRequest(fetcher, "DELETE", url, options, parameters);
   }
 }
