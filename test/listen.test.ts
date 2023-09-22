@@ -1,145 +1,63 @@
 import { createClient } from "../src";
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import { faker } from "@faker-js/faker";
-import { /*transcription, urlSource,*/ customDomain } from "./mocks";
 import DeepgramClient from "../src/DeepgramClient";
-// import nock from "nock";
-// import fetchMock from "fetch-mock";
-// import { appendSearchParams } from "../src/lib/helpers";
-// import { FileSource } from "../src/lib/types/PrerecordedSource";
 
-const deepgram = createClient(faker.string.alphanumeric(40), {
-  global: { url: customDomain },
-});
+import bufferSource from "./mocks/bufferSource";
 
-describe("testing making listen requests", () => {
-  // before(() => {
-  //   if (!nock.isActive()) nock.activate();
-  //   nock.disableNetConnect();
-  // });
+describe("making listen requests", () => {
+  let deepgram: DeepgramClient;
 
-  // afterEach(() => {
-  //   if (!nock.isDone()) {
-  //     throw new Error(
-  //       `Not all nock interceptors were used: ${JSON.stringify(nock.pendingMocks())}`
-  //     );
-  //   }
+  beforeEach(() => {
+    deepgram = createClient(faker.string.alphanumeric(40), {
+      global: { url: "http://localhost:8080" },
+    });
+  });
 
-  //   nock.cleanAll();
-  // });
-
-  // after(() => {
-  //   nock.restore();
-  // });
-
-  it("it should create the client object", () => {
+  it("should create the client object", () => {
     expect(deepgram).to.not.be.undefined;
     expect(deepgram).is.instanceOf(DeepgramClient);
   });
 
-  // it("it should transcribe a URL source", async () => {
-  //   const mockOptions = {};
+  it("should transcribe a URL source synchronously", async () => {
+    const { result, error } = await deepgram.listen.prerecorded.transcribeUrl({
+      url: "https://dpgr.am/spacewalk.wav",
+    });
 
-  //   const params = new URLSearchParams();
-  //   appendSearchParams(params, mockOptions);
+    assert.isNull(error);
+    assert.isNotNull(result);
+    assert.containsAllDeepKeys(result?.metadata, ["request_id"]);
+  });
 
-  //   // nock(`https://${customDomain}`).post(`/v1/listen?${params}`).reply(200, transcription);
-  //   fetchMock.post(`https://${customDomain}`, transcription);
+  it("should transcribe a URL source asynchronously", async () => {
+    const { result, error } = await deepgram.listen.prerecorded.transcribeFile(bufferSource);
 
-  //   const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
-  //     urlSource,
-  //     mockOptions
-  //   );
+    assert.isNull(error);
+    assert.isNotNull(result);
+    assert.containsAllDeepKeys(result?.metadata, ["request_id"]);
+  });
 
-  //   console.log(result, error);
+  it("should transcribe a file source asynchronously", async () => {
+    const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallback(
+      {
+        url: "https://dpgr.am/spacewalk.wav",
+      },
+      "http://example.com"
+    );
 
-  //   expect(error).to.be.null;
-  //   expect(result).to.deep.equal(transcription);
-  // });
+    assert.isNull(error);
+    assert.isNotNull(result);
+    assert.containsAllDeepKeys(result, ["request_id"]);
+  });
 
-  // it("it should transcribe a ReadStream source", async () => {
-  //   const mockOptions = {};
+  it("should transcribe a file source asynchronously", async () => {
+    const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallback(
+      bufferSource,
+      "https://localhost:8081/callback"
+    );
 
-  //   const params = new URLSearchParams();
-  //   appendSearchParams(params, mockOptions);
-
-  //   nock(`https://${customDomain}`).post(`/v1/listen?${params}`).reply(200, transcription);
-
-  //   const { result, error } = await deepgram.listen.syncPrerecordedFile(
-  //     readStreamSource,
-  //     mockOptions
-  //   );
-
-  //   expect(error).to.be.null;
-  //   expect(result).to.deep.equal(transcription);
-  // });
-
-  // it("it should not try to transcribe a ReadStream source when missing a mimetype", async () => {
-  //   const mockOptions = {};
-
-  //   const params = new URLSearchParams();
-  //   appendSearchParams(params, mockOptions);
-
-  //   readStreamSource.mimetype = "";
-
-  //   const { result, error } = await deepgram.listen.syncPrerecordedFile(
-  //     readStreamSource,
-  //     mockOptions
-  //   );
-
-  //   expect(result).to.be.null;
-  //   expect(error?.message).to.equal(
-  //     "Mimetype must be provided if the source is a Buffer or a Readable"
-  //   );
-  // });
-
-  // it("it should transcribe a Buffer source", async () => {
-  //   const mockOptions = {};
-
-  //   const params = new URLSearchParams();
-  //   appendSearchParams(params, mockOptions);
-
-  //   nock(`https://${customDomain}`).post(`/v1/listen?${params}`).reply(200, transcription);
-
-  //   const { result, error } = await deepgram.listen.syncPrerecordedFile(bufferSource, mockOptions);
-
-  //   expect(error).to.be.null;
-  //   expect(result).to.deep.equal(transcription);
-  // });
-
-  // it("it should not try to transcribe a Buffer source when missing a mimetype", async () => {
-  //   const mockOptions = {};
-
-  //   const params = new URLSearchParams();
-  //   appendSearchParams(params, mockOptions);
-
-  //   bufferSource.mimetype = "";
-
-  //   const { result, error } = await deepgram.listen.syncPrerecordedFile(bufferSource, mockOptions);
-
-  //   expect(result).to.be.null;
-  //   expect(error?.message).to.equal(
-  //     "Mimetype must be provided if the source is a Buffer or a Readable"
-  //   );
-  // });
-
-  // it("it should not try to transcribe an unknown source", async () => {
-  //   const mockOptions = {};
-
-  //   const params = new URLSearchParams();
-  //   appendSearchParams(params, mockOptions);
-
-  //   const unknownSource = {
-  //     test: "breaker",
-  //     mimetype: "application/xml",
-  //   };
-
-  //   const { result, error } = await deepgram.listen.syncPrerecordedFile(
-  //     unknownSource as unknown as FileSource,
-  //     mockOptions
-  //   );
-
-  //   expect(result).to.be.null;
-  //   expect(error?.message).to.equal("Unknown transcription source type");
-  // });
+    assert.isNull(error);
+    assert.isNotNull(result);
+    assert.containsAllDeepKeys(result, ["request_id"]);
+  });
 });
