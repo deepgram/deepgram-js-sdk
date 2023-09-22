@@ -1,9 +1,8 @@
-import { createClient } from "../src";
 import { assert, expect } from "chai";
+import { createClient } from "../src";
 import { faker } from "@faker-js/faker";
-import DeepgramClient from "../src/DeepgramClient";
-
 import bufferSource from "./mocks/bufferSource";
+import DeepgramClient from "../src/DeepgramClient";
 
 describe("making listen requests", () => {
   let deepgram: DeepgramClient;
