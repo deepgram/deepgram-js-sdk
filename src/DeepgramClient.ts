@@ -59,7 +59,7 @@ export default class DeepgramClient {
     return new ListenClient(this.url, this.headers, this.fetch /*, this.ws*/);
   }
 
-  get project(): ManageClient {
+  get manage(): ManageClient {
     return new ManageClient(this.url, this.headers, this.fetch);
   }
 
