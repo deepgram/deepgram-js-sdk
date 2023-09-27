@@ -327,7 +327,7 @@ export class ManageClient extends AbstractRestfulClient {
 
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.patch(this.fetch as Fetch, url, body, {
+      const result: MessageResponse = await this.put(this.fetch as Fetch, url, body, {
         headers: this.headers,
       });
 

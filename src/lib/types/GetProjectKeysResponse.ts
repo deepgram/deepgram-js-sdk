@@ -17,7 +17,7 @@ interface Member {
 interface Key {
   api_key_id: string;
   comment?: string;
-  scopes: [string];
-  tags?: [string];
+  scopes: string[];
+  tags?: string[];
   created: string;
 }

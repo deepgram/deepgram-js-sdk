@@ -1,5 +1,5 @@
 export interface CreateOnPremCredentialsOptions extends Record<string, unknown> {
   comment?: string;
-  scopes?: [string];
+  scopes?: string[];
   provider?: string;
 }

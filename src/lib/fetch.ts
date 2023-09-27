@@ -14,7 +14,7 @@ export const resolveFetch = (customFetch?: Fetch): Fetch => {
   return (...args) => _fetch(...args);
 };
 
-export const fetchWithAuth = (deepgramKey: string, customFetch?: Fetch): Fetch => {
+export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
   const fetch = resolveFetch(customFetch);
   const HeadersConstructor = resolveHeadersConstructor();
 
@@ -22,7 +22,7 @@ export const fetchWithAuth = (deepgramKey: string, customFetch?: Fetch): Fetch =
     let headers = new HeadersConstructor(init?.headers);
 
     if (!headers.has("Authorization")) {
-      headers.set("Authorization", `Token ${deepgramKey}`);
+      headers.set("Authorization", `Token ${apiKey}`);
     }
 
     return fetch(input, { ...init, headers });

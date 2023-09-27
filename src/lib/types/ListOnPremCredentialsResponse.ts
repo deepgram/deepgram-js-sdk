@@ -11,7 +11,7 @@ export interface OnPremCredentialResponse {
     distribution_credentials_id: string;
     provider: string;
     comment: string;
-    scopes: [string, string];
+    scopes: string[];
     created: string;
   };
 }
