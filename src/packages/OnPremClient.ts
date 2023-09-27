@@ -13,7 +13,7 @@ export class OnPremClient extends AbstractRestfulClient {
   /**
    * @see https://developers.deepgram.com/reference/list-credentials
    */
-  async listOnPremCredentials(
+  async listCredentials(
     projectId: string,
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<ListOnPremCredentialsResponse>> {
@@ -38,7 +38,7 @@ export class OnPremClient extends AbstractRestfulClient {
   /**
    * @see https://developers.deepgram.com/reference/get-credentials
    */
-  async getOnPremCredentials(
+  async getCredentials(
     projectId: string,
     credentialsId: string,
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials/:credentialsId"
@@ -66,7 +66,7 @@ export class OnPremClient extends AbstractRestfulClient {
   /**
    * @see https://developers.deepgram.com/reference/create-credentials
    */
-  async createOnPremCredentials(
+  async createCredentials(
     projectId: string,
     options: CreateOnPremCredentialsOptions,
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
@@ -94,7 +94,7 @@ export class OnPremClient extends AbstractRestfulClient {
   /**
    * @see https://developers.deepgram.com/reference/delete-credentials
    */
-  async deleteProject(
+  async deleteCredentials(
     projectId: string,
     credentialsId: string,
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials/:credentialsId"

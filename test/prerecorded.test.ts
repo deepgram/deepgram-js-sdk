@@ -28,7 +28,7 @@ describe("making listen requests", () => {
     assert.containsAllDeepKeys(result?.metadata, ["request_id"]);
   });
 
-  it("should transcribe a URL source asynchronously", async () => {
+  it("should transcribe a file source synchronously", async () => {
     const { result, error } = await deepgram.listen.prerecorded.transcribeFile(bufferSource);
 
     assert.isNull(error);
@@ -36,7 +36,7 @@ describe("making listen requests", () => {
     assert.containsAllDeepKeys(result?.metadata, ["request_id"]);
   });
 
-  it("should transcribe a file source asynchronously", async () => {
+  it("should transcribe a URL source asynchronously", async () => {
     const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallback(
       {
         url: "https://dpgr.am/spacewalk.wav",

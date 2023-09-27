@@ -1,3 +1,3 @@
 export interface GetProjectMemberScopesResponse {
-  scopes: [string];
+  scopes: string[];
 }

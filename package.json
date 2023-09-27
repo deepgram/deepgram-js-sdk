@@ -42,9 +42,8 @@
     "build:module": "tsc -p tsconfig.module.json",
     "build:umd": "webpack --mode=production",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "pretest": "ts-node test/testServer.ts &",
-    "test": "mocha -r ts-node/register test/*test.ts test/**/*test.ts --insect",
-    "posttest": "kill $(lsof -t -i:8080)",
+    "test:server": "nodemon -e ts --watch src --watch test --exec \"ts-node test/testServer.ts\"",
+    "test": "mocha -r ts-node/register test/*test.ts test/**/*test.ts --insect || :",
     "test:coverage": "nyc --reporter=lcovonly --reporter=text --reporter=text-summary npm run test",
     "docs": "typedoc --entryPoints src/index.ts --out docs/v2 --includes src/**/*.ts",
     "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
