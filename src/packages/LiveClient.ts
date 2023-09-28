@@ -1,62 +1,44 @@
+import { EventEmitter } from "events";
 import { appendSearchParams } from "../lib/helpers";
-import { DeepgramError } from "../lib/errors";
-import { LiveConnectionState } from "../lib/types/LiveConnectionState";
-import { LiveTranscriptionEvents } from "../lib/types/LiveTranscriptionEvents";
-import WebSocket, { EventEmitter } from "isomorphic-ws";
-import type { LiveConfigOptions } from "../lib/types/LiveConfigOptions";
-import type { LiveOptions } from "../lib/types/TranscriptionOptions";
+import WebSocket from "modern-isomorphic-ws";
+import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
+import type { LiveOptions, LiveConfigOptions } from "../lib/types";
+import { DEFAULT_HEADERS } from "../lib/constants";
 
-export class LiveClient {
-  private wsUrl: string;
-  private headers: Record<string, string>;
-  private ws?: (url: string, options: any) => WebSocket;
-
-  constructor(
-    wsUrl: string,
-    headers: Record<string, string>,
-    ws?: (url: string, options: any) => WebSocket
-  ) {
-    this.wsUrl = wsUrl;
-    this.headers = headers;
-    this.ws = ws;
-  }
-
-  public listen(options?: LiveOptions, endpoint = "v1/listen") {
-    return new WsClient(this.wsUrl, this.headers, this.ws, options, endpoint);
-  }
-}
-
-class WsClient extends EventEmitter {
+export class LiveClient extends EventEmitter {
   private _socket: WebSocket;
 
-  constructor(
-    wsUrl: string,
-    headers: Record<string, string>,
-    ws?: (url: string, options: any) => WebSocket,
-    options?: LiveOptions,
-    endpoint = "v1/listen"
-  ) {
+  constructor(baseUrl: URL, apiKey: string, options: LiveOptions, endpoint = "v1/listen") {
     super();
 
-    if (!ws) throw new DeepgramError("Failed to get WebSocket");
-
     const transcriptionOptions: LiveOptions = { ...{}, ...options };
-    const url = new URL(endpoint, wsUrl);
+    const url = new URL(endpoint, baseUrl);
+    url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
     appendSearchParams(url.searchParams, transcriptionOptions);
 
-    this._socket = ws(url.toString(), { headers });
+    this._socket = new WebSocket(url.toString(), {
+      headers: {
+        Authorization: `token ${apiKey}`,
+        ...DEFAULT_HEADERS,
+      },
+    });
 
     this._socket.onopen = () => {
       this.emit(LiveTranscriptionEvents.Open, this);
     };
 
     this._socket.onclose = (event: WebSocket.CloseEvent) => {
-      // changing the event.target to any to access the private _req property that isn't available on the WebSocket.CloseEvent type
+      /**
+       * changing the event.target to any to access the private _req
+       * property that isn't available on the WebSocket.CloseEvent type
+       **/
       const newTarget: any = event.target;
+
       if (newTarget["_req"]) {
         const dgErrorIndex = newTarget["_req"].res.rawHeaders.indexOf("dg-error");
         event.reason = newTarget["_req"].res.rawHeaders[dgErrorIndex + 1];
       }
+
       this.emit(LiveTranscriptionEvents.Close, event);
     };
 
@@ -64,11 +46,27 @@ class WsClient extends EventEmitter {
       this.emit(LiveTranscriptionEvents.Error, event);
     };
 
-    this._socket.onmessage = (m) => {
-      this.emit(LiveTranscriptionEvents.TranscriptReceived, m.data);
-    };
+    this._socket.onmessage = (event) => {
+      if (String(event.data)) {
+        try {
+          const data = JSON.parse(event.data as string);
 
-    return this;
+          if (data.type === LiveTranscriptionEvents.Metadata) {
+            this.emit(LiveTranscriptionEvents.Metadata, data);
+          }
+
+          if (data.type === LiveTranscriptionEvents.Transcript) {
+            this.emit(LiveTranscriptionEvents.Transcript, data);
+          }
+        } catch (error) {
+          console.log(error);
+          this.emit(LiveTranscriptionEvents.Error, {
+            event,
+            message: "Unable to parse `data` as JSON.",
+          });
+        }
+      }
+    };
   }
 
   public configure(config: LiveConfigOptions): void {
@@ -98,7 +96,18 @@ class WsClient extends EventEmitter {
    */
   public send(data: string | ArrayBufferLike | ArrayBufferView): void {
     if (this._socket.readyState === LiveConnectionState.OPEN) {
-      this._socket.send(data);
+      if (typeof data === "string") {
+        this._socket.send(data); // send text data
+      } else {
+        if (data.byteLength > 0) {
+          this._socket.send(data); // send buffer when not zero-byte
+        } else {
+          this.emit(
+            LiveTranscriptionEvents.Warning,
+            "Zero-byte detected, skipping. Send `CloseStream` if trying to close the connection."
+          );
+        }
+      }
     } else {
       this.emit(LiveTranscriptionEvents.Error, "Could not send. Connection not open.");
     }
@@ -109,6 +118,16 @@ class WsClient extends EventEmitter {
    * the websocket connection when transcription is finished
    */
   public finish(): void {
-    this._socket.send(new Uint8Array(0));
+    // tell the server to close the socket
+    this._socket.send(
+      JSON.stringify({
+        type: "CloseStream",
+      })
+    );
+
+    // close the socket from the client end
+    if (this._socket.readyState === LiveConnectionState.OPEN) {
+      this._socket.close();
+    }
   }
 }

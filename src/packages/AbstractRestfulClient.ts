@@ -1,17 +1,18 @@
 import { DeepgramApiError, DeepgramUnknownError } from "../lib/errors";
 import { Readable } from "stream";
-import { resolveResponse } from "../lib/fetch";
+import { fetchWithAuth, resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 
 export class AbstractRestfulClient {
-  protected url: URL;
+  protected baseUrl: URL;
   protected headers: Record<string, string>;
-  protected fetch?: Fetch;
+  protected fetch: Fetch;
 
-  constructor(url: URL, headers: Record<string, string>, fetch?: Fetch) {
-    this.url = url;
+  constructor(baseUrl: URL, headers: Record<string, string>, apiKey: string) {
+    this.baseUrl = baseUrl;
     this.headers = headers;
-    this.fetch = fetch;
+
+    this.fetch = fetchWithAuth(apiKey);
   }
 
   protected _getErrorMessage(err: any): string {

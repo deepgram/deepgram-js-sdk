@@ -35,7 +35,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjects(endpoint = "v1/projects"): Promise<DeepgramResponse<GetProjectsResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint;
 
       const result: GetProjectsResponse = await this.get(this.fetch as Fetch, url, {
@@ -60,7 +60,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId"
   ): Promise<DeepgramResponse<GetProjectResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: GetProjectResponse = await this.get(this.fetch as Fetch, url, {
@@ -86,7 +86,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const body = JSON.stringify(options);
@@ -113,7 +113,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId"
   ): Promise<VoidResponse> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       await this.delete(this.fetch as Fetch, url, {
@@ -138,7 +138,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/keys"
   ): Promise<DeepgramResponse<GetProjectKeysResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: GetProjectKeysResponse = await this.get(this.fetch as Fetch, url, {
@@ -164,7 +164,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/keys/:keyId"
   ): Promise<DeepgramResponse<GetProjectKeyResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:keyId/, keyId);
 
       const result: GetProjectKeyResponse = await this.get(this.fetch as Fetch, url, {
@@ -190,7 +190,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/keys"
   ): Promise<DeepgramResponse<CreateProjectKeyResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const body = JSON.stringify(options);
@@ -218,7 +218,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/keys/:keyId"
   ): Promise<VoidResponse> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:keyId/, keyId);
 
       await this.delete(this.fetch as Fetch, url, {
@@ -243,7 +243,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/members"
   ): Promise<DeepgramResponse<GetProjectMembersResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: GetProjectMembersResponse = await this.get(this.fetch as Fetch, url, {
@@ -269,7 +269,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/members/:memberId"
   ): Promise<VoidResponse> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:memberId/, memberId);
 
       await this.delete(this.fetch as Fetch, url, {
@@ -295,7 +295,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/members/:memberId/scopes"
   ): Promise<DeepgramResponse<GetProjectMemberScopesResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:memberId/, memberId);
 
       const result: GetProjectMemberScopesResponse = await this.get(this.fetch as Fetch, url, {
@@ -322,7 +322,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/members/:memberId/scopes"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:memberId/, memberId);
 
       const body = JSON.stringify(options);
@@ -349,7 +349,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/invites"
   ): Promise<DeepgramResponse<GetProjectInvitesResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: GetProjectInvitesResponse = await this.get(this.fetch as Fetch, url, {
@@ -375,7 +375,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/invites"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const body = JSON.stringify(options);
@@ -403,7 +403,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/invites/:email"
   ): Promise<VoidResponse> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:email/, email);
 
       await this.delete(this.fetch as Fetch, url, {
@@ -428,7 +428,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/leave"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: MessageResponse = await this.delete(this.fetch as Fetch, url, {
@@ -454,7 +454,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/requests"
   ): Promise<DeepgramResponse<GetProjectUsageRequestsResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
       appendSearchParams(url.searchParams, options);
 
@@ -481,7 +481,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/requests/:requestId"
   ): Promise<DeepgramResponse<GetProjectUsageRequestResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:requestId/, requestId);
 
       const result: GetProjectUsageRequestResponse = await this.get(this.fetch as Fetch, url, {
@@ -507,7 +507,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/usage"
   ): Promise<DeepgramResponse<GetProjectUsageSummaryResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
       appendSearchParams(url.searchParams, options);
 
@@ -534,7 +534,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/usage/fields"
   ): Promise<DeepgramResponse<GetProjectUsageFieldsResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
       appendSearchParams(url.searchParams, options);
 
@@ -560,7 +560,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/balances"
   ): Promise<DeepgramResponse<GetProjectBalancesResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: GetProjectBalancesResponse = await this.get(this.fetch as Fetch, url, {
@@ -586,7 +586,7 @@ export class ManageClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/balances/:balanceId"
   ): Promise<DeepgramResponse<GetProjectBalanceResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:balanceId/, balanceId);
 
       const result: GetProjectBalanceResponse = await this.get(this.fetch as Fetch, url, {

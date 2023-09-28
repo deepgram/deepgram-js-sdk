@@ -18,7 +18,7 @@ export class OnPremClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<ListOnPremCredentialsResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const result: ListOnPremCredentialsResponse = await this.get(this.fetch as Fetch, url, {
@@ -44,7 +44,7 @@ export class OnPremClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials/:credentialsId"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint
         .replace(/:projectId/, projectId)
         .replace(/:credentialsId/, credentialsId);
@@ -72,7 +72,7 @@ export class OnPremClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
       const body = JSON.stringify(options);
@@ -100,7 +100,7 @@ export class OnPremClient extends AbstractRestfulClient {
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials/:credentialsId"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
-      const url = this.url;
+      const url = new URL(this.baseUrl);
       url.pathname = endpoint
         .replace(/:projectId/, projectId)
         .replace(/:credentialsId/, credentialsId);
