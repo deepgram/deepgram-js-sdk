@@ -8,7 +8,7 @@ describe("making onprem requests", () => {
 
   beforeEach(() => {
     deepgram = createClient(faker.string.alphanumeric(40), {
-      global: { url: "http://localhost:8080" },
+      global: { url: "https://deepgram-mock-api-server.fly.dev" },
     });
   });
 
