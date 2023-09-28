@@ -9,7 +9,7 @@ app.use(function (req, res, next) {
 });
 
 const responseString = async (file: string): Promise<any> => {
-  const result = await import(`./mocks/${file}.ts`);
+  const result = await import(`./mocks/${file}`);
 
   return result.default;
 };
