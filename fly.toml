@@ -1,0 +1,16 @@
+# fly.toml app configuration file generated for deepgram-mock-api-server on 2023-09-28T14:04:19+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "deepgram-mock-api-server"
+primary_region = "yul"
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
