@@ -12,7 +12,7 @@ const newOnpremCredential: CreateOnPremCredentialsOptions = {
     secret: faker.string.alphanumeric(40),
     comment: faker.lorem.word(),
     scopes: [faker.lorem.word()],
-    created: faker.lorem.word(),
+    created: faker.date.anytime().toISOString(),
   },
 };
 

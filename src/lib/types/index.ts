@@ -29,13 +29,17 @@ export type {
   OnPremCredentialResponse,
 } from "./ListOnPremCredentialsResponse";
 export type { LiveConfigOptions } from "./LiveConfigOptions";
-export type { LiveConnectionState } from "./LiveConnectionState";
-export type { LiveTranscriptionEvents } from "./LiveTranscriptionEvents";
 export type { MessageResponse } from "./MessageResponse";
-export type { PrerecordedSource } from "./PrerecordedSource";
+export type {
+  BufferSource,
+  FileSource,
+  PrerecordedSource,
+  ReadStreamSource,
+  UrlSource,
+} from "./PrerecordedSource";
 export type { SendProjectInviteOptions } from "./SendProjectInviteOptions";
 export type { SyncPrerecordedResponse } from "./SyncPrerecordedResponse";
-export type { TranscriptionOptions } from "./TranscriptionOptions";
+export type { TranscriptionOptions, PrerecordedOptions, LiveOptions } from "./TranscriptionOptions";
 export type { UpdateProjectMemberScopeOptions } from "./UpdateProjectMemberScopeOptions";
 export type { UpdateProjectOptions } from "./UpdateProjectOptions";
 export type { VoidResponse } from "./VoidResponse";

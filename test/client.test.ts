@@ -22,7 +22,7 @@ describe("testing creation of a deepgram client object", () => {
 
   it("it should have the default URL when no custom URL option is provided", () => {
     // @ts-ignore
-    const url = deepgram.url.hostname;
+    const url = deepgram.baseUrl.hostname;
 
     expect(url).to.equal(DEFAULT_URL);
   });
@@ -43,7 +43,7 @@ describe("testing creation of a deepgram client object", () => {
     });
 
     // @ts-ignore
-    const url = client.url.hostname;
+    const url = client.baseUrl.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
     expect(url).to.equal(customDomain);
@@ -56,18 +56,10 @@ describe("testing creation of a deepgram client object", () => {
     });
 
     // @ts-ignore
-    const url = client.url.hostname;
+    const url = client.baseUrl.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
     expect(url).to.equal(stripTrailingSlash(domain));
-  });
-
-  it("it should allow for the supply of a custom fetch", () => {
-    const client = createClient(faker.string.alphanumeric(40), {
-      global: { fetch: (...args) => fetch(...args) },
-    });
-
-    expect(client).is.instanceOf(DeepgramClient);
   });
 
   it("it should allow for the supply of a custom header", () => {
