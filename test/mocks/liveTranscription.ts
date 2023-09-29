@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
+import { LiveTranscriptionResponse } from "../../src/lib/types";
 
-const liveTranscription /*: LiveTranscriptionResponse*/ = {
+const liveTranscription: LiveTranscriptionResponse = {
   type: "Results",
   channel_index: [faker.number.int()],
   duration: faker.number.float(),

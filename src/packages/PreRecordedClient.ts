@@ -1,5 +1,6 @@
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import {
+  CallbackUrl,
   appendSearchParams,
   isBufferSource,
   isReadStreamSource,
@@ -105,7 +106,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
   async transcribeUrlCallback(
     source: UrlSource,
-    callback: string,
+    callback: CallbackUrl,
     options?: PrerecordedOptions,
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
@@ -117,7 +118,10 @@ export class PrerecordedClient extends AbstractRestfulClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const transcriptionOptions: PrerecordedOptions = { ...options, ...{ callback } };
+      const transcriptionOptions: PrerecordedOptions = {
+        ...options,
+        ...{ callback: callback.toString() },
+      };
 
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
@@ -138,7 +142,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
   async transcribeFileCallback(
     source: FileSource,
-    callback: string,
+    callback: CallbackUrl,
     options?: PrerecordedOptions,
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
@@ -160,7 +164,10 @@ export class PrerecordedClient extends AbstractRestfulClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const transcriptionOptions: PrerecordedOptions = { ...options, ...{ callback } };
+      const transcriptionOptions: PrerecordedOptions = {
+        ...options,
+        ...{ callback: callback.toString() },
+      };
 
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);

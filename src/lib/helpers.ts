@@ -74,3 +74,7 @@ export const isReadStreamSource = (
 
   return false;
 };
+
+export class CallbackUrl extends URL {
+  private callbackUrl = true;
+}

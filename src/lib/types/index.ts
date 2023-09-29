@@ -29,6 +29,8 @@ export type {
   OnPremCredentialResponse,
 } from "./ListOnPremCredentialsResponse";
 export type { LiveConfigOptions } from "./LiveConfigOptions";
+export type { LiveMetadataEvent } from "./LiveMetadataEvent";
+export type { LiveTranscriptionEvent } from "./LiveTranscriptionEvent";
 export type { MessageResponse } from "./MessageResponse";
 export type {
   BufferSource,

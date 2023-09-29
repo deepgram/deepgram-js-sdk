@@ -2,7 +2,12 @@ import { EventEmitter } from "events";
 import { appendSearchParams } from "../lib/helpers";
 import WebSocket from "modern-isomorphic-ws";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
-import type { LiveOptions, LiveConfigOptions } from "../lib/types";
+import type {
+  LiveOptions,
+  LiveConfigOptions,
+  LiveMetadataEvent,
+  LiveTranscriptionEvent,
+} from "../lib/types";
 import { DEFAULT_HEADERS } from "../lib/constants";
 
 export class LiveClient extends EventEmitter {
@@ -47,24 +52,22 @@ export class LiveClient extends EventEmitter {
     };
 
     this._socket.onmessage = (event) => {
-      if (String(event.data)) {
-        try {
-          const data = JSON.parse(event.data as string);
+      try {
+        const data: any = JSON.parse(event.data.toString());
 
-          if (data.type === LiveTranscriptionEvents.Metadata) {
-            this.emit(LiveTranscriptionEvents.Metadata, data);
-          }
-
-          if (data.type === LiveTranscriptionEvents.Transcript) {
-            this.emit(LiveTranscriptionEvents.Transcript, data);
-          }
-        } catch (error) {
-          console.log(error);
-          this.emit(LiveTranscriptionEvents.Error, {
-            event,
-            message: "Unable to parse `data` as JSON.",
-          });
+        if (data.type === LiveTranscriptionEvents.Metadata) {
+          this.emit(LiveTranscriptionEvents.Metadata, data as LiveMetadataEvent);
         }
+
+        if (data.type === LiveTranscriptionEvents.Transcript) {
+          this.emit(LiveTranscriptionEvents.Transcript, data as LiveTranscriptionEvent);
+        }
+      } catch (error) {
+        this.emit(LiveTranscriptionEvents.Error, {
+          event,
+          message: "Unable to parse `data` as JSON.",
+          error,
+        });
       }
     };
   }

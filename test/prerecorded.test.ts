@@ -1,8 +1,9 @@
 import { assert, expect } from "chai";
 import { createClient } from "../src";
 import { faker } from "@faker-js/faker";
-import bufferSource from "./mocks/bufferSource";
+import { bufferSource, urlSource } from "./mocks";
 import DeepgramClient from "../src/DeepgramClient";
+import { CallbackUrl } from "../src/lib/helpers";
 
 describe("making listen requests", () => {
   let deepgram: DeepgramClient;
@@ -19,9 +20,7 @@ describe("making listen requests", () => {
   });
 
   it("should transcribe a URL source synchronously", async () => {
-    const { result, error } = await deepgram.listen.prerecorded.transcribeUrl({
-      url: "https://dpgr.am/spacewalk.wav",
-    });
+    const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(urlSource);
 
     assert.isNull(error);
     assert.isNotNull(result);
@@ -38,10 +37,8 @@ describe("making listen requests", () => {
 
   it("should transcribe a URL source asynchronously", async () => {
     const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallback(
-      {
-        url: "https://dpgr.am/spacewalk.wav",
-      },
-      "http://example.com"
+      urlSource,
+      new CallbackUrl("https://example.com/callback")
     );
 
     assert.isNull(error);
@@ -52,7 +49,7 @@ describe("making listen requests", () => {
   it("should transcribe a file source asynchronously", async () => {
     const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallback(
       bufferSource,
-      "https://localhost:8081/callback"
+      new CallbackUrl("https://example.com/callback")
     );
 
     assert.isNull(error);
