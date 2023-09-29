@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
+import { LiveMetadataResponse } from "../../src/lib/types";
 
-const liveMetadata /*: LiveMetadataResponse*/ = {
+const liveMetadata: LiveMetadataResponse = {
   type: "Metadata",
   transaction_key: faker.string.alpha(20),
   request_id: faker.string.uuid(),

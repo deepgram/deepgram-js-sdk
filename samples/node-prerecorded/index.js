@@ -1,4 +1,4 @@
-const { createClient } = require("../dist/main/index");
+const { createClient } = require("../../dist/main/index");
 const fs = require("fs");
 
 const url = async () => {
