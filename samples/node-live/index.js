@@ -1,5 +1,5 @@
 const { createClient } = require("../../dist/main/index");
-const { LiveTranscriptionEvents, LiveConnectionState } = require("../../dist/main/lib/enums");
+const { LiveTranscriptionEvents } = require("../../dist/main/lib/enums");
 const fetch = require("cross-fetch");
 
 const live = async () => {
