@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { appendSearchParams } from "../lib/helpers";
+import { appendSearchParams, isBrowser } from "../lib/helpers";
 import WebSocket from "modern-isomorphic-ws";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
 import type {
@@ -21,12 +21,16 @@ export class LiveClient extends EventEmitter {
     url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
     appendSearchParams(url.searchParams, transcriptionOptions);
 
-    this._socket = new WebSocket(url.toString(), {
-      headers: {
-        Authorization: `token ${apiKey}`,
-        ...DEFAULT_HEADERS,
-      },
-    });
+    if (isBrowser()) {
+      this._socket = new WebSocket(url.toString(), ["token", apiKey]);
+    } else {
+      this._socket = new WebSocket(url.toString(), {
+        headers: {
+          Authorization: `token ${apiKey}`,
+          ...DEFAULT_HEADERS,
+        },
+      });
+    }
 
     this._socket.onopen = () => {
       this.emit(LiveTranscriptionEvents.Open, this);
