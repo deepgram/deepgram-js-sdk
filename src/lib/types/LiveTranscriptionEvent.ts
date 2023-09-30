@@ -1,5 +1,5 @@
 export interface LiveTranscriptionEvent {
-  type: "Result";
+  type: "Results";
   channel_index: number[];
   duration: number;
   start: number;
