@@ -5,7 +5,7 @@ interface ExpirationOptions extends CommonOptions {
 }
 
 export interface TtlOptions extends CommonOptions {
-  time_to_live_in_seconds?: string;
+  time_to_live_in_seconds?: number;
 }
 
 interface CommonOptions extends Record<string, unknown> {
