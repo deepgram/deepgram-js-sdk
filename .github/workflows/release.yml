@@ -6,6 +6,8 @@ on:
       - main
       - next
       - rc
+      - beta
+      - alpha
   workflow_dispatch:
 
 jobs:
