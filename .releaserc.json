@@ -2,7 +2,9 @@
   "branches": [
     { "name": "main" },
     { "name": "next", "channel": "next", "prerelease": true },
-    { "name": "rc", "channel": "rc", "prerelease": true }
+    { "name": "rc", "channel": "rc", "prerelease": true },
+    { "name": "beta", "channel": "beta", "prerelease": true },
+    { "name": "alpha", "channel": "alpha", "prerelease": true }
   ],
   "plugins": [
     [
