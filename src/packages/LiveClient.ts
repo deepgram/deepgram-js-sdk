@@ -100,6 +100,9 @@ export class LiveClient extends EventEmitter {
   /**
    * Sends data to the Deepgram API via websocket connection
    * @param data Audio data to send to Deepgram
+   *
+   * Conforms to RFC #146 - does not send an empty byte.
+   * @see https://github.com/deepgram/deepgram-python-sdk/issues/146
    */
   public send(data: string | ArrayBufferLike | ArrayBufferView): void {
     if (this._socket.readyState === LiveConnectionState.OPEN) {
