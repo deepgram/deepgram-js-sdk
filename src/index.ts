@@ -7,3 +7,6 @@ import type { DeepgramClientOptions } from "./lib/types";
 export const createClient = (apiKey: string, options?: DeepgramClientOptions): DeepgramClient => {
   return new DeepgramClient(apiKey, options);
 };
+
+export * from "./lib/types";
+export * from "./lib/enums";
