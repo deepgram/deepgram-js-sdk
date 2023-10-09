@@ -13,7 +13,8 @@ Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Power your apps 
 * [Deepgram Node.js SDK](#deepgram-nodejs-sdk)
 * [Getting an API Key](#getting-an-api-key)
 * [Installation](#installation)
-* [Constructor](#constructor)
+* [Configuration](#configuration)
+  * [Custom API Endpoint](#custom-api-endpoint)  
 * [Transcription](#transcription)
   * [Remote Files](#remote-files)
   * [Local Files](#local-files)
@@ -56,13 +57,17 @@ Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Power your apps 
 
 # Installation
 
+You can install the Deepgram Node.js SDK as a dependency in your application using NPM or yarn:
+
 ```bash
 npm install @deepgram/sdk
 # - or -
 # yarn add @deepgram/sdk
 ```
 
-# Constructor
+# Configuration
+
+Once the SDK is installed, import the Deepgram object. Then create a new instance specifying your API key so that your application will be authorized to connect to Deepgram.
 
 ```js
 const { Deepgram } = require("@deepgram/sdk");
@@ -71,6 +76,16 @@ const { Deepgram } = require("@deepgram/sdk");
 
 const deepgram = new Deepgram(DEEPGRAM_API_KEY);
 ```
+With the Deepgram client initialized, you can now send requests to the Deepgram API to transcribe audio, manage projects & keys, and retrieve usage information.
+
+## Custom API Endpoint
+
+In order to point the SDK at a different API endpoint (e.g., for on-prem deployments), you can pass in an object setting the `API_URL` when initializing the Deepgram client.
+
+```js
+const REQUIRE_SSL = false; // defaults to true - set depending on server configuration
+const API_URL = "localhost:8080"; // defaults to api.deepgram.com
+const deepgram = new Deepgram(DEEPGRAM_API_KEY, API_URL, REQUIRE_SSL); 
 
 # Transcription
 
@@ -114,6 +129,8 @@ See an example, here: [https://github.com/deepgram-devs/node-live-example](https
 [See our API reference for more info](https://developers.deepgram.com/reference/streaming).
 
 # Projects
+
+The `Deepgram.projects` object provides access to manage projects associated with the API key you provided when instantiating the Deepgram client.
 
 ## Get Projects
 
