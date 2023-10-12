@@ -22,7 +22,7 @@ const readstream = async () => {
 
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
     {
-      stream: fs.createReadStream("./samples/nasa.mp4"),
+      stream: fs.createReadStream("./examples/nasa.mp4"),
       mimetype: "audio/mp4",
     },
     {
@@ -39,7 +39,7 @@ const buffer = async () => {
 
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
     {
-      buffer: fs.readFileSync("./samples/nasa.mp4"),
+      buffer: fs.readFileSync("./examples/nasa.mp4"),
       mimetype: "audio/mp4",
     },
     {
