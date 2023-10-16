@@ -1,9 +1,18 @@
 import { assert, expect } from "chai";
 import { createClient } from "../src";
 import { faker } from "@faker-js/faker";
-import { bufferSource, urlSource } from "./mocks";
 import DeepgramClient from "../src/DeepgramClient";
 import { CallbackUrl } from "../src/lib/helpers";
+import { BufferSource, UrlSource } from "../src/lib/types";
+
+const bufferSource: BufferSource = {
+  buffer: Buffer.from("string"),
+  mimetype: "video/mpeg",
+};
+
+const urlSource: UrlSource = {
+  url: faker.internet.url({ appendSlash: false }) + "/nasa.wav",
+};
 
 describe("making listen requests", () => {
   let deepgram: DeepgramClient;
