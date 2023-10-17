@@ -4,7 +4,6 @@ import { version } from "./version";
 export const DEFAULT_HEADERS = {
   "X-Client-Info": `@deepgram/sdk; ${isBrowser() ? "browser" : "server"}; v${version}`,
   "User-Agent": `@deepgram/sdk/${version}`,
-  "Content-Type": "application/json",
 };
 
 export const DEFAULT_URL = "api.deepgram.com";

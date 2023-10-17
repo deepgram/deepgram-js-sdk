@@ -45,6 +45,8 @@ const buffer = async () => {
   if (!error) console.log(result);
 };
 
-url();
-readstream();
-buffer();
+(async () => {
+  await url();
+  await readstream();
+  await buffer();
+})();

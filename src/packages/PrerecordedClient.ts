@@ -18,7 +18,10 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
+      this.headers["Content-Type"] = "application/json";
+
       let body;
+
       if (isUrlSource(source)) {
         body = JSON.stringify(source);
       } else {
@@ -56,7 +59,11 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
+      // deepgram ignores the mimetype if it's not `application/json`
+      this.headers["Content-Type"] = "deepgram/audio+video";
+
       let body;
+
       if (isFileSource(source)) {
         body = source;
       } else {
@@ -95,7 +102,10 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
+      this.headers["Content-Type"] = "application/json";
+
       let body;
+
       if (isUrlSource(source)) {
         body = JSON.stringify(source);
       } else {
@@ -131,7 +141,11 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
+      // deepgram ignores the mimetype if it's not `application/json`
+      this.headers["Content-Type"] = "deepgram/audio+video";
+
       let body;
+
       if (isFileSource(source)) {
         body = source;
       } else {
