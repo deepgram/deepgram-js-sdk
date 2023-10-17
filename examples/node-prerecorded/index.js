@@ -21,10 +21,7 @@ const readstream = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-    {
-      stream: fs.createReadStream("./examples/nasa.mp4"),
-      mimetype: "audio/mp4",
-    },
+    fs.createReadStream("./examples/nasa.mp4"),
     {
       model: "nova",
     }
@@ -38,10 +35,7 @@ const buffer = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-    {
-      buffer: fs.readFileSync("./examples/nasa.mp4"),
-      mimetype: "audio/mp4",
-    },
+    fs.readFileSync("./examples/nasa.mp4"),
     {
       model: "nova",
     }

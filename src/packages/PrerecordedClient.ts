@@ -1,11 +1,5 @@
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
-import {
-  CallbackUrl,
-  appendSearchParams,
-  isBufferSource,
-  isReadStreamSource,
-  isUrlSource,
-} from "../lib/helpers";
+import { CallbackUrl, appendSearchParams, isFileSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   AsyncPrerecordedResponse,
@@ -62,19 +56,9 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
-      if (source.mimetype === undefined || source.mimetype.length === 0) {
-        throw new DeepgramError(
-          "Mimetype must be provided if the source is a Buffer or a Readable"
-        );
-      }
-
-      this.headers["Content-Type"] = source.mimetype;
-
       let body;
-      if (isBufferSource(source)) {
-        body = source.buffer;
-      } else if (isReadStreamSource(source)) {
-        body = source.stream;
+      if (isFileSource(source)) {
+        body = source;
       } else {
         throw new DeepgramError("Unknown transcription source type");
       }
@@ -147,19 +131,9 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
-      if (source.mimetype === undefined || source.mimetype.length === 0) {
-        throw new DeepgramError(
-          "Mimetype must be provided if the source is a Buffer or a Readable"
-        );
-      }
-
-      this.headers["Content-Type"] = source.mimetype;
-
       let body;
-      if (isBufferSource(source)) {
-        body = source.buffer;
-      } else if (isReadStreamSource(source)) {
-        body = source.stream;
+      if (isFileSource(source)) {
+        body = source;
       } else {
         throw new DeepgramError("Unknown transcription source type");
       }

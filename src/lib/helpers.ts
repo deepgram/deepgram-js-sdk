@@ -1,11 +1,6 @@
 import { Headers as CrossFetchHeaders } from "cross-fetch";
-import {
-  BufferSource,
-  DeepgramClientOptions,
-  PrerecordedSource,
-  ReadStreamSource,
-  UrlSource,
-} from "./types";
+import { DeepgramClientOptions, FileSource, PrerecordedSource, UrlSource } from "./types";
+import { Readable } from "stream";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -59,18 +54,20 @@ export const isUrlSource = (providedSource: PrerecordedSource): providedSource i
   return false;
 };
 
-export const isBufferSource = (
-  providedSource: PrerecordedSource
-): providedSource is BufferSource => {
-  if ((providedSource as BufferSource).buffer) return true;
+export const isFileSource = (providedSource: PrerecordedSource): providedSource is FileSource => {
+  if (isReadStreamSource(providedSource) || isBufferSource(providedSource)) return true;
 
   return false;
 };
 
-export const isReadStreamSource = (
-  providedSource: PrerecordedSource
-): providedSource is ReadStreamSource => {
-  if ((providedSource as ReadStreamSource).stream) return true;
+const isBufferSource = (providedSource: PrerecordedSource): providedSource is Buffer => {
+  if (providedSource as Buffer) return true;
+
+  return false;
+};
+
+const isReadStreamSource = (providedSource: PrerecordedSource): providedSource is Readable => {
+  if (providedSource as Readable) return true;
 
   return false;
 };
