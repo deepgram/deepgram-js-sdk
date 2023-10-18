@@ -85,7 +85,8 @@ In order to point the SDK at a different API endpoint (e.g., for on-prem deploym
 ```js
 const REQUIRE_SSL = false; // defaults to true - set depending on server configuration
 const API_URL = "localhost:8080"; // defaults to api.deepgram.com
-const deepgram = new Deepgram(DEEPGRAM_API_KEY, API_URL, REQUIRE_SSL); 
+const deepgram = new Deepgram(DEEPGRAM_API_KEY, API_URL, REQUIRE_SSL);
+``` 
 
 # Transcription
 
