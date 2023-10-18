@@ -48,7 +48,7 @@ export class AbstractRestfulClient {
       return params;
     }
 
-    params.headers = { "Content-Type": "application/json", ...options?.headers };
+    params.headers = { ...options?.headers };
     params.body = body;
     return { ...params, ...parameters, duplex: "half" };
   }

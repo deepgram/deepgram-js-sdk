@@ -32,13 +32,7 @@ export type { LiveConfigOptions } from "./LiveConfigOptions";
 export type { LiveMetadataEvent } from "./LiveMetadataEvent";
 export type { LiveTranscriptionEvent } from "./LiveTranscriptionEvent";
 export type { MessageResponse } from "./MessageResponse";
-export type {
-  BufferSource,
-  FileSource,
-  PrerecordedSource,
-  ReadStreamSource,
-  UrlSource,
-} from "./PrerecordedSource";
+export type { FileSource, PrerecordedSource, UrlSource } from "./PrerecordedSource";
 export type { SendProjectInviteOptions } from "./SendProjectInviteOptions";
 export type { SyncPrerecordedResponse } from "./SyncPrerecordedResponse";
 export type { TranscriptionOptions, PrerecordedOptions, LiveOptions } from "./TranscriptionOptions";
