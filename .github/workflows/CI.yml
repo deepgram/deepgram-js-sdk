@@ -2,6 +2,12 @@ name: CI
 
 on:
   pull_request:
+    branches:
+      - main
+      - next
+      - rc
+      - beta
+      - alpha
     paths-ignore:
       - "docs/**"
       - "**/*.md"
@@ -12,6 +18,8 @@ on:
       - main
       - next
       - rc
+      - beta
+      - alpha
     paths-ignore:
       - "docs/**"
       - "**/*.md"
