@@ -8,12 +8,11 @@ const createClient = (apiKey: string, options?: DeepgramClientOptions): Deepgram
   return new DeepgramClient(apiKey, options);
 };
 
-export default createClient;
+export { createClient, DeepgramClient };
 
 /**
  * Helpful exports.
  */
-export { DeepgramClient };
 export * from "./lib/types";
 export * from "./lib/enums";
 export * from "./lib/constants";
