@@ -1,7 +1,7 @@
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { isDeepgramError } from "../lib/errors";
 import type {
-  CreateOnPremCredentialsOptions,
+  CreateOnPremCredentialsSchema,
   DeepgramResponse,
   Fetch,
   ListOnPremCredentialsResponse,
@@ -68,7 +68,7 @@ export class OnPremClient extends AbstractRestfulClient {
    */
   async createCredentials(
     projectId: string,
-    options: CreateOnPremCredentialsOptions,
+    options: CreateOnPremCredentialsSchema,
     endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {

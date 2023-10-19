@@ -1,6 +1,6 @@
 import { PrerecordedClient } from "./PrerecordedClient";
 import { LiveClient } from "./LiveClient";
-import { LiveOptions } from "../lib/types";
+import { LiveSchema } from "../lib/types";
 
 export class ListenClient {
   protected baseUrl: URL;
@@ -17,7 +17,7 @@ export class ListenClient {
     return new PrerecordedClient(this.baseUrl, this.headers, this.key);
   }
 
-  public live(options: LiveOptions, endpoint = "v1/listen") {
+  public live(options: LiveSchema, endpoint = "v1/listen") {
     return new LiveClient(this.baseUrl, this.key, options, endpoint);
   }
 }

@@ -1,6 +1,6 @@
 export type { AsyncPrerecordedResponse } from "./AsyncPrerecordedResponse";
-export type { CreateOnPremCredentialsOptions } from "./CreateOnPremCredentialsOptions";
-export type { CreateProjectKeyOptions } from "./CreateProjectKeyOptions";
+export type { CreateOnPremCredentialsSchema } from "./CreateOnPremCredentialsSchema";
+export type { CreateProjectKeySchema } from "./CreateProjectKeySchema";
 export type { CreateProjectKeyResponse } from "./CreateProjectKeyResponse";
 export type { DeepgramClientOptions } from "./DeepgramClientOptions";
 export type { DeepgramResponse } from "./DeepgramResponse";
@@ -15,14 +15,14 @@ export type { GetProjectMemberScopesResponse } from "./GetProjectMemberScopesRes
 export type { GetProjectMembersResponse } from "./GetProjectMembersResponse";
 export type { GetProjectResponse } from "./GetProjectResponse";
 export type { GetProjectsResponse } from "./GetProjectsResponse";
-export type { GetProjectUsageFieldsOptions } from "./GetProjectUsageFieldsOptions";
+export type { GetProjectUsageFieldsSchema } from "./GetProjectUsageFieldsSchema";
 export type { GetProjectUsageFieldsResponse } from "./GetProjectUsageFieldsResponse";
 export type {
   GetProjectUsageRequestResponse,
   GetProjectUsageRequestsResponse,
 } from "./GetProjectUsageRequestsResponse";
-export type { GetProjectUsageRequestsOptions } from "./GetProjectUsageRequestsOptions";
-export type { GetProjectUsageSummaryOptions } from "./GetProjectUsageSummaryOptions";
+export type { GetProjectUsageRequestsSchema } from "./GetProjectUsageRequestsSchema";
+export type { GetProjectUsageSummarySchema } from "./GetProjectUsageSummarySchema";
 export type { GetProjectUsageSummaryResponse } from "./GetProjectUsageSummaryResponse";
 export type {
   ListOnPremCredentialsResponse,
@@ -33,9 +33,9 @@ export type { LiveMetadataEvent } from "./LiveMetadataEvent";
 export type { LiveTranscriptionEvent } from "./LiveTranscriptionEvent";
 export type { MessageResponse } from "./MessageResponse";
 export type { FileSource, PrerecordedSource, UrlSource } from "./PrerecordedSource";
-export type { SendProjectInviteOptions } from "./SendProjectInviteOptions";
+export type { SendProjectInviteSchema } from "./SendProjectInviteSchema";
 export type { SyncPrerecordedResponse } from "./SyncPrerecordedResponse";
-export type { TranscriptionOptions, PrerecordedOptions, LiveOptions } from "./TranscriptionOptions";
-export type { UpdateProjectMemberScopeOptions } from "./UpdateProjectMemberScopeOptions";
-export type { UpdateProjectOptions } from "./UpdateProjectOptions";
+export type { TranscriptionSchema, PrerecordedSchema, LiveSchema } from "./TranscriptionSchema";
+export type { UpdateProjectMemberScopeSchema } from "./UpdateProjectMemberScopeSchema";
+export type { UpdateProjectSchema } from "./UpdateProjectSchema";
 export type { VoidResponse } from "./VoidResponse";

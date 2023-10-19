@@ -3,7 +3,7 @@ import { appendSearchParams, isBrowser } from "../lib/helpers";
 import WebSocket from "modern-isomorphic-ws";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
 import type {
-  LiveOptions,
+  LiveSchema,
   LiveConfigOptions,
   LiveMetadataEvent,
   LiveTranscriptionEvent,
@@ -13,10 +13,10 @@ import { DEFAULT_HEADERS } from "../lib/constants";
 export class LiveClient extends EventEmitter {
   private _socket: WebSocket;
 
-  constructor(baseUrl: URL, apiKey: string, options: LiveOptions, endpoint = "v1/listen") {
+  constructor(baseUrl: URL, apiKey: string, options: LiveSchema, endpoint = "v1/listen") {
     super();
 
-    const transcriptionOptions: LiveOptions = { ...{}, ...options };
+    const transcriptionOptions: LiveSchema = { ...{}, ...options };
     const url = new URL(endpoint, baseUrl);
     url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
     appendSearchParams(url.searchParams, transcriptionOptions);
