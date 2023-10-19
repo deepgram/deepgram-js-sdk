@@ -2,7 +2,7 @@ import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { isDeepgramError } from "../lib/errors";
 import { appendSearchParams } from "../lib/helpers";
 import type {
-  CreateProjectKeyOptions,
+  CreateProjectKeySchema,
   CreateProjectKeyResponse,
   DeepgramResponse,
   Fetch,
@@ -15,17 +15,17 @@ import type {
   GetProjectMembersResponse,
   GetProjectResponse,
   GetProjectsResponse,
-  GetProjectUsageFieldsOptions,
+  GetProjectUsageFieldsSchema,
   GetProjectUsageFieldsResponse,
   GetProjectUsageRequestResponse,
-  GetProjectUsageRequestsOptions,
+  GetProjectUsageRequestsSchema,
   GetProjectUsageRequestsResponse,
-  GetProjectUsageSummaryOptions,
+  GetProjectUsageSummarySchema,
   GetProjectUsageSummaryResponse,
   MessageResponse,
-  SendProjectInviteOptions,
-  UpdateProjectMemberScopeOptions,
-  UpdateProjectOptions,
+  SendProjectInviteSchema,
+  UpdateProjectMemberScopeSchema,
+  UpdateProjectSchema,
   VoidResponse,
 } from "../lib/types";
 
@@ -82,7 +82,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async updateProject(
     projectId: string,
-    options: UpdateProjectOptions,
+    options: UpdateProjectSchema,
     endpoint = "v1/projects/:projectId"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
@@ -186,7 +186,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async createProjectKey(
     projectId: string,
-    options: CreateProjectKeyOptions,
+    options: CreateProjectKeySchema,
     endpoint = "v1/projects/:projectId/keys"
   ): Promise<DeepgramResponse<CreateProjectKeyResponse>> {
     try {
@@ -318,7 +318,7 @@ export class ManageClient extends AbstractRestfulClient {
   async updateProjectMemberScope(
     projectId: string,
     memberId: string,
-    options: UpdateProjectMemberScopeOptions,
+    options: UpdateProjectMemberScopeSchema,
     endpoint = "v1/projects/:projectId/members/:memberId/scopes"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
@@ -371,7 +371,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async sendProjectInvite(
     projectId: string,
-    options: SendProjectInviteOptions,
+    options: SendProjectInviteSchema,
     endpoint = "v1/projects/:projectId/invites"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
@@ -450,7 +450,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectUsageRequests(
     projectId: string,
-    options: GetProjectUsageRequestsOptions,
+    options: GetProjectUsageRequestsSchema,
     endpoint = "v1/projects/:projectId/requests"
   ): Promise<DeepgramResponse<GetProjectUsageRequestsResponse>> {
     try {
@@ -503,7 +503,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectUsageSummary(
     projectId: string,
-    options: GetProjectUsageSummaryOptions,
+    options: GetProjectUsageSummarySchema,
     endpoint = "v1/projects/:projectId/usage"
   ): Promise<DeepgramResponse<GetProjectUsageSummaryResponse>> {
     try {
@@ -530,7 +530,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectUsageFields(
     projectId: string,
-    options: GetProjectUsageFieldsOptions,
+    options: GetProjectUsageFieldsSchema,
     endpoint = "v1/projects/:projectId/usage/fields"
   ): Promise<DeepgramResponse<GetProjectUsageFieldsResponse>> {
     try {

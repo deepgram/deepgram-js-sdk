@@ -6,7 +6,7 @@ import type {
   DeepgramResponse,
   Fetch,
   FileSource,
-  PrerecordedOptions,
+  PrerecordedSchema,
   SyncPrerecordedResponse,
   UrlSource,
 } from "../lib/types";
@@ -14,7 +14,7 @@ import type {
 export class PrerecordedClient extends AbstractRestfulClient {
   async transcribeUrl(
     source: UrlSource,
-    options?: PrerecordedOptions,
+    options?: PrerecordedSchema,
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
@@ -34,7 +34,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
         );
       }
 
-      const transcriptionOptions: PrerecordedOptions = { ...{}, ...options };
+      const transcriptionOptions: PrerecordedSchema = { ...{}, ...options };
 
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
@@ -55,7 +55,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
   async transcribeFile(
     source: FileSource,
-    options?: PrerecordedOptions,
+    options?: PrerecordedSchema,
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
@@ -76,7 +76,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
         );
       }
 
-      const transcriptionOptions: PrerecordedOptions = { ...{}, ...options };
+      const transcriptionOptions: PrerecordedSchema = { ...{}, ...options };
 
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
@@ -98,7 +98,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
   async transcribeUrlCallback(
     source: UrlSource,
     callback: CallbackUrl,
-    options?: PrerecordedOptions,
+    options?: PrerecordedSchema,
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
@@ -112,7 +112,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const transcriptionOptions: PrerecordedOptions = {
+      const transcriptionOptions: PrerecordedSchema = {
         ...options,
         ...{ callback: callback.toString() },
       };
@@ -137,7 +137,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
   async transcribeFileCallback(
     source: FileSource,
     callback: CallbackUrl,
-    options?: PrerecordedOptions,
+    options?: PrerecordedSchema,
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
@@ -152,7 +152,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const transcriptionOptions: PrerecordedOptions = {
+      const transcriptionOptions: PrerecordedSchema = {
         ...options,
         ...{ callback: callback.toString() },
       };

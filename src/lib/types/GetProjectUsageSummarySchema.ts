@@ -1,4 +1,4 @@
-export interface GetProjectUsageSummaryOptions extends Record<string, unknown> {
+export interface GetProjectUsageSummarySchema extends Record<string, unknown> {
   start?: string;
   end: string;
   accessor?: string;

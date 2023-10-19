@@ -1,4 +1,4 @@
-export type CreateProjectKeyOptions = ExpirationOptions | TtlOptions;
+export type CreateProjectKeySchema = ExpirationOptions | TtlOptions;
 
 interface ExpirationOptions extends CommonOptions {
   expiration_date?: string;

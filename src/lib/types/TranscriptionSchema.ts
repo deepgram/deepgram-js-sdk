@@ -1,7 +1,7 @@
 /**
  * Options for transcription
  */
-interface TranscriptionOptions extends Record<string, unknown> {
+interface TranscriptionSchema extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/model
    */
@@ -86,7 +86,7 @@ interface TranscriptionOptions extends Record<string, unknown> {
   [key: string]: unknown;
 }
 
-interface PrerecordedOptions extends TranscriptionOptions {
+interface PrerecordedSchema extends TranscriptionSchema {
   /**
    * @see https://developers.deepgram.com/docs/detect-entities
    */
@@ -128,7 +128,7 @@ interface PrerecordedOptions extends TranscriptionOptions {
   utt_split?: number;
 }
 
-interface LiveOptions extends TranscriptionOptions {
+interface LiveSchema extends TranscriptionSchema {
   /**
    * @see https://developers.deepgram.com/docs/channels
    */
@@ -155,4 +155,4 @@ interface LiveOptions extends TranscriptionOptions {
   interim_results?: boolean;
 }
 
-export type { TranscriptionOptions, PrerecordedOptions, LiveOptions };
+export type { TranscriptionSchema, PrerecordedSchema, LiveSchema };
