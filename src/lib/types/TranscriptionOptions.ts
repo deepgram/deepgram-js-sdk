@@ -35,7 +35,7 @@ interface TranscriptionOptions extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/redaction
    */
-  redact?: Array<string> | Array<boolean> | boolean;
+  redact?: Array<string> | string | boolean;
 
   /**
    * @see https://developers.deepgram.com/docs/diarization
