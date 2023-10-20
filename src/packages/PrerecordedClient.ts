@@ -18,8 +18,6 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
-      this.headers["Content-Type"] = "application/json";
-
       let body;
 
       if (isUrlSource(source)) {
@@ -102,8 +100,6 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
-      this.headers["Content-Type"] = "application/json";
-
       let body;
 
       if (isUrlSource(source)) {
