@@ -2,14 +2,15 @@ import { EventEmitter } from "events";
 import { appendSearchParams, isBrowser } from "../lib/helpers";
 import WebSocket from "modern-isomorphic-ws";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
+import { DEFAULT_HEADERS } from "../lib/constants";
+import { DeepgramError } from "../lib/errors";
+
 import type {
   LiveSchema,
   LiveConfigOptions,
   LiveMetadataEvent,
   LiveTranscriptionEvent,
 } from "../lib/types";
-import { DEFAULT_HEADERS } from "../lib/constants";
-import { DeepgramError } from "../lib/errors";
 
 export class LiveClient extends EventEmitter {
   private _socket: WebSocket;
