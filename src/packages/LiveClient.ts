@@ -11,11 +11,6 @@ import type {
 import { DEFAULT_HEADERS } from "../lib/constants";
 import { DeepgramError } from "../lib/errors";
 
-if (isBrowser()) {
-  // @ts-ignore
-  window.Buffer = Buffer;
-}
-
 export class LiveClient extends EventEmitter {
   private _socket: WebSocket;
 
