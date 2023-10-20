@@ -9,6 +9,12 @@ import type {
   LiveTranscriptionEvent,
 } from "../lib/types";
 import { DEFAULT_HEADERS } from "../lib/constants";
+import { DeepgramError } from "../lib/errors";
+
+if (isBrowser()) {
+  // @ts-ignore
+  window.Buffer = Buffer;
+}
 
 export class LiveClient extends EventEmitter {
   private _socket: WebSocket;
@@ -101,16 +107,21 @@ export class LiveClient extends EventEmitter {
    * Sends data to the Deepgram API via websocket connection
    * @param data Audio data to send to Deepgram
    *
-   * Conforms to RFC #146 - does not send an empty byte.
+   * Conforms to RFC #146 for Node.js - does not send an empty byte.
+   * In the browser, a Blob will contain length with no audio.
    * @see https://github.com/deepgram/deepgram-python-sdk/issues/146
    */
-  public send(data: string | ArrayBufferLike | ArrayBufferView): void {
+  public send(data: string | ArrayBufferLike | Blob): void {
     if (this._socket.readyState === LiveConnectionState.OPEN) {
       if (typeof data === "string") {
         this._socket.send(data); // send text data
+      } else if ((data as any) instanceof Blob) {
+        this._socket.send(data as unknown as ArrayBufferLike); // send blob data
       } else {
-        if (data.byteLength > 0) {
-          this._socket.send(data); // send buffer when not zero-byte
+        const buffer = data as ArrayBufferLike;
+
+        if (buffer.byteLength > 0) {
+          this._socket.send(buffer); // send buffer when not zero-byte (or browser)
         } else {
           this.emit(
             LiveTranscriptionEvents.Warning,
@@ -119,7 +130,7 @@ export class LiveClient extends EventEmitter {
         }
       }
     } else {
-      this.emit(LiveTranscriptionEvents.Error, "Could not send. Connection not open.");
+      throw new DeepgramError("Could not send. Connection not open.");
     }
   }
 
