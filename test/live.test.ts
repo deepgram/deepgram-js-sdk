@@ -9,7 +9,7 @@ describe("connecting to our transcription websocket", () => {
 
   beforeEach(() => {
     deepgram = createClient(faker.string.alphanumeric(40), {
-      global: { url: "https://deepgram-mock-api-server.fly.dev" },
+      global: { url: "https://api.mock.deepgram.com" },
     });
   });
 
