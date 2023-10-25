@@ -35,7 +35,7 @@ interface TranscriptionSchema extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/redaction
    */
-  redact?: Array<string> | string | boolean;
+  redact?: string[] | string | boolean;
 
   /**
    * @see https://developers.deepgram.com/docs/diarization
@@ -81,7 +81,7 @@ interface TranscriptionSchema extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/tagging
    */
-  tag?: Array<string>;
+  tag?: string[];
 
   [key: string]: unknown;
 }

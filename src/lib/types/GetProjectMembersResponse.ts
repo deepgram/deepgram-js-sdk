@@ -1,5 +1,5 @@
 export interface GetProjectMembersResponse {
-  members: [Member];
+  members: Member[];
 }
 
 interface Member {

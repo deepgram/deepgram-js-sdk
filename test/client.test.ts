@@ -38,18 +38,18 @@ describe("testing creation of a deepgram client object", () => {
 
   it("it should create the client object with a custom domain", () => {
     const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: "https://deepgram-mock-api-server.fly.dev" },
+      global: { url: "https://api.mock.deepgram.com" },
     });
 
     // @ts-ignore
     const url = client.baseUrl.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal("deepgram-mock-api-server.fly.dev");
+    expect(url).to.equal("api.mock.deepgram.com");
   });
 
   it("it should strip trailing slashes off the API URL if they're supplied", () => {
-    const domain = `https://deepgram-mock-api-server.fly.dev/`;
+    const domain = `https://api.mock.deepgram.com`;
     const client = createClient(faker.string.alphanumeric(40), {
       global: { url: domain },
     });
@@ -58,11 +58,11 @@ describe("testing creation of a deepgram client object", () => {
     const url = client.baseUrl.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal("deepgram-mock-api-server.fly.dev");
+    expect(url).to.equal("api.mock.deepgram.com");
   });
 
   it("it should still work when provided a URL without a protocol", () => {
-    const domain = `deepgram-mock-api-server.fly.dev`;
+    const domain = `api.mock.deepgram.com`;
     const client = createClient(faker.string.alphanumeric(40), {
       global: { url: domain },
     });
@@ -71,7 +71,7 @@ describe("testing creation of a deepgram client object", () => {
     const url = client.baseUrl.hostname;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal("deepgram-mock-api-server.fly.dev");
+    expect(url).to.equal("api.mock.deepgram.com");
   });
 
   it("it should allow for the supply of a custom header", () => {

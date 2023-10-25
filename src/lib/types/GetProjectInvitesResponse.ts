@@ -1,5 +1,5 @@
 export interface GetProjectInvitesResponse {
-  invites: [Invite];
+  invites: Invite[];
 }
 
 interface Invite {

@@ -1,7 +1,7 @@
 export interface GetProjectUsageRequestsResponse {
   page: number;
   limit: number;
-  requests: [GetProjectUsageRequestResponse];
+  requests: GetProjectUsageRequestResponse[];
 }
 
 export interface GetProjectUsageRequestResponse {
