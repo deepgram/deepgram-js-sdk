@@ -1,5 +1,5 @@
 export interface GetProjectKeysResponse {
-  api_keys: [GetProjectKeyResponse];
+  api_keys: GetProjectKeyResponse[];
 }
 
 export interface GetProjectKeyResponse {

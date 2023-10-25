@@ -1,6 +1,6 @@
 export interface GetProjectUsageFieldsResponse {
   tags: string[];
-  models: [UsageModel];
+  models: UsageModel[];
   processing_methods: string[];
   languages: string[];
   features: string[];

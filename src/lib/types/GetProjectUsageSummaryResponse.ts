@@ -5,7 +5,7 @@ export interface GetProjectUsageSummaryResponse {
     units: string;
     amount: number;
   };
-  results: [UsageSummary];
+  results: UsageSummary[];
 }
 
 interface UsageSummary {

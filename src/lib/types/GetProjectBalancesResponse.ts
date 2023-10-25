@@ -1,5 +1,5 @@
 export interface GetProjectBalancesResponse {
-  balances: [GetProjectBalanceResponse];
+  balances: GetProjectBalanceResponse[];
 }
 
 export interface GetProjectBalanceResponse {

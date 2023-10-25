@@ -6,17 +6,17 @@ export interface SyncPrerecordedResponse {
 interface Alternative {
   transcript: string;
   confidence: number;
-  words: Array<WordBase>;
-  summaries?: Array<Summary>;
+  words: WordBase[];
+  summaries?: Summary[];
   paragraphs?: ParagraphGroup;
-  entities?: Array<Entity>;
-  translations?: Array<Translation>;
-  topics?: Array<TopicGroup>;
+  entities?: Entity[];
+  translations?: Translation[];
+  topics?: TopicGroup[];
 }
 
 interface Channel {
-  search?: Array<Search>;
-  alternatives: Array<Alternative>;
+  search?: Search[];
+  alternatives: Alternative[];
   detected_language?: string;
 }
 
@@ -42,9 +42,9 @@ interface Metadata {
   created: string;
   duration: number;
   channels: number;
-  models: Array<string>;
+  models: string[];
   model_info: Record<string, ModelInfo>;
-  warnings?: Array<Warning>;
+  warnings?: Warning[];
 }
 
 interface ModelInfo {
@@ -54,7 +54,7 @@ interface ModelInfo {
 }
 
 interface Paragraph {
-  sentences: Array<Sentence>;
+  sentences: Sentence[];
   start: number;
   end: number;
   num_words: number;
@@ -62,18 +62,18 @@ interface Paragraph {
 
 interface ParagraphGroup {
   transcript: string;
-  paragraphs: Array<Paragraph>;
+  paragraphs: Paragraph[];
 }
 
 interface Result {
-  channels: Array<Channel>;
-  utterances?: Array<Utterance>;
+  channels: Channel[];
+  utterances?: Utterance[];
   summary?: TranscriptionSummary;
 }
 
 interface Search {
   query: string;
-  hits: Array<Hit>;
+  hits: Hit[];
 }
 
 interface Sentence {
@@ -98,7 +98,7 @@ interface Topic {
 }
 
 interface TopicGroup {
-  topics: Array<Topic>;
+  topics: Topic[];
   text: string;
   start_word: number;
   end_word: number;
@@ -115,7 +115,7 @@ interface Utterance {
   confidence: number;
   channel: number;
   transcript: string;
-  words: Array<WordBase>;
+  words: WordBase[];
   speaker?: number;
   id: string;
 }

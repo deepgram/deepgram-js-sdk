@@ -1,5 +1,5 @@
 export interface GetProjectsResponse {
-  projects: [Project];
+  projects: Project[];
 }
 
 interface Project {

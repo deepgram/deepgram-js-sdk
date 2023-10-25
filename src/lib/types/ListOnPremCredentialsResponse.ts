@@ -1,5 +1,5 @@
 export interface ListOnPremCredentialsResponse {
-  distribution_credentials: [OnPremCredentialResponse];
+  distribution_credentials: OnPremCredentialResponse[];
 }
 
 export interface OnPremCredentialResponse {
