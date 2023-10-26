@@ -1,6 +1,7 @@
 import { Headers as CrossFetchHeaders } from "cross-fetch";
 import { DeepgramClientOptions, FileSource, PrerecordedSource, UrlSource } from "./types";
 import { Readable } from "stream";
+import merge from "deepmerge";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -12,16 +13,7 @@ export function applySettingDefaults(
   options: DeepgramClientOptions,
   defaults: DeepgramClientOptions
 ): DeepgramClientOptions {
-  const { global: globalOptions } = options;
-
-  const { global: DEFAULT_GLOBAL_OPTIONS } = defaults;
-
-  return {
-    global: {
-      ...DEFAULT_GLOBAL_OPTIONS,
-      ...globalOptions,
-    },
-  };
+  return merge(defaults, options);
 }
 
 export function appendSearchParams(

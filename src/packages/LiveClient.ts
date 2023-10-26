@@ -1,34 +1,39 @@
-import { EventEmitter } from "events";
+import { AbstractWsClient } from "./AbstractWsClient";
 import { appendSearchParams, isBrowser } from "../lib/helpers";
-import WebSocket from "modern-isomorphic-ws";
-import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
-import { DEFAULT_HEADERS } from "../lib/constants";
 import { DeepgramError } from "../lib/errors";
+import { DEFAULT_HEADERS, DEFAULT_OPTIONS } from "../lib/constants";
+import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
+import WebSocket from "modern-isomorphic-ws";
 
 import type {
   LiveSchema,
   LiveConfigOptions,
   LiveMetadataEvent,
   LiveTranscriptionEvent,
+  DeepgramClientOptions,
 } from "../lib/types";
 
-export class LiveClient extends EventEmitter {
+export class LiveClient extends AbstractWsClient {
   private _socket: WebSocket;
 
-  constructor(baseUrl: URL, apiKey: string, options: LiveSchema, endpoint = "v1/listen") {
-    super();
+  constructor(
+    protected key: string,
+    protected options: DeepgramClientOptions | undefined = DEFAULT_OPTIONS,
+    private transcriptionOptions: LiveSchema = {},
+    endpoint = "v1/listen"
+  ) {
+    super(key, options);
 
-    const transcriptionOptions: LiveSchema = { ...{}, ...options };
-    const url = new URL(endpoint, baseUrl);
+    const url = new URL(endpoint, this.baseUrl);
     url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
-    appendSearchParams(url.searchParams, transcriptionOptions);
+    appendSearchParams(url.searchParams, this.transcriptionOptions);
 
     if (isBrowser()) {
-      this._socket = new WebSocket(url.toString(), ["token", apiKey]);
+      this._socket = new WebSocket(url.toString(), ["token", this.key]);
     } else {
       this._socket = new WebSocket(url.toString(), {
         headers: {
-          Authorization: `token ${apiKey}`,
+          Authorization: `token ${this.key}`,
           ...DEFAULT_HEADERS,
         },
       });

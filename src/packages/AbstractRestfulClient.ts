@@ -2,17 +2,16 @@ import { DeepgramApiError, DeepgramUnknownError } from "../lib/errors";
 import { Readable } from "stream";
 import { fetchWithAuth, resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
+import { AbstractClient } from "./AbstractClient";
+import { DeepgramClientOptions } from "../lib/types";
+import { DEFAULT_OPTIONS } from "../lib/constants";
 
-export class AbstractRestfulClient {
-  protected baseUrl: URL;
-  protected headers: Record<string, string>;
+export abstract class AbstractRestfulClient extends AbstractClient {
   protected fetch: Fetch;
 
-  constructor(baseUrl: URL, headers: Record<string, string>, apiKey: string) {
-    this.baseUrl = baseUrl;
-    this.headers = headers;
-
-    this.fetch = fetchWithAuth(apiKey);
+  constructor(protected key: string, protected options: DeepgramClientOptions) {
+    super(key, options);
+    this.fetch = fetchWithAuth(this.key);
   }
 
   protected _getErrorMessage(err: any): string {
@@ -38,35 +37,38 @@ export class AbstractRestfulClient {
 
   protected _getRequestParams(
     method: RequestMethodType,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters,
     body?: string | Buffer | Readable
   ) {
-    const params: { [k: string]: any } = { method, headers: options?.headers || {} };
+    const params: { [k: string]: any } = {
+      ...this.options?.fetch,
+      method,
+      headers: { ...this.options?.fetch?.headers, ...headers } || {},
+    };
 
     if (method === "GET") {
       return params;
     }
 
-    params.headers = { "Content-Type": "application/json", ...options?.headers };
     params.body = body;
+    params.duplex = "half";
 
-    return { ...params, ...parameters, duplex: "half" };
+    return { ...params, ...parameters };
   }
 
   protected async _handleRequest(
     fetcher: Fetch,
     method: RequestMethodType,
     url: string | URL,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters,
     body?: string | Buffer | Readable
   ): Promise<any> {
     return new Promise((resolve, reject) => {
-      fetcher(url, this._getRequestParams(method, options, parameters, body))
+      fetcher(url, this._getRequestParams(method, headers, parameters, body))
         .then((result) => {
           if (!result.ok) throw result;
-          if (options?.noResolveJson) return result;
           return result.json();
         })
         .then((data) => resolve(data))
@@ -77,48 +79,48 @@ export class AbstractRestfulClient {
   protected async get(
     fetcher: Fetch,
     url: string | URL,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters
   ): Promise<any> {
-    return this._handleRequest(fetcher, "GET", url, options, parameters);
+    return this._handleRequest(fetcher, "GET", url, headers, parameters);
   }
 
   protected async post(
     fetcher: Fetch,
     url: string | URL,
     body: string | Buffer | Readable,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters
   ): Promise<any> {
-    return this._handleRequest(fetcher, "POST", url, options, parameters, body);
+    return this._handleRequest(fetcher, "POST", url, headers, parameters, body);
   }
 
   protected async put(
     fetcher: Fetch,
     url: string | URL,
     body: string | Buffer | Readable,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters
   ): Promise<any> {
-    return this._handleRequest(fetcher, "PUT", url, options, parameters, body);
+    return this._handleRequest(fetcher, "PUT", url, headers, parameters, body);
   }
 
   protected async patch(
     fetcher: Fetch,
     url: string | URL,
     body: string | Buffer | Readable,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters
   ): Promise<any> {
-    return this._handleRequest(fetcher, "PATCH", url, options, parameters, body);
+    return this._handleRequest(fetcher, "PATCH", url, headers, parameters, body);
   }
 
   protected async delete(
     fetcher: Fetch,
     url: string | URL,
-    options?: FetchOptions,
+    headers?: Record<string, string>,
     parameters?: FetchParameters
   ): Promise<any> {
-    return this._handleRequest(fetcher, "DELETE", url, options, parameters);
+    return this._handleRequest(fetcher, "DELETE", url, headers, parameters);
   }
 }

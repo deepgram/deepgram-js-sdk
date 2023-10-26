@@ -37,9 +37,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
 
-      const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -57,9 +55,6 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
-      // deepgram ignores the mimetype if it's not `application/json`
-      this.headers["Content-Type"] = "deepgram/audio+video";
-
       let body;
 
       if (isFileSource(source)) {
@@ -80,7 +75,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
       appendSearchParams(url.searchParams, transcriptionOptions);
 
       const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
+        "Content-Type": "deepgram/audio+video",
       });
 
       return { result, error: null };
@@ -116,9 +111,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
 
-      const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -137,9 +130,6 @@ export class PrerecordedClient extends AbstractRestfulClient {
     endpoint = "v1/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
-      // deepgram ignores the mimetype if it's not `application/json`
-      this.headers["Content-Type"] = "deepgram/audio+video";
-
       let body;
 
       if (isFileSource(source)) {
@@ -157,7 +147,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
       appendSearchParams(url.searchParams, transcriptionOptions);
 
       const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
+        "Content-Type": "deepgram/audio+video",
       });
 
       return { result, error: null };

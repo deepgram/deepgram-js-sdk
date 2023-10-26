@@ -1,5 +1,7 @@
+import { FetchOptions } from "./Fetch";
+
 export interface DeepgramClientOptions {
-  global: {
+  global?: {
     /**
      * Optional headers for initializing the client.
      */
@@ -10,4 +12,5 @@ export interface DeepgramClientOptions {
      */
     url?: string;
   };
+  fetch?: FetchOptions;
 }

@@ -4,7 +4,7 @@ import type { DeepgramClientOptions } from "./lib/types";
 /**
  * Creates a new Deepgram Client.
  */
-const createClient = (apiKey: string, options?: DeepgramClientOptions): DeepgramClient => {
+const createClient = (apiKey: string, options: DeepgramClientOptions = {}): DeepgramClient => {
   return new DeepgramClient(apiKey, options);
 };
 

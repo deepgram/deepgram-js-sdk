@@ -38,9 +38,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint;
 
-      const result: GetProjectsResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectsResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -63,9 +61,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: GetProjectResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -91,9 +87,7 @@ export class ManageClient extends AbstractRestfulClient {
 
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.patch(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: MessageResponse = await this.patch(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -116,9 +110,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      await this.delete(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      await this.delete(this.fetch as Fetch, url);
 
       return { error: null };
     } catch (error) {
@@ -141,9 +133,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: GetProjectKeysResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectKeysResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -167,9 +157,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:keyId/, keyId);
 
-      const result: GetProjectKeyResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectKeyResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -195,9 +183,7 @@ export class ManageClient extends AbstractRestfulClient {
 
       const body = JSON.stringify(options);
 
-      const result: CreateProjectKeyResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: CreateProjectKeyResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -221,9 +207,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:keyId/, keyId);
 
-      await this.delete(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      await this.delete(this.fetch as Fetch, url);
 
       return { error: null };
     } catch (error) {
@@ -246,9 +230,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: GetProjectMembersResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectMembersResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -272,9 +254,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:memberId/, memberId);
 
-      await this.delete(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      await this.delete(this.fetch as Fetch, url);
 
       return { error: null };
     } catch (error) {
@@ -298,9 +278,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:memberId/, memberId);
 
-      const result: GetProjectMemberScopesResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectMemberScopesResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -327,9 +305,7 @@ export class ManageClient extends AbstractRestfulClient {
 
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.put(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: MessageResponse = await this.put(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -352,9 +328,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: GetProjectInvitesResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectInvitesResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -380,9 +354,7 @@ export class ManageClient extends AbstractRestfulClient {
 
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: MessageResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -406,9 +378,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:email/, email);
 
-      await this.delete(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      await this.delete(this.fetch as Fetch, url);
 
       return { error: null };
     } catch (error) {
@@ -431,9 +401,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: MessageResponse = await this.delete(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: MessageResponse = await this.delete(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -458,9 +426,7 @@ export class ManageClient extends AbstractRestfulClient {
       url.pathname = endpoint.replace(/:projectId/, projectId);
       appendSearchParams(url.searchParams, options);
 
-      const result: GetProjectUsageRequestsResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectUsageRequestsResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -484,9 +450,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:requestId/, requestId);
 
-      const result: GetProjectUsageRequestResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectUsageRequestResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -511,9 +475,7 @@ export class ManageClient extends AbstractRestfulClient {
       url.pathname = endpoint.replace(/:projectId/, projectId);
       appendSearchParams(url.searchParams, options);
 
-      const result: GetProjectUsageSummaryResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectUsageSummaryResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -538,9 +500,7 @@ export class ManageClient extends AbstractRestfulClient {
       url.pathname = endpoint.replace(/:projectId/, projectId);
       appendSearchParams(url.searchParams, options);
 
-      const result: GetProjectUsageFieldsResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectUsageFieldsResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -563,9 +523,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: GetProjectBalancesResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectBalancesResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -589,9 +547,7 @@ export class ManageClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId).replace(/:balanceId/, balanceId);
 
-      const result: GetProjectBalanceResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: GetProjectBalanceResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {

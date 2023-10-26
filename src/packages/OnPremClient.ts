@@ -21,9 +21,7 @@ export class OnPremClient extends AbstractRestfulClient {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint.replace(/:projectId/, projectId);
 
-      const result: ListOnPremCredentialsResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: ListOnPremCredentialsResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -49,9 +47,7 @@ export class OnPremClient extends AbstractRestfulClient {
         .replace(/:projectId/, projectId)
         .replace(/:credentialsId/, credentialsId);
 
-      const result: OnPremCredentialResponse = await this.get(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: OnPremCredentialResponse = await this.get(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
@@ -77,9 +73,7 @@ export class OnPremClient extends AbstractRestfulClient {
 
       const body = JSON.stringify(options);
 
-      const result: OnPremCredentialResponse = await this.post(this.fetch as Fetch, url, body, {
-        headers: this.headers,
-      });
+      const result: OnPremCredentialResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -105,9 +99,7 @@ export class OnPremClient extends AbstractRestfulClient {
         .replace(/:projectId/, projectId)
         .replace(/:credentialsId/, credentialsId);
 
-      const result: MessageResponse = await this.delete(this.fetch as Fetch, url, {
-        headers: this.headers,
-      });
+      const result: MessageResponse = await this.delete(this.fetch as Fetch, url);
 
       return { result, error: null };
     } catch (error) {
