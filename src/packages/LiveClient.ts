@@ -1,7 +1,7 @@
 import { AbstractWsClient } from "./AbstractWsClient";
 import { appendSearchParams, isBrowser } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
-import { DEFAULT_HEADERS, DEFAULT_OPTIONS } from "../lib/constants";
+import { DEFAULT_OPTIONS } from "../lib/constants";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
 import WebSocket from "modern-isomorphic-ws";
 

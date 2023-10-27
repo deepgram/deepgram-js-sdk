@@ -1,10 +1,9 @@
 import { DeepgramApiError, DeepgramError, DeepgramUnknownError } from "../lib/errors";
 import { Readable } from "stream";
 import { fetchWithAuth, resolveResponse } from "../lib/fetch";
-import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
+import type { Fetch, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 import { AbstractClient } from "./AbstractClient";
 import { DeepgramClientOptions } from "../lib/types";
-import { DEFAULT_OPTIONS } from "../lib/constants";
 import { isBrowser } from "../lib/helpers";
 
 export abstract class AbstractRestfulClient extends AbstractClient {

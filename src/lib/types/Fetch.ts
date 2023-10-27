@@ -1,7 +1,7 @@
 export type Fetch = typeof fetch;
 
 export interface FetchOptions {
-  method?: RequestMethodType; // GET, POST, PUT, DELETE, etc.
+  method?: RequestMethodType;
   headers?: Record<string, string>;
   cache?: "default" | "no-cache" | "reload" | "force-cache" | "only-if-cached"; // default, no-cache, reload, force-cache, only-if-cached
   credentials?: "include" | "same-origin" | "omit"; // include, same-origin, omit
@@ -17,7 +17,7 @@ export interface FetchOptions {
     | "unsafe-url";
 }
 
-export type RequestMethodType = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+export type RequestMethodType = "GET" | "POST" | "PUT" | "DELETE" | "PATCH"; // GET, POST, PUT, DELETE, etc.
 
 export interface FetchParameters {
   /**
