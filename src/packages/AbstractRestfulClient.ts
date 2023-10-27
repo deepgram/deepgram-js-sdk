@@ -1,16 +1,24 @@
-import { DeepgramApiError, DeepgramUnknownError } from "../lib/errors";
+import { DeepgramApiError, DeepgramError, DeepgramUnknownError } from "../lib/errors";
 import { Readable } from "stream";
 import { fetchWithAuth, resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 import { AbstractClient } from "./AbstractClient";
 import { DeepgramClientOptions } from "../lib/types";
 import { DEFAULT_OPTIONS } from "../lib/constants";
+import { isBrowser } from "../lib/helpers";
 
 export abstract class AbstractRestfulClient extends AbstractClient {
   protected fetch: Fetch;
 
   constructor(protected key: string, protected options: DeepgramClientOptions) {
     super(key, options);
+
+    if (isBrowser() && !this.willProxy()) {
+      throw new DeepgramError(
+        "Due to CORS we are unable to support REST-based API calls to our API from the browser. Please consider using a proxy, and including a `restProxy: { url: ''}` in your Deepgram client options."
+      );
+    }
+
     this.fetch = fetchWithAuth(this.key);
   }
 

@@ -5,7 +5,6 @@ import { DeepgramClientOptions } from "../lib/types";
 
 export abstract class AbstractWsClient extends EventEmitter {
   protected baseUrl: URL;
-  protected headers: Record<string, string>;
 
   constructor(
     protected key: string,
@@ -39,7 +38,5 @@ export abstract class AbstractWsClient extends EventEmitter {
 
     this.baseUrl = new URL(stripTrailingSlash(url));
     this.baseUrl.protocol = this.baseUrl.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
-
-    this.headers = this.options.global?.headers ?? {};
   }
 }

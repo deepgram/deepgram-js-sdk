@@ -10,7 +10,6 @@ import { DeepgramClientOptions } from "../lib/types";
  */
 export abstract class AbstractClient {
   protected baseUrl: URL;
-  protected headers: Record<string, string>;
 
   constructor(protected key: string, protected options: DeepgramClientOptions) {
     this.key = key;
@@ -31,13 +30,28 @@ export abstract class AbstractClient {
       );
     }
 
-    let url = this.options.global.url;
+    if (this.willProxy()) {
+      this.baseUrl = this.resolveBaseUrl(this.options.restProxy?.url as string);
 
+      if (this.options.global.headers) {
+        this.options.global.headers["X-Deepgram-Proxy"] = this.options.global.url;
+      }
+    } else {
+      this.baseUrl = this.resolveBaseUrl(this.options.global.url);
+    }
+  }
+
+  protected resolveBaseUrl(url: string) {
     if (!/^https?:\/\//i.test(url)) {
       url = "https://" + url;
     }
 
-    this.baseUrl = new URL(stripTrailingSlash(url));
-    this.headers = this.options.global?.headers ?? {};
+    return new URL(stripTrailingSlash(url));
+  }
+
+  protected willProxy() {
+    const proxyUrl = this.options.restProxy?.url;
+
+    return null !== proxyUrl && "" !== proxyUrl;
   }
 }

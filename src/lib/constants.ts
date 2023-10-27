@@ -15,13 +15,7 @@ export const DEFAULT_GLOBAL_OPTIONS = {
 };
 
 export const DEFAULT_FETCH_OPTIONS: FetchOptions = {
-  method: "GET", // GET, POST, PUT, PATCH, DELETE
-  mode: "cors", // no-cors, cors, same-origin
   headers: DEFAULT_HEADERS,
-  cache: "default", // default, no-cache, reload, force-cache, only-if-cached
-  credentials: "same-origin", // include, same-origin, omit
-  redirect: "follow", // manual, follow, error
-  referrerPolicy: "no-referrer-when-downgrade", // no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
 };
 
 export const DEFAULT_OPTIONS = {

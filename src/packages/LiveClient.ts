@@ -34,7 +34,7 @@ export class LiveClient extends AbstractWsClient {
       this._socket = new WebSocket(url.toString(), {
         headers: {
           Authorization: `token ${this.key}`,
-          ...DEFAULT_HEADERS,
+          ...this.options?.global?.headers,
         },
       });
     }
