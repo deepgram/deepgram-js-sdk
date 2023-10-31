@@ -51,6 +51,7 @@
     "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
   },
   "dependencies": {
+    "@deepgram/captions": "^1.0.0",
     "cross-fetch": "^3.1.5",
     "events": "^3.3.0",
     "modern-isomorphic-ws": "^1.0.5"

@@ -17,3 +17,8 @@ export * from "./lib/types";
 export * from "./lib/enums";
 export * from "./lib/constants";
 export * from "./lib/errors";
+
+/**
+ * Captions.
+ */
+export { webvtt, srt } from "@deepgram/captions";
