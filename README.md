@@ -4,10 +4,13 @@
 
 Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
 
-- [Getting an API Key](#getting-an-api-key)
 - [Installation](#installation)
+  - [UMD](#umd)
+  - [ESM](#esm)
 - [Initialization](#initialization)
+  - [Getting an API Key](#getting-an-api-key)
 - [Scoped Configuration](#scoped-configuration)
+  - [Rest requests in the browser](#rest-requests-in-the-browser)
 - [Transcription](#transcription)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
@@ -50,11 +53,9 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Development and Contributing](#development-and-contributing)
 - [Getting Help](#getting-help)
 
-# Getting an API Key
-
-🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
-
 # Installation
+
+You can install this SDK directly from [npm](https://www.npmjs.com/package/@deepgram/sdk).
 
 ```bash
 npm install @deepgram/sdk
@@ -62,27 +63,88 @@ npm install @deepgram/sdk
 # yarn add @deepgram/sdk
 ```
 
+## UMD
+
+You can now use plain `<script>`s to import deepgram from CDNs, like:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
+```
+
+or even:
+
+```html
+<script src="https://unpkg.com/@deepgram/sdk"></script>
+```
+
+Then you can use it from a global deepgram variable:
+
+```html
+<script>
+  const { createClient } = deepgram;
+  const _deepgram = createClient("deepgram-api-key");
+
+  console.log("Deepgram Instance: ", _deepgram);
+  // ...
+</script>
+```
+
+## ESM
+
+You can now use type="module" `<script>`s to import deepgram from CDNs, like:
+
+```html
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk@v3.0.0-alpha.10/+esm";
+  const deepgram = createClient("deepgram-api-key");
+
+  console.log("Deepgram Instance: ", deepgram);
+  // ...
+</script>
+```
+
 # Initialization
 
 ```js
-const { createClient } = require("@deepgram/sdk");
+import { createClient } from "@deepgram/sdk";
 // - or -
-// import { createClient } from "@deepgram/sdk";
+// const { createClient } = require("@deepgram/sdk");
 
 const deepgram = createClient(DEEPGRAM_API_KEY);
 ```
+
+## Getting an API Key
+
+🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
 
 # Scoped Configuration
 
 A new feature is scoped configuration. You'll be able to configure various aspects of the SDK from the initialization.
 
 ```js
-const { createClient } = require("@deepgram/sdk");
+import { createClient } from "@deepgram/sdk";
 // - or -
-// import { createClient } from "@deepgram/sdk";
+// const { createClient } = require("@deepgram/sdk");
 
-const deepgram = createClient(DEEPGRAM_API_KEY, { global: { url: "http://localhost:8080" } });
+const deepgram = createClient(DEEPGRAM_API_KEY, {
+  global: { url: "https://api.beta.deepgram.com" },
+  // proxy: { url: "http://localhost:8080" }
+});
 ```
+
+## Rest requests in the browser
+
+This SDK now works in the browser. If you'd like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you'll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:
+
+```js
+const { createClient } = require("@deepgram/sdk");
+
+const deepgram = createClient("proxy", {
+  proxy: { url: "http://localhost:8080" },
+});
+```
+
+Your proxy service should replace the Authorization header with `Authorization: token <DEEPGRAM_API_KEY>` and return results verbatim to the SDK.
 
 # Transcription
 
