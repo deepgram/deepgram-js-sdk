@@ -137,7 +137,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 This SDK now works in the browser. If you'd like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you'll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:
 
 ```js
-const { createClient } = require("@deepgram/sdk");
+import { createClient } from "@deepgram/sdk";
 
 const deepgram = createClient("proxy", {
   proxy: { url: "http://localhost:8080" },
