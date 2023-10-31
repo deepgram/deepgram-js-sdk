@@ -1,12 +1,9 @@
-# Deepgram Node.js SDK
+# Deepgram JavaScript SDK
 
 [![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4) [![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
-Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
+Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
 
-> This SDK only supports hosted usage of api.deepgram.com.
-
-- [Deepgram Node.js SDK](#deepgram-nodejs-sdk)
 - [Getting an API Key](#getting-an-api-key)
 - [Installation](#installation)
 - [Initialization](#initialization)
@@ -15,6 +12,7 @@ Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Power your apps 
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
   - [Live Audio](#live-audio)
+- [Transcribing to captions](#transcribing-to-captions)
 - [Projects](#projects)
   - [Get Projects](#get-projects)
   - [Get Project](#get-project)
@@ -44,7 +42,7 @@ Official Node.js SDK for [Deepgram](https://www.deepgram.com/). Power your apps 
 - [Billing](#billing)
   - [Get All Balances](#get-all-balances)
   - [Get Balance](#get-balance)
-- [On-Prem APIs] (#on-prem-apis)
+- [On-Prem APIs](#on-prem-apis)
   - [List On-Prem credentials](#list-on-prem-credentials)
   - [Get On-Prem credentials](#get-on-prem-credentials)
   - [Create On-Prem credentials](#create-on-prem-credentials)
@@ -143,9 +141,29 @@ dgConnection.on(LiveTranscriptionEvents.Open, () => {
 });
 ```
 
-See an example, here: [https://github.com/deepgram-devs/node-live-example](https://github.com/deepgram-devs/node-live-example).
+To see an example, [check out our Node.js example](https://github.com/deepgram-devs/node-live-example) or our [Browser example](https://github.com/deepgram-devs/js-live-example).
 
 [See our API reference for more info](https://developers.deepgram.com/reference/streaming).
+
+# Transcribing to captions
+
+```js
+import { webvtt /* , srt */ } from "@deepgram/captions";
+
+const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+  {
+    url: "https://dpgr.am/spacewalk.wav",
+  },
+  {
+    model: "nova",
+  }
+);
+
+const vttOutput = webvtt(result);
+// const srtOutput = srt(result);
+```
+
+[See our standalone captions library for more information](https://github.com/deepgram/deepgram-node-captions).
 
 # Projects
 
@@ -424,6 +442,6 @@ To make sure our community is safe for all, be sure to review and agree to our
 We love to hear from you so if you have questions, comments or find a bug in the
 project, let us know! You can either:
 
-- [Open an issue in this repository](https://github.com/deepgram/node-sdk/issues/new)
-- [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
+- [Open an issue in this repository](https://github.com/deepgram/deepgram-node-sdk/issues/new)
 - [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
+- [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
