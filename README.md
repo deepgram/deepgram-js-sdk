@@ -95,7 +95,7 @@ You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 
 ```html
 <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk@v3.0.0-alpha.10/+esm";
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
   const deepgram = createClient("deepgram-api-key");
 
   console.log("Deepgram Instance: ", deepgram);
