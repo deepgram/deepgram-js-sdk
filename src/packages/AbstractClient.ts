@@ -52,6 +52,6 @@ export abstract class AbstractClient {
   protected willProxy() {
     const proxyUrl = this.options.restProxy?.url;
 
-    return null !== proxyUrl && "" !== proxyUrl;
+    return !!proxyUrl;
   }
 }

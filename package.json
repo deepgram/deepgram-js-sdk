@@ -53,6 +53,7 @@
   "dependencies": {
     "@deepgram/captions": "^1.0.0",
     "cross-fetch": "^3.1.5",
+    "dayjs": "^1.11.10",
     "events": "^3.3.0",
     "modern-isomorphic-ws": "^1.0.5"
   },
