@@ -37,28 +37,29 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should create the client object with a custom domain", () => {
-    const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: "https://api.mock.deepgram.com" },
-    });
-
-    // @ts-ignore
-    const url = client.baseUrl.hostname;
-
-    expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal("api.mock.deepgram.com");
-  });
-
-  it("it should strip trailing slashes off the API URL if they're supplied", () => {
-    const domain = `https://api.mock.deepgram.com`;
+    const domain = faker.internet.url({ appendSlash: false });
     const client = createClient(faker.string.alphanumeric(40), {
       global: { url: domain },
     });
 
     // @ts-ignore
-    const url = client.baseUrl.hostname;
+    const baseUrl = client.baseUrl;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal("api.mock.deepgram.com");
+    expect(`${baseUrl.protocol}//${baseUrl.hostname}`).to.equal(domain);
+  });
+
+  it("it should strip trailing slashes off the API URL if they're supplied", () => {
+    const domain = faker.internet.url({ appendSlash: true });
+    const client = createClient(faker.string.alphanumeric(40), {
+      global: { url: domain },
+    });
+
+    // @ts-ignore
+    const baseUrl = client.baseUrl;
+
+    expect(client).is.instanceOf(DeepgramClient);
+    expect(`${baseUrl.protocol}//${baseUrl.hostname}`).to.equal(stripTrailingSlash(domain));
   });
 
   it("it should still work when provided a URL without a protocol", () => {

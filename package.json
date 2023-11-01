@@ -51,7 +51,9 @@
     "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
   },
   "dependencies": {
+    "@deepgram/captions": "^1.0.0",
     "cross-fetch": "^3.1.5",
+    "dayjs": "^1.11.10",
     "events": "^3.3.0",
     "modern-isomorphic-ws": "^1.0.5"
   },
@@ -65,6 +67,7 @@
     "@types/ws": "^8.5.6",
     "chai": "^4.3.7",
     "cross-env": "^7.0.3",
+    "deepmerge": "^4.3.1",
     "husky": "^4.3.0",
     "mocha": "^9.2.2",
     "nodemon": "^3.0.1",

@@ -1,5 +1,7 @@
+import { FetchOptions } from "./Fetch";
+
 export interface DeepgramClientOptions {
-  global: {
+  global?: {
     /**
      * Optional headers for initializing the client.
      */
@@ -9,5 +11,9 @@ export interface DeepgramClientOptions {
      * The URL used to interact with production, On-prem and other Deepgram environments. Defaults to `api.deepgram.com`.
      */
     url?: string;
+  };
+  fetch?: FetchOptions;
+  restProxy?: {
+    url: null | string;
   };
 }

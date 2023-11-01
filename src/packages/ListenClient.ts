@@ -1,23 +1,14 @@
-import { PrerecordedClient } from "./PrerecordedClient";
+import { AbstractClient } from "./AbstractClient";
 import { LiveClient } from "./LiveClient";
 import { LiveSchema } from "../lib/types";
+import { PrerecordedClient } from "./PrerecordedClient";
 
-export class ListenClient {
-  protected baseUrl: URL;
-  protected headers: Record<string, string>;
-  protected key: string;
-
-  constructor(baseUrl: URL, headers: Record<string, string>, apiKey: string) {
-    this.baseUrl = baseUrl;
-    this.headers = headers;
-    this.key = apiKey;
-  }
-
+export class ListenClient extends AbstractClient {
   get prerecorded() {
-    return new PrerecordedClient(this.baseUrl, this.headers, this.key);
+    return new PrerecordedClient(this.key, this.options);
   }
 
-  public live(options: LiveSchema, endpoint = "v1/listen") {
-    return new LiveClient(this.baseUrl, this.key, options, endpoint);
+  public live(transcriptionOptions: LiveSchema, endpoint = "v1/listen") {
+    return new LiveClient(this.key, this.options, transcriptionOptions, endpoint);
   }
 }
