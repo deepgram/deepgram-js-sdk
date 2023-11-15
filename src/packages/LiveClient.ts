@@ -3,7 +3,7 @@ import { appendSearchParams, isBrowser } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
 import { DEFAULT_OPTIONS } from "../lib/constants";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
-import WebSocket from "modern-isomorphic-ws";
+import WebSocket from "isomorphic-ws";
 
 import type {
   LiveSchema,
@@ -28,15 +28,19 @@ export class LiveClient extends AbstractWsClient {
     url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
     appendSearchParams(url.searchParams, this.transcriptionOptions);
 
-    if (isBrowser()) {
-      this._socket = new WebSocket(url.toString(), ["token", this.key]);
-    } else {
+    try {
       this._socket = new WebSocket(url.toString(), {
         headers: {
           Authorization: `token ${this.key}`,
           ...this.options?.global?.headers,
         },
       });
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        this._socket = new WebSocket(url.toString(), ["token", this.key]);
+      } else {
+        throw e; // let others bubble up
+      }
     }
 
     this._socket.onopen = () => {
