@@ -150,10 +150,5 @@ export class LiveClient extends AbstractWsClient {
         type: "CloseStream",
       })
     );
-
-    // close the socket from the client end
-    if (this._socket.readyState === LiveConnectionState.OPEN) {
-      this._socket.close();
-    }
   }
 }
