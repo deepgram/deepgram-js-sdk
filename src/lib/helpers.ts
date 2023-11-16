@@ -8,6 +8,7 @@ export function stripTrailingSlash(url: string): string {
 }
 
 export const isBrowser = () => typeof window !== "undefined";
+export const isServer = () => typeof process !== "undefined";
 
 export function applySettingDefaults(
   options: DeepgramClientOptions,

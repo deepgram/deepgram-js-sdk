@@ -1,5 +1,5 @@
 import { AbstractWsClient } from "./AbstractWsClient";
-import { appendSearchParams, isBrowser } from "../lib/helpers";
+import { appendSearchParams, isServer } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
 import { DEFAULT_OPTIONS } from "../lib/constants";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
@@ -28,19 +28,15 @@ export class LiveClient extends AbstractWsClient {
     url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
     appendSearchParams(url.searchParams, this.transcriptionOptions);
 
-    try {
+    if (isServer()) {
       this._socket = new WebSocket(url.toString(), {
         headers: {
           Authorization: `token ${this.key}`,
           ...this.options?.global?.headers,
         },
       });
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        this._socket = new WebSocket(url.toString(), ["token", this.key]);
-      } else {
-        throw e; // let others bubble up
-      }
+    } else {
+      this._socket = new WebSocket(url.toString(), ["token", this.key]);
     }
 
     this._socket.onopen = () => {
