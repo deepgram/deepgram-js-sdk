@@ -4,6 +4,7 @@
 
 Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
 
+- [Migrating from v2](#migrating-from-v2)
 - [Installation](#installation)
   - [UMD](#umd)
   - [ESM](#esm)
@@ -11,9 +12,13 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Getting an API Key](#getting-an-api-key)
 - [Scoped Configuration](#scoped-configuration)
   - [Rest requests in the browser](#rest-requests-in-the-browser)
-- [Transcription](#transcription)
+- [Transcription (Synchronous)](#transcription-synchronous)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
+- [Transcription (Asynchronous / Callbacks)](#transcription-asynchronous--callbacks)
+  - [Remote Files](#remote-files-1)
+  - [Local Files](#local-files-1)
+- [Transcription (Live / Streaming)](#transcription-live--streaming)
   - [Live Audio](#live-audio)
 - [Transcribing to captions](#transcribing-to-captions)
 - [Projects](#projects)
@@ -51,7 +56,12 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Create On-Prem credentials](#create-on-prem-credentials)
   - [Delete On-Prem credentials](#delete-on-prem-credentials)
 - [Development and Contributing](#development-and-contributing)
+  - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
+
+# Migrating from v2
+
+We have published [a migration guide on our docs](https://developers.deepgram.com/docs/js-sdk-v2-to-v3-migration-guide), showing how to move from v2 to v3.
 
 # Installation
 
@@ -150,7 +160,7 @@ Your proxy service should replace the Authorization header with `Authorization: 
 
 Check out our example Node-based proxy here: [Deepgram Node Proxy](https://github.com/deepgram-devs/deepgram-node-proxy).
 
-# Transcription
+# Transcription (Synchronous)
 
 ## Remote Files
 
@@ -190,6 +200,58 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+
+# Transcription (Asynchronous / Callbacks)
+
+## Remote Files
+
+```js
+import { CallbackUrl } from "@deepgram/sdk";
+
+const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallback(
+  {
+    url: "https://dpgr.am/spacewalk.wav",
+  },
+  new CallbackUrl("http://callback/endpoint"),
+  {
+    model: "nova",
+  }
+);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+
+## Local Files
+
+```js
+import { CallbackUrl } from "@deepgram/sdk";
+
+const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallback(
+  fs.createReadStream("./examples/spacewalk.wav"),
+  new CallbackUrl("http://callback/endpoint"),
+  {
+    model: "nova",
+  }
+);
+```
+
+or
+
+```js
+import { CallbackUrl } from "@deepgram/sdk";
+
+const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallback(
+  fs.readFileSync("./examples/spacewalk.wav"),
+  new CallbackUrl("http://callback/endpoint"),
+  {
+    model: "nova",
+  }
+);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+
+# Transcription (Live / Streaming)
 
 ## Live Audio
 
@@ -502,6 +564,10 @@ Interested in contributing? We ❤️ pull requests!
 To make sure our community is safe for all, be sure to review and agree to our
 [Code of Conduct](./CODE_OF_CONDUCT.md). Then see the
 [Contribution](./CONTRIBUTING.md) guidelines for more information.
+
+## Debugging and making changes locally
+
+If you want to make local changes to the SDK and run the [`examples/`](./examples/), you'll need to `npm run build` first, to ensure that your changes are included in the examples that are running.
 
 # Getting Help
 

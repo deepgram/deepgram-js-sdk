@@ -1,7 +1,7 @@
 const { createClient } = require("../../dist/main/index");
 const fs = require("fs");
 
-const url = async () => {
+const transcribeUrl = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
   const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
@@ -13,25 +13,11 @@ const url = async () => {
     }
   );
 
-  if (error) throw new Error(error);
-  if (!error) console.log(result);
+  if (error) throw error;
+  if (!error) console.dir(result, { depth: null });
 };
 
-const readstream = async () => {
-  const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
-
-  const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-    fs.createReadStream("./examples/nasa.mp4"),
-    {
-      model: "nova",
-    }
-  );
-
-  if (error) throw new Error(error);
-  if (!error) console.log(result);
-};
-
-const buffer = async () => {
+const transcribeFile = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
@@ -41,12 +27,9 @@ const buffer = async () => {
     }
   );
 
-  if (error) throw new Error(error);
-  if (!error) console.log(result);
+  if (error) throw error;
+  if (!error) console.dir(result, { depth: null });
 };
 
-(async () => {
-  await url();
-  await readstream();
-  await buffer();
-})();
+transcribeUrl();
+transcribeFile();
