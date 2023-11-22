@@ -1,4 +1,5 @@
 import { DEFAULT_OPTIONS, DEFAULT_URL } from "../lib/constants";
+import { DeepgramError } from "../lib/errors";
 import { applySettingDefaults, stripTrailingSlash } from "../lib/helpers";
 import { DeepgramClientOptions } from "../lib/types";
 
@@ -19,18 +20,24 @@ export abstract class AbstractClient {
     }
 
     if (!this.key) {
-      throw new Error("A deepgram API key is required");
+      throw new DeepgramError("A deepgram API key is required");
     }
 
     this.options = applySettingDefaults(options, DEFAULT_OPTIONS);
 
     if (!this.options.global?.url) {
-      throw new Error(
+      throw new DeepgramError(
         `An API URL is required. It should be set to ${DEFAULT_URL} by default. No idea what happened!`
       );
     }
 
     if (this.willProxy()) {
+      if (this.key !== "proxy") {
+        throw new DeepgramError(
+          `Do not attempt to pass any other API key than the string "proxy" when making proxied REST requests. Please ensure your proxy application is responsible for writing our API key to the Authorization header.`
+        );
+      }
+
       this.baseUrl = this.resolveBaseUrl(this.options.restProxy?.url as string);
 
       if (this.options.global.headers) {

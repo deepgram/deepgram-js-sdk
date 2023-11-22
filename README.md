@@ -138,7 +138,7 @@ import { createClient } from "@deepgram/sdk";
 
 const deepgram = createClient(DEEPGRAM_API_KEY, {
   global: { url: "https://api.beta.deepgram.com" },
-  // proxy: { url: "http://localhost:8080" }
+  // restProxy: { url: "http://localhost:8080" }
 });
 ```
 
@@ -150,11 +150,15 @@ This SDK now works in the browser. If you'd like to make REST-based requests (pr
 import { createClient } from "@deepgram/sdk";
 
 const deepgram = createClient("proxy", {
-  proxy: { url: "http://localhost:8080" },
+  restProxy: { url: "http://localhost:8080" },
 });
 ```
 
+> Important: You must pass `"proxy"` as your API key, and use the proxy to set the `Authorization` header to your Deepgram API key.
+
 Your proxy service should replace the Authorization header with `Authorization: token <DEEPGRAM_API_KEY>` and return results verbatim to the SDK.
+
+Check out our example Node-based proxy here: [Deepgram Node Proxy](https://github.com/deepgram-devs/deepgram-node-proxy).
 
 # Transcription (Synchronous)
 
