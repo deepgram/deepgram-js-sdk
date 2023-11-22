@@ -1,9 +1,9 @@
 import { AbstractWsClient } from "./AbstractWsClient";
-import { appendSearchParams, isServer } from "../lib/helpers";
+import { appendSearchParams } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
 import { DEFAULT_OPTIONS } from "../lib/constants";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
-import WebSocket from "isomorphic-ws";
+import { w3cwebsocket } from "websocket";
 
 import type {
   LiveSchema,
@@ -14,7 +14,7 @@ import type {
 } from "../lib/types";
 
 export class LiveClient extends AbstractWsClient {
-  private _socket: WebSocket;
+  private _socket: w3cwebsocket;
 
   constructor(
     protected key: string,
@@ -28,22 +28,13 @@ export class LiveClient extends AbstractWsClient {
     url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
     appendSearchParams(url.searchParams, this.transcriptionOptions);
 
-    if (isServer()) {
-      this._socket = new WebSocket(url.toString(), {
-        headers: {
-          Authorization: `token ${this.key}`,
-          ...this.options?.global?.headers,
-        },
-      });
-    } else {
-      this._socket = new WebSocket(url.toString(), ["token", this.key]);
-    }
+    this._socket = new w3cwebsocket(url.toString(), ["token", this.key]);
 
     this._socket.onopen = () => {
       this.emit(LiveTranscriptionEvents.Open, this);
     };
 
-    this._socket.onclose = (event: WebSocket.CloseEvent) => {
+    this._socket.onclose = (event: any) => {
       /**
        * changing the event.target to any to access the private _req
        * property that isn't available on the WebSocket.CloseEvent type
