@@ -35,17 +35,6 @@ export class LiveClient extends AbstractWsClient {
     };
 
     this._socket.onclose = (event: any) => {
-      /**
-       * changing the event.target to any to access the private _req
-       * property that isn't available on the WebSocket.CloseEvent type
-       **/
-      const newTarget: any = event.target;
-
-      if (newTarget["_req"]) {
-        const dgErrorIndex = newTarget["_req"].res.rawHeaders.indexOf("dg-error");
-        event.reason = newTarget["_req"].res.rawHeaders[dgErrorIndex + 1];
-      }
-
       this.emit(LiveTranscriptionEvents.Close, event);
     };
 
