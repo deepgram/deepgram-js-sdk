@@ -8,7 +8,7 @@ export interface LiveTranscriptionEvent {
   channel: {
     alternatives: {
       transcript: string;
-      confidence: boolean;
+      confidence: number;
       words: {
         word: string;
         start: number;
