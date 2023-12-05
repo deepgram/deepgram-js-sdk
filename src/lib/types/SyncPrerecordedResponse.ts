@@ -18,6 +18,7 @@ interface Channel {
   search?: Search[];
   alternatives: Alternative[];
   detected_language?: string;
+  language_confidence?: number;
 }
 
 interface Entity {
