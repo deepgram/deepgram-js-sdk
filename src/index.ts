@@ -1,5 +1,15 @@
 import DeepgramClient from "./DeepgramClient";
+import { DeepgramVersionError } from "./lib/errors";
 import type { DeepgramClientOptions } from "./lib/types";
+
+/**
+ * Major version fallback error
+ */
+class Deepgram {
+  constructor(protected apiKey: string, protected apiUrl?: string, protected requireSSL?: boolean) {
+    throw new DeepgramVersionError();
+  }
+}
 
 /**
  * Creates a new Deepgram Client.
@@ -8,7 +18,7 @@ const createClient = (apiKey: string, options: DeepgramClientOptions = {}): Deep
   return new DeepgramClient(apiKey, options);
 };
 
-export { createClient, DeepgramClient };
+export { createClient, DeepgramClient, Deepgram };
 
 /**
  * Helpful exports.
