@@ -12,7 +12,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
   constructor(protected key: string, protected options: DeepgramClientOptions) {
     super(key, options);
 
-    if (isBrowser() && !this.willProxy()) {
+    if (isBrowser() && !this._willProxy()) {
       throw new DeepgramError(
         "Due to CORS we are unable to support REST-based API calls to our API from the browser. Please consider using a proxy, and including a `restProxy: { url: ''}` in your Deepgram client options."
       );
@@ -129,5 +129,11 @@ export abstract class AbstractRestfulClient extends AbstractClient {
     parameters?: FetchParameters
   ): Promise<any> {
     return this._handleRequest(fetcher, "DELETE", url, headers, parameters);
+  }
+
+  private _willProxy() {
+    const proxyUrl = this.options.restProxy?.url;
+
+    return !!proxyUrl;
   }
 }
