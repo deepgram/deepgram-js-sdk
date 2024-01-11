@@ -21,6 +21,10 @@ const live = async () => {
       console.log(data);
     });
 
+    connection.on(LiveTranscriptionEvents.Error, (err) => {
+      console.error(err);
+    });
+
     fetch(url)
       .then((r) => r.body)
       .then((res) => {
