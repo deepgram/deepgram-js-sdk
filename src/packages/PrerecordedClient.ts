@@ -28,7 +28,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
       if (options !== undefined && "callback" in options) {
         throw new DeepgramError(
-          "Callback cannot be provided as an option to a synchronous transcription. Use `asyncPrerecordedUrl` or `asyncPrerecordedFile` instead."
+          "Callback cannot be provided as an option to a synchronous transcription. Use `transcribeUrlCallback` or `transcribeFileCallback` instead."
         );
       }
 
@@ -65,7 +65,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
 
       if (options !== undefined && "callback" in options) {
         throw new DeepgramError(
-          "Callback cannot be provided as an option to a synchronous transcription. Use `asyncPrerecordedUrl` or `asyncPrerecordedFile` instead."
+          "Callback cannot be provided as an option to a synchronous transcription. Use `transcribeUrlCallback` or `transcribeFileCallback` instead."
         );
       }
 
