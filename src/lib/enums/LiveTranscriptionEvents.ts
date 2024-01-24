@@ -5,4 +5,5 @@ export enum LiveTranscriptionEvents {
   Metadata = "Metadata", // exact match to data type from API
   Error = "error",
   Warning = "warning",
+  SpeechStarted = "SpeechStarted",
 }

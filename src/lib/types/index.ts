@@ -34,6 +34,7 @@ export type { LiveTranscriptionEvent } from "./LiveTranscriptionEvent";
 export type { MessageResponse } from "./MessageResponse";
 export type { FileSource, PrerecordedSource, UrlSource } from "./PrerecordedSource";
 export type { SendProjectInviteSchema } from "./SendProjectInviteSchema";
+export type { SpeechStartedEvent } from "./SpeechStartedEvent";
 export type { SyncPrerecordedResponse } from "./SyncPrerecordedResponse";
 export type { TranscriptionSchema, PrerecordedSchema, LiveSchema } from "./TranscriptionSchema";
 export type { UpdateProjectMemberScopeSchema } from "./UpdateProjectMemberScopeSchema";
