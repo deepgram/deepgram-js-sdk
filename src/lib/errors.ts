@@ -38,3 +38,13 @@ export class DeepgramUnknownError extends DeepgramError {
     this.originalError = originalError;
   }
 }
+
+export class DeepgramVersionError extends DeepgramError {
+  constructor() {
+    super(
+      `You are attempting to use an old format for a newer SDK version. Read more here: https://dpgr.am/js-v3`
+    );
+
+    this.name = "DeepgramVersionError";
+  }
+}
