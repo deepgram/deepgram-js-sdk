@@ -182,7 +182,7 @@ interface LiveSchema extends TranscriptionSchema {
   /**
    * @see https://developers.deepgram.com/docs/endpointing
    */
-  endpointing?: number;
+  endpointing?: false | number;
 
   /**
    * @see https://developers.deepgram.com/docs/interim-results
