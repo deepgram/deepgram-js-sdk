@@ -1,5 +1,12 @@
 import { Headers as CrossFetchHeaders } from "cross-fetch";
-import { DeepgramClientOptions, FileSource, PrerecordedSource, UrlSource } from "./types";
+import {
+  DeepgramClientOptions,
+  FileSource,
+  PrerecordedSource,
+  UrlSource,
+  TextSource,
+  AnalyzeSource,
+} from "./types";
 import { Readable } from "stream";
 import merge from "deepmerge";
 
@@ -41,8 +48,18 @@ export const resolveHeadersConstructor = () => {
   return Headers;
 };
 
-export const isUrlSource = (providedSource: PrerecordedSource): providedSource is UrlSource => {
+export const isUrlSource = (
+  providedSource: PrerecordedSource | AnalyzeSource
+): providedSource is UrlSource => {
   if ((providedSource as UrlSource).url) return true;
+
+  return false;
+};
+
+export const isTextSource = (
+  providedSource: PrerecordedSource | AnalyzeSource
+): providedSource is TextSource => {
+  if ((providedSource as TextSource).text) return true;
 
   return false;
 };

@@ -1,43 +1,44 @@
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
-import { CallbackUrl, appendSearchParams, isFileSource, isUrlSource } from "../lib/helpers";
+import { CallbackUrl, appendSearchParams, isTextSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
-  AsyncPrerecordedResponse,
+  AnalyzeSchema,
+  AsyncAnalyzeResponse,
   DeepgramResponse,
   Fetch,
-  FileSource,
   PrerecordedSchema,
-  SyncPrerecordedResponse,
+  SyncAnalyzeResponse,
+  TextSource,
   UrlSource,
 } from "../lib/types";
 
-export class PrerecordedClient extends AbstractRestfulClient {
-  async transcribeUrl(
+export class ReadClient extends AbstractRestfulClient {
+  async analyzeUrl(
     source: UrlSource,
-    options?: PrerecordedSchema,
-    endpoint = "v1/listen"
-  ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
+    options?: AnalyzeSchema,
+    endpoint = "v1/read"
+  ): Promise<DeepgramResponse<SyncAnalyzeResponse>> {
     try {
       let body;
 
       if (isUrlSource(source)) {
         body = JSON.stringify(source);
       } else {
-        throw new DeepgramError("Unknown transcription source type");
+        throw new DeepgramError("Unknown source type");
       }
 
       if (options !== undefined && "callback" in options) {
         throw new DeepgramError(
-          "Callback cannot be provided as an option to a synchronous transcription. Use `transcribeUrlCallback` or `transcribeFileCallback` instead."
+          "Callback cannot be provided as an option to a synchronous transcription. Use `analyzeUrlCallback` or `analyzeTextCallback` instead."
         );
       }
 
-      const transcriptionOptions: PrerecordedSchema = { ...{}, ...options };
+      const analyzeOptions: AnalyzeSchema = { ...{}, ...options };
 
       const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
+      appendSearchParams(url.searchParams, analyzeOptions);
 
-      const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body);
+      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -49,34 +50,32 @@ export class PrerecordedClient extends AbstractRestfulClient {
     }
   }
 
-  async transcribeFile(
-    source: FileSource,
-    options?: PrerecordedSchema,
-    endpoint = "v1/listen"
-  ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
+  async analyzeText(
+    source: TextSource,
+    options?: AnalyzeSchema,
+    endpoint = "v1/read"
+  ): Promise<DeepgramResponse<SyncAnalyzeResponse>> {
     try {
       let body;
 
-      if (isFileSource(source)) {
-        body = source;
+      if (isTextSource(source)) {
+        body = JSON.stringify(source);
       } else {
-        throw new DeepgramError("Unknown transcription source type");
+        throw new DeepgramError("Unknown source type");
       }
 
       if (options !== undefined && "callback" in options) {
         throw new DeepgramError(
-          "Callback cannot be provided as an option to a synchronous transcription. Use `transcribeUrlCallback` or `transcribeFileCallback` instead."
+          "Callback cannot be provided as an option to a synchronous requests. Use `analyzeUrlCallback` or `analyzeTextCallback` instead."
         );
       }
 
-      const transcriptionOptions: PrerecordedSchema = { ...{}, ...options };
+      const analyzeOptions: AnalyzeSchema = { ...{}, ...options };
 
       const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
+      appendSearchParams(url.searchParams, analyzeOptions);
 
-      const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        "Content-Type": "deepgram/audio+video",
-      });
+      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -88,19 +87,19 @@ export class PrerecordedClient extends AbstractRestfulClient {
     }
   }
 
-  async transcribeUrlCallback(
+  async analyzeUrlCallback(
     source: UrlSource,
     callback: CallbackUrl,
-    options?: PrerecordedSchema,
-    endpoint = "v1/listen"
-  ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
+    options?: AnalyzeSchema,
+    endpoint = "v1/read"
+  ): Promise<DeepgramResponse<AsyncAnalyzeResponse>> {
     try {
       let body;
 
       if (isUrlSource(source)) {
         body = JSON.stringify(source);
       } else {
-        throw new DeepgramError("Unknown transcription source type");
+        throw new DeepgramError("Unknown source type");
       }
 
       const transcriptionOptions: PrerecordedSchema = {
@@ -111,7 +110,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
 
-      const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body);
+      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body);
 
       return { result, error: null };
     } catch (error) {
@@ -123,19 +122,19 @@ export class PrerecordedClient extends AbstractRestfulClient {
     }
   }
 
-  async transcribeFileCallback(
-    source: FileSource,
+  async analyzeTextCallback(
+    source: TextSource,
     callback: CallbackUrl,
-    options?: PrerecordedSchema,
-    endpoint = "v1/listen"
-  ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
+    options?: AnalyzeSchema,
+    endpoint = "v1/read"
+  ): Promise<DeepgramResponse<AsyncAnalyzeResponse>> {
     try {
       let body;
 
-      if (isFileSource(source)) {
+      if (isTextSource(source)) {
         body = source;
       } else {
-        throw new DeepgramError("Unknown transcription source type");
+        throw new DeepgramError("Unknown source type");
       }
 
       const transcriptionOptions: PrerecordedSchema = {
@@ -146,7 +145,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
       const url = new URL(endpoint, this.baseUrl);
       appendSearchParams(url.searchParams, transcriptionOptions);
 
-      const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
+      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body, {
         "Content-Type": "deepgram/audio+video",
       });
 

@@ -1,3 +1,4 @@
+import { DeepgramVersionError } from "./lib/errors";
 import { AbstractClient } from "./packages/AbstractClient";
 import { ListenClient } from "./packages/ListenClient";
 import { ManageClient } from "./packages/ManageClient";
@@ -20,5 +21,41 @@ export default class DeepgramClient extends AbstractClient {
 
   get onprem(): OnPremClient {
     return new OnPremClient(this.key, this.options);
+  }
+
+  /**
+   * Major version fallback errors are below
+   */
+
+  get transcription(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get projects(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get keys(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get members(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get scopes(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get invitation(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get usage(): any {
+    throw new DeepgramVersionError();
+  }
+
+  get billing(): any {
+    throw new DeepgramVersionError();
   }
 }
