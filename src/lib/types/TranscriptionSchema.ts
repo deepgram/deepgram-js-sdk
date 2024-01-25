@@ -100,14 +100,9 @@ interface TranscriptionSchema extends Record<string, unknown> {
   tag?: string[];
 
   /**
-   * @see https://developers.deepgram.com/docs/smart-format#dictation
+   * @see https://developers.deepgram.com/docs/extra
    */
-  dictation?: boolean;
-
-  /**
-   * @see https://developers.deepgram.com/docs/smart-format#measurements
-   */
-  measurements?: boolean;
+  extra?: boolean;
 
   [key: string]: unknown;
 }
@@ -156,6 +151,16 @@ interface PrerecordedSchema extends TranscriptionSchema {
    * @see https://developers.deepgram.com/docs/utterance-split
    */
   utt_split?: number;
+
+  /**
+   * @see https://developers.deepgram.com/docs/smart-format#dictation
+   */
+  dictation?: boolean;
+
+  /**
+   * @see https://developers.deepgram.com/docs/smart-format#measurements
+   */
+  measurements?: boolean;
 }
 
 interface LiveSchema extends TranscriptionSchema {

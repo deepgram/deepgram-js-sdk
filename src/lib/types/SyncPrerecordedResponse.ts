@@ -46,6 +46,9 @@ interface Metadata {
   models: string[];
   model_info: Record<string, ModelInfo>;
   warnings?: Warning[];
+  extra: {
+    [key: string]: unknown;
+  };
 }
 
 interface ModelInfo {
