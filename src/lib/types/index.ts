@@ -47,4 +47,5 @@ export type { SyncAnalyzeResponse } from "./SyncAnalyzeResponse";
 export type { TranscriptionSchema, PrerecordedSchema, LiveSchema } from "./TranscriptionSchema";
 export type { UpdateProjectMemberScopeSchema } from "./UpdateProjectMemberScopeSchema";
 export type { UpdateProjectSchema } from "./UpdateProjectSchema";
+export type { UtteranceEndEvent } from "./UtteranceEndEvent";
 export type { VoidResponse } from "./VoidResponse";
