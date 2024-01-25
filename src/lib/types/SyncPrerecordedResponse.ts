@@ -44,14 +44,45 @@ interface Metadata {
   duration: number;
   channels: number;
   models: string[];
-  model_info: Record<string, ModelInfo>;
   warnings?: Warning[];
+  model_info: Record<string, ModelInfo>;
+  summary_info?: SummaryInfo;
+  intents_info?: IntentsInfo;
+  sentiment_info?: SentimentInfo;
+  topics_info?: TopicsInfo;
+  extra: {
+    [key: string]: unknown;
+  };
 }
 
 interface ModelInfo {
   name: string;
   version: string;
   arch: string;
+}
+
+interface SummaryInfo {
+  input_tokens: number;
+  output_tokens: number;
+  model_uuid: string;
+}
+
+interface IntentsInfo {
+  model_uuid: string;
+  input_tokens: number;
+  output_tokens: number;
+}
+
+interface SentimentInfo {
+  model_uuid: string;
+  input_tokens: number;
+  output_tokens: number;
+}
+
+interface TopicsInfo {
+  model_uuid: string;
+  input_tokens: number;
+  output_tokens: number;
 }
 
 interface Paragraph {
@@ -70,6 +101,47 @@ interface Result {
   channels: Channel[];
   utterances?: Utterance[];
   summary?: TranscriptionSummary;
+  sentiments?: Sentiments;
+  topics?: Topics;
+  intents?: Intents;
+}
+
+interface Sentiments {
+  segments: Segment[];
+  average: Average;
+}
+
+interface Topics {
+  segments: Segment[];
+}
+
+interface Intents {
+  segments: Segment[];
+}
+
+interface Intent {
+  intent: string;
+  confidence_score: number;
+}
+
+interface Average {
+  sentiment: string;
+  sentiment_score: number;
+}
+
+interface Topic {
+  topic: string;
+  confidence_score: number;
+}
+
+interface Segment {
+  text: string;
+  start_word: number;
+  end_word: number;
+  sentiment?: string;
+  sentiment_score?: number;
+  topics?: Topic[];
+  intents?: Intent[];
 }
 
 interface Search {

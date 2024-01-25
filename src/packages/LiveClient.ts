@@ -11,6 +11,8 @@ import type {
   LiveMetadataEvent,
   LiveTranscriptionEvent,
   DeepgramClientOptions,
+  UtteranceEndEvent,
+  SpeechStartedEvent,
 } from "../lib/types";
 
 export class LiveClient extends AbstractWsClient {
@@ -52,6 +54,14 @@ export class LiveClient extends AbstractWsClient {
 
         if (data.type === LiveTranscriptionEvents.Transcript) {
           this.emit(LiveTranscriptionEvents.Transcript, data as LiveTranscriptionEvent);
+        }
+
+        if (data.type === LiveTranscriptionEvents.UtteranceEnd) {
+          this.emit(LiveTranscriptionEvents.UtteranceEnd, data as UtteranceEndEvent);
+        }
+
+        if (data.type === LiveTranscriptionEvents.SpeechStarted) {
+          this.emit(LiveTranscriptionEvents.SpeechStarted, data as SpeechStartedEvent);
         }
       } catch (error) {
         this.emit(LiveTranscriptionEvents.Error, {
