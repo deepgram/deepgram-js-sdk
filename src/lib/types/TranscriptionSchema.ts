@@ -100,6 +100,41 @@ interface TranscriptionSchema extends Record<string, unknown> {
   tag?: string[];
 
   /**
+   * As yet unreleased.
+   */
+  sentiment?: boolean;
+
+  /**
+   * As yet unreleased.
+   */
+  intents?: boolean;
+
+  /**
+   * As yet unreleased.
+   */
+  custom_intent?: string[] | string;
+
+  /**
+   * As yet unreleased.
+   */
+  custom_intent_mode?: "strict" | "extended";
+
+  /**
+   * As yet unreleased.
+   */
+  topics?: boolean;
+
+  /**
+   * As yet unreleased.
+   */
+  custom_topic?: string[] | string;
+
+  /**
+   * As yet unreleased.
+   */
+  custom_topic_mode?: "strict" | "extended";
+
+  /**
    * @see https://developers.deepgram.com/docs/extra
    */
   extra?: boolean;
@@ -182,12 +217,17 @@ interface LiveSchema extends TranscriptionSchema {
   /**
    * @see https://developers.deepgram.com/docs/endpointing
    */
-  endpointing?: number;
+  endpointing?: false | number;
 
   /**
    * @see https://developers.deepgram.com/docs/interim-results
    */
   interim_results?: boolean;
+
+  /**
+   * @see https://developers.deepgram.com/docs/understanding-end-of-speech-detection
+   */
+  utterance_end_ms?: number;
 }
 
 export type { TranscriptionSchema, PrerecordedSchema, LiveSchema };
