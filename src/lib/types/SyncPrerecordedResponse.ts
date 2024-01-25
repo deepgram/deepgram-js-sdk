@@ -50,6 +50,9 @@ interface Metadata {
   intents_info?: IntentsInfo;
   sentiment_info?: SentimentInfo;
   topics_info?: TopicsInfo;
+  extra: {
+    [key: string]: unknown;
+  };
 }
 
 interface ModelInfo {

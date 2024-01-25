@@ -8,6 +8,7 @@ interface TranscriptionSchema extends Record<string, unknown> {
   model?: string;
 
   /**
+   * @deprecated
    * @see https://developers.deepgram.com/docs/tier
    */
   tier?: string;
@@ -43,9 +44,19 @@ interface TranscriptionSchema extends Record<string, unknown> {
   diarize?: boolean;
 
   /**
+   * @see https://developers.deepgram.com/docs/diarization
+   */
+  diarize_version?: string;
+
+  /**
    * @see https://developers.deepgram.com/docs/smart-format
    */
   smart_format?: boolean;
+
+  /**
+   * @see https://developers.deepgram.com/docs/filler-words
+   */
+  filler_words?: boolean;
 
   /**
    * @see https://developers.deepgram.com/docs/multichannel
@@ -72,6 +83,11 @@ interface TranscriptionSchema extends Record<string, unknown> {
    * @see https://developers.deepgram.com/docs/callback
    */
   callback?: string;
+
+  /**
+   * @see https://developers.deepgram.com/docs/callback#results
+   */
+  callback_method?: string;
 
   /**
    * @see https://developers.deepgram.com/docs/keywords
@@ -118,6 +134,11 @@ interface TranscriptionSchema extends Record<string, unknown> {
    */
   custom_topic_mode?: "strict" | "extended";
 
+  /**
+   * @see https://developers.deepgram.com/docs/extra
+   */
+  extra?: boolean;
+
   [key: string]: unknown;
 }
 
@@ -138,7 +159,11 @@ interface PrerecordedSchema extends TranscriptionSchema {
   detect_topics?: boolean;
 
   /**
-   * Undocumented feature.
+   * Alternatives will run your transcription X number of times and return
+   * that many variations of the transcription, allowing for the selection
+   * of the most accurate. Cost increases by number of alternatives.
+   *
+   * @deprecated
    */
   alternatives?: number;
 
@@ -161,6 +186,16 @@ interface PrerecordedSchema extends TranscriptionSchema {
    * @see https://developers.deepgram.com/docs/utterance-split
    */
   utt_split?: number;
+
+  /**
+   * @see https://developers.deepgram.com/docs/smart-format#dictation
+   */
+  dictation?: boolean;
+
+  /**
+   * @see https://developers.deepgram.com/docs/smart-format#measurements
+   */
+  measurements?: boolean;
 }
 
 interface LiveSchema extends TranscriptionSchema {
