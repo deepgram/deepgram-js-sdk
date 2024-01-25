@@ -132,7 +132,7 @@ export class ReadClient extends AbstractRestfulClient {
       let body;
 
       if (isTextSource(source)) {
-        body = source;
+        body = JSON.stringify(source);
       } else {
         throw new DeepgramError("Unknown source type");
       }
