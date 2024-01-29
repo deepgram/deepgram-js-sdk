@@ -228,6 +228,11 @@ interface LiveSchema extends TranscriptionSchema {
    * @see https://developers.deepgram.com/docs/understanding-end-of-speech-detection
    */
   utterance_end_ms?: number;
+
+  /**
+   * @see https://developers.deepgram.com/docs/start-of-speech-detection
+   */
+  vad_events?: boolean;
 }
 
 export type { TranscriptionSchema, PrerecordedSchema, LiveSchema };
