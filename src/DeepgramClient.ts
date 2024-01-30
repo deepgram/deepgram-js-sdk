@@ -8,7 +8,7 @@ import { OnPremClient } from "./packages/OnPremClient";
  * Deepgram Client.
  *
  * An isomorphic Javascript client for interacting with the Deepgram API.
- * @see https://developers.deepgram.com
+ * @see https://developers.deepgram.com/docs/js-sdk
  */
 export default class DeepgramClient extends AbstractClient {
   get listen(): ListenClient {
@@ -25,8 +25,9 @@ export default class DeepgramClient extends AbstractClient {
 
   /**
    * Major version fallback errors are below
+   *
+   * @see https://developers.deepgram.com/docs/js-sdk-v2-to-v3-migration-guide
    */
-
   get transcription(): any {
     throw new DeepgramVersionError();
   }
