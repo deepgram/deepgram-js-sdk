@@ -10,8 +10,8 @@
     "speech",
     "sdk"
   ],
-  "homepage": "https://github.com/deepgram/deepgram-node-sdk",
-  "bugs": "https://github.com/deepgram/deepgram-node-sdk/issues",
+  "homepage": "https://github.com/deepgram/deepgram-js-sdk",
+  "bugs": "https://github.com/deepgram/deepgram-js-sdk/issues",
   "license": "MIT",
   "author": {
     "name": "Deepgram DevRel Team",
@@ -36,7 +36,7 @@
   "module": "dist/module/index.js",
   "types": "dist/module/index.d.ts",
   "sideEffects": false,
-  "repository": "deepgram/deepgram-node-sdk",
+  "repository": "deepgram/deepgram-js-sdk",
   "scripts": {
     "clean": "rimraf dist docs/v2",
     "format": "prettier --write \"{src,test}/**/*.ts\"",
