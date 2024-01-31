@@ -1,4 +1,8 @@
-const { createClient, LiveTranscriptionEvents } = require("../../dist/main/index");
+const {
+  createClient,
+  LiveTranscriptionEvents,
+  LiveTranscriptionEvent,
+} = require("../../dist/main/index");
 const fetch = require("cross-fetch");
 
 const live = async () => {
@@ -6,7 +10,11 @@ const live = async () => {
 
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const connection = deepgram.listen.live({ model: "general", tier: "enhanced" });
+  const connection = deepgram.listen.live({
+    model: "nova-2",
+    utterance_end_ms: 1500,
+    interim_results: true,
+  });
 
   connection.on(LiveTranscriptionEvents.Open, () => {
     connection.on(LiveTranscriptionEvents.Close, () => {
@@ -18,6 +26,14 @@ const live = async () => {
     });
 
     connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+      console.log(data.channel);
+    });
+
+    connection.on(LiveTranscriptionEvents.UtteranceEnd, (data) => {
+      console.log(data);
+    });
+
+    connection.on(LiveTranscriptionEvents.SpeechStarted, (data) => {
       console.log(data);
     });
 
