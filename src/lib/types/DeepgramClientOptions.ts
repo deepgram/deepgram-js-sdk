@@ -1,4 +1,4 @@
-import { FetchOptions } from "./Fetch";
+import { Fetch, FetchOptions } from "./Fetch";
 
 export interface DeepgramClientOptions {
   global?: {
@@ -12,8 +12,12 @@ export interface DeepgramClientOptions {
      */
     url?: string;
   };
-  fetch?: FetchOptions;
+  fetchOptions?: FetchOptions;
   restProxy?: {
     url: null | string;
   };
+}
+
+export interface DeepgramClientOptionsWithFetchOverride extends DeepgramClientOptions {
+  fetch: Fetch;
 }

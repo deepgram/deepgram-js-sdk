@@ -5,11 +5,15 @@ import type { Fetch, FetchParameters, RequestMethodType } from "../lib/types/Fet
 import { AbstractClient } from "./AbstractClient";
 import { DeepgramClientOptions } from "../lib/types";
 import { isBrowser } from "../lib/helpers";
+import { DeepgramClientOptionsWithFetchOverride } from "../lib/types/DeepgramClientOptions";
 
 export abstract class AbstractRestfulClient extends AbstractClient {
   protected fetch: Fetch;
 
-  constructor(protected key: string, protected options: DeepgramClientOptions) {
+  constructor(
+    protected key: string,
+    protected options: DeepgramClientOptions | DeepgramClientOptionsWithFetchOverride
+  ) {
     super(key, options);
 
     if (isBrowser() && !this._willProxy()) {
@@ -18,7 +22,11 @@ export abstract class AbstractRestfulClient extends AbstractClient {
       );
     }
 
-    this.fetch = fetchWithAuth(this.key);
+    if ("fetch" in options) {
+      this.fetch = options.fetch;
+    } else {
+      this.fetch = fetchWithAuth(this.key);
+    }
   }
 
   protected _getErrorMessage(err: any): string {
@@ -49,9 +57,9 @@ export abstract class AbstractRestfulClient extends AbstractClient {
     body?: string | Buffer | Readable
   ) {
     const params: { [k: string]: any } = {
-      ...this.options?.fetch,
+      ...this.options?.fetchOptions,
       method,
-      headers: { ...this.options?.fetch?.headers, ...headers } || {},
+      headers: { ...this.options?.fetchOptions?.headers, ...headers } || {},
     };
 
     if (method === "GET") {
