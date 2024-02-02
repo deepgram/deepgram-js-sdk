@@ -13,11 +13,8 @@ export interface DeepgramClientOptions {
     url?: string;
   };
   fetchOptions?: FetchOptions;
+  fetch?: Fetch;
   restProxy?: {
     url: null | string;
   };
-}
-
-export interface DeepgramClientOptionsWithFetchOverride extends DeepgramClientOptions {
-  fetch: Fetch;
 }
