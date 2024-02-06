@@ -2,9 +2,15 @@
  * Options for read analysis
  */
 interface AnalyzeSchema extends Record<string, unknown> {
+  /**
+   * @see https://developers.deepgram.com/docs/callback
+   */
   callback?: string;
 
-  callback_method?: string;
+  /**
+   * @see https://developers.deepgram.com/docs/callback#results
+   */
+  callback_method?: "put" | "post";
 
   custom_intent?: string | string[];
 
@@ -23,6 +29,11 @@ interface AnalyzeSchema extends Record<string, unknown> {
   sentiment?: boolean;
 
   topics?: boolean;
+
+  /**
+   * @see https://developers.deepgram.com/docs/extra-metadata
+   */
+  extra?: string[] | string;
 }
 
 export type { AnalyzeSchema };

@@ -87,7 +87,7 @@ interface TranscriptionSchema extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/callback#results
    */
-  callback_method?: string;
+  callback_method?: "put" | "post";
 
   /**
    * @see https://developers.deepgram.com/docs/keywords
@@ -135,9 +135,9 @@ interface TranscriptionSchema extends Record<string, unknown> {
   custom_topic_mode?: "strict" | "extended";
 
   /**
-   * @see https://developers.deepgram.com/docs/extra
+   * @see https://developers.deepgram.com/docs/extra-metadata
    */
-  extra?: boolean;
+  extra?: string[] | string;
 
   [key: string]: unknown;
 }
