@@ -21,5 +21,5 @@ export const DEFAULT_FETCH_OPTIONS: FetchOptions = {
 
 export const DEFAULT_OPTIONS: DeepgramClientOptions = {
   global: DEFAULT_GLOBAL_OPTIONS,
-  fetchOptions: DEFAULT_FETCH_OPTIONS,
+  fetch: DEFAULT_FETCH_OPTIONS,
 };

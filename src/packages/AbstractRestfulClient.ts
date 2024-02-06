@@ -18,7 +18,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
       );
     }
 
-    this.fetch = options.fetch ? options.fetch : fetchWithAuth(this.key);
+    this.fetch = fetchWithAuth(this.key, options.customFetch);
   }
 
   protected _getErrorMessage(err: any): string {
@@ -49,9 +49,9 @@ export abstract class AbstractRestfulClient extends AbstractClient {
     body?: string | Buffer | Readable
   ) {
     const params: { [k: string]: any } = {
-      ...this.options?.fetchOptions,
+      ...this.options?.fetch,
       method,
-      headers: { ...this.options?.fetchOptions?.headers, ...headers } || {},
+      headers: { ...this.options?.fetch?.headers, ...headers } || {},
     };
 
     if (method === "GET") {
