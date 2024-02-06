@@ -8,7 +8,7 @@ export const DEFAULT_HEADERS = {
   "User-Agent": `@deepgram/sdk/${version}`,
 };
 
-export const DEFAULT_URL = "api.deepgram.com";
+export const DEFAULT_URL = "https://api.deepgram.com";
 
 export const DEFAULT_GLOBAL_OPTIONS = {
   url: DEFAULT_URL,
