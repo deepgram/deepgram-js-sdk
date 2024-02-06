@@ -36,6 +36,9 @@ interface Metadata {
   sentiment_info: SentimentInfo;
   summary_info: SummaryInfo;
   topics_info: TopicsInfo;
+  extra?: {
+    [key: string]: unknown;
+  };
 }
 
 interface Average {
