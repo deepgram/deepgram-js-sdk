@@ -4,6 +4,7 @@ import { ListenClient } from "./packages/ListenClient";
 import { ManageClient } from "./packages/ManageClient";
 import { OnPremClient } from "./packages/OnPremClient";
 import { ReadClient } from "./packages/ReadClient";
+import { SpeakClient } from "./packages/SpeakClient";
 
 /**
  * Deepgram Client.
@@ -26,6 +27,10 @@ export default class DeepgramClient extends AbstractClient {
 
   get read(): ReadClient {
     return new ReadClient(this.key, this.options);
+  }
+
+  get speak(): SpeakClient {
+    return new SpeakClient(this.key, this.options);
   }
 
   /**
