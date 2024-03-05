@@ -42,6 +42,7 @@ export type {
   AnalyzeSource,
 } from "./DeepgramSource";
 export type { SendProjectInviteSchema } from "./SendProjectInviteSchema";
+export type { SpeakSchema } from "./SpeakSchema";
 export type { SpeechStartedEvent } from "./SpeechStartedEvent";
 export type { SyncPrerecordedResponse } from "./SyncPrerecordedResponse";
 export type { SyncAnalyzeResponse } from "./SyncAnalyzeResponse";
