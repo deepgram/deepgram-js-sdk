@@ -76,7 +76,28 @@ export abstract class AbstractRestfulClient extends AbstractClient {
       fetcher(url, this._getRequestParams(method, headers, parameters, body))
         .then((result) => {
           if (!result.ok) throw result;
+
           return result.json();
+        })
+        .then((data) => resolve(data))
+        .catch((error) => this.handleError(error, reject));
+    });
+  }
+
+  protected async _handleRawRequest(
+    fetcher: Fetch,
+    method: RequestMethodType,
+    url: string | URL,
+    headers?: Record<string, string>,
+    parameters?: FetchParameters,
+    body?: string | Buffer | Readable
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      fetcher(url, this._getRequestParams(method, headers, parameters, body))
+        .then((result) => {
+          if (!result.ok) throw result;
+
+          return result;
         })
         .then((data) => resolve(data))
         .catch((error) => this.handleError(error, reject));
