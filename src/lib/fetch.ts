@@ -2,9 +2,11 @@ import crossFetch from "cross-fetch";
 import { resolveHeadersConstructor } from "./helpers";
 import type { Fetch } from "./types/Fetch";
 
-export const resolveFetch = (): Fetch => {
+export const resolveFetch = (customFetch?: Fetch): Fetch => {
   let _fetch: Fetch;
-  if (typeof fetch === "undefined") {
+  if (customFetch) {
+    _fetch = customFetch;
+  } else if (typeof fetch === "undefined") {
     _fetch = crossFetch as unknown as Fetch;
   } else {
     _fetch = fetch;
@@ -12,8 +14,8 @@ export const resolveFetch = (): Fetch => {
   return (...args) => _fetch(...args);
 };
 
-export const fetchWithAuth = (apiKey: string): Fetch => {
-  const fetch = resolveFetch();
+export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
+  const fetch = resolveFetch(customFetch);
   const HeadersConstructor = resolveHeadersConstructor();
 
   return async (input, init) => {

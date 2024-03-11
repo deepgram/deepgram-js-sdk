@@ -1,4 +1,5 @@
 import { isBrowser } from "./helpers";
+import { DeepgramClientOptions } from "./types/DeepgramClientOptions";
 import { FetchOptions } from "./types/Fetch";
 import { version } from "./version";
 
@@ -18,7 +19,7 @@ export const DEFAULT_FETCH_OPTIONS: FetchOptions = {
   headers: DEFAULT_HEADERS,
 };
 
-export const DEFAULT_OPTIONS = {
+export const DEFAULT_OPTIONS: DeepgramClientOptions = {
   global: DEFAULT_GLOBAL_OPTIONS,
   fetch: DEFAULT_FETCH_OPTIONS,
 };
