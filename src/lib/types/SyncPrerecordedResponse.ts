@@ -104,6 +104,7 @@ interface Result {
   sentiments?: Sentiments;
   topics?: Topics;
   intents?: Intents;
+  paragraphs?: ParagraphGroup;
 }
 
 interface Sentiments {
