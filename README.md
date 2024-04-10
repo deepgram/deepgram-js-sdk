@@ -55,6 +55,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Get On-Prem credentials](#get-on-prem-credentials)
   - [Create On-Prem credentials](#create-on-prem-credentials)
   - [Delete On-Prem credentials](#delete-on-prem-credentials)
+-  [Backwards Compatibility](#backwards-compatibility)
 - [Development and Contributing](#development-and-contributing)
   - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
@@ -556,6 +557,10 @@ const { result, error } = await deepgram.onprem.createCredentials(projectId, opt
 ```js
 const { result, error } = await deepgram.onprem.deleteCredentials(projectId, credentialId);
 ```
+
+# Backwards Compatibility
+
+Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
 
 # Development and Contributing
 
