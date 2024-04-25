@@ -16,7 +16,7 @@ import type {
 } from "../lib/types";
 
 export class LiveClient extends AbstractWsClient {
-  private _socket: w3cwebsocket;
+  protected _socket: w3cwebsocket;
 
   constructor(
     protected key: string,
