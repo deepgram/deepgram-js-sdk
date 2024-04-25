@@ -13,7 +13,7 @@ export interface DeepgramClientOptions {
     url?: string;
   };
   fetch?: FetchOptions;
-  customFetch?: Fetch;
+  _experimentalCustomFetch?: Fetch;
   restProxy?: {
     url: null | string;
   };
