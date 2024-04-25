@@ -4,6 +4,8 @@ import { version } from "./version";
 
 export const NODE_VERSION = process.versions.node;
 
+export const WS_RECONNECTION_RETRY_LIMIT = 10;
+
 export const DEFAULT_HEADERS = {
   "Content-Type": `application/json`,
   "X-Client-Info": `@deepgram/sdk; ${isBrowser() ? "browser" : "server"}; v${version}`,

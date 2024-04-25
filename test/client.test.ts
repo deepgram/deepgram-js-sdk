@@ -21,9 +21,9 @@ describe("testing creation of a deepgram client object", () => {
 
   it("it should have the default URL when no custom URL option is provided", () => {
     // @ts-ignore
-    const url = deepgram.baseUrl.hostname;
+    const url = deepgram.baseUrl;
 
-    expect(url).to.equal(DEFAULT_URL);
+    expect(`${url.protocol}//${url.hostname}`).to.equal(DEFAULT_URL);
   });
 
   it("it should throw an error if no valid apiKey is provided", () => {

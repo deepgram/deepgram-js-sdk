@@ -6,6 +6,8 @@ import {
   UrlSource,
   TextSource,
   AnalyzeSource,
+  LiveSchema,
+  TranscriptionSchema,
 } from "./types";
 import { Readable } from "stream";
 import merge from "deepmerge";
@@ -85,3 +87,15 @@ const isReadStreamSource = (providedSource: PrerecordedSource): providedSource i
 export class CallbackUrl extends URL {
   private callbackUrl = true;
 }
+
+export const buildRequestUrl = (
+  endpoint: string,
+  baseUrl: string | URL,
+  transcriptionOptions: LiveSchema | TranscriptionSchema
+): URL => {
+  const url = new URL(endpoint, baseUrl);
+  url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
+  appendSearchParams(url.searchParams, transcriptionOptions);
+
+  return url;
+};

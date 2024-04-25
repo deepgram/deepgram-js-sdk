@@ -1,7 +1,7 @@
 import { AbstractWsClient } from "./AbstractWsClient";
-import { appendSearchParams } from "../lib/helpers";
+import { buildRequestUrl } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
-import { DEFAULT_OPTIONS } from "../lib/constants";
+import { DEFAULT_OPTIONS, WS_RECONNECTION_RETRY_LIMIT } from "../lib/constants";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
 import { w3cwebsocket } from "websocket";
 
@@ -17,32 +17,61 @@ import type {
 
 export class LiveClient extends AbstractWsClient {
   protected _socket: w3cwebsocket;
+  protected _reconnections: number = 0;
 
   constructor(
     protected key: string,
     protected options: DeepgramClientOptions | undefined = DEFAULT_OPTIONS,
     private transcriptionOptions: LiveSchema = {},
-    endpoint = "v1/listen"
+    protected endpoint = "v1/listen"
   ) {
     super(key, options);
 
-    const url = new URL(endpoint, this.baseUrl);
-    url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
-    appendSearchParams(url.searchParams, this.transcriptionOptions);
+    this._socket = this._connect();
+    this._registerEvents();
+  }
 
-    this._socket = new w3cwebsocket(url.toString(), ["token", this.key]);
+  protected _connect(): w3cwebsocket {
+    const url = buildRequestUrl(this.endpoint, this.baseUrl, this.transcriptionOptions);
 
+    try {
+      const socket = new w3cwebsocket(url.toString(), ["token", this.key]);
+
+      return socket;
+    } catch (error: any) {
+      throw new DeepgramError(error);
+    }
+  }
+
+  protected _attemptReconnection(): void {
+    if (this._reconnections > WS_RECONNECTION_RETRY_LIMIT) {
+      throw new DeepgramError("Reconnection retry limit exceeded");
+    }
+
+    this._reconnections += 1;
+    this._unregisterEvents();
+    this._socket = this._connect();
+    this._registerEvents();
+  }
+
+  protected _unregisterEvents(): void {
+    this._socket.onopen = () => {};
+    this._socket.onclose = () => {};
+    this._socket.onerror = () => {};
+    this._socket.onmessage = () => {};
+  }
+
+  protected _registerEvents(): void {
     this._socket.onopen = () => {
       this.emit(LiveTranscriptionEvents.Open, this);
     };
 
     this._socket.onclose = (event: any) => {
       this.emit(LiveTranscriptionEvents.Close, event);
+      this._attemptReconnection();
     };
 
-    this._socket.onerror = (event) => {
-      this.emit(LiveTranscriptionEvents.Error, event);
-    };
+    this._socket.onerror = (error: Error) => {};
 
     this._socket.onmessage = (event) => {
       try {

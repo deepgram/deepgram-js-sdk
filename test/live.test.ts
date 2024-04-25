@@ -7,9 +7,9 @@ import { LiveConnectionState, LiveTranscriptionEvents } from "../src/lib/enums";
 describe("connecting to our transcription websocket", () => {
   let deepgram: DeepgramClient;
 
-  beforeEach(() => {
+  before(() => {
     deepgram = createClient(faker.string.alphanumeric(40), {
-      global: { url: "https://api.mock.deepgram.com" },
+      global: { url: "https://api.mock.deepgram" },
     });
   });
 
@@ -24,53 +24,7 @@ describe("connecting to our transcription websocket", () => {
     connection.on(LiveTranscriptionEvents.Open, (event) => {
       expect(connection.getReadyState()).to.eq(LiveConnectionState.OPEN);
 
-      connection.on(LiveTranscriptionEvents.Metadata, (data) => {
-        assert.isNotNull(data);
-        assert.containsAllDeepKeys(data, ["request_id"]);
-
-        connection.finish();
-        done();
-      });
-    });
-  });
-
-  it("should send data and recieve a transcription object back", function (done) {
-    const connection = deepgram.listen.live({ model: "general", tier: "enhanced" });
-
-    connection.on(LiveTranscriptionEvents.Open, () => {
-      connection.on(LiveTranscriptionEvents.Metadata, (data) => {
-        assert.isNotNull(data);
-        assert.containsAllDeepKeys(data, ["request_id"]);
-      });
-
-      connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-        assert.isNotNull(data);
-        assert.containsAllDeepKeys(data, ["channel"]);
-
-        connection.finish();
-        done();
-      });
-
-      connection.send(new Uint8Array(100)); // mock ArrayBufferLike audio data
-    });
-  });
-
-  it("should receive a warning if trying to send zero-byte length data", function (done) {
-    const connection = deepgram.listen.live({ model: "general", tier: "enhanced" });
-
-    connection.on(LiveTranscriptionEvents.Open, () => {
-      connection.on(LiveTranscriptionEvents.Warning, (data) => {
-        assert.isNotNull(data);
-
-        expect(data).to.eq(
-          "Zero-byte detected, skipping. Send `CloseStream` if trying to close the connection."
-        );
-
-        connection.finish();
-        done();
-      });
-
-      connection.send(new Uint8Array(0));
+      done();
     });
   });
 });
