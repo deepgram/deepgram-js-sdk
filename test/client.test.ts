@@ -1,6 +1,6 @@
 import { createClient } from "../src";
 import { DEFAULT_URL } from "../src/lib/constants";
-import { expect } from "chai";
+import { expect, assert } from "chai";
 import { faker } from "@faker-js/faker";
 import { stripTrailingSlash } from "../src/lib/helpers";
 import DeepgramClient from "../src/DeepgramClient";
@@ -81,5 +81,22 @@ describe("testing creation of a deepgram client object", () => {
     });
 
     expect(client).is.instanceOf(DeepgramClient);
+  });
+
+  it("should use custom fetch when provided", async () => {
+    const fetch = async () => {
+      return new Response(JSON.stringify({ customFetch: true }));
+    };
+
+    const client = createClient(faker.string.alphanumeric(40), {
+      global: { url: "https://api.mock.deepgram.com" },
+      _experimentalCustomFetch: fetch,
+    });
+
+    const { result, error } = await client.manage.getProjectBalances(faker.string.uuid());
+
+    assert.isNull(error);
+    assert.isNotNull(result);
+    assert.containsAllDeepKeys(result, ["customFetch"]);
   });
 });
