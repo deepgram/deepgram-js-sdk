@@ -5,4 +5,5 @@ export interface CreateProjectKeyResponse {
   scopes: string[];
   tags?: string[];
   created: string;
+  expiration_date?: string;
 }
