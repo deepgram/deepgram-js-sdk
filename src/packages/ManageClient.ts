@@ -27,9 +27,32 @@ import type {
   UpdateProjectMemberScopeSchema,
   UpdateProjectSchema,
   VoidResponse,
+  GetTokenDetailsResponse,
 } from "../lib/types";
 
 export class ManageClient extends AbstractRestfulClient {
+  /**
+   * @see https://developers.deepgram.com/docs/authenticating#test-request
+   */
+  async getTokenDetails(
+    endpoint = "v1/auth/token"
+  ): Promise<DeepgramResponse<GetTokenDetailsResponse>> {
+    try {
+      const url = new URL(this.baseUrl);
+      url.pathname = endpoint;
+
+      const result: GetTokenDetailsResponse = await this.get(this.fetch as Fetch, url);
+
+      return { result, error: null };
+    } catch (error) {
+      if (isDeepgramError(error)) {
+        return { result: null, error };
+      }
+
+      throw error;
+    }
+  }
+
   /**
    * @see https://developers.deepgram.com/reference/get-projects
    */

@@ -18,7 +18,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
       );
     }
 
-    this.fetch = fetchWithAuth(this.key);
+    this.fetch = fetchWithAuth(this.key, options._experimentalCustomFetch);
   }
 
   protected _getErrorMessage(err: any): string {
