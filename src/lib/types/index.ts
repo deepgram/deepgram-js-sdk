@@ -26,6 +26,7 @@ export type {
 export type { GetProjectUsageRequestsSchema } from "./GetProjectUsageRequestsSchema";
 export type { GetProjectUsageSummarySchema } from "./GetProjectUsageSummarySchema";
 export type { GetProjectUsageSummaryResponse } from "./GetProjectUsageSummaryResponse";
+export type { GetTokenDetailsResponse } from "./GetTokenDetailsResponse";
 export type {
   ListOnPremCredentialsResponse,
   OnPremCredentialResponse,
