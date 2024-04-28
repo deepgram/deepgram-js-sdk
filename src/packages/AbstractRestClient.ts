@@ -6,15 +6,15 @@ import { AbstractClient } from "./AbstractClient";
 import { DeepgramClientOptions } from "../lib/types";
 import { isBrowser } from "../lib/helpers";
 
-export abstract class AbstractRestfulClient extends AbstractClient {
+export abstract class AbstractRestClient extends AbstractClient {
   protected fetch: Fetch;
 
   constructor(protected key: string, options: DeepgramClientOptions) {
     super(key, options);
 
-    if (isBrowser() && !this._willProxy()) {
+    if (isBrowser() && !this.willProxy()) {
       throw new DeepgramError(
-        "Due to CORS we are unable to support REST-based API calls to our API from the browser. Please consider using a proxy, and including a `restProxy: { url: ''}` in your Deepgram client options."
+        "Due to CORS we are unable to support REST-based API calls to our API from the browser. Please consider using a proxy: https://dpgr.am/js-proxy for more information."
       );
     }
 
@@ -25,7 +25,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
     return err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
   }
 
-  protected async handleError(error: unknown, reject: (reason?: any) => void) {
+  protected async _handleError(error: unknown, reject: (reason?: any) => void) {
     const Res = await resolveResponse();
 
     if (error instanceof Res) {
@@ -80,7 +80,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
           return result.json();
         })
         .then((data) => resolve(data))
-        .catch((error) => this.handleError(error, reject));
+        .catch((error) => this._handleError(error, reject));
     });
   }
 
@@ -100,7 +100,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
           return result;
         })
         .then((data) => resolve(data))
-        .catch((error) => this.handleError(error, reject));
+        .catch((error) => this._handleError(error, reject));
     });
   }
 
@@ -152,7 +152,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
     return this._handleRequest(fetcher, "DELETE", url, headers, parameters);
   }
 
-  private _willProxy() {
+  protected willProxy() {
     const proxyUrl = this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
 
     return !!proxyUrl;
