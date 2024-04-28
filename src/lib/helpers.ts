@@ -17,11 +17,8 @@ export function stripTrailingSlash(url: string): string {
 export const isBrowser = () => typeof window !== "undefined";
 export const isServer = () => typeof process !== "undefined";
 
-export function applySettingDefaults(
-  options: DeepgramClientOptions,
-  defaults: DeepgramClientOptions
-): DeepgramClientOptions {
-  return merge(defaults, options);
+export function applyDefaults<O, S>(options: Partial<O>, subordinate: Partial<S>): S {
+  return merge(subordinate, options);
 }
 
 export function appendSearchParams(
@@ -83,5 +80,19 @@ const isReadStreamSource = (providedSource: PrerecordedSource): providedSource i
 };
 
 export class CallbackUrl extends URL {
-  private callbackUrl = true;
+  public callbackUrl = true;
 }
+
+export const convertProtocolToWs = (url: string | URL) => {
+  const convert = (string: string) => string.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
+
+  if (url instanceof URL) {
+    return new URL(convert(url.toString()));
+  }
+
+  if (typeof url === "string") {
+    return new URL(convert(url));
+  }
+
+  throw new Error("URL must be a string or `URL` object");
+};

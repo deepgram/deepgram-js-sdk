@@ -1,6 +1,5 @@
-import { isBrowser } from "./helpers";
-import { DeepgramClientOptions } from "./types/DeepgramClientOptions";
-import { FetchOptions } from "./types/Fetch";
+import { convertProtocolToWs, isBrowser } from "./helpers";
+import { DefaultNamespaceOptions, DefaultClientOptions } from "./types/DeepgramClientOptions";
 import { version } from "./version";
 
 export const NODE_VERSION = process.versions.node;
@@ -13,15 +12,11 @@ export const DEFAULT_HEADERS = {
 
 export const DEFAULT_URL = "https://api.deepgram.com";
 
-export const DEFAULT_GLOBAL_OPTIONS = {
-  url: DEFAULT_URL,
+export const DEFAULT_GLOBAL_OPTIONS: DefaultNamespaceOptions = {
+  fetch: { options: { url: DEFAULT_URL, headers: DEFAULT_HEADERS } },
+  websocket: { options: { url: convertProtocolToWs(DEFAULT_URL) } },
 };
 
-export const DEFAULT_FETCH_OPTIONS: FetchOptions = {
-  headers: DEFAULT_HEADERS,
-};
-
-export const DEFAULT_OPTIONS: DeepgramClientOptions = {
+export const DEFAULT_OPTIONS: DefaultClientOptions = {
   global: DEFAULT_GLOBAL_OPTIONS,
-  fetch: DEFAULT_FETCH_OPTIONS,
 };
