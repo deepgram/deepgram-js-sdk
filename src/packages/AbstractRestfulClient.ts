@@ -9,7 +9,7 @@ import { isBrowser } from "../lib/helpers";
 export abstract class AbstractRestfulClient extends AbstractClient {
   protected fetch: Fetch;
 
-  constructor(protected key: string, protected options: DeepgramClientOptions) {
+  constructor(protected key: string, options: DeepgramClientOptions) {
     super(key, options);
 
     if (isBrowser() && !this._willProxy()) {
@@ -18,7 +18,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
       );
     }
 
-    this.fetch = fetchWithAuth(this.key, options._experimentalCustomFetch);
+    this.fetch = fetchWithAuth(this.key, this.namespaceOptions.fetch.client);
   }
 
   protected _getErrorMessage(err: any): string {
@@ -153,7 +153,7 @@ export abstract class AbstractRestfulClient extends AbstractClient {
   }
 
   private _willProxy() {
-    const proxyUrl = this.options.restProxy?.url;
+    const proxyUrl = this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
 
     return !!proxyUrl;
   }
