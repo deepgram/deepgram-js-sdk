@@ -1,4 +1,3 @@
-import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { CallbackUrl, appendSearchParams, isTextSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
@@ -11,12 +10,15 @@ import type {
   TextSource,
   UrlSource,
 } from "../lib/types";
+import { AbstractRestClient } from "./AbstractRestClient";
 
-export class ReadClient extends AbstractRestfulClient {
+export class ReadClient extends AbstractRestClient {
+  public namespace: string = "read";
+
   async analyzeUrl(
     source: UrlSource,
     options?: AnalyzeSchema,
-    endpoint = "v1/read"
+    endpoint = "{version}/read"
   ): Promise<DeepgramResponse<SyncAnalyzeResponse>> {
     try {
       let body;
@@ -53,7 +55,7 @@ export class ReadClient extends AbstractRestfulClient {
   async analyzeText(
     source: TextSource,
     options?: AnalyzeSchema,
-    endpoint = "v1/read"
+    endpoint = "{version}/read"
   ): Promise<DeepgramResponse<SyncAnalyzeResponse>> {
     try {
       let body;
@@ -91,7 +93,7 @@ export class ReadClient extends AbstractRestfulClient {
     source: UrlSource,
     callback: CallbackUrl,
     options?: AnalyzeSchema,
-    endpoint = "v1/read"
+    endpoint = "{version}/read"
   ): Promise<DeepgramResponse<AsyncAnalyzeResponse>> {
     try {
       let body;
@@ -126,7 +128,7 @@ export class ReadClient extends AbstractRestfulClient {
     source: TextSource,
     callback: CallbackUrl,
     options?: AnalyzeSchema,
-    endpoint = "v1/read"
+    endpoint = "{version}/read"
   ): Promise<DeepgramResponse<AsyncAnalyzeResponse>> {
     try {
       let body;

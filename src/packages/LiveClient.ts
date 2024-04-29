@@ -1,30 +1,30 @@
-import { AbstractWsClient } from "./AbstractWsClient";
-import { appendSearchParams } from "../lib/helpers";
+import { AbstractLiveClient } from "./AbstractLiveClient";
+import { appendSearchParams, isDeepgramClientOptions, isLiveSchema } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
-import { DEFAULT_OPTIONS } from "../lib/constants";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
 import { w3cwebsocket } from "websocket";
 
-import type {
-  LiveSchema,
-  LiveConfigOptions,
-  LiveMetadataEvent,
-  LiveTranscriptionEvent,
-  DeepgramClientOptions,
-  UtteranceEndEvent,
-  SpeechStartedEvent,
+import {
+  type LiveSchema,
+  type LiveConfigOptions,
+  type LiveMetadataEvent,
+  type LiveTranscriptionEvent,
+  type DeepgramClientOptions,
+  type UtteranceEndEvent,
+  type SpeechStartedEvent,
 } from "../lib/types";
 
-export class LiveClient extends AbstractWsClient {
-  private _socket: w3cwebsocket;
+export class LiveClient extends AbstractLiveClient {
+  public namespace: string = "listen";
+  protected _socket: w3cwebsocket;
 
+  // Constructor implementation
   constructor(
-    protected key: string,
-    protected options: DeepgramClientOptions | undefined = DEFAULT_OPTIONS,
-    private transcriptionOptions: LiveSchema = {},
-    endpoint = "v1/listen"
+    options: DeepgramClientOptions,
+    transcriptionOptions: LiveSchema = {},
+    endpoint: string = "{version}/listen"
   ) {
-    super(key, options);
+    super(options);
 
     const url = new URL(endpoint, this.baseUrl);
     url.protocol = url.protocol.toLowerCase().replace(/^http/, "ws");

@@ -4,11 +4,13 @@ import { LiveSchema } from "../lib/types";
 import { PrerecordedClient } from "./PrerecordedClient";
 
 export class ListenClient extends AbstractClient {
+  public namespace: string = "listen";
+
   get prerecorded() {
-    return new PrerecordedClient(this.key, this.options);
+    return new PrerecordedClient(this.options);
   }
 
-  public live(transcriptionOptions: LiveSchema, endpoint = "v1/listen") {
-    return new LiveClient(this.key, this.options, transcriptionOptions, endpoint);
+  public live(transcriptionOptions: LiveSchema = {}, endpoint = "{version}/listen") {
+    return new LiveClient(this.options, transcriptionOptions, endpoint);
   }
 }

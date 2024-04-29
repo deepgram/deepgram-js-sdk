@@ -1,9 +1,10 @@
-import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { DeepgramError, DeepgramUnknownError, isDeepgramError } from "../lib/errors";
 import { appendSearchParams, isTextSource } from "../lib/helpers";
 import { Fetch, SpeakSchema, TextSource } from "../lib/types";
+import { AbstractRestClient } from "./AbstractRestClient";
 
-export class SpeakClient extends AbstractRestfulClient {
+export class SpeakClient extends AbstractRestClient {
+  public namespace: string = "speak";
   public result: undefined | Response;
 
   /**
@@ -12,7 +13,7 @@ export class SpeakClient extends AbstractRestfulClient {
   async request(
     source: TextSource,
     options?: SpeakSchema,
-    endpoint = "v1/speak"
+    endpoint = "{version}/speak"
   ): Promise<SpeakClient> {
     try {
       let body;
