@@ -63,6 +63,30 @@ export abstract class AbstractClient extends EventEmitter {
     const convertLegacyOptions = (optionsArg: DeepgramClientOptions): DeepgramClientOptions => {
       const newOptions: DeepgramClientOptions = {};
 
+      if (optionsArg._experimentalCustomFetch) {
+        newOptions.global = {
+          fetch: {
+            client: optionsArg._experimentalCustomFetch,
+          },
+        };
+      }
+
+      optionsArg = merge(optionsArg, newOptions);
+
+      if (optionsArg.restProxy?.url) {
+        newOptions.global = {
+          fetch: {
+            options: {
+              proxy: {
+                url: optionsArg.restProxy?.url,
+              },
+            },
+          },
+        };
+      }
+
+      optionsArg = merge(optionsArg, newOptions);
+
       if (optionsArg.global?.url) {
         newOptions.global = {
           fetch: {
@@ -70,8 +94,15 @@ export abstract class AbstractClient extends EventEmitter {
               url: optionsArg.global.url,
             },
           },
+          websocket: {
+            options: {
+              url: optionsArg.global.url,
+            },
+          },
         };
       }
+
+      optionsArg = merge(optionsArg, newOptions);
 
       if (optionsArg.global?.headers) {
         newOptions.global = {
@@ -80,10 +111,17 @@ export abstract class AbstractClient extends EventEmitter {
               headers: optionsArg.global?.headers,
             },
           },
+          websocket: {
+            options: {
+              _nodeOnlyHeaders: optionsArg.global?.headers,
+            },
+          },
         };
       }
 
-      return merge(optionsArg, newOptions);
+      optionsArg = merge(optionsArg, newOptions);
+
+      return optionsArg;
     };
 
     options = convertLegacyOptions(options);
