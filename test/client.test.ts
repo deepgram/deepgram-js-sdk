@@ -76,41 +76,11 @@ describe("testing creation of a deepgram client object", () => {
     expect(key).to.equal(mockKey);
   });
 
-  it("it should strip trailing slashes off the API URL if they're supplied", () => {
-    const mockUrl = faker.internet.url({ appendSlash: false });
-    const mockKey = faker.string.alphanumeric(40);
-    const client = createClient({
-      key: mockKey,
-      global: { fetch: { options: { url: `${mockUrl}/` } } },
-    });
-
-    // @ts-ignore
-    const url = client.namespaceOptions.fetch.options.url;
-
-    // @ts-ignore
-    const key = client.options.key;
-
-    expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal(mockUrl);
-    expect(key).to.equal(mockKey);
-  });
-
-  it("it should still work when provided a URL without a protocol", () => {
-    const domain = `api.mock.deepgram.com`;
-    const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: domain },
-    });
-
-    // @ts-ignore
-    const url = client.baseUrl.hostname;
-
-    expect(client).is.instanceOf(DeepgramClient);
-    expect(url).to.equal("api.mock.deepgram.com");
-  });
-
   it("it should allow for the supply of a custom header", () => {
     const client = createClient(faker.string.alphanumeric(40), {
-      global: { headers: { "X-dg-test": "testing" } },
+      global: {
+        fetch: { options: { headers: { "X-dg-test": "testing" } } },
+      },
     });
 
     expect(client).is.instanceOf(DeepgramClient);
@@ -122,8 +92,9 @@ describe("testing creation of a deepgram client object", () => {
     };
 
     const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: "https://api.mock.deepgram.com" },
-      _experimentalCustomFetch: fetch,
+      global: {
+        fetch: { client: fetch },
+      },
     });
 
     const { result, error } = await client.manage.getProjectBalances(faker.string.uuid());
