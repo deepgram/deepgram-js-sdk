@@ -1,4 +1,3 @@
-import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { isDeepgramError } from "../lib/errors";
 import type {
   CreateOnPremCredentialsSchema,
@@ -8,14 +7,17 @@ import type {
   MessageResponse,
   OnPremCredentialResponse,
 } from "../lib/types";
+import { AbstractRestClient } from "./AbstractRestClient";
 
-export class OnPremClient extends AbstractRestfulClient {
+export class OnPremClient extends AbstractRestClient {
+  public namespace: string = "onprem";
+
   /**
    * @see https://developers.deepgram.com/reference/list-credentials
    */
   async listCredentials(
     projectId: string,
-    endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
+    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<ListOnPremCredentialsResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -39,7 +41,7 @@ export class OnPremClient extends AbstractRestfulClient {
   async getCredentials(
     projectId: string,
     credentialsId: string,
-    endpoint = "v1/projects/:projectId/onprem/distribution/credentials/:credentialsId"
+    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials/:credentialsId"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -65,7 +67,7 @@ export class OnPremClient extends AbstractRestfulClient {
   async createCredentials(
     projectId: string,
     options: CreateOnPremCredentialsSchema,
-    endpoint = "v1/projects/:projectId/onprem/distribution/credentials"
+    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -91,7 +93,7 @@ export class OnPremClient extends AbstractRestfulClient {
   async deleteCredentials(
     projectId: string,
     credentialsId: string,
-    endpoint = "v1/projects/:projectId/onprem/distribution/credentials/:credentialsId"
+    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials/:credentialsId"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const url = new URL(this.baseUrl);

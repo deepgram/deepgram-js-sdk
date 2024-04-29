@@ -7,65 +7,91 @@ import { ReadClient } from "./packages/ReadClient";
 import { SpeakClient } from "./packages/SpeakClient";
 
 /**
- * Deepgram Client.
+ * The DeepgramClient class provides access to various Deepgram API clients, including ListenClient, ManageClient, OnPremClient, ReadClient, and SpeakClient.
  *
- * An isomorphic Javascript client for interacting with the Deepgram API.
- * @see https://developers.deepgram.com/docs/js-sdk
+ * @see https://github.com/deepgram/deepgram-js-sdk
  */
 export default class DeepgramClient extends AbstractClient {
   get listen(): ListenClient {
-    return new ListenClient(this.key, this.options);
+    return new ListenClient(this.options);
   }
 
   get manage(): ManageClient {
-    return new ManageClient(this.key, this.options);
+    return new ManageClient(this.options);
   }
 
   get onprem(): OnPremClient {
-    return new OnPremClient(this.key, this.options);
+    return new OnPremClient(this.options);
   }
 
   get read(): ReadClient {
-    return new ReadClient(this.key, this.options);
+    return new ReadClient(this.options);
   }
 
   get speak(): SpeakClient {
-    return new SpeakClient(this.key, this.options);
+    return new SpeakClient(this.options);
   }
 
   /**
-   * Major version fallback errors are below
-   *
-   * @see https://developers.deepgram.com/docs/js-sdk-v2-to-v3-migration-guide
+   * @deprecated
+   * @see https://dpgr.am/js-v3
    */
   get transcription(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get projects(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get keys(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get members(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get scopes(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get invitation(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get usage(): any {
     throw new DeepgramVersionError();
   }
 
+  /**
+   * @deprecated
+   * @see https://dpgr.am/js-v3
+   */
   get billing(): any {
     throw new DeepgramVersionError();
   }
