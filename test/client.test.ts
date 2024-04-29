@@ -21,7 +21,7 @@ describe("testing creation of a deepgram client object", () => {
 
   it("it should have the default URL when no custom URL option is provided", () => {
     // @ts-ignore
-    const url = deepgram.baseUrl.hostname;
+    const url = deepgram.namespaceOptions.fetch.options.url;
 
     expect(url).to.equal(DEFAULT_URL);
   });
@@ -31,35 +31,68 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should throw an error if invalid options are provided", () => {
-    expect(() => createClient(faker.string.alphanumeric(40), { global: { url: "" } })).to.throw(
-      `An API URL is required. It should be set to ${DEFAULT_URL} by default. No idea what happened!`
+    // const client = createClient({ global: { fetch: { options: { url: "" } } } });
+    // console.log(client);
+    // process.exit(1);
+    expect(() => createClient({ global: { fetch: { options: { url: "" } } } })).to.throw(
+      `A deepgram API key is required.`
     );
   });
 
-  it("it should create the client object with a custom domain", () => {
-    const domain = faker.internet.url({ appendSlash: false });
-    const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: domain },
+  it("it should create the client object with legacy options", () => {
+    const mockUrl = faker.internet.url({ appendSlash: false });
+    const mockKey = faker.string.alphanumeric(40);
+    const client = createClient(mockKey, {
+      global: { url: mockUrl },
     });
 
     // @ts-ignore
-    const baseUrl = client.baseUrl;
+    const url = client.namespaceOptions.fetch.options.url;
+
+    // @ts-ignore
+    const key = client.options.key;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(`${baseUrl.protocol}//${baseUrl.hostname}`).to.equal(domain);
+    expect(url).to.equal(mockUrl);
+    expect(key).to.equal(mockKey);
+  });
+
+  it("it should create the client object with a custom url", () => {
+    const mockUrl = faker.internet.url({ appendSlash: false });
+    const mockKey = faker.string.alphanumeric(40);
+    const client = createClient({
+      key: mockKey,
+      global: { fetch: { options: { url: mockUrl } } },
+    });
+
+    // @ts-ignore
+    const url = client.namespaceOptions.fetch.options.url;
+
+    // @ts-ignore
+    const key = client.options.key;
+
+    expect(client).is.instanceOf(DeepgramClient);
+    expect(url).to.equal(mockUrl);
+    expect(key).to.equal(mockKey);
   });
 
   it("it should strip trailing slashes off the API URL if they're supplied", () => {
-    const domain = faker.internet.url({ appendSlash: true });
-    const client = createClient(faker.string.alphanumeric(40), {
-      global: { url: domain },
+    const mockUrl = faker.internet.url({ appendSlash: false });
+    const mockKey = faker.string.alphanumeric(40);
+    const client = createClient({
+      key: mockKey,
+      global: { fetch: { options: { url: `${mockUrl}/` } } },
     });
 
     // @ts-ignore
-    const baseUrl = client.baseUrl;
+    const url = client.namespaceOptions.fetch.options.url;
+
+    // @ts-ignore
+    const key = client.options.key;
 
     expect(client).is.instanceOf(DeepgramClient);
-    expect(`${baseUrl.protocol}//${baseUrl.hostname}`).to.equal(stripTrailingSlash(domain));
+    expect(url).to.equal(mockUrl);
+    expect(key).to.equal(mockKey);
   });
 
   it("it should still work when provided a URL without a protocol", () => {

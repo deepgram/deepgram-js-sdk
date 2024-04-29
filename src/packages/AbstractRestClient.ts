@@ -8,17 +8,25 @@ import { isBrowser } from "../lib/helpers";
 
 export abstract class AbstractRestClient extends AbstractClient {
   protected fetch: Fetch;
+  protected baseUrl: string;
 
-  constructor(protected key: string, options: DeepgramClientOptions) {
-    super(key, options);
+  // Constructor implementation
+  constructor(options: DeepgramClientOptions) {
+    super(options);
 
-    if (isBrowser() && !this.willProxy()) {
+    if (isBrowser() && !this.proxy) {
       throw new DeepgramError(
         "Due to CORS we are unable to support REST-based API calls to our API from the browser. Please consider using a proxy: https://dpgr.am/js-proxy for more information."
       );
     }
 
     this.fetch = fetchWithAuth(this.key, this.namespaceOptions.fetch.client);
+
+    if (this.proxy) {
+      this.baseUrl = this.namespaceOptions.fetch.options.proxy!.url;
+    } else {
+      this.baseUrl = this.namespaceOptions.fetch.options.url;
+    }
   }
 
   protected _getErrorMessage(err: any): string {
@@ -150,11 +158,5 @@ export abstract class AbstractRestClient extends AbstractClient {
     parameters?: FetchParameters
   ): Promise<any> {
     return this._handleRequest(fetcher, "DELETE", url, headers, parameters);
-  }
-
-  protected willProxy() {
-    const proxyUrl = this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
-
-    return !!proxyUrl;
   }
 }

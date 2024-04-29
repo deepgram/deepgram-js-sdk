@@ -1,4 +1,4 @@
-import { applySettingDefaults } from "../src/lib/helpers";
+import { applyDefaults } from "../src/lib/helpers";
 import { DeepgramClientOptions } from "../src/lib/types/DeepgramClientOptions";
 import { DEFAULT_OPTIONS } from "../src/lib/constants";
 import { expect } from "chai";
@@ -15,7 +15,7 @@ describe("testing constants", () => {
     const options = {
       global: { url: faker.internet.url({ appendSlash: false }) },
     };
-    const settings = applySettingDefaults(options, DEFAULT_OPTIONS);
+    const settings = applyDefaults(options, DEFAULT_OPTIONS);
 
     expect(settings).is.not.deep.equal(options);
   });

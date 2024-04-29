@@ -6,6 +6,8 @@ import {
   UrlSource,
   TextSource,
   AnalyzeSource,
+  LiveSchema,
+  TranscriptionSchema,
 } from "./types";
 import { Readable } from "stream";
 import merge from "deepmerge";
@@ -83,16 +85,27 @@ export class CallbackUrl extends URL {
   public callbackUrl = true;
 }
 
-export const convertProtocolToWs = (url: string | URL) => {
+export const convertProtocolToWs = (url: string) => {
   const convert = (string: string) => string.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
 
-  if (url instanceof URL) {
-    return new URL(convert(url.toString()));
-  }
-
-  if (typeof url === "string") {
-    return new URL(convert(url));
-  }
-
-  throw new Error("URL must be a string or `URL` object");
+  return convert(url);
 };
+
+export const buildRequestUrl = (
+  endpoint: string,
+  baseUrl: string | URL,
+  transcriptionOptions: LiveSchema | TranscriptionSchema
+): URL => {
+  const url = new URL(endpoint, baseUrl);
+  appendSearchParams(url.searchParams, transcriptionOptions);
+
+  return url;
+};
+
+export function isLiveSchema(arg: any): arg is LiveSchema {
+  return arg && typeof arg.interim_results !== "undefined";
+}
+
+export function isDeepgramClientOptions(arg: any): arg is DeepgramClientOptions {
+  return arg && typeof arg.global !== "undefined";
+}

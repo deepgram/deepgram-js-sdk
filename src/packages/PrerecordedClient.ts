@@ -1,4 +1,3 @@
-import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { CallbackUrl, appendSearchParams, isFileSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
@@ -10,12 +9,15 @@ import type {
   SyncPrerecordedResponse,
   UrlSource,
 } from "../lib/types";
+import { AbstractRestClient } from "./AbstractRestClient";
 
-export class PrerecordedClient extends AbstractRestfulClient {
+export class PrerecordedClient extends AbstractRestClient {
+  public namespace: string = "listen";
+
   async transcribeUrl(
     source: UrlSource,
     options?: PrerecordedSchema,
-    endpoint = "v1/listen"
+    endpoint = "{version}/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
       let body;
@@ -52,7 +54,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
   async transcribeFile(
     source: FileSource,
     options?: PrerecordedSchema,
-    endpoint = "v1/listen"
+    endpoint = "{version}/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
       let body;
@@ -92,7 +94,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
     source: UrlSource,
     callback: CallbackUrl,
     options?: PrerecordedSchema,
-    endpoint = "v1/listen"
+    endpoint = "{version}/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
       let body;
@@ -127,7 +129,7 @@ export class PrerecordedClient extends AbstractRestfulClient {
     source: FileSource,
     callback: CallbackUrl,
     options?: PrerecordedSchema,
-    endpoint = "v1/listen"
+    endpoint = "{version}/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
       let body;

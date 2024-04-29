@@ -1,4 +1,3 @@
-import { AbstractRestfulClient } from "./AbstractRestfulClient";
 import { isDeepgramError } from "../lib/errors";
 import { appendSearchParams } from "../lib/helpers";
 import type {
@@ -29,13 +28,16 @@ import type {
   VoidResponse,
   GetTokenDetailsResponse,
 } from "../lib/types";
+import { AbstractRestClient } from "./AbstractRestClient";
 
-export class ManageClient extends AbstractRestfulClient {
+export class ManageClient extends AbstractRestClient {
+  public namespace: string = "manage";
+
   /**
    * @see https://developers.deepgram.com/docs/authenticating#test-request
    */
   async getTokenDetails(
-    endpoint = "v1/auth/token"
+    endpoint = "{version}/auth/token"
   ): Promise<DeepgramResponse<GetTokenDetailsResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -56,7 +58,9 @@ export class ManageClient extends AbstractRestfulClient {
   /**
    * @see https://developers.deepgram.com/reference/get-projects
    */
-  async getProjects(endpoint = "v1/projects"): Promise<DeepgramResponse<GetProjectsResponse>> {
+  async getProjects(
+    endpoint = "{version}/projects"
+  ): Promise<DeepgramResponse<GetProjectsResponse>> {
     try {
       const url = new URL(this.baseUrl);
       url.pathname = endpoint;
@@ -78,7 +82,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProject(
     projectId: string,
-    endpoint = "v1/projects/:projectId"
+    endpoint = "{version}/projects/:projectId"
   ): Promise<DeepgramResponse<GetProjectResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -102,7 +106,7 @@ export class ManageClient extends AbstractRestfulClient {
   async updateProject(
     projectId: string,
     options: UpdateProjectSchema,
-    endpoint = "v1/projects/:projectId"
+    endpoint = "{version}/projects/:projectId"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -127,7 +131,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async deleteProject(
     projectId: string,
-    endpoint = "v1/projects/:projectId"
+    endpoint = "{version}/projects/:projectId"
   ): Promise<VoidResponse> {
     try {
       const url = new URL(this.baseUrl);
@@ -150,7 +154,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectKeys(
     projectId: string,
-    endpoint = "v1/projects/:projectId/keys"
+    endpoint = "{version}/projects/:projectId/keys"
   ): Promise<DeepgramResponse<GetProjectKeysResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -174,7 +178,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectKey(
     projectId: string,
     keyId: string,
-    endpoint = "v1/projects/:projectId/keys/:keyId"
+    endpoint = "{version}/projects/:projectId/keys/:keyId"
   ): Promise<DeepgramResponse<GetProjectKeyResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -198,7 +202,7 @@ export class ManageClient extends AbstractRestfulClient {
   async createProjectKey(
     projectId: string,
     options: CreateProjectKeySchema,
-    endpoint = "v1/projects/:projectId/keys"
+    endpoint = "{version}/projects/:projectId/keys"
   ): Promise<DeepgramResponse<CreateProjectKeyResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -224,7 +228,7 @@ export class ManageClient extends AbstractRestfulClient {
   async deleteProjectKey(
     projectId: string,
     keyId: string,
-    endpoint = "v1/projects/:projectId/keys/:keyId"
+    endpoint = "{version}/projects/:projectId/keys/:keyId"
   ): Promise<VoidResponse> {
     try {
       const url = new URL(this.baseUrl);
@@ -247,7 +251,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectMembers(
     projectId: string,
-    endpoint = "v1/projects/:projectId/members"
+    endpoint = "{version}/projects/:projectId/members"
   ): Promise<DeepgramResponse<GetProjectMembersResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -271,7 +275,7 @@ export class ManageClient extends AbstractRestfulClient {
   async removeProjectMember(
     projectId: string,
     memberId: string,
-    endpoint = "v1/projects/:projectId/members/:memberId"
+    endpoint = "{version}/projects/:projectId/members/:memberId"
   ): Promise<VoidResponse> {
     try {
       const url = new URL(this.baseUrl);
@@ -295,7 +299,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectMemberScopes(
     projectId: string,
     memberId: string,
-    endpoint = "v1/projects/:projectId/members/:memberId/scopes"
+    endpoint = "{version}/projects/:projectId/members/:memberId/scopes"
   ): Promise<DeepgramResponse<GetProjectMemberScopesResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -320,7 +324,7 @@ export class ManageClient extends AbstractRestfulClient {
     projectId: string,
     memberId: string,
     options: UpdateProjectMemberScopeSchema,
-    endpoint = "v1/projects/:projectId/members/:memberId/scopes"
+    endpoint = "{version}/projects/:projectId/members/:memberId/scopes"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -345,7 +349,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectInvites(
     projectId: string,
-    endpoint = "v1/projects/:projectId/invites"
+    endpoint = "{version}/projects/:projectId/invites"
   ): Promise<DeepgramResponse<GetProjectInvitesResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -369,7 +373,7 @@ export class ManageClient extends AbstractRestfulClient {
   async sendProjectInvite(
     projectId: string,
     options: SendProjectInviteSchema,
-    endpoint = "v1/projects/:projectId/invites"
+    endpoint = "{version}/projects/:projectId/invites"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -395,7 +399,7 @@ export class ManageClient extends AbstractRestfulClient {
   async deleteProjectInvite(
     projectId: string,
     email: string,
-    endpoint = "v1/projects/:projectId/invites/:email"
+    endpoint = "{version}/projects/:projectId/invites/:email"
   ): Promise<VoidResponse> {
     try {
       const url = new URL(this.baseUrl);
@@ -418,7 +422,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async leaveProject(
     projectId: string,
-    endpoint = "v1/projects/:projectId/leave"
+    endpoint = "{version}/projects/:projectId/leave"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -442,7 +446,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectUsageRequests(
     projectId: string,
     options: GetProjectUsageRequestsSchema,
-    endpoint = "v1/projects/:projectId/requests"
+    endpoint = "{version}/projects/:projectId/requests"
   ): Promise<DeepgramResponse<GetProjectUsageRequestsResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -467,7 +471,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectUsageRequest(
     projectId: string,
     requestId: string,
-    endpoint = "v1/projects/:projectId/requests/:requestId"
+    endpoint = "{version}/projects/:projectId/requests/:requestId"
   ): Promise<DeepgramResponse<GetProjectUsageRequestResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -491,7 +495,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectUsageSummary(
     projectId: string,
     options: GetProjectUsageSummarySchema,
-    endpoint = "v1/projects/:projectId/usage"
+    endpoint = "{version}/projects/:projectId/usage"
   ): Promise<DeepgramResponse<GetProjectUsageSummaryResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -516,7 +520,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectUsageFields(
     projectId: string,
     options: GetProjectUsageFieldsSchema,
-    endpoint = "v1/projects/:projectId/usage/fields"
+    endpoint = "{version}/projects/:projectId/usage/fields"
   ): Promise<DeepgramResponse<GetProjectUsageFieldsResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -540,7 +544,7 @@ export class ManageClient extends AbstractRestfulClient {
    */
   async getProjectBalances(
     projectId: string,
-    endpoint = "v1/projects/:projectId/balances"
+    endpoint = "{version}/projects/:projectId/balances"
   ): Promise<DeepgramResponse<GetProjectBalancesResponse>> {
     try {
       const url = new URL(this.baseUrl);
@@ -564,7 +568,7 @@ export class ManageClient extends AbstractRestfulClient {
   async getProjectBalance(
     projectId: string,
     balanceId: string,
-    endpoint = "v1/projects/:projectId/balances/:balanceId"
+    endpoint = "{version}/projects/:projectId/balances/:balanceId"
   ): Promise<DeepgramResponse<GetProjectBalanceResponse>> {
     try {
       const url = new URL(this.baseUrl);
