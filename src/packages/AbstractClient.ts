@@ -94,23 +94,43 @@ export abstract class AbstractClient extends EventEmitter {
   }
 
   /**
-   * Generates a URL for the specified endpoint and transcription options.
+   * Generates a URL for an API endpoint with optional query parameters and transcription options.
    *
-   * @param endpoint - The endpoint URL, which may contain a "{version}" placeholder that will be replaced with the client's version.
-   * @param transcriptionOptions - The transcription options to include as query parameters in the URL.
-   * @returns A URL object representing the generated URL.
+   * @param endpoint - The API endpoint URL, which may contain placeholders for fields.
+   * @param fields - An optional object containing key-value pairs to replace placeholders in the endpoint URL.
+   * @param transcriptionOptions - Optional transcription options to include as query parameters in the URL.
+   * @returns A URL object representing the constructed API request URL.
    */
   public getRequestUrl(
     endpoint: string,
-    transcriptionOptions: LiveSchema | TranscriptionSchema
+    fields: { [key: string]: string } = { version: this.version },
+    transcriptionOptions?: {
+      [key: string]: unknown;
+    }
   ): URL {
     /**
-     * Version the URL endpoints if they can be versioned.
+     * If we pass in fields without a version, set a version.
      */
-    endpoint = endpoint.replace("{version}", this.version);
+    fields.version = this.version;
 
+    /**
+     * Version and template the endpoint for input argument..
+     */
+    endpoint = endpoint.replace(/:(\w+)/g, function (_, key) {
+      return fields![key];
+    });
+
+    /**
+     * Create a URL object.
+     */
     const url = new URL(endpoint as string, this.baseUrl);
-    appendSearchParams(url.searchParams, transcriptionOptions);
+
+    /**
+     * If there are transcription options, append them to the request as URL querystring parameters
+     */
+    if (transcriptionOptions) {
+      appendSearchParams(url.searchParams, transcriptionOptions);
+    }
 
     return url;
   }

@@ -21,11 +21,11 @@ export class LiveClient extends AbstractLiveClient {
   constructor(
     options: DeepgramClientOptions,
     transcriptionOptions: LiveSchema = {},
-    endpoint: string = "{version}/listen"
+    endpoint: string = ":version/listen"
   ) {
     super(options);
 
-    const requestUrl = this.getRequestUrl(endpoint, transcriptionOptions);
+    const requestUrl = this.getRequestUrl(endpoint, {}, transcriptionOptions);
     this._socket = new w3cwebsocket(requestUrl.toString(), ["token", this.key]);
 
     this._socket.onopen = () => {

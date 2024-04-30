@@ -17,13 +17,11 @@ export class OnPremClient extends AbstractRestClient {
    */
   async listCredentials(
     projectId: string,
-    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials"
+    endpoint = ":version/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<ListOnPremCredentialsResponse>> {
     try {
-      const url = new URL(this.baseUrl);
-      url.pathname = endpoint.replace(/:projectId/, projectId);
-
-      const result: ListOnPremCredentialsResponse = await this.get(this.fetch as Fetch, url);
+      const requestUrl = this.getRequestUrl(endpoint, { projectId });
+      const result: ListOnPremCredentialsResponse = await this.get(this.fetch as Fetch, requestUrl);
 
       return { result, error: null };
     } catch (error) {
@@ -41,15 +39,11 @@ export class OnPremClient extends AbstractRestClient {
   async getCredentials(
     projectId: string,
     credentialsId: string,
-    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials/:credentialsId"
+    endpoint = ":version/projects/:projectId/onprem/distribution/credentials/:credentialsId"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
-      const url = new URL(this.baseUrl);
-      url.pathname = endpoint
-        .replace(/:projectId/, projectId)
-        .replace(/:credentialsId/, credentialsId);
-
-      const result: OnPremCredentialResponse = await this.get(this.fetch as Fetch, url);
+      const requestUrl = this.getRequestUrl(endpoint, { projectId, credentialsId });
+      const result: OnPremCredentialResponse = await this.get(this.fetch as Fetch, requestUrl);
 
       return { result, error: null };
     } catch (error) {
@@ -67,15 +61,17 @@ export class OnPremClient extends AbstractRestClient {
   async createCredentials(
     projectId: string,
     options: CreateOnPremCredentialsSchema,
-    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials"
+    endpoint = ":version/projects/:projectId/onprem/distribution/credentials"
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
-      const url = new URL(this.baseUrl);
-      url.pathname = endpoint.replace(/:projectId/, projectId);
-
+      const requestUrl = this.getRequestUrl(endpoint, { projectId });
       const body = JSON.stringify(options);
 
-      const result: OnPremCredentialResponse = await this.post(this.fetch as Fetch, url, body);
+      const result: OnPremCredentialResponse = await this.post(
+        this.fetch as Fetch,
+        requestUrl,
+        body
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -93,15 +89,11 @@ export class OnPremClient extends AbstractRestClient {
   async deleteCredentials(
     projectId: string,
     credentialsId: string,
-    endpoint = "{version}/projects/:projectId/onprem/distribution/credentials/:credentialsId"
+    endpoint = ":version/projects/:projectId/onprem/distribution/credentials/:credentialsId"
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
-      const url = new URL(this.baseUrl);
-      url.pathname = endpoint
-        .replace(/:projectId/, projectId)
-        .replace(/:credentialsId/, credentialsId);
-
-      const result: MessageResponse = await this.delete(this.fetch as Fetch, url);
+      const requestUrl = this.getRequestUrl(endpoint, { projectId, credentialsId });
+      const result: MessageResponse = await this.delete(this.fetch as Fetch, requestUrl);
 
       return { result, error: null };
     } catch (error) {

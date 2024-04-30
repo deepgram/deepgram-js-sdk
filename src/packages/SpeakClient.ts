@@ -13,7 +13,7 @@ export class SpeakClient extends AbstractRestClient {
   async request(
     source: TextSource,
     options?: SpeakSchema,
-    endpoint = "{version}/speak"
+    endpoint = ":version/speak"
   ): Promise<SpeakClient> {
     try {
       let body;

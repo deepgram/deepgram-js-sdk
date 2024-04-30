@@ -17,7 +17,7 @@ export class PrerecordedClient extends AbstractRestClient {
   async transcribeUrl(
     source: UrlSource,
     options?: PrerecordedSchema,
-    endpoint = "{version}/listen"
+    endpoint = ":version/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
       let body;
@@ -34,12 +34,12 @@ export class PrerecordedClient extends AbstractRestClient {
         );
       }
 
-      const transcriptionOptions: PrerecordedSchema = { ...{}, ...options };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
-
-      const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body);
+      const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
+      const result: SyncPrerecordedResponse = await this.post(
+        this.fetch as Fetch,
+        requestUrl,
+        body
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -54,7 +54,7 @@ export class PrerecordedClient extends AbstractRestClient {
   async transcribeFile(
     source: FileSource,
     options?: PrerecordedSchema,
-    endpoint = "{version}/listen"
+    endpoint = ":version/listen"
   ): Promise<DeepgramResponse<SyncPrerecordedResponse>> {
     try {
       let body;
@@ -71,14 +71,15 @@ export class PrerecordedClient extends AbstractRestClient {
         );
       }
 
-      const transcriptionOptions: PrerecordedSchema = { ...{}, ...options };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
-
-      const result: SyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        "Content-Type": "deepgram/audio+video",
-      });
+      const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
+      const result: SyncPrerecordedResponse = await this.post(
+        this.fetch as Fetch,
+        requestUrl,
+        body,
+        {
+          "Content-Type": "deepgram/audio+video",
+        }
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -94,7 +95,7 @@ export class PrerecordedClient extends AbstractRestClient {
     source: UrlSource,
     callback: CallbackUrl,
     options?: PrerecordedSchema,
-    endpoint = "{version}/listen"
+    endpoint = ":version/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
       let body;
@@ -105,15 +106,16 @@ export class PrerecordedClient extends AbstractRestClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const transcriptionOptions: PrerecordedSchema = {
-        ...options,
-        ...{ callback: callback.toString() },
-      };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
-
-      const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body);
+      const requestUrl = this.getRequestUrl(
+        endpoint,
+        {},
+        { ...options, callback: callback.toString() }
+      );
+      const result: AsyncPrerecordedResponse = await this.post(
+        this.fetch as Fetch,
+        requestUrl,
+        body
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -129,7 +131,7 @@ export class PrerecordedClient extends AbstractRestClient {
     source: FileSource,
     callback: CallbackUrl,
     options?: PrerecordedSchema,
-    endpoint = "{version}/listen"
+    endpoint = ":version/listen"
   ): Promise<DeepgramResponse<AsyncPrerecordedResponse>> {
     try {
       let body;
@@ -140,17 +142,27 @@ export class PrerecordedClient extends AbstractRestClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const transcriptionOptions: PrerecordedSchema = {
-        ...options,
-        ...{ callback: callback.toString() },
-      };
+      // const transcriptionOptions: PrerecordedSchema = {
+      //   ...options,
+      //   ...{ callback: callback.toString() },
+      // };
 
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
+      // const url = new URL(endpoint, this.baseUrl);
+      // appendSearchParams(url.searchParams, transcriptionOptions);
 
-      const result: AsyncPrerecordedResponse = await this.post(this.fetch as Fetch, url, body, {
-        "Content-Type": "deepgram/audio+video",
-      });
+      const requestUrl = this.getRequestUrl(
+        endpoint,
+        {},
+        { ...options, callback: callback.toString() }
+      );
+      const result: AsyncPrerecordedResponse = await this.post(
+        this.fetch as Fetch,
+        requestUrl,
+        body,
+        {
+          "Content-Type": "deepgram/audio+video",
+        }
+      );
 
       return { result, error: null };
     } catch (error) {
