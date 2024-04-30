@@ -2,8 +2,6 @@ import { DeepgramClientOptions } from "../lib/types";
 import { AbstractClient } from "./AbstractClient";
 
 export abstract class AbstractLiveClient extends AbstractClient {
-  protected baseUrl: string;
-
   // Constructor implementation
   constructor(options: DeepgramClientOptions) {
     super(options);

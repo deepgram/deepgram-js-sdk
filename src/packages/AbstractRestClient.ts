@@ -8,7 +8,6 @@ import { isBrowser } from "../lib/helpers";
 
 export abstract class AbstractRestClient extends AbstractClient {
   protected fetch: Fetch;
-  protected baseUrl: string;
 
   // Constructor implementation
   constructor(options: DeepgramClientOptions) {
