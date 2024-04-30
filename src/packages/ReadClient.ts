@@ -18,7 +18,7 @@ export class ReadClient extends AbstractRestClient {
   async analyzeUrl(
     source: UrlSource,
     options?: AnalyzeSchema,
-    endpoint = "{version}/read"
+    endpoint = ":version/read"
   ): Promise<DeepgramResponse<SyncAnalyzeResponse>> {
     try {
       let body;
@@ -35,12 +35,8 @@ export class ReadClient extends AbstractRestClient {
         );
       }
 
-      const analyzeOptions: AnalyzeSchema = { ...{}, ...options };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, analyzeOptions);
-
-      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body);
+      const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
+      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body);
 
       return { result, error: null };
     } catch (error) {
@@ -55,7 +51,7 @@ export class ReadClient extends AbstractRestClient {
   async analyzeText(
     source: TextSource,
     options?: AnalyzeSchema,
-    endpoint = "{version}/read"
+    endpoint = ":version/read"
   ): Promise<DeepgramResponse<SyncAnalyzeResponse>> {
     try {
       let body;
@@ -72,12 +68,8 @@ export class ReadClient extends AbstractRestClient {
         );
       }
 
-      const analyzeOptions: AnalyzeSchema = { ...{}, ...options };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, analyzeOptions);
-
-      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body);
+      const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
+      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body);
 
       return { result, error: null };
     } catch (error) {
@@ -93,7 +85,7 @@ export class ReadClient extends AbstractRestClient {
     source: UrlSource,
     callback: CallbackUrl,
     options?: AnalyzeSchema,
-    endpoint = "{version}/read"
+    endpoint = ":version/read"
   ): Promise<DeepgramResponse<AsyncAnalyzeResponse>> {
     try {
       let body;
@@ -104,15 +96,12 @@ export class ReadClient extends AbstractRestClient {
         throw new DeepgramError("Unknown source type");
       }
 
-      const transcriptionOptions: PrerecordedSchema = {
-        ...options,
-        ...{ callback: callback.toString() },
-      };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
-
-      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body);
+      const requestUrl = this.getRequestUrl(
+        endpoint,
+        {},
+        { ...options, callback: callback.toString() }
+      );
+      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body);
 
       return { result, error: null };
     } catch (error) {
@@ -128,7 +117,7 @@ export class ReadClient extends AbstractRestClient {
     source: TextSource,
     callback: CallbackUrl,
     options?: AnalyzeSchema,
-    endpoint = "{version}/read"
+    endpoint = ":version/read"
   ): Promise<DeepgramResponse<AsyncAnalyzeResponse>> {
     try {
       let body;
@@ -139,15 +128,12 @@ export class ReadClient extends AbstractRestClient {
         throw new DeepgramError("Unknown source type");
       }
 
-      const transcriptionOptions: PrerecordedSchema = {
-        ...options,
-        ...{ callback: callback.toString() },
-      };
-
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, transcriptionOptions);
-
-      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, url, body, {
+      const requestUrl = this.getRequestUrl(
+        endpoint,
+        {},
+        { ...options, callback: callback.toString() }
+      );
+      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body, {
         "Content-Type": "deepgram/audio+video",
       });
 

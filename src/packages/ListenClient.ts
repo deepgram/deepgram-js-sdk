@@ -10,7 +10,7 @@ export class ListenClient extends AbstractClient {
     return new PrerecordedClient(this.options);
   }
 
-  public live(transcriptionOptions: LiveSchema = {}, endpoint = "{version}/listen") {
+  public live(transcriptionOptions: LiveSchema = {}, endpoint = ":version/listen") {
     return new LiveClient(this.options, transcriptionOptions, endpoint);
   }
 }
