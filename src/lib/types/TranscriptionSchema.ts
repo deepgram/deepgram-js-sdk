@@ -138,8 +138,6 @@ interface TranscriptionSchema extends Record<string, unknown> {
    * @see https://developers.deepgram.com/docs/extra-metadata
    */
   extra?: string[] | string;
-
-  [key: string]: unknown;
 }
 
 interface PrerecordedSchema extends TranscriptionSchema {
