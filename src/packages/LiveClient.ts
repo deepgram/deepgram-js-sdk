@@ -1,5 +1,4 @@
 import { AbstractLiveClient } from "./AbstractLiveClient";
-import { appendSearchParams, isDeepgramClientOptions, isLiveSchema } from "../lib/helpers";
 import { DeepgramError } from "../lib/errors";
 import { LiveConnectionState, LiveTranscriptionEvents } from "../lib/enums";
 import { w3cwebsocket } from "websocket";
@@ -26,11 +25,8 @@ export class LiveClient extends AbstractLiveClient {
   ) {
     super(options);
 
-    const url = new URL(endpoint, this.baseUrl);
-    url.protocol = url.protocol.toLowerCase().replace(/^http/, "ws");
-    appendSearchParams(url.searchParams, this.transcriptionOptions);
-
-    this._socket = new w3cwebsocket(url.toString(), ["token", this.key]);
+    const requestUrl = this.getRequestUrl(endpoint, transcriptionOptions);
+    this._socket = new w3cwebsocket(requestUrl.toString(), ["token", this.key]);
 
     this._socket.onopen = () => {
       this.emit(LiveTranscriptionEvents.Open, this);
