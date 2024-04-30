@@ -109,3 +109,67 @@ export function isLiveSchema(arg: any): arg is LiveSchema {
 export function isDeepgramClientOptions(arg: any): arg is DeepgramClientOptions {
   return arg && typeof arg.global !== "undefined";
 }
+
+export const convertLegacyOptions = (optionsArg: DeepgramClientOptions): DeepgramClientOptions => {
+  const newOptions: DeepgramClientOptions = {};
+
+  if (optionsArg._experimentalCustomFetch) {
+    newOptions.global = {
+      fetch: {
+        client: optionsArg._experimentalCustomFetch,
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  if (optionsArg.restProxy?.url) {
+    newOptions.global = {
+      fetch: {
+        options: {
+          proxy: {
+            url: optionsArg.restProxy?.url,
+          },
+        },
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  if (optionsArg.global?.url) {
+    newOptions.global = {
+      fetch: {
+        options: {
+          url: optionsArg.global.url,
+        },
+      },
+      websocket: {
+        options: {
+          url: optionsArg.global.url,
+        },
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  if (optionsArg.global?.headers) {
+    newOptions.global = {
+      fetch: {
+        options: {
+          headers: optionsArg.global?.headers,
+        },
+      },
+      websocket: {
+        options: {
+          _nodeOnlyHeaders: optionsArg.global?.headers,
+        },
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  return optionsArg;
+};

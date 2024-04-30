@@ -1,9 +1,8 @@
 import EventEmitter from "events";
-import { DEFAULT_OPTIONS } from "../lib/constants";
+import { DEFAULT_OPTIONS, DEFAULT_URL } from "../lib/constants";
 import { DeepgramError } from "../lib/errors";
-import { applyDefaults } from "../lib/helpers";
-import { DeepgramClientOptions } from "../lib/types";
-import merge from "deepmerge";
+import { appendSearchParams, applyDefaults, convertLegacyOptions } from "../lib/helpers";
+import { DeepgramClientOptions, LiveSchema, TranscriptionSchema } from "../lib/types";
 import {
   DefaultClientOptions,
   DefaultNamespaceOptions,
@@ -26,7 +25,8 @@ export abstract class AbstractClient extends EventEmitter {
   protected namespaceOptions: DefaultNamespaceOptions;
   protected options: DefaultClientOptions;
   public namespace: string = "global";
-  public version: number = 1;
+  public version: string = "v1";
+  public baseUrl: string = DEFAULT_URL;
 
   /**
    * Constructs a new instance of the DeepgramClient class with the provided options.
@@ -60,70 +60,6 @@ export abstract class AbstractClient extends EventEmitter {
 
     this.key = key;
 
-    const convertLegacyOptions = (optionsArg: DeepgramClientOptions): DeepgramClientOptions => {
-      const newOptions: DeepgramClientOptions = {};
-
-      if (optionsArg._experimentalCustomFetch) {
-        newOptions.global = {
-          fetch: {
-            client: optionsArg._experimentalCustomFetch,
-          },
-        };
-      }
-
-      optionsArg = merge(optionsArg, newOptions);
-
-      if (optionsArg.restProxy?.url) {
-        newOptions.global = {
-          fetch: {
-            options: {
-              proxy: {
-                url: optionsArg.restProxy?.url,
-              },
-            },
-          },
-        };
-      }
-
-      optionsArg = merge(optionsArg, newOptions);
-
-      if (optionsArg.global?.url) {
-        newOptions.global = {
-          fetch: {
-            options: {
-              url: optionsArg.global.url,
-            },
-          },
-          websocket: {
-            options: {
-              url: optionsArg.global.url,
-            },
-          },
-        };
-      }
-
-      optionsArg = merge(optionsArg, newOptions);
-
-      if (optionsArg.global?.headers) {
-        newOptions.global = {
-          fetch: {
-            options: {
-              headers: optionsArg.global?.headers,
-            },
-          },
-          websocket: {
-            options: {
-              _nodeOnlyHeaders: optionsArg.global?.headers,
-            },
-          },
-        };
-      }
-
-      optionsArg = merge(optionsArg, newOptions);
-
-      return optionsArg;
-    };
-
     options = convertLegacyOptions(options);
 
     /**
@@ -143,7 +79,7 @@ export abstract class AbstractClient extends EventEmitter {
     );
   }
 
-  public v(version: number = 1) {
+  public v(version: string = "v1"): this {
     this.version = version;
 
     return this;
@@ -155,5 +91,27 @@ export abstract class AbstractClient extends EventEmitter {
    */
   get proxy(): boolean {
     return this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
+  }
+
+  /**
+   * Generates a URL for the specified endpoint and transcription options.
+   *
+   * @param endpoint - The endpoint URL, which may contain a "{version}" placeholder that will be replaced with the client's version.
+   * @param transcriptionOptions - The transcription options to include as query parameters in the URL.
+   * @returns A URL object representing the generated URL.
+   */
+  public getRequestUrl(
+    endpoint: string,
+    transcriptionOptions: LiveSchema | TranscriptionSchema
+  ): URL {
+    /**
+     * Version the URL endpoints if they can be versioned.
+     */
+    endpoint = endpoint.replace("{version}", this.version);
+
+    const url = new URL(endpoint as string, this.baseUrl);
+    appendSearchParams(url.searchParams, transcriptionOptions);
+
+    return url;
   }
 }
