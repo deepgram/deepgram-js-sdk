@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../dist/umd/deepgram.js"></script>
+    <script>
+      const { createClient } = deepgram;
+      const _deepgram = createClient("deepgram-api-key", {
+        global: {
+          fetch: {
+            options: {
+              url: "https://api.mock.deepgram.com",
+            },
+          },
+        },
+      });
+
+      console.log("Deepgram Instance: ", _deepgram);
+
+      (async () => {
+        const { result, error } = await _deepgram.manage.getProjects();
+
+        console.log(result, error);
+      })();
+
+      // ...
+    </script>
+  </head>
+  <body>
+    Running test... check the developer console.
+  </body>
+</html>
