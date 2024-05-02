@@ -27,7 +27,7 @@ export class LiveClient extends AbstractWsClient {
     super(key, options);
 
     const url = new URL(endpoint, this.baseUrl);
-    url.protocol = url.protocol.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
+    url.protocol = url.protocol.toLowerCase().replace(/^http/, "ws");
     appendSearchParams(url.searchParams, this.transcriptionOptions);
 
     this._socket = new w3cwebsocket(url.toString(), ["token", this.key]);
