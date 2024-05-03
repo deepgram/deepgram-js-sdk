@@ -1,5 +1,5 @@
 import { AbstractRestfulClient } from "./AbstractRestfulClient";
-import { DeepgramError, DeepgramUnknownError, isDeepgramError } from "../lib/errors";
+import { DeepgramError, DeepgramUnknownError } from "../lib/errors";
 import { appendSearchParams, isTextSource } from "../lib/helpers";
 import { Fetch, SpeakSchema, TextSource } from "../lib/types";
 
