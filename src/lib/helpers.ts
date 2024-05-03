@@ -82,6 +82,4 @@ const isReadStreamSource = (providedSource: PrerecordedSource): providedSource i
   return false;
 };
 
-export class CallbackUrl extends URL {
-  private callbackUrl = true;
-}
+export class CallbackUrl extends URL {}
