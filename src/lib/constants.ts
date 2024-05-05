@@ -12,7 +12,7 @@ export const DEFAULT_HEADERS = {
 
 export const DEFAULT_URL = "https://api.deepgram.com";
 
-export const DEFAULT_GLOBAL_OPTIONS: DefaultNamespaceOptions = {
+export const DEFAULT_GLOBAL_OPTIONS: Partial<DefaultNamespaceOptions> = {
   fetch: { options: { url: DEFAULT_URL, headers: DEFAULT_HEADERS } },
   websocket: { options: { url: convertProtocolToWs(DEFAULT_URL) } },
 };

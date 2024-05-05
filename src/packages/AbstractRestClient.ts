@@ -19,7 +19,7 @@ export abstract class AbstractRestClient extends AbstractClient {
       );
     }
 
-    this.fetch = fetchWithAuth(this.key, this.namespaceOptions.fetch.client);
+    this.fetch = fetchWithAuth(this.namespaceOptions.key, this.namespaceOptions.fetch.client);
 
     if (this.proxy) {
       this.baseUrl = this.namespaceOptions.fetch.options.proxy!.url;

@@ -22,7 +22,6 @@ import {
 export abstract class AbstractClient extends EventEmitter {
   protected factory: Function | undefined = undefined;
   protected key: string;
-  protected namespaceOptions: DefaultNamespaceOptions;
   protected options: DefaultClientOptions;
   public namespace: string = "global";
   public version: string = "v1";
@@ -69,14 +68,6 @@ export abstract class AbstractClient extends EventEmitter {
       options,
       DEFAULT_OPTIONS
     );
-
-    /**
-     * Roll up options for this namespace.
-     */
-    this.namespaceOptions = applyDefaults<NamespaceOptions, DefaultNamespaceOptions>(
-      this.options[this.namespace],
-      this.options.global!
-    );
   }
 
   public v(version: string = "v1"): this {
@@ -91,6 +82,18 @@ export abstract class AbstractClient extends EventEmitter {
    */
   get proxy(): boolean {
     return this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
+  }
+
+  get namespaceOptions(): DefaultNamespaceOptions {
+    const defaults = applyDefaults<NamespaceOptions, DefaultNamespaceOptions>(
+      this.options[this.namespace],
+      this.options.global
+    );
+
+    return {
+      ...defaults,
+      key: this.key,
+    };
   }
 
   /**

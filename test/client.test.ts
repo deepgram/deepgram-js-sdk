@@ -99,6 +99,8 @@ describe("testing creation of a deepgram client object", () => {
 
     const { result, error } = await client.manage.getProjectBalances(faker.string.uuid());
 
+    console.log("result", result);
+
     assert.isNull(error);
     assert.isNotNull(result);
     assert.containsAllDeepKeys(result, ["customFetch"]);
