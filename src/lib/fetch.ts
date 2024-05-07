@@ -1,6 +1,6 @@
-import crossFetch from "cross-fetch";
 import { resolveHeadersConstructor } from "./helpers";
-import type { Fetch } from "./types/Fetch";
+import crossFetch from "cross-fetch";
+import type { Fetch } from "./types";
 
 export const resolveFetch = (customFetch?: Fetch): Fetch => {
   let _fetch: Fetch;

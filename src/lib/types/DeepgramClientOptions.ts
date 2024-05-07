@@ -1,4 +1,4 @@
-import { FetchOptions } from "./Fetch";
+import { Fetch, FetchOptions } from "./Fetch";
 
 export type IKeyFactory = () => string;
 export type IFetch = typeof fetch;
@@ -75,5 +75,21 @@ export interface DeepgramClientOptions {
   onprem?: NamespaceOptions;
   read?: NamespaceOptions;
   speak?: NamespaceOptions;
-  [index: string]: any;
+
+  /**
+   * @deprecated as of 3.4, use a namespace like `global` instead
+   */
+  fetch?: FetchOptions;
+
+  /**
+   * @deprecated as of 3.4, use a namespace like `global` instead
+   */
+  _experimentalCustomFetch?: Fetch;
+
+  /**
+   * @deprecated as of 3.4, use a namespace like `global` instead
+   */
+  restProxy?: {
+    url: null | string;
+  };
 }

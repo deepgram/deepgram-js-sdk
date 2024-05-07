@@ -1,10 +1,14 @@
-import { DeepgramApiError, DeepgramError, DeepgramUnknownError } from "../lib/errors";
-import { Readable } from "stream";
-import { fetchWithAuth, resolveResponse } from "../lib/fetch";
-import type { Fetch, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
 import { AbstractClient } from "./AbstractClient";
-import { DeepgramClientOptions } from "../lib/types";
+import { DeepgramApiError, DeepgramError, DeepgramUnknownError } from "../lib/errors";
+import { fetchWithAuth, resolveResponse } from "../lib/fetch";
 import { isBrowser } from "../lib/helpers";
+import { Readable } from "stream";
+import type {
+  DeepgramClientOptions,
+  Fetch,
+  FetchParameters,
+  RequestMethodType,
+} from "../lib/types";
 
 export abstract class AbstractRestClient extends AbstractClient {
   protected fetch: Fetch;
@@ -157,5 +161,13 @@ export abstract class AbstractRestClient extends AbstractClient {
     parameters?: FetchParameters
   ): Promise<any> {
     return this._handleRequest(fetcher, "DELETE", url, headers, parameters);
+  }
+
+  /**
+   * Determines whether the current instance should proxy requests.
+   * @returns {boolean} true if the current instance should proxy requests; otherwise, false
+   */
+  get proxy(): boolean {
+    return this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
   }
 }

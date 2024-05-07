@@ -1,8 +1,8 @@
+import { AbstractRestClient } from "./AbstractRestClient";
 import { isDeepgramError } from "../lib/errors";
-import { appendSearchParams } from "../lib/helpers";
 import type {
-  CreateProjectKeySchema,
   CreateProjectKeyResponse,
+  CreateProjectKeySchema,
   DeepgramResponse,
   Fetch,
   GetProjectBalanceResponse,
@@ -14,21 +14,20 @@ import type {
   GetProjectMembersResponse,
   GetProjectResponse,
   GetProjectsResponse,
-  GetProjectUsageFieldsSchema,
   GetProjectUsageFieldsResponse,
+  GetProjectUsageFieldsSchema,
   GetProjectUsageRequestResponse,
-  GetProjectUsageRequestsSchema,
   GetProjectUsageRequestsResponse,
-  GetProjectUsageSummarySchema,
+  GetProjectUsageRequestsSchema,
   GetProjectUsageSummaryResponse,
+  GetProjectUsageSummarySchema,
+  GetTokenDetailsResponse,
   MessageResponse,
   SendProjectInviteSchema,
   UpdateProjectMemberScopeSchema,
   UpdateProjectSchema,
   VoidResponse,
-  GetTokenDetailsResponse,
 } from "../lib/types";
-import { AbstractRestClient } from "./AbstractRestClient";
 
 export class ManageClient extends AbstractRestClient {
   public namespace: string = "manage";

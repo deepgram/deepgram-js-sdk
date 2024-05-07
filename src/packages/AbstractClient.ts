@@ -2,12 +2,14 @@ import EventEmitter from "events";
 import { DEFAULT_OPTIONS, DEFAULT_URL } from "../lib/constants";
 import { DeepgramError } from "../lib/errors";
 import { appendSearchParams, applyDefaults, convertLegacyOptions } from "../lib/helpers";
-import { DeepgramClientOptions, LiveSchema, TranscriptionSchema } from "../lib/types";
-import {
+import type {
+  DeepgramClientOptions,
   DefaultClientOptions,
   DefaultNamespaceOptions,
   NamespaceOptions,
-} from "../lib/types/DeepgramClientOptions";
+} from "../lib/types";
+
+export const noop = () => {};
 
 /**
  * Represents an abstract Deepgram client that provides a base implementation for interacting with the Deepgram API.
@@ -26,6 +28,7 @@ export abstract class AbstractClient extends EventEmitter {
   public namespace: string = "global";
   public version: string = "v1";
   public baseUrl: string = DEFAULT_URL;
+  public logger: Function = noop;
 
   /**
    * Constructs a new instance of the DeepgramClient class with the provided options.
@@ -76,17 +79,9 @@ export abstract class AbstractClient extends EventEmitter {
     return this;
   }
 
-  /**
-   * Determines whether the current instance should proxy requests.
-   * @returns {boolean} true if the current instance should proxy requests; otherwise, false
-   */
-  get proxy(): boolean {
-    return this.key === "proxy" && !!this.namespaceOptions.fetch.options.proxy?.url;
-  }
-
   get namespaceOptions(): DefaultNamespaceOptions {
     const defaults = applyDefaults<NamespaceOptions, DefaultNamespaceOptions>(
-      this.options[this.namespace],
+      (this.options as any)[this.namespace],
       this.options.global
     );
 
@@ -136,5 +131,14 @@ export abstract class AbstractClient extends EventEmitter {
     }
 
     return url;
+  }
+
+  /**
+   * Logs the message.
+   *
+   * For customized logging, `this.logger` can be overridden.
+   */
+  public log(kind: string, msg: string, data?: any) {
+    this.logger(kind, msg, data);
   }
 }

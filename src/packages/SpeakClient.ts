@@ -1,7 +1,7 @@
-import { DeepgramError, DeepgramUnknownError, isDeepgramError } from "../lib/errors";
-import { appendSearchParams, isTextSource } from "../lib/helpers";
-import { Fetch, SpeakSchema, TextSource } from "../lib/types";
 import { AbstractRestClient } from "./AbstractRestClient";
+import { appendSearchParams, isTextSource } from "../lib/helpers";
+import { DeepgramError, DeepgramUnknownError } from "../lib/errors";
+import { Fetch, SpeakSchema, TextSource } from "../lib/types";
 
 export class SpeakClient extends AbstractRestClient {
   public namespace: string = "speak";

@@ -1,16 +1,15 @@
-import { CallbackUrl, appendSearchParams, isTextSource, isUrlSource } from "../lib/helpers";
+import { AbstractRestClient } from "./AbstractRestClient";
+import { CallbackUrl, isTextSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   AnalyzeSchema,
   AsyncAnalyzeResponse,
   DeepgramResponse,
   Fetch,
-  PrerecordedSchema,
   SyncAnalyzeResponse,
   TextSource,
   UrlSource,
 } from "../lib/types";
-import { AbstractRestClient } from "./AbstractRestClient";
 
 export class ReadClient extends AbstractRestClient {
   public namespace: string = "read";

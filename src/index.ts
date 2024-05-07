@@ -1,6 +1,6 @@
-import DeepgramClient from "./DeepgramClient";
 import { DeepgramVersionError } from "./lib/errors";
-import { DeepgramClientOptions, IKeyFactory } from "./lib/types/DeepgramClientOptions";
+import DeepgramClient from "./DeepgramClient";
+import type { DeepgramClientOptions, IKeyFactory } from "./lib/types";
 
 /**
  * This class is deprecated and should not be used. It throws a `DeepgramVersionError` when instantiated.

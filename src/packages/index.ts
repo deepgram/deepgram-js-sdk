@@ -1,8 +1,10 @@
-export { AbstractClient } from "./AbstractClient";
-export { AbstractRestClient } from "./AbstractRestClient";
-export { AbstractLiveClient } from "./AbstractLiveClient";
-export { ListenClient } from "./ListenClient";
-export { LiveClient } from "./LiveClient";
-export { ManageClient } from "./ManageClient";
-export { OnPremClient } from "./OnPremClient";
-export { PrerecordedClient } from "./PrerecordedClient";
+export * from "./AbstractClient";
+export * from "./AbstractLiveClient";
+export * from "./AbstractRestClient";
+export * from "./ListenClient";
+export * from "./ListenLiveClient";
+export * from "./ListenRestClient";
+export * from "./ManageClient";
+export * from "./OnPremClient";
+export * from "./ReadClient";
+export * from "./SpeakClient";

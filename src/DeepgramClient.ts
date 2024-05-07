@@ -1,10 +1,12 @@
 import { DeepgramVersionError } from "./lib/errors";
-import { AbstractClient } from "./packages/AbstractClient";
-import { ListenClient } from "./packages/ListenClient";
-import { ManageClient } from "./packages/ManageClient";
-import { OnPremClient } from "./packages/OnPremClient";
-import { ReadClient } from "./packages/ReadClient";
-import { SpeakClient } from "./packages/SpeakClient";
+import {
+  AbstractClient,
+  ListenClient,
+  ManageClient,
+  OnPremClient,
+  ReadClient,
+  SpeakClient,
+} from "./packages";
 
 /**
  * The DeepgramClient class provides access to various Deepgram API clients, including ListenClient, ManageClient, OnPremClient, ReadClient, and SpeakClient.

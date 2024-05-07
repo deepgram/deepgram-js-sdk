@@ -1,4 +1,5 @@
-import { CallbackUrl, appendSearchParams, isFileSource, isUrlSource } from "../lib/helpers";
+import { AbstractRestClient } from "./AbstractRestClient";
+import { CallbackUrl, isFileSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   AsyncPrerecordedResponse,
@@ -9,9 +10,8 @@ import type {
   SyncPrerecordedResponse,
   UrlSource,
 } from "../lib/types";
-import { AbstractRestClient } from "./AbstractRestClient";
 
-export class PrerecordedClient extends AbstractRestClient {
+export class ListenRestClient extends AbstractRestClient {
   public namespace: string = "listen";
 
   async transcribeUrl(

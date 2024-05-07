@@ -1,5 +1,7 @@
 import { Headers as CrossFetchHeaders } from "cross-fetch";
-import {
+import { Readable } from "stream";
+import merge from "deepmerge";
+import type {
   DeepgramClientOptions,
   FileSource,
   PrerecordedSource,
@@ -9,8 +11,6 @@ import {
   LiveSchema,
   TranscriptionSchema,
 } from "./types";
-import { Readable } from "stream";
-import merge from "deepmerge";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");

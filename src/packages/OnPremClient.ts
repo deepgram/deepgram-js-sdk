@@ -1,3 +1,4 @@
+import { AbstractRestClient } from "./AbstractRestClient";
 import { isDeepgramError } from "../lib/errors";
 import type {
   CreateOnPremCredentialsSchema,
@@ -7,7 +8,6 @@ import type {
   MessageResponse,
   OnPremCredentialResponse,
 } from "../lib/types";
-import { AbstractRestClient } from "./AbstractRestClient";
 
 export class OnPremClient extends AbstractRestClient {
   public namespace: string = "onprem";

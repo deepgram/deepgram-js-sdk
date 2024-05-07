@@ -1,16 +1,16 @@
 import { AbstractClient } from "./AbstractClient";
-import { LiveClient } from "./LiveClient";
+import { ListenLiveClient } from "./ListenLiveClient";
 import { LiveSchema } from "../lib/types";
-import { PrerecordedClient } from "./PrerecordedClient";
+import { ListenRestClient } from "./ListenRestClient";
 
 export class ListenClient extends AbstractClient {
   public namespace: string = "listen";
 
   get prerecorded() {
-    return new PrerecordedClient(this.options);
+    return new ListenRestClient(this.options);
   }
 
   public live(transcriptionOptions: LiveSchema = {}, endpoint = ":version/listen") {
-    return new LiveClient(this.options, transcriptionOptions, endpoint);
+    return new ListenLiveClient(this.options, transcriptionOptions, endpoint);
   }
 }

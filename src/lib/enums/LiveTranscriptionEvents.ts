@@ -1,10 +1,21 @@
 export enum LiveTranscriptionEvents {
+  /**
+   * Built in socket events.
+   */
   Open = "open",
   Close = "close",
-  Transcript = "Results", // exact match to data type from API
-  Metadata = "Metadata", // exact match to data type from API
   Error = "error",
-  Warning = "warning",
-  UtteranceEnd = "UtteranceEnd", // exact match to data type from API
+
+  /**
+   * Message { type: string }
+   */
+  Transcript = "Results",
+  Metadata = "Metadata",
+  UtteranceEnd = "UtteranceEnd",
   SpeechStarted = "SpeechStarted",
+
+  /**
+   * Catch all for any other message event
+   */
+  Unhandled = "Unhandled",
 }

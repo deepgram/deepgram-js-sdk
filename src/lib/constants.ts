@@ -1,6 +1,6 @@
 import { convertProtocolToWs, isBrowser } from "./helpers";
-import { DefaultNamespaceOptions, DefaultClientOptions } from "./types/DeepgramClientOptions";
 import { version } from "./version";
+import type { DefaultNamespaceOptions, DefaultClientOptions } from "./types";
 
 export const NODE_VERSION = process.versions.node;
 
@@ -14,9 +14,25 @@ export const DEFAULT_URL = "https://api.deepgram.com";
 
 export const DEFAULT_GLOBAL_OPTIONS: Partial<DefaultNamespaceOptions> = {
   fetch: { options: { url: DEFAULT_URL, headers: DEFAULT_HEADERS } },
-  websocket: { options: { url: convertProtocolToWs(DEFAULT_URL) } },
+  websocket: {
+    options: { url: convertProtocolToWs(DEFAULT_URL), _nodeOnlyHeaders: DEFAULT_HEADERS },
+  },
 };
 
 export const DEFAULT_OPTIONS: DefaultClientOptions = {
   global: DEFAULT_GLOBAL_OPTIONS,
 };
+
+export enum SOCKET_STATES {
+  connecting = 0,
+  open = 1,
+  closing = 2,
+  closed = 3,
+}
+
+export enum CONNECTION_STATE {
+  Connecting = "connecting",
+  Open = "open",
+  Closing = "closing",
+  Closed = "closed",
+}
