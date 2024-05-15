@@ -4,30 +4,31 @@ const fs = require("fs");
 const transcribeUrl = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
+  console.log("Transcribing URL", "https://dpgr.am/spacewalk.wav");
   const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
     {
       url: "https://dpgr.am/spacewalk.wav",
     },
     {
-      model: "nova",
+      model: "nova-2",
     }
   );
 
-  if (error) throw error;
+  if (error) console.error(error);
   if (!error) console.dir(result, { depth: null });
 };
 
 const transcribeFile = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-    fs.readFileSync("./examples/nasa.mp4"),
-    {
-      model: "nova",
-    }
-  );
+  const file = fs.readFileSync("./examples/nasa.mp4");
 
-  if (error) throw error;
+  console.log("Transcribing file", file);
+  const { result, error } = await deepgram.listen.prerecorded.transcribeFile(file, {
+    model: "nova-2",
+  });
+
+  if (error) console.error(error);
   if (!error) console.dir(result, { depth: null });
 };
 
