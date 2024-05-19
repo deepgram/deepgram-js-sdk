@@ -36,7 +36,9 @@ export class ReadClient extends AbstractRestClient {
       }
 
       const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
-      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body);
+      const result: SyncAnalyzeResponse = await this.post(requestUrl, body).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -69,7 +71,9 @@ export class ReadClient extends AbstractRestClient {
       }
 
       const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
-      const result: SyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body);
+      const result: SyncAnalyzeResponse = await this.post(requestUrl, body).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -101,7 +105,9 @@ export class ReadClient extends AbstractRestClient {
         {},
         { ...options, callback: callback.toString() }
       );
-      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body);
+      const result: AsyncAnalyzeResponse = await this.post(requestUrl, body).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -133,9 +139,9 @@ export class ReadClient extends AbstractRestClient {
         {},
         { ...options, callback: callback.toString() }
       );
-      const result: AsyncAnalyzeResponse = await this.post(this.fetch as Fetch, requestUrl, body, {
-        "Content-Type": "deepgram/audio+video",
-      });
+      const result: AsyncAnalyzeResponse = await this.post(requestUrl, body, {
+        headers: { "Content-Type": "deepgram/audio+video" },
+      }).then((result) => result.json());
 
       return { result, error: null };
     } catch (error) {

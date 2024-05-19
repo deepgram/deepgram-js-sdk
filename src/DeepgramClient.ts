@@ -1,13 +1,16 @@
 import { DeepgramVersionError } from "./lib/errors";
-import { AbstractClient } from "./packages/AbstractClient";
-import { ListenClient } from "./packages/ListenClient";
-import { ManageClient } from "./packages/ManageClient";
-import { OnPremClient } from "./packages/OnPremClient";
-import { ReadClient } from "./packages/ReadClient";
-import { SpeakClient } from "./packages/SpeakClient";
+import {
+  AbstractClient,
+  ListenClient,
+  ManageClient,
+  ReadClient,
+  SelfHostedClient as OnPremClient,
+  SelfHostedClient,
+  SpeakClient,
+} from "./packages";
 
 /**
- * The DeepgramClient class provides access to various Deepgram API clients, including ListenClient, ManageClient, OnPremClient, ReadClient, and SpeakClient.
+ * The DeepgramClient class provides access to various Deepgram API clients, including ListenClient, ManageClient, SelfHostedClient, ReadClient, and SpeakClient.
  *
  * @see https://github.com/deepgram/deepgram-js-sdk
  */
@@ -20,8 +23,16 @@ export default class DeepgramClient extends AbstractClient {
     return new ManageClient(this.options);
   }
 
+  /**
+   * backwards compatibility for renaming onprem to selfhosted
+   * @deprecated
+   */
   get onprem(): OnPremClient {
-    return new OnPremClient(this.options);
+    return this.selfhosted;
+  }
+
+  get selfhosted(): SelfHostedClient {
+    return new SelfHostedClient(this.options);
   }
 
   get read(): ReadClient {
