@@ -15,7 +15,7 @@ const transcribeUrl = async () => {
   );
 
   if (error) console.error(error);
-  if (!error) console.dir(result, { depth: null });
+  if (!error) console.dir(result, { depth: 1 });
 };
 
 const transcribeFile = async () => {
@@ -29,7 +29,7 @@ const transcribeFile = async () => {
   });
 
   if (error) console.error(error);
-  if (!error) console.dir(result, { depth: null });
+  if (!error) console.dir(result, { depth: 1 });
 };
 
 transcribeUrl();

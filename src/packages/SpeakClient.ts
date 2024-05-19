@@ -1,6 +1,6 @@
-import { DeepgramError, DeepgramUnknownError, isDeepgramError } from "../lib/errors";
-import { appendSearchParams, isTextSource } from "../lib/helpers";
-import { Fetch, SpeakSchema, TextSource } from "../lib/types";
+import { DeepgramError, DeepgramUnknownError } from "../lib/errors";
+import { isTextSource } from "../lib/helpers";
+import { SpeakSchema, TextSource } from "../lib/types";
 import { AbstractRestClient } from "./AbstractRestClient";
 
 export class SpeakClient extends AbstractRestClient {
@@ -24,11 +24,15 @@ export class SpeakClient extends AbstractRestClient {
         throw new DeepgramError("Unknown transcription source type");
       }
 
-      const speakOptions: SpeakSchema = { ...{ model: "aura-asteria-en" }, ...options };
+      const requestUrl = this.getRequestUrl(
+        endpoint,
+        {},
+        { ...{ model: "aura-asteria-en" }, ...options }
+      );
+      this.result = await this.post(requestUrl, body, {
+        headers: { Accept: "audio/*", "Content-Type": "application/json" },
+      });
 
-      const url = new URL(endpoint, this.baseUrl);
-      appendSearchParams(url.searchParams, speakOptions);
-      this.result = await this._handleRawRequest(this.fetch as Fetch, "POST", url, {}, {}, body);
       return this;
     } catch (error) {
       throw error;

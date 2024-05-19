@@ -4,5 +4,7 @@ export { AbstractLiveClient } from "./AbstractLiveClient";
 export { ListenClient } from "./ListenClient";
 export { LiveClient } from "./LiveClient";
 export { ManageClient } from "./ManageClient";
-export { OnPremClient } from "./OnPremClient";
+export { SelfHostedClient } from "./SelfHostedClient";
 export { PrerecordedClient } from "./PrerecordedClient";
+export { ReadClient } from "./ReadClient";
+export { SpeakClient } from "./SpeakClient";

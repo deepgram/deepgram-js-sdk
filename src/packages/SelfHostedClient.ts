@@ -9,8 +9,8 @@ import type {
 } from "../lib/types";
 import { AbstractRestClient } from "./AbstractRestClient";
 
-export class OnPremClient extends AbstractRestClient {
-  public namespace: string = "onprem";
+export class SelfHostedClient extends AbstractRestClient {
+  public namespace: string = "selfhosted";
 
   /**
    * @see https://developers.deepgram.com/reference/list-credentials
@@ -21,7 +21,9 @@ export class OnPremClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<ListOnPremCredentialsResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: ListOnPremCredentialsResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: ListOnPremCredentialsResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -43,7 +45,9 @@ export class OnPremClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<OnPremCredentialResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, credentialsId });
-      const result: OnPremCredentialResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: OnPremCredentialResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -67,10 +71,8 @@ export class OnPremClient extends AbstractRestClient {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
       const body = JSON.stringify(options);
 
-      const result: OnPremCredentialResponse = await this.post(
-        this.fetch as Fetch,
-        requestUrl,
-        body
+      const result: OnPremCredentialResponse = await this.post(requestUrl, body).then((result) =>
+        result.json()
       );
 
       return { result, error: null };
@@ -93,7 +95,7 @@ export class OnPremClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, credentialsId });
-      const result: MessageResponse = await this.delete(this.fetch as Fetch, requestUrl);
+      const result: MessageResponse = await this.delete(requestUrl).then((result) => result.json());
 
       return { result, error: null };
     } catch (error) {

@@ -41,7 +41,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetTokenDetailsResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint);
-      const result: GetTokenDetailsResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetTokenDetailsResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -61,7 +63,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectsResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint);
-      const result: GetProjectsResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectsResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -82,7 +86,7 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: GetProjectResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectResponse = await this.get(requestUrl).then((result) => result.json());
 
       return { result, error: null };
     } catch (error) {
@@ -106,7 +110,9 @@ export class ManageClient extends AbstractRestClient {
       const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.patch(this.fetch as Fetch, requestUrl, body);
+      const result: MessageResponse = await this.patch(requestUrl, body).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -127,7 +133,7 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<VoidResponse> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      await this.delete(this.fetch as Fetch, requestUrl);
+      await this.delete(requestUrl);
 
       return { error: null };
     } catch (error) {
@@ -148,7 +154,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectKeysResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: GetProjectKeysResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectKeysResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -170,7 +178,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectKeyResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, keyId });
-      const result: GetProjectKeyResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectKeyResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -194,10 +204,8 @@ export class ManageClient extends AbstractRestClient {
       const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
       const body = JSON.stringify(options);
 
-      const result: CreateProjectKeyResponse = await this.post(
-        this.fetch as Fetch,
-        requestUrl,
-        body
+      const result: CreateProjectKeyResponse = await this.post(requestUrl, body).then((result) =>
+        result.json()
       );
 
       return { result, error: null };
@@ -220,7 +228,7 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<VoidResponse> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, keyId });
-      await this.delete(this.fetch as Fetch, requestUrl);
+      await this.delete(requestUrl);
 
       return { error: null };
     } catch (error) {
@@ -241,7 +249,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectMembersResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: GetProjectMembersResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectMembersResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -263,7 +273,7 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<VoidResponse> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, memberId });
-      await this.delete(this.fetch as Fetch, requestUrl);
+      await this.delete(requestUrl);
 
       return { error: null };
     } catch (error) {
@@ -285,9 +295,8 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectMemberScopesResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, memberId });
-      const result: GetProjectMemberScopesResponse = await this.get(
-        this.fetch as Fetch,
-        requestUrl
+      const result: GetProjectMemberScopesResponse = await this.get(requestUrl).then((result) =>
+        result.json()
       );
 
       return { result, error: null };
@@ -313,7 +322,9 @@ export class ManageClient extends AbstractRestClient {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, memberId }, options);
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.put(this.fetch as Fetch, requestUrl, body);
+      const result: MessageResponse = await this.put(requestUrl, body).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -334,7 +345,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectInvitesResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: GetProjectInvitesResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectInvitesResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -358,7 +371,9 @@ export class ManageClient extends AbstractRestClient {
       const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
       const body = JSON.stringify(options);
 
-      const result: MessageResponse = await this.post(this.fetch as Fetch, requestUrl, body);
+      const result: MessageResponse = await this.post(requestUrl, body).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -380,7 +395,7 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<VoidResponse> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, email });
-      await this.delete(this.fetch as Fetch, requestUrl);
+      await this.delete(requestUrl).then((result) => result.json());
 
       return { error: null };
     } catch (error) {
@@ -401,7 +416,7 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<MessageResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: MessageResponse = await this.delete(this.fetch as Fetch, requestUrl);
+      const result: MessageResponse = await this.delete(requestUrl).then((result) => result.json());
 
       return { result, error: null };
     } catch (error) {
@@ -423,9 +438,8 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectUsageRequestsResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
-      const result: GetProjectUsageRequestsResponse = await this.get(
-        this.fetch as Fetch,
-        requestUrl
+      const result: GetProjectUsageRequestsResponse = await this.get(requestUrl).then((result) =>
+        result.json()
       );
 
       return { result, error: null };
@@ -448,9 +462,8 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectUsageRequestResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, requestId });
-      const result: GetProjectUsageRequestResponse = await this.get(
-        this.fetch as Fetch,
-        requestUrl
+      const result: GetProjectUsageRequestResponse = await this.get(requestUrl).then((result) =>
+        result.json()
       );
 
       return { result, error: null };
@@ -473,9 +486,8 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectUsageSummaryResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
-      const result: GetProjectUsageSummaryResponse = await this.get(
-        this.fetch as Fetch,
-        requestUrl
+      const result: GetProjectUsageSummaryResponse = await this.get(requestUrl).then((result) =>
+        result.json()
       );
 
       return { result, error: null };
@@ -498,7 +510,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectUsageFieldsResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
-      const result: GetProjectUsageFieldsResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectUsageFieldsResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -519,7 +533,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectBalancesResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId });
-      const result: GetProjectBalancesResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectBalancesResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {
@@ -541,7 +557,9 @@ export class ManageClient extends AbstractRestClient {
   ): Promise<DeepgramResponse<GetProjectBalanceResponse>> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, balanceId });
-      const result: GetProjectBalanceResponse = await this.get(this.fetch as Fetch, requestUrl);
+      const result: GetProjectBalanceResponse = await this.get(requestUrl).then((result) =>
+        result.json()
+      );
 
       return { result, error: null };
     } catch (error) {

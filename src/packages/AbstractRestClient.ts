@@ -1,10 +1,11 @@
 import { DeepgramApiError, DeepgramError, DeepgramUnknownError } from "../lib/errors";
 import { Readable } from "stream";
 import { fetchWithAuth, resolveResponse } from "../lib/fetch";
-import type { Fetch, FetchParameters, RequestMethodType } from "../lib/types/Fetch";
+import type { Fetch, FetchOptions, RequestMethodType } from "../lib/types/Fetch";
 import { AbstractClient } from "./AbstractClient";
 import { DeepgramClientOptions } from "../lib/types";
 import { isBrowser } from "../lib/helpers";
+import merge from "deepmerge";
 
 export abstract class AbstractRestClient extends AbstractClient {
   protected fetch: Fetch;
@@ -49,113 +50,85 @@ export abstract class AbstractRestClient extends AbstractClient {
     }
   }
 
-  protected _getRequestParams(
+  protected _getRequestOptions(
     method: RequestMethodType,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters,
-    body?: string | Buffer | Readable
-  ) {
-    const params: { [k: string]: any } = {
-      ...this.options?.fetch,
-      method,
-      headers: { ...this.options?.fetch?.headers, ...headers } || {},
-    };
+    bodyOrOptions?: string | Buffer | Readable | FetchOptions,
+    options?: FetchOptions
+  ): FetchOptions {
+    let reqOptions: FetchOptions = { method };
 
-    if (method === "GET") {
-      return params;
+    if (method === "GET" || method === "DELETE") {
+      reqOptions = { ...reqOptions, ...(bodyOrOptions as FetchOptions) };
+    } else {
+      reqOptions = {
+        duplex: "half",
+        body: bodyOrOptions as BodyInit,
+        ...reqOptions,
+        ...options,
+      };
     }
 
-    params.body = body;
-    params.duplex = "half";
-
-    return { ...params, ...parameters };
+    return merge(this.namespaceOptions.fetch.options, reqOptions);
   }
 
   protected async _handleRequest(
-    fetcher: Fetch,
+    method: "GET" | "DELETE",
+    url: URL,
+    options?: FetchOptions
+  ): Promise<Response>;
+  protected async _handleRequest(
+    method: "POST" | "PUT" | "PATCH",
+    url: URL,
+    body: string | Buffer | Readable,
+    options?: FetchOptions
+  ): Promise<Response>;
+  protected async _handleRequest(
     method: RequestMethodType,
-    url: string | URL,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters,
-    body?: string | Buffer | Readable
-  ): Promise<any> {
+    url: URL,
+    bodyOrOptions?: string | Buffer | Readable | FetchOptions,
+    options?: FetchOptions
+  ): Promise<Response> {
     return new Promise((resolve, reject) => {
-      fetcher(url, this._getRequestParams(method, headers, parameters, body))
+      const fetcher = this.fetch;
+
+      fetcher(url, this._getRequestOptions(method, bodyOrOptions, options))
         .then((result) => {
           if (!result.ok) throw result;
-
-          return result.json();
+          resolve(result);
         })
-        .then((data) => resolve(data))
         .catch((error) => this._handleError(error, reject));
     });
   }
 
-  protected async _handleRawRequest(
-    fetcher: Fetch,
-    method: RequestMethodType,
-    url: string | URL,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters,
-    body?: string | Buffer | Readable
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
-      fetcher(url, this._getRequestParams(method, headers, parameters, body))
-        .then((result) => {
-          if (!result.ok) throw result;
-
-          return result;
-        })
-        .then((data) => resolve(data))
-        .catch((error) => this._handleError(error, reject));
-    });
-  }
-
-  protected async get(
-    fetcher: Fetch,
-    url: string | URL,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters
-  ): Promise<any> {
-    return this._handleRequest(fetcher, "GET", url, headers, parameters);
+  protected async get(url: URL, options?: FetchOptions): Promise<any> {
+    return this._handleRequest("GET", url, options);
   }
 
   protected async post(
-    fetcher: Fetch,
-    url: string | URL,
+    url: URL,
     body: string | Buffer | Readable,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters
+    options?: FetchOptions
   ): Promise<any> {
-    return this._handleRequest(fetcher, "POST", url, headers, parameters, body);
+    return this._handleRequest("POST", url, body, options);
   }
 
   protected async put(
-    fetcher: Fetch,
-    url: string | URL,
+    url: URL,
     body: string | Buffer | Readable,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters
+    options?: FetchOptions
   ): Promise<any> {
-    return this._handleRequest(fetcher, "PUT", url, headers, parameters, body);
+    return this._handleRequest("PUT", url, body, options);
   }
 
   protected async patch(
-    fetcher: Fetch,
-    url: string | URL,
+    url: URL,
     body: string | Buffer | Readable,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters
+    options?: FetchOptions
   ): Promise<any> {
-    return this._handleRequest(fetcher, "PATCH", url, headers, parameters, body);
+    return this._handleRequest("PATCH", url, body, options);
   }
 
-  protected async delete(
-    fetcher: Fetch,
-    url: string | URL,
-    headers?: Record<string, string>,
-    parameters?: FetchParameters
-  ): Promise<any> {
-    return this._handleRequest(fetcher, "DELETE", url, headers, parameters);
+  protected async delete(url: URL, options?: FetchOptions): Promise<any> {
+    return this._handleRequest("DELETE", url, options);
   }
 }
