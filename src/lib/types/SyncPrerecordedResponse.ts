@@ -90,6 +90,7 @@ interface Paragraph {
   start: number;
   end: number;
   num_words: number;
+  speaker?: number;
 }
 
 interface ParagraphGroup {
