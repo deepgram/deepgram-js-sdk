@@ -14,11 +14,12 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [1. Global Defaults](#1-global-defaults)
   - [2. Namespace-specific Configurations](#2-namespace-specific-configurations)
   - [3. Transport Options](#3-transport-options)
-  - [Change the API url used for all SDK methods](#change-the-api-url-used-for-all-sdk-methods)
-  - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
-  - [Override fetch transmitter](#override-fetch-transmitter)
-  - [Proxy requests in the browser](#proxy-requests-in-the-browser)
-  - [Set custom headers for fetch](#set-custom-headers-for-fetch)
+  - [4. Examples](#4-examples)
+    - [Change the API url used for all SDK methods](#change-the-api-url-used-for-all-sdk-methods)
+    - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
+    - [Override fetch transmitter](#override-fetch-transmitter)
+    - [Proxy requests in the browser](#proxy-requests-in-the-browser)
+    - [Set custom headers for fetch](#set-custom-headers-for-fetch)
 - [Transcription (Synchronous)](#transcription-synchronous)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
@@ -158,7 +159,9 @@ The SDK supports scoped configurtion. You'll be able to configure various aspect
 
 This configuration system enables robust customization where defaults provide a foundation, but every aspect of the client's interaction with the API can be finely controlled and tailored to specific needs through namespace-specific settings. This enhances the maintainability and scalability of the application by localizing configurations to their relevant contexts.
 
-## Change the API url used for all SDK methods
+## 4. Examples
+
+### Change the API url used for all SDK methods
 
 Useful for using different API environments (for e.g. beta).
 
@@ -172,7 +175,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 });
 ```
 
-## Change the API url used for transcription only
+### Change the API url used for transcription only
 
 Useful for on-prem installations. Only affects requests to `/listen` endpoints.
 
@@ -186,7 +189,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 });
 ```
 
-## Override fetch transmitter
+### Override fetch transmitter
 
 Useful for providing a custom http client.
 
@@ -204,7 +207,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 });
 ```
 
-## Proxy requests in the browser
+### Proxy requests in the browser
 
 This SDK now works in the browser. If you'd like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you'll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:
 
@@ -222,7 +225,7 @@ Your proxy service should replace the Authorization header with `Authorization: 
 
 Check out our example Node-based proxy here: [Deepgram Node Proxy](https://github.com/deepgram-devs/deepgram-node-proxy).
 
-## Set custom headers for fetch
+### Set custom headers for fetch
 
 Useful for many things.
 
@@ -635,7 +638,7 @@ const { result, error } = await deepgram.onprem.deleteCredentials(projectId, cre
 
 Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
 
-We strictly follow semver, and will not introduce breaking changes to the publicly documented interfaces of the SDK. Use internal and undocumented interfaces without pinning your version, at your own risk.
+We strictly follow semver, and will not introduce breaking changes to the publicly documented interfaces of the SDK. **Use internal and undocumented interfaces without pinning your version, at your own risk.**
 
 # Development and Contributing
 
