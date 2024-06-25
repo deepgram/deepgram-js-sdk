@@ -3,7 +3,7 @@ import { createClient } from "../src";
 import { faker } from "@faker-js/faker";
 import DeepgramClient from "../src/DeepgramClient";
 
-describe("making manage requests", () => {
+describe("making manage REST requests", () => {
   let deepgram: DeepgramClient;
 
   beforeEach(() => {

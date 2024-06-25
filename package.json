@@ -47,8 +47,8 @@
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
     "test": "mocha -r ts-node/register test/*test.ts test/**/*test.ts --inspect --exit",
     "test:coverage": "nyc --reporter=lcovonly --reporter=text --reporter=text-summary npm run test",
-    "docs": "typedoc --entryPoints src/index.ts --out docs/v2 --includes src/**/*.ts",
-    "docs:json": "typedoc --entryPoints src/index.ts --includes src/**/*.ts --json docs/v2/spec.json --excludeExternals"
+    "docs": "typedoc --entryPoints src/index.ts --out docs/ --includes src/packages/**/*.ts   --emit none",
+    "docs:json": "typedoc --entryPoints src/index.ts --includes src/packages/**/*.ts --json docs/spec.json   --emit none"
   },
   "dependencies": {
     "@deepgram/captions": "^1.1.1",

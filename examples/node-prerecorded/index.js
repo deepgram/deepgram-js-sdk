@@ -21,7 +21,7 @@ const transcribeUrl = async () => {
 const transcribeFile = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const file = fs.readFileSync("./examples/nasa.mp4");
+  const file = fs.readFileSync("./examples/spacewalk.wav");
 
   console.log("Transcribing file", file);
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(file, {
