@@ -16,12 +16,34 @@
 
       console.log("Deepgram Instance: ", _deepgram);
 
-      (async () => {
-        const { result, error } = await _deepgram.manage.getProjects();
+      const transcribeUrl = async () => {
+        const { result, error } = await _deepgram.listen.prerecorded.transcribeUrl(
+          {
+            url: "https://dpgr.am/spacewalk.wav",
+          },
+          {
+            model: "nova",
+          }
+        );
 
-        console.log(result, error);
-      })();
+        if (error) throw error;
+        if (!error) console.dir(result, { depth: null });
+      };
 
+      const transcribeFile = async () => {
+        const { result, error } = await _deepgram.listen.prerecorded.transcribeFile(
+          fs.readFileSync("./examples/nasa.mp4"),
+          {
+            model: "nova",
+          }
+        );
+
+        if (error) throw error;
+        if (!error) console.dir(result, { depth: null });
+      };
+
+      transcribeUrl();
+      transcribeFile();
       // ...
     </script>
   </head>

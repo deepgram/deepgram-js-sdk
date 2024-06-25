@@ -1,6 +1,6 @@
-import DeepgramClient from "./DeepgramClient";
-import { DeepgramVersionError } from "./lib/errors";
 import { DeepgramClientOptions, IKeyFactory } from "./lib/types/DeepgramClientOptions";
+import { DeepgramVersionError } from "./lib/errors";
+import DeepgramClient from "./DeepgramClient";
 
 /**
  * This class is deprecated and should not be used. It throws a `DeepgramVersionError` when instantiated.
@@ -20,13 +20,10 @@ class Deepgram {
  * @param {DeepgramClientArgs} args - Arguments to pass to the Deepgram client constructor.
  * @returns A new Deepgram client instance.
  */
-// Constructor overloads
 function createClient(): DeepgramClient;
 function createClient(key?: string | IKeyFactory): DeepgramClient;
 function createClient(options?: DeepgramClientOptions): DeepgramClient;
 function createClient(key?: string | IKeyFactory, options?: DeepgramClientOptions): DeepgramClient;
-
-// Constructor implementation
 function createClient(
   keyOrOptions?: string | IKeyFactory | DeepgramClientOptions,
   options?: DeepgramClientOptions

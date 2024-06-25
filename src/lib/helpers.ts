@@ -1,4 +1,3 @@
-import { Headers as CrossFetchHeaders } from "cross-fetch";
 import {
   DeepgramClientOptions,
   FileSource,
@@ -9,6 +8,7 @@ import {
   LiveSchema,
   TranscriptionSchema,
 } from "./types";
+import { Headers as CrossFetchHeaders } from "cross-fetch";
 import { Readable } from "stream";
 import merge from "deepmerge";
 
@@ -86,7 +86,7 @@ export class CallbackUrl extends URL {
 }
 
 export const convertProtocolToWs = (url: string) => {
-  const convert = (string: string) => string.toLowerCase().replace(/(http)(s)?/gi, "ws$2");
+  const convert = (string: string) => string.toLowerCase().replace(/^http/, "ws");
 
   return convert(url);
 };

@@ -25,7 +25,7 @@ export default class DeepgramClient extends AbstractClient {
 
   /**
    * backwards compatibility for renaming onprem to selfhosted
-   * @deprecated
+   * @deprecated use selfhosted() instead
    */
   get onprem(): OnPremClient {
     return this.selfhosted;
