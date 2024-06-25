@@ -3,7 +3,7 @@ import { createClient } from "../src";
 import { faker } from "@faker-js/faker";
 import DeepgramClient from "../src/DeepgramClient";
 
-describe("making onprem requests", () => {
+describe("making self-hosted REST requests", () => {
   let deepgram: DeepgramClient;
 
   beforeEach(() => {
@@ -17,16 +17,16 @@ describe("making onprem requests", () => {
     expect(deepgram).is.instanceOf(DeepgramClient);
   });
 
-  it("should list onprem credentials", async () => {
-    const { result, error } = await deepgram.onprem.listCredentials(faker.string.uuid());
+  it("should list selfhosted credentials", async () => {
+    const { result, error } = await deepgram.selfhosted.listCredentials(faker.string.uuid());
 
     assert.isNull(error);
     assert.isNotNull(result);
     assert.containsAllDeepKeys(result, ["distribution_credentials"]);
   });
 
-  it("should get onprem credentials", async () => {
-    const { result, error } = await deepgram.onprem.getCredentials(
+  it("should get selfhosted credentials", async () => {
+    const { result, error } = await deepgram.selfhosted.getCredentials(
       faker.string.uuid(),
       faker.string.uuid()
     );
@@ -36,8 +36,8 @@ describe("making onprem requests", () => {
     assert.containsAllDeepKeys(result, ["member"]);
   });
 
-  it("should create onprem credentials", async () => {
-    const { result, error } = await deepgram.onprem.createCredentials(faker.string.uuid(), {
+  it("should create selfhosted credentials", async () => {
+    const { result, error } = await deepgram.selfhosted.createCredentials(faker.string.uuid(), {
       comment: faker.lorem.paragraph(),
       scopes: [faker.lorem.word()],
       provider: faker.lorem.word(),
@@ -48,8 +48,8 @@ describe("making onprem requests", () => {
     assert.containsAllDeepKeys(result, ["member"]);
   });
 
-  it("should delete onprem credentials", async () => {
-    const { result, error } = await deepgram.onprem.deleteCredentials(
+  it("should delete selfhosted credentials", async () => {
+    const { result, error } = await deepgram.selfhosted.deleteCredentials(
       faker.string.uuid(),
       faker.string.uuid()
     );

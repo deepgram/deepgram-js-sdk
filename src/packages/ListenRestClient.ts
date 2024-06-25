@@ -1,4 +1,4 @@
-import { CallbackUrl, appendSearchParams, isFileSource, isUrlSource } from "../lib/helpers";
+import { CallbackUrl, isFileSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   AsyncPrerecordedResponse,
@@ -11,9 +11,28 @@ import type {
 } from "../lib/types";
 import { AbstractRestClient } from "./AbstractRestClient";
 
-export class PrerecordedClient extends AbstractRestClient {
+/**
+ * The `ListenRestClient` class extends the `AbstractRestClient` class and provides methods for transcribing audio from URLs or files using the Deepgram API.
+ *
+ * The `transcribeUrl` method is used to transcribe audio from a URL synchronously. It takes a `UrlSource` object as the source, an optional `PrerecordedSchema` object as options, and an optional endpoint string. It returns a `DeepgramResponse` object containing the transcription result or an error.
+ *
+ * The `transcribeFile` method is used to transcribe audio from a file synchronously. It takes a `FileSource` object as the source, an optional `PrerecordedSchema` object as options, and an optional endpoint string. It returns a `DeepgramResponse` object containing the transcription result or an error.
+ *
+ * The `transcribeUrlCallback` method is used to transcribe audio from a URL asynchronously. It takes a `UrlSource` object as the source, a `CallbackUrl` object as the callback, an optional `PrerecordedSchema` object as options, and an optional endpoint string. It returns a `DeepgramResponse` object containing the transcription result or an error.
+ *
+ * The `transcribeFileCallback` method is used to transcribe audio from a file asynchronously. It takes a `FileSource` object as the source, a `CallbackUrl` object as the callback, an optional `PrerecordedSchema` object as options, and an optional endpoint string. It returns a `DeepgramResponse` object containing the transcription result or an error.
+ */
+export class ListenRestClient extends AbstractRestClient {
   public namespace: string = "listen";
 
+  /**
+   * Transcribes audio from a URL synchronously.
+   *
+   * @param source - The URL source object containing the audio URL to transcribe.
+   * @param options - An optional `PrerecordedSchema` object containing additional options for the transcription.
+   * @param endpoint - An optional endpoint string to use for the transcription request.
+   * @returns A `DeepgramResponse` object containing the transcription result or an error.
+   */
   async transcribeUrl(
     source: UrlSource,
     options?: PrerecordedSchema,
@@ -49,6 +68,14 @@ export class PrerecordedClient extends AbstractRestClient {
     }
   }
 
+  /**
+   * Transcribes audio from a file asynchronously.
+   *
+   * @param source - The file source object containing the audio file to transcribe.
+   * @param options - An optional `PrerecordedSchema` object containing additional options for the transcription.
+   * @param endpoint - An optional endpoint string to use for the transcription request.
+   * @returns A `DeepgramResponse` object containing the transcription result or an error.
+   */
   async transcribeFile(
     source: FileSource,
     options?: PrerecordedSchema,
@@ -71,7 +98,7 @@ export class PrerecordedClient extends AbstractRestClient {
 
       const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
       const result: SyncPrerecordedResponse = await this.post(requestUrl, body, {
-        headers: { "Content-Type": "audio/*" },
+        headers: { "Content-Type": "deepgram/audio+video" },
       }).then((result) => result.json());
 
       return { result, error: null };
@@ -84,6 +111,15 @@ export class PrerecordedClient extends AbstractRestClient {
     }
   }
 
+  /**
+   * Transcribes audio from a URL asynchronously.
+   *
+   * @param source - The URL source object containing the audio file to transcribe.
+   * @param callback - The callback URL to receive the transcription result.
+   * @param options - An optional `PrerecordedSchema` object containing additional options for the transcription.
+   * @param endpoint - An optional endpoint string to use for the transcription request.
+   * @returns A `DeepgramResponse` object containing the transcription result or an error.
+   */
   async transcribeUrlCallback(
     source: UrlSource,
     callback: CallbackUrl,
@@ -118,6 +154,15 @@ export class PrerecordedClient extends AbstractRestClient {
     }
   }
 
+  /**
+   * Transcribes audio from a file asynchronously.
+   *
+   * @param source - The file source object containing the audio file to transcribe.
+   * @param callback - The callback URL to receive the transcription result.
+   * @param options - An optional `PrerecordedSchema` object containing additional options for the transcription.
+   * @param endpoint - An optional endpoint string to use for the transcription request.
+   * @returns A `DeepgramResponse` object containing the transcription result or an error.
+   */
   async transcribeFileCallback(
     source: FileSource,
     callback: CallbackUrl,
@@ -152,3 +197,5 @@ export class PrerecordedClient extends AbstractRestClient {
     }
   }
 }
+
+export { ListenRestClient as PrerecordedClient };
