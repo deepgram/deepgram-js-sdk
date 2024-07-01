@@ -98,7 +98,7 @@ export abstract class AbstractRestClient extends AbstractClient {
       };
     }
 
-    return merge(this.namespaceOptions.fetch.options, reqOptions);
+    return merge(this.namespaceOptions.fetch.options, reqOptions, { clone: false });
   }
 
   /**
