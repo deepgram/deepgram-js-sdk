@@ -1,0 +1,478 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@deepgram/sdk</title><meta name="description" content="Documentation for @deepgram/sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@deepgram/sdk</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1> @deepgram/sdk </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#deepgram-javascript-sdk" id="deepgram-javascript-sdk" style="color: inherit; text-decoration: none;">
+  <h1>Deepgram JavaScript SDK</h1>
+</a>
+<p><a href="https://discord.gg/xWRaCDBtW4"><img src="https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat" alt="Discord"></a> <a href="https://github.com/deepgram/node-sdk/actions/workflows/CI.yml"><img src="https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg" alt="CI"></a> <a href="https://www.npmjs.com/package/@deepgram/sdk"><img src="https://img.shields.io/npm/v/@deepgram/sdk" alt="npm (scoped)"></a> <a href="CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded" alt="Contributor Covenant"></a></p>
+<p>Official JavaScript SDK for <a href="https://www.deepgram.com/">Deepgram</a>. Power your apps with world-class speech and Language AI models.</p>
+<ul>
+<li><a href="#migrating-from-v2">Migrating from v2</a></li>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#umd">UMD</a></li>
+<li><a href="#esm">ESM</a></li>
+</ul>
+</li>
+<li><a href="#initialization">Initialization</a><ul>
+<li><a href="#getting-an-api-key">Getting an API Key</a></li>
+</ul>
+</li>
+<li><a href="#scoped-configuration">Scoped Configuration</a><ul>
+<li><a href="#rest-requests-in-the-browser">Rest requests in the browser</a></li>
+</ul>
+</li>
+<li><a href="#transcription-synchronous">Transcription (Synchronous)</a><ul>
+<li><a href="#remote-files">Remote Files</a></li>
+<li><a href="#local-files">Local Files</a></li>
+</ul>
+</li>
+<li><a href="#transcription-asynchronous--callbacks">Transcription (Asynchronous / Callbacks)</a><ul>
+<li><a href="#remote-files-1">Remote Files</a></li>
+<li><a href="#local-files-1">Local Files</a></li>
+</ul>
+</li>
+<li><a href="#transcription-live--streaming">Transcription (Live / Streaming)</a><ul>
+<li><a href="#live-audio">Live Audio</a></li>
+</ul>
+</li>
+<li><a href="#transcribing-to-captions">Transcribing to captions</a></li>
+<li><a href="#projects">Projects</a><ul>
+<li><a href="#get-projects">Get Projects</a></li>
+<li><a href="#get-project">Get Project</a></li>
+<li><a href="#update-project">Update Project</a></li>
+<li><a href="#delete-project">Delete Project</a></li>
+</ul>
+</li>
+<li><a href="#keys">Keys</a><ul>
+<li><a href="#list-keys">List Keys</a></li>
+<li><a href="#get-key">Get Key</a></li>
+<li><a href="#create-key">Create Key</a></li>
+<li><a href="#delete-key">Delete Key</a></li>
+</ul>
+</li>
+<li><a href="#members">Members</a><ul>
+<li><a href="#get-members">Get Members</a></li>
+<li><a href="#remove-member">Remove Member</a></li>
+</ul>
+</li>
+<li><a href="#scopes">Scopes</a><ul>
+<li><a href="#get-member-scopes">Get Member Scopes</a></li>
+<li><a href="#update-scope">Update Scope</a></li>
+</ul>
+</li>
+<li><a href="#invitations">Invitations</a><ul>
+<li><a href="#list-invites">List Invites</a></li>
+<li><a href="#send-invite">Send Invite</a></li>
+<li><a href="#delete-invite">Delete Invite</a></li>
+<li><a href="#leave-project">Leave Project</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#get-all-requests">Get All Requests</a></li>
+<li><a href="#get-request">Get Request</a></li>
+<li><a href="#summarize-usage">Summarize Usage</a></li>
+<li><a href="#get-fields">Get Fields</a></li>
+</ul>
+</li>
+<li><a href="#billing">Billing</a><ul>
+<li><a href="#get-all-balances">Get All Balances</a></li>
+<li><a href="#get-balance">Get Balance</a></li>
+</ul>
+</li>
+<li><a href="#on-prem-apis">On-Prem APIs</a><ul>
+<li><a href="#list-on-prem-credentials">List On-Prem credentials</a></li>
+<li><a href="#get-on-prem-credentials">Get On-Prem credentials</a></li>
+<li><a href="#create-on-prem-credentials">Create On-Prem credentials</a></li>
+<li><a href="#delete-on-prem-credentials">Delete On-Prem credentials</a></li>
+</ul>
+</li>
+<li><a href="#backwards-compatibility">Backwards Compatibility</a></li>
+<li><a href="#development-and-contributing">Development and Contributing</a><ul>
+<li><a href="#debugging-and-making-changes-locally">Debugging and making changes locally</a></li>
+</ul>
+</li>
+<li><a href="#getting-help">Getting Help</a></li>
+</ul>
+
+<a href="#migrating-from-v2" id="migrating-from-v2" style="color: inherit; text-decoration: none;">
+  <h1>Migrating from v2</h1>
+</a>
+<p>We have published <a href="https://developers.deepgram.com/docs/js-sdk-v2-to-v3-migration-guide">a migration guide on our docs</a>, showing how to move from v2 to v3.</p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h1>Installation</h1>
+</a>
+<p>You can install this SDK directly from <a href="https://www.npmjs.com/package/@deepgram/sdk">npm</a>.</p>
+<pre><code class="language-bash"><span class="hl-0">npm install @deepgram/sdk</span><br/><span class="hl-1"># - or -</span><br/><span class="hl-1"># yarn add @deepgram/sdk</span>
+</code></pre>
+
+<a href="#umd" id="umd" style="color: inherit; text-decoration: none;">
+  <h2>UMD</h2>
+</a>
+<p>You can now use plain <code>&lt;script&gt;</code>s to import deepgram from CDNs, like:</p>
+<pre><code class="language-html"><span class="hl-2">&lt;</span><span class="hl-3">script</span><span class="hl-4"> </span><span class="hl-5">src</span><span class="hl-4">=</span><span class="hl-6">&quot;https://cdn.jsdelivr.net/npm/@deepgram/sdk&quot;</span><span class="hl-2">&gt;&lt;/</span><span class="hl-3">script</span><span class="hl-2">&gt;</span>
+</code></pre>
+<p>or even:</p>
+<pre><code class="language-html"><span class="hl-2">&lt;</span><span class="hl-3">script</span><span class="hl-4"> </span><span class="hl-5">src</span><span class="hl-4">=</span><span class="hl-6">&quot;https://unpkg.com/@deepgram/sdk&quot;</span><span class="hl-2">&gt;&lt;/</span><span class="hl-3">script</span><span class="hl-2">&gt;</span>
+</code></pre>
+<p>Then you can use it from a global deepgram variable:</p>
+<pre><code class="language-html"><span class="hl-2">&lt;</span><span class="hl-3">script</span><span class="hl-2">&gt;</span><br/><span class="hl-4">  </span><span class="hl-7">const</span><span class="hl-4"> { </span><span class="hl-8">createClient</span><span class="hl-4"> } </span><span class="hl-0">=</span><span class="hl-4"> </span><span class="hl-9">deepgram</span><span class="hl-4">;</span><br/><span class="hl-4">  </span><span class="hl-7">const</span><span class="hl-4"> </span><span class="hl-8">_deepgram</span><span class="hl-4"> </span><span class="hl-0">=</span><span class="hl-4"> </span><span class="hl-10">createClient</span><span class="hl-4">(</span><span class="hl-11">&quot;deepgram-api-key&quot;</span><span class="hl-4">);</span><br/><br/><span class="hl-4">  </span><span class="hl-9">console</span><span class="hl-4">.</span><span class="hl-10">log</span><span class="hl-4">(</span><span class="hl-11">&quot;Deepgram Instance: &quot;</span><span class="hl-4">, </span><span class="hl-9">_deepgram</span><span class="hl-4">);</span><br/><span class="hl-4">  </span><span class="hl-1">// ...</span><br/><span class="hl-2">&lt;/</span><span class="hl-3">script</span><span class="hl-2">&gt;</span>
+</code></pre>
+
+<a href="#esm" id="esm" style="color: inherit; text-decoration: none;">
+  <h2>ESM</h2>
+</a>
+<p>You can now use type=&quot;module&quot; <code>&lt;script&gt;</code>s to import deepgram from CDNs, like:</p>
+<pre><code class="language-html"><span class="hl-2">&lt;</span><span class="hl-3">script</span><span class="hl-4"> </span><span class="hl-5">type</span><span class="hl-4">=</span><span class="hl-6">&quot;module&quot;</span><span class="hl-2">&gt;</span><br/><span class="hl-4">  </span><span class="hl-12">import</span><span class="hl-4"> { </span><span class="hl-9">createClient</span><span class="hl-4"> } </span><span class="hl-12">from</span><span class="hl-4"> </span><span class="hl-11">&quot;https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm&quot;</span><span class="hl-4">;</span><br/><span class="hl-4">  </span><span class="hl-7">const</span><span class="hl-4"> </span><span class="hl-8">deepgram</span><span class="hl-4"> </span><span class="hl-0">=</span><span class="hl-4"> </span><span class="hl-10">createClient</span><span class="hl-4">(</span><span class="hl-11">&quot;deepgram-api-key&quot;</span><span class="hl-4">);</span><br/><br/><span class="hl-4">  </span><span class="hl-9">console</span><span class="hl-4">.</span><span class="hl-10">log</span><span class="hl-4">(</span><span class="hl-11">&quot;Deepgram Instance: &quot;</span><span class="hl-4">, </span><span class="hl-9">deepgram</span><span class="hl-4">);</span><br/><span class="hl-4">  </span><span class="hl-1">// ...</span><br/><span class="hl-2">&lt;/</span><span class="hl-3">script</span><span class="hl-2">&gt;</span>
+</code></pre>
+
+<a href="#initialization" id="initialization" style="color: inherit; text-decoration: none;">
+  <h1>Initialization</h1>
+</a>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">createClient</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/sdk&quot;</span><span class="hl-0">;</span><br/><span class="hl-1">// - or -</span><br/><span class="hl-1">// const { createClient } = require(&quot;@deepgram/sdk&quot;);</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> </span><span class="hl-8">deepgram</span><span class="hl-0"> = </span><span class="hl-10">createClient</span><span class="hl-0">(</span><span class="hl-8">DEEPGRAM_API_KEY</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#getting-an-api-key" id="getting-an-api-key" style="color: inherit; text-decoration: none;">
+  <h2>Getting an API Key</h2>
+</a>
+<p>🔑 To access the Deepgram API you will need a <a href="https://console.deepgram.com/signup?jump=keys">free Deepgram API Key</a>.</p>
+
+<a href="#scoped-configuration" id="scoped-configuration" style="color: inherit; text-decoration: none;">
+  <h1>Scoped Configuration</h1>
+</a>
+<p>A new feature is scoped configuration. You&#39;ll be able to configure various aspects of the SDK from the initialization.</p>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">createClient</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/sdk&quot;</span><span class="hl-0">;</span><br/><span class="hl-1">// - or -</span><br/><span class="hl-1">// const { createClient } = require(&quot;@deepgram/sdk&quot;);</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> </span><span class="hl-8">deepgram</span><span class="hl-0"> = </span><span class="hl-10">createClient</span><span class="hl-0">(</span><span class="hl-8">DEEPGRAM_API_KEY</span><span class="hl-0">, {</span><br/><span class="hl-0">  </span><span class="hl-9">global:</span><span class="hl-0"> { </span><span class="hl-9">url:</span><span class="hl-0"> </span><span class="hl-11">&quot;https://api.beta.deepgram.com&quot;</span><span class="hl-0"> },</span><br/><span class="hl-0">  </span><span class="hl-1">// restProxy: { url: &quot;http://localhost:8080&quot; }</span><br/><span class="hl-0">});</span>
+</code></pre>
+
+<a href="#rest-requests-in-the-browser" id="rest-requests-in-the-browser" style="color: inherit; text-decoration: none;">
+  <h2>Rest requests in the browser</h2>
+</a>
+<p>This SDK now works in the browser. If you&#39;d like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you&#39;ll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:</p>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">createClient</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/sdk&quot;</span><span class="hl-0">;</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> </span><span class="hl-8">deepgram</span><span class="hl-0"> = </span><span class="hl-10">createClient</span><span class="hl-0">(</span><span class="hl-11">&quot;proxy&quot;</span><span class="hl-0">, {</span><br/><span class="hl-0">  </span><span class="hl-9">restProxy:</span><span class="hl-0"> { </span><span class="hl-9">url:</span><span class="hl-0"> </span><span class="hl-11">&quot;http://localhost:8080&quot;</span><span class="hl-0"> },</span><br/><span class="hl-0">});</span>
+</code></pre>
+<blockquote>
+<p>Important: You must pass <code>&quot;proxy&quot;</code> as your API key, and use the proxy to set the <code>Authorization</code> header to your Deepgram API key.</p>
+</blockquote>
+<p>Your proxy service should replace the Authorization header with <code>Authorization: token &lt;DEEPGRAM_API_KEY&gt;</code> and return results verbatim to the SDK.</p>
+<p>Check out our example Node-based proxy here: <a href="https://github.com/deepgram-devs/deepgram-node-proxy">Deepgram Node Proxy</a>.</p>
+
+<a href="#transcription-synchronous" id="transcription-synchronous" style="color: inherit; text-decoration: none;">
+  <h1>Transcription (Synchronous)</h1>
+</a>
+
+<a href="#remote-files" id="remote-files" style="color: inherit; text-decoration: none;">
+  <h2>Remote Files</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeUrl</span><span class="hl-0">(</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">url:</span><span class="hl-0"> </span><span class="hl-11">&quot;https://dpgr.am/spacewalk.wav&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/pre-recorded">See our API reference for more info</a>.</p>
+
+<a href="#local-files" id="local-files" style="color: inherit; text-decoration: none;">
+  <h2>Local Files</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeFile</span><span class="hl-0">(</span><br/><span class="hl-0">  </span><span class="hl-9">fs</span><span class="hl-0">.</span><span class="hl-10">createReadStream</span><span class="hl-0">(</span><span class="hl-11">&quot;./examples/spacewalk.wav&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p>or</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeFile</span><span class="hl-0">(</span><br/><span class="hl-0">  </span><span class="hl-9">fs</span><span class="hl-0">.</span><span class="hl-10">readFileSync</span><span class="hl-0">(</span><span class="hl-11">&quot;./examples/spacewalk.wav&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/pre-recorded">See our API reference for more info</a>.</p>
+
+<a href="#transcription-asynchronous--callbacks" id="transcription-asynchronous--callbacks" style="color: inherit; text-decoration: none;">
+  <h1>Transcription (Asynchronous / Callbacks)</h1>
+</a>
+
+<a href="#remote-files-1" id="remote-files-1" style="color: inherit; text-decoration: none;">
+  <h2>Remote Files</h2>
+</a>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">CallbackUrl</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/sdk&quot;</span><span class="hl-0">;</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeUrlCallback</span><span class="hl-0">(</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">url:</span><span class="hl-0"> </span><span class="hl-11">&quot;https://dpgr.am/spacewalk.wav&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  </span><span class="hl-7">new</span><span class="hl-0"> </span><span class="hl-10">CallbackUrl</span><span class="hl-0">(</span><span class="hl-11">&quot;http://callback/endpoint&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/pre-recorded">See our API reference for more info</a>.</p>
+
+<a href="#local-files-1" id="local-files-1" style="color: inherit; text-decoration: none;">
+  <h2>Local Files</h2>
+</a>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">CallbackUrl</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/sdk&quot;</span><span class="hl-0">;</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeFileCallback</span><span class="hl-0">(</span><br/><span class="hl-0">  </span><span class="hl-9">fs</span><span class="hl-0">.</span><span class="hl-10">createReadStream</span><span class="hl-0">(</span><span class="hl-11">&quot;./examples/spacewalk.wav&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  </span><span class="hl-7">new</span><span class="hl-0"> </span><span class="hl-10">CallbackUrl</span><span class="hl-0">(</span><span class="hl-11">&quot;http://callback/endpoint&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p>or</p>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">CallbackUrl</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/sdk&quot;</span><span class="hl-0">;</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeFileCallback</span><span class="hl-0">(</span><br/><span class="hl-0">  </span><span class="hl-9">fs</span><span class="hl-0">.</span><span class="hl-10">readFileSync</span><span class="hl-0">(</span><span class="hl-11">&quot;./examples/spacewalk.wav&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  </span><span class="hl-7">new</span><span class="hl-0"> </span><span class="hl-10">CallbackUrl</span><span class="hl-0">(</span><span class="hl-11">&quot;http://callback/endpoint&quot;</span><span class="hl-0">),</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/pre-recorded">See our API reference for more info</a>.</p>
+
+<a href="#transcription-live--streaming" id="transcription-live--streaming" style="color: inherit; text-decoration: none;">
+  <h1>Transcription (Live / Streaming)</h1>
+</a>
+
+<a href="#live-audio" id="live-audio" style="color: inherit; text-decoration: none;">
+  <h2>Live Audio</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> </span><span class="hl-8">dgConnection</span><span class="hl-0"> = </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-10">live</span><span class="hl-0">({ </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0"> });</span><br/><br/><span class="hl-9">dgConnection</span><span class="hl-0">.</span><span class="hl-10">on</span><span class="hl-0">(</span><span class="hl-9">LiveTranscriptionEvents</span><span class="hl-0">.</span><span class="hl-9">Open</span><span class="hl-0">, () </span><span class="hl-7">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-9">dgConnection</span><span class="hl-0">.</span><span class="hl-10">on</span><span class="hl-0">(</span><span class="hl-9">LiveTranscriptionEvents</span><span class="hl-0">.</span><span class="hl-9">Transcript</span><span class="hl-0">, (</span><span class="hl-9">data</span><span class="hl-0">) </span><span class="hl-7">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">console</span><span class="hl-0">.</span><span class="hl-10">log</span><span class="hl-0">(</span><span class="hl-9">data</span><span class="hl-0">);</span><br/><span class="hl-0">  });</span><br/><br/><span class="hl-0">  </span><span class="hl-9">source</span><span class="hl-0">.</span><span class="hl-10">addListener</span><span class="hl-0">(</span><span class="hl-11">&quot;got-some-audio&quot;</span><span class="hl-0">, </span><span class="hl-7">async</span><span class="hl-0"> (</span><span class="hl-9">event</span><span class="hl-0">) </span><span class="hl-7">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">dgConnection</span><span class="hl-0">.</span><span class="hl-10">send</span><span class="hl-0">(</span><span class="hl-9">event</span><span class="hl-0">.</span><span class="hl-9">raw_audio_data</span><span class="hl-0">);</span><br/><span class="hl-0">  });</span><br/><span class="hl-0">});</span>
+</code></pre>
+<p>To see an example, <a href="https://github.com/deepgram-devs/node-live-example">check out our Node.js example</a> or our <a href="https://github.com/deepgram-devs/js-live-example">Browser example</a>.</p>
+<p><a href="https://developers.deepgram.com/reference/streaming">See our API reference for more info</a>.</p>
+
+<a href="#transcribing-to-captions" id="transcribing-to-captions" style="color: inherit; text-decoration: none;">
+  <h1>Transcribing to captions</h1>
+</a>
+<pre><code class="language-js"><span class="hl-12">import</span><span class="hl-0"> { </span><span class="hl-9">webvtt</span><span class="hl-0"> </span><span class="hl-1">/* , srt */</span><span class="hl-0"> } </span><span class="hl-12">from</span><span class="hl-0"> </span><span class="hl-11">&quot;@deepgram/captions&quot;</span><span class="hl-0">;</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">listen</span><span class="hl-0">.</span><span class="hl-9">prerecorded</span><span class="hl-0">.</span><span class="hl-10">transcribeUrl</span><span class="hl-0">(</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">url:</span><span class="hl-0"> </span><span class="hl-11">&quot;https://dpgr.am/spacewalk.wav&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  },</span><br/><span class="hl-0">  {</span><br/><span class="hl-0">    </span><span class="hl-9">model:</span><span class="hl-0"> </span><span class="hl-11">&quot;nova&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">  }</span><br/><span class="hl-0">);</span><br/><br/><span class="hl-7">const</span><span class="hl-0"> </span><span class="hl-8">vttOutput</span><span class="hl-0"> = </span><span class="hl-10">webvtt</span><span class="hl-0">(</span><span class="hl-9">result</span><span class="hl-0">);</span><br/><span class="hl-1">// const srtOutput = srt(result);</span>
+</code></pre>
+<p><a href="https://github.com/deepgram/deepgram-node-captions">See our standalone captions library for more information</a>.</p>
+
+<a href="#projects" id="projects" style="color: inherit; text-decoration: none;">
+  <h1>Projects</h1>
+</a>
+
+<a href="#get-projects" id="get-projects" style="color: inherit; text-decoration: none;">
+  <h2>Get Projects</h2>
+</a>
+<p>Returns all projects accessible by the API key.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjects</span><span class="hl-0">();</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-projects">See our API reference for more info</a>.</p>
+
+<a href="#get-project" id="get-project" style="color: inherit; text-decoration: none;">
+  <h2>Get Project</h2>
+</a>
+<p>Retrieves a specific project based on the provided project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProject</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-project">See our API reference for more info</a>.</p>
+
+<a href="#update-project" id="update-project" style="color: inherit; text-decoration: none;">
+  <h2>Update Project</h2>
+</a>
+<p>Update a project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">updateProject</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">options</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/update-project">See our API reference for more info</a>.</p>
+
+<a href="#delete-project" id="delete-project" style="color: inherit; text-decoration: none;">
+  <h2>Delete Project</h2>
+</a>
+<p>Delete a project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">deleteProject</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/delete-project">See our API reference for more info</a>.</p>
+
+<a href="#keys" id="keys" style="color: inherit; text-decoration: none;">
+  <h1>Keys</h1>
+</a>
+
+<a href="#list-keys" id="list-keys" style="color: inherit; text-decoration: none;">
+  <h2>List Keys</h2>
+</a>
+<p>Retrieves all keys associated with the provided project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectKeys</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/list-keys">See our API reference for more info</a>.</p>
+
+<a href="#get-key" id="get-key" style="color: inherit; text-decoration: none;">
+  <h2>Get Key</h2>
+</a>
+<p>Retrieves a specific key associated with the provided project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectKey</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">projectKeyId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-key">See our API reference for more info</a>.</p>
+
+<a href="#create-key" id="create-key" style="color: inherit; text-decoration: none;">
+  <h2>Create Key</h2>
+</a>
+<p>Creates an API key with the provided scopes.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">createProjectKey</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">options</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/create-key">See our API reference for more info</a>.</p>
+
+<a href="#delete-key" id="delete-key" style="color: inherit; text-decoration: none;">
+  <h2>Delete Key</h2>
+</a>
+<p>Deletes a specific key associated with the provided project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">deleteProjectKey</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">projectKeyId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/delete-key">See our API reference for more info</a>.</p>
+
+<a href="#members" id="members" style="color: inherit; text-decoration: none;">
+  <h1>Members</h1>
+</a>
+
+<a href="#get-members" id="get-members" style="color: inherit; text-decoration: none;">
+  <h2>Get Members</h2>
+</a>
+<p>Retrieves account objects for all of the accounts in the specified project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectMembers</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-members">See our API reference for more info</a>.</p>
+
+<a href="#remove-member" id="remove-member" style="color: inherit; text-decoration: none;">
+  <h2>Remove Member</h2>
+</a>
+<p>Removes member account for specified member_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">removeProjectMember</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">projectMemberId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/remove-member">See our API reference for more info</a>.</p>
+
+<a href="#scopes" id="scopes" style="color: inherit; text-decoration: none;">
+  <h1>Scopes</h1>
+</a>
+
+<a href="#get-member-scopes" id="get-member-scopes" style="color: inherit; text-decoration: none;">
+  <h2>Get Member Scopes</h2>
+</a>
+<p>Retrieves scopes of the specified member in the specified project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectMemberScopes</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">projectMemberId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-member-scopes">See our API reference for more info</a>.</p>
+
+<a href="#update-scope" id="update-scope" style="color: inherit; text-decoration: none;">
+  <h2>Update Scope</h2>
+</a>
+<p>Updates the scope for the specified member in the specified project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">updateProjectMemberScope</span><span class="hl-0">(</span><br/><span class="hl-0">  </span><span class="hl-9">projectId</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-9">projectMemberId</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-9">options</span><br/><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/update-scope">See our API reference for more info</a>.</p>
+
+<a href="#invitations" id="invitations" style="color: inherit; text-decoration: none;">
+  <h1>Invitations</h1>
+</a>
+
+<a href="#list-invites" id="list-invites" style="color: inherit; text-decoration: none;">
+  <h2>List Invites</h2>
+</a>
+<p>Retrieves all invitations associated with the provided project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectInvites</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/list-invites">See our API reference for more info</a>.</p>
+
+<a href="#send-invite" id="send-invite" style="color: inherit; text-decoration: none;">
+  <h2>Send Invite</h2>
+</a>
+<p>Sends an invitation to the provided email address.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">sendProjectInvite</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">options</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/send-invites">See our API reference for more info</a>.</p>
+
+<a href="#delete-invite" id="delete-invite" style="color: inherit; text-decoration: none;">
+  <h2>Delete Invite</h2>
+</a>
+<p>Removes the specified invitation from the project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">deleteProjectInvite</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">email</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/delete-invite">See our API reference for more info</a>.</p>
+
+<a href="#leave-project" id="leave-project" style="color: inherit; text-decoration: none;">
+  <h2>Leave Project</h2>
+</a>
+<p>Removes the authenticated user from the project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">leaveProject</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/leave-project">See our API reference for more info</a>.</p>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h1>Usage</h1>
+</a>
+
+<a href="#get-all-requests" id="get-all-requests" style="color: inherit; text-decoration: none;">
+  <h2>Get All Requests</h2>
+</a>
+<p>Retrieves all requests associated with the provided project_id based on the provided options.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectUsageRequest</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">requestId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-all-requests">See our API reference for more info</a>.</p>
+
+<a href="#get-request" id="get-request" style="color: inherit; text-decoration: none;">
+  <h2>Get Request</h2>
+</a>
+<p>Retrieves a specific request associated with the provided project_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectUsageRequest</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">requestId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-request">See our API reference for more info</a>.</p>
+
+<a href="#summarize-usage" id="summarize-usage" style="color: inherit; text-decoration: none;">
+  <h2>Summarize Usage</h2>
+</a>
+<p>Retrieves usage associated with the provided project_id based on the provided options.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectUsageSummary</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">options</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/summarize-usage">See our API reference for more info</a>.</p>
+
+<a href="#get-fields" id="get-fields" style="color: inherit; text-decoration: none;">
+  <h2>Get Fields</h2>
+</a>
+<p>Lists the features, models, tags, languages, and processing method used for requests in the specified project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectUsageFields</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">options</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-fields">See our API reference for more info</a>.</p>
+
+<a href="#billing" id="billing" style="color: inherit; text-decoration: none;">
+  <h1>Billing</h1>
+</a>
+
+<a href="#get-all-balances" id="get-all-balances" style="color: inherit; text-decoration: none;">
+  <h2>Get All Balances</h2>
+</a>
+<p>Retrieves the list of balance info for the specified project.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectBalances</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-all-balances">See our API reference for more info</a>.</p>
+
+<a href="#get-balance" id="get-balance" style="color: inherit; text-decoration: none;">
+  <h2>Get Balance</h2>
+</a>
+<p>Retrieves the balance info for the specified project and balance_id.</p>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">manage</span><span class="hl-0">.</span><span class="hl-10">getProjectBalance</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">balanceId</span><span class="hl-0">);</span>
+</code></pre>
+<p><a href="https://developers.deepgram.com/reference/get-balance">See our API reference for more info</a>.</p>
+
+<a href="#on-prem-apis" id="on-prem-apis" style="color: inherit; text-decoration: none;">
+  <h1>On-Prem APIs</h1>
+</a>
+
+<a href="#list-on-prem-credentials" id="list-on-prem-credentials" style="color: inherit; text-decoration: none;">
+  <h2>List On-Prem credentials</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">onprem</span><span class="hl-0">.</span><span class="hl-10">listCredentials</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#get-on-prem-credentials" id="get-on-prem-credentials" style="color: inherit; text-decoration: none;">
+  <h2>Get On-Prem credentials</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">onprem</span><span class="hl-0">.</span><span class="hl-10">getCredentials</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">credentialId</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#create-on-prem-credentials" id="create-on-prem-credentials" style="color: inherit; text-decoration: none;">
+  <h2>Create On-Prem credentials</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">onprem</span><span class="hl-0">.</span><span class="hl-10">createCredentials</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">options</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#delete-on-prem-credentials" id="delete-on-prem-credentials" style="color: inherit; text-decoration: none;">
+  <h2>Delete On-Prem credentials</h2>
+</a>
+<pre><code class="language-js"><span class="hl-7">const</span><span class="hl-0"> { </span><span class="hl-8">result</span><span class="hl-0">, </span><span class="hl-8">error</span><span class="hl-0"> } = </span><span class="hl-12">await</span><span class="hl-0"> </span><span class="hl-9">deepgram</span><span class="hl-0">.</span><span class="hl-9">onprem</span><span class="hl-0">.</span><span class="hl-10">deleteCredentials</span><span class="hl-0">(</span><span class="hl-9">projectId</span><span class="hl-0">, </span><span class="hl-9">credentialId</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#backwards-compatibility" id="backwards-compatibility" style="color: inherit; text-decoration: none;">
+  <h1>Backwards Compatibility</h1>
+</a>
+<p>Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.</p>
+
+<a href="#development-and-contributing" id="development-and-contributing" style="color: inherit; text-decoration: none;">
+  <h1>Development and Contributing</h1>
+</a>
+<p>Interested in contributing? We ❤️ pull requests!</p>
+<p>To make sure our community is safe for all, be sure to review and agree to our
+<a href="./CODE_OF_CONDUCT.md">Code of Conduct</a>. Then see the
+<a href="./CONTRIBUTING.md">Contribution</a> guidelines for more information.</p>
+
+<a href="#debugging-and-making-changes-locally" id="debugging-and-making-changes-locally" style="color: inherit; text-decoration: none;">
+  <h2>Debugging and making changes locally</h2>
+</a>
+<p>If you want to make local changes to the SDK and run the <a href="./examples/"><code>examples/</code></a>, you&#39;ll need to <code>npm run build</code> first, to ensure that your changes are included in the examples that are running.</p>
+
+<a href="#getting-help" id="getting-help" style="color: inherit; text-decoration: none;">
+  <h1>Getting Help</h1>
+</a>
+<p>We love to hear from you so if you have questions, comments or find a bug in the
+project, let us know! You can either:</p>
+<ul>
+<li><a href="https://github.com/deepgram/deepgram-node-sdk/issues/new">Open an issue in this repository</a></li>
+<li><a href="https://discord.gg/xWRaCDBtW4">Join the Deepgram Discord Community</a></li>
+<li><a href="https://github.com/orgs/deepgram/discussions">Join the Deepgram Github Discussions Community</a></li>
+</ul>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Modules</a></li><li class=" tsd-kind-module"><a href="modules/index.html">index</a></li><li class=" tsd-kind-module"><a href="modules/lib_errors.html">lib/errors</a></li><li class=" tsd-kind-module"><a href="modules/lib_fetch.html">lib/fetch</a></li><li class=" tsd-kind-module"><a href="modules/lib_helpers.html">lib/helpers</a></li><li class=" tsd-kind-module"><a href="modules/lib_version.html">lib/version</a></li><li class=" tsd-kind-module"><a href="modules/packages.html">packages</a></li><li class=" tsd-kind-module"><a href="modules/packages_AbstractClient.html">packages/<wbr/>Abstract<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_AbstractRestfulClient.html">packages/<wbr/>Abstract<wbr/>Restful<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_AbstractWsClient.html">packages/<wbr/>Abstract<wbr/>Ws<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_ListenClient.html">packages/<wbr/>Listen<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_LiveClient.html">packages/<wbr/>Live<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_ManageClient.html">packages/<wbr/>Manage<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_OnPremClient.html">packages/<wbr/>On<wbr/>Prem<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_PrerecordedClient.html">packages/<wbr/>Prerecorded<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_ReadClient.html">packages/<wbr/>Read<wbr/>Client</a></li><li class=" tsd-kind-module"><a href="modules/packages_SpeakClient.html">packages/<wbr/>Speak<wbr/>Client</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li><li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li><li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
