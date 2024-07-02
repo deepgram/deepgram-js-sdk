@@ -1,3 +1,3 @@
-export interface UpdateProjectMemberScopeSchema {
+export interface UpdateProjectMemberScopeSchema extends Record<string, unknown> {
   scope: string;
 }

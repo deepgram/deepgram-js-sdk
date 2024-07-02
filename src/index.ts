@@ -1,9 +1,12 @@
-import DeepgramClient from "./DeepgramClient";
+import { DeepgramClientOptions, IKeyFactory } from "./lib/types/DeepgramClientOptions";
 import { DeepgramVersionError } from "./lib/errors";
-import type { DeepgramClientOptions } from "./lib/types";
+import DeepgramClient from "./DeepgramClient";
 
 /**
- * Major version fallback error
+ * This class is deprecated and should not be used. It throws a `DeepgramVersionError` when instantiated.
+ *
+ * @deprecated
+ * @see https://dpgr.am/js-v3
  */
 class Deepgram {
   constructor(protected apiKey: string, protected apiUrl?: string, protected requireSSL?: boolean) {
@@ -12,11 +15,33 @@ class Deepgram {
 }
 
 /**
- * Creates a new Deepgram Client.
+ * Creates a new Deepgram client instance.
+ *
+ * @param {DeepgramClientArgs} args - Arguments to pass to the Deepgram client constructor.
+ * @returns A new Deepgram client instance.
  */
-const createClient = (apiKey: string, options: DeepgramClientOptions = {}): DeepgramClient => {
-  return new DeepgramClient(apiKey, options);
-};
+function createClient(): DeepgramClient;
+function createClient(key?: string | IKeyFactory): DeepgramClient;
+function createClient(options?: DeepgramClientOptions): DeepgramClient;
+function createClient(key?: string | IKeyFactory, options?: DeepgramClientOptions): DeepgramClient;
+function createClient(
+  keyOrOptions?: string | IKeyFactory | DeepgramClientOptions,
+  options?: DeepgramClientOptions
+): DeepgramClient {
+  let resolvedOptions: DeepgramClientOptions = {};
+
+  if (typeof keyOrOptions === "string" || typeof keyOrOptions === "function") {
+    if (typeof options === "object") {
+      resolvedOptions = options;
+    }
+
+    resolvedOptions.key = keyOrOptions;
+  } else if (typeof keyOrOptions === "object") {
+    resolvedOptions = keyOrOptions;
+  }
+
+  return new DeepgramClient(resolvedOptions);
+}
 
 export { createClient, DeepgramClient, Deepgram };
 

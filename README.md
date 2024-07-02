@@ -4,14 +4,24 @@
 
 Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
 
-- [Migrating from v2](#migrating-from-v2)
+- [Migrating from earlier versions](#migrating-from-earlier-versions)
+  - [V2 to V3](#v2-to-v3)
+  - [V3.\* to V3.4](#v3-to-v34)
 - [Installation](#installation)
   - [UMD](#umd)
   - [ESM](#esm)
 - [Initialization](#initialization)
   - [Getting an API Key](#getting-an-api-key)
 - [Scoped Configuration](#scoped-configuration)
-  - [Rest requests in the browser](#rest-requests-in-the-browser)
+  - [1. Global Defaults](#1-global-defaults)
+  - [2. Namespace-specific Configurations](#2-namespace-specific-configurations)
+  - [3. Transport Options](#3-transport-options)
+  - [4. Examples](#4-examples)
+    - [Change the API url used for all SDK methods](#change-the-api-url-used-for-all-sdk-methods)
+    - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
+    - [Override fetch transmitter](#override-fetch-transmitter)
+    - [Proxy requests in the browser](#proxy-requests-in-the-browser)
+    - [Set custom headers for fetch](#set-custom-headers-for-fetch)
 - [Transcription (Synchronous)](#transcription-synchronous)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
@@ -21,6 +31,8 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Transcription (Live / Streaming)](#transcription-live--streaming)
   - [Live Audio](#live-audio)
 - [Transcribing to captions](#transcribing-to-captions)
+- [Text to Speech](#text-to-speech)
+- [Text Intelligence](#text-intelligence)
 - [Projects](#projects)
   - [Get Projects](#get-projects)
   - [Get Project](#get-project)
@@ -55,14 +67,20 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Get On-Prem credentials](#get-on-prem-credentials)
   - [Create On-Prem credentials](#create-on-prem-credentials)
   - [Delete On-Prem credentials](#delete-on-prem-credentials)
--  [Backwards Compatibility](#backwards-compatibility)
+- [Backwards Compatibility](#backwards-compatibility)
 - [Development and Contributing](#development-and-contributing)
   - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
 
-# Migrating from v2
+# Migrating from earlier versions
+
+## V2 to V3
 
 We have published [a migration guide on our docs](https://developers.deepgram.com/docs/js-sdk-v2-to-v3-migration-guide), showing how to move from v2 to v3.
+
+## V3.\* to V3.4
+
+We recommend using only documented interfaces, as we strictly follow semantic versioning (semver) and breaking changes may occur for undocumented interfaces. To ensure compatibility, consider pinning your versions if you need to use undocumented interfaces.
 
 # Installation
 
@@ -130,7 +148,32 @@ const deepgram = createClient(DEEPGRAM_API_KEY);
 
 # Scoped Configuration
 
-A new feature is scoped configuration. You'll be able to configure various aspects of the SDK from the initialization.
+The SDK supports scoped configuration. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here’s how the namespace configuration works:
+
+## 1. Global Defaults
+
+- The `global` namespace serves as the foundational configuration applicable across all other namespaces unless overridden.
+- Includes general settings like URL and headers applicable for all API calls.
+- If no specific configurations are provided for other namespaces, the `global` defaults are used.
+
+## 2. Namespace-specific Configurations
+
+- Each namespace (`listen`, `manage`, `onprem`, `read`, `speak`) can have its specific configurations which override the `global` settings within their respective scopes.
+- Allows for detailed control over different parts of the application interacting with various Deepgram API endpoints.
+
+## 3. Transport Options
+
+- Configurations for both `fetch` and `websocket` can be specified under each namespace, allowing different transport mechanisms for different operations.
+- For example, the `fetch` configuration can have its own URL and proxy settings distinct from the `websocket`.
+- The generic interfaces define a structure for transport options which include a client (like a `fetch` or `WebSocket` instance) and associated options (like headers, URL, proxy settings).
+
+This configuration system enables robust customization where defaults provide a foundation, but every aspect of the client's interaction with the API can be finely controlled and tailored to specific needs through namespace-specific settings. This enhances the maintainability and scalability of the application by localizing configurations to their relevant contexts.
+
+## 4. Examples
+
+### Change the API url used for all SDK methods
+
+Useful for using different API environments (for e.g. beta).
 
 ```js
 import { createClient } from "@deepgram/sdk";
@@ -138,12 +181,43 @@ import { createClient } from "@deepgram/sdk";
 // const { createClient } = require("@deepgram/sdk");
 
 const deepgram = createClient(DEEPGRAM_API_KEY, {
-  global: { url: "https://api.beta.deepgram.com" },
-  // restProxy: { url: "http://localhost:8080" }
+  global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } },
 });
 ```
 
-## Rest requests in the browser
+### Change the API url used for transcription only
+
+Useful for on-prem installations. Only affects requests to `/listen` endpoints.
+
+```js
+import { createClient } from "@deepgram/sdk";
+// - or -
+// const { createClient } = require("@deepgram/sdk");
+
+const deepgram = createClient(DEEPGRAM_API_KEY, {
+  listen: { fetch: { options: { url: "http://localhost:8080" } } },
+});
+```
+
+### Override fetch transmitter
+
+Useful for providing a custom http client.
+
+```js
+import { createClient } from "@deepgram/sdk";
+// - or -
+// const { createClient } = require("@deepgram/sdk");
+
+const yourFetch = async () => {
+  return Response("...etc");
+};
+
+const deepgram = createClient(DEEPGRAM_API_KEY, {
+  global: { fetch: { client: yourFetch } },
+});
+```
+
+### Proxy requests in the browser
 
 This SDK now works in the browser. If you'd like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you'll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:
 
@@ -151,7 +225,7 @@ This SDK now works in the browser. If you'd like to make REST-based requests (pr
 import { createClient } from "@deepgram/sdk";
 
 const deepgram = createClient("proxy", {
-  restProxy: { url: "http://localhost:8080" },
+  global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
 });
 ```
 
@@ -160,6 +234,18 @@ const deepgram = createClient("proxy", {
 Your proxy service should replace the Authorization header with `Authorization: token <DEEPGRAM_API_KEY>` and return results verbatim to the SDK.
 
 Check out our example Node-based proxy here: [Deepgram Node Proxy](https://github.com/deepgram-devs/deepgram-node-proxy).
+
+### Set custom headers for fetch
+
+Useful for many things.
+
+```js
+import { createClient } from "@deepgram/sdk";
+
+const deepgram = createClient("proxy", {
+  global: { fetch: { options: { headers: { "x-custom-header": "foo" } } } },
+});
+```
 
 # Transcription (Synchronous)
 
@@ -293,6 +379,38 @@ const vttOutput = webvtt(result);
 ```
 
 [See our standalone captions library for more information](https://github.com/deepgram/deepgram-node-captions).
+
+# Text to Speech
+
+```js
+const { result } = await deepgram.speak.request({ text }, { model: "aura-asteria-en" });
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api).
+
+# Text Intelligence
+
+```js
+const text = `The history of the phrase 'The quick brown fox jumps over the
+lazy dog'. The earliest known appearance of the phrase was in The Boston
+Journal. In an article titled "Current Notes" in the February 9, 1885, edition,
+the phrase is mentioned as a good practice sentence for writing students: "A
+favorite copy set by writing teachers for their pupils is the following,
+because it contains every letter of the alphabet: 'A quick brown fox jumps over
+the lazy dog.'" Dozens of other newspapers published the phrase over the
+next few months, all using the version of the sentence starting with "A" rather
+than "The". The earliest known use of the phrase starting with "The" is from
+the 1888 book Illustrative Shorthand by Linda Bronson.[3] The modern form
+(starting with "The") became more common even though it is slightly longer than
+the original (starting with "A").`;
+
+const { result, error } = await deepgram.read.analyzeText(
+  { text },
+  { language: "en", topics: true, sentiment: true }
+);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/analyze-text).
 
 # Projects
 
@@ -561,6 +679,8 @@ const { result, error } = await deepgram.onprem.deleteCredentials(projectId, cre
 # Backwards Compatibility
 
 Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
+
+We strictly follow semver, and will not introduce breaking changes to the publicly documented interfaces of the SDK. **Use internal and undocumented interfaces without pinning your version, at your own risk.**
 
 # Development and Contributing
 

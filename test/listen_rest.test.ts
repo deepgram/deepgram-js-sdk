@@ -11,7 +11,7 @@ const urlSource: UrlSource = {
   url: faker.internet.url({ appendSlash: false }) + "/nasa.wav",
 };
 
-describe("making listen requests", () => {
+describe("making listen REST requests", () => {
   let deepgram: DeepgramClient;
 
   beforeEach(() => {

@@ -1,4 +1,3 @@
-import { Headers as CrossFetchHeaders } from "cross-fetch";
 import {
   DeepgramClientOptions,
   FileSource,
@@ -6,7 +5,10 @@ import {
   UrlSource,
   TextSource,
   AnalyzeSource,
+  LiveSchema,
+  TranscriptionSchema,
 } from "./types";
+import { Headers as CrossFetchHeaders } from "cross-fetch";
 import { Readable } from "stream";
 import merge from "deepmerge";
 
@@ -14,14 +16,12 @@ export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
 
-export const isBrowser = () => typeof window !== "undefined";
-export const isServer = () => typeof process !== "undefined";
+export function isBrowser() {
+  return typeof window !== "undefined" && typeof window.document !== "undefined";
+}
 
-export function applySettingDefaults(
-  options: DeepgramClientOptions,
-  defaults: DeepgramClientOptions
-): DeepgramClientOptions {
-  return merge(defaults, options);
+export function applyDefaults<O, S>(options: Partial<O> = {}, subordinate: Partial<S> = {}): S {
+  return merge(subordinate, options);
 }
 
 export function appendSearchParams(
@@ -83,5 +83,94 @@ const isReadStreamSource = (providedSource: PrerecordedSource): providedSource i
 };
 
 export class CallbackUrl extends URL {
-  private callbackUrl = true;
+  public callbackUrl = true;
 }
+
+export const convertProtocolToWs = (url: string) => {
+  const convert = (string: string) => string.toLowerCase().replace(/^http/, "ws");
+
+  return convert(url);
+};
+
+export const buildRequestUrl = (
+  endpoint: string,
+  baseUrl: string | URL,
+  transcriptionOptions: LiveSchema | TranscriptionSchema
+): URL => {
+  const url = new URL(endpoint, baseUrl);
+  appendSearchParams(url.searchParams, transcriptionOptions);
+
+  return url;
+};
+
+export function isLiveSchema(arg: any): arg is LiveSchema {
+  return arg && typeof arg.interim_results !== "undefined";
+}
+
+export function isDeepgramClientOptions(arg: any): arg is DeepgramClientOptions {
+  return arg && typeof arg.global !== "undefined";
+}
+
+export const convertLegacyOptions = (optionsArg: DeepgramClientOptions): DeepgramClientOptions => {
+  const newOptions: DeepgramClientOptions = {};
+
+  if (optionsArg._experimentalCustomFetch) {
+    newOptions.global = {
+      fetch: {
+        client: optionsArg._experimentalCustomFetch,
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  if (optionsArg.restProxy?.url) {
+    newOptions.global = {
+      fetch: {
+        options: {
+          proxy: {
+            url: optionsArg.restProxy?.url,
+          },
+        },
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  if (optionsArg.global?.url) {
+    newOptions.global = {
+      fetch: {
+        options: {
+          url: optionsArg.global.url,
+        },
+      },
+      websocket: {
+        options: {
+          url: optionsArg.global.url,
+        },
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  if (optionsArg.global?.headers) {
+    newOptions.global = {
+      fetch: {
+        options: {
+          headers: optionsArg.global?.headers,
+        },
+      },
+      websocket: {
+        options: {
+          _nodeOnlyHeaders: optionsArg.global?.headers,
+        },
+      },
+    };
+  }
+
+  optionsArg = merge(optionsArg, newOptions);
+
+  return optionsArg;
+};

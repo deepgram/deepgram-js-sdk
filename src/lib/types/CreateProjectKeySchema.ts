@@ -12,5 +12,4 @@ interface CommonOptions extends Record<string, unknown> {
   comment: string;
   scopes: string[];
   tags?: string[];
-  [key: string]: unknown;
 }

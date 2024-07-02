@@ -1,2 +1,2 @@
-export { LiveConnectionState } from "./LiveConnectionState";
-export { LiveTranscriptionEvents } from "./LiveTranscriptionEvents";
+export * from "./LiveConnectionState";
+export * from "./LiveTranscriptionEvents";
