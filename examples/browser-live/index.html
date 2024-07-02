@@ -4,22 +4,105 @@
     <script src="../../dist/umd/deepgram.js"></script>
     <script>
       const { createClient } = deepgram;
-      const _deepgram = createClient("deepgram-api-key", {
-        global: {
-          fetch: {
-            options: {
-              url: "https://api.mock.deepgram.com",
-            },
-          },
-        },
-      });
+      const _deepgram = createClient("deepgram-api-key");
 
       console.log("Deepgram Instance: ", _deepgram);
 
       (async () => {
-        const { result, error } = await _deepgram.manage.getProjects();
+        const url = "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
 
-        console.log(result, error);
+        // We will collect the is_final=true messages here so we can use them when the person finishes speaking
+        let is_finals = [];
+
+        const connection = _deepgram.listen.live({
+          model: "nova-2",
+          language: "en-US",
+          // Apply smart formatting to the output
+          smart_format: true,
+          // To get UtteranceEnd, the following must be set:
+          interim_results: true,
+          utterance_end_ms: 1000,
+          vad_events: true,
+          // Time in milliseconds of silence to wait for before finalizing speech
+          endpointing: 300,
+        });
+
+        connection.on("open", () => {
+          connection.on("close", () => {
+            console.log("Connection closed.");
+          });
+
+          connection.on("Metadata", (data) => {
+            console.log(`Deepgram Metadata: ${data}`);
+          });
+
+          connection.on("Results", (data) => {
+            const sentence = data.channel.alternatives[0].transcript;
+
+            // Ignore empty transcripts
+            if (sentence.length == 0) {
+              return;
+            }
+            if (data.is_final) {
+              // We need to collect these and concatenate them together when we get a speech_final=true
+              // See docs: https://developers.deepgram.com/docs/understand-endpointing-interim-results
+              is_finals.push(sentence);
+
+              // Speech final means we have detected sufficent silence to consider this end of speech
+              // Speech final is the lowest latency result as it triggers as soon an the endpointing value has triggered
+              if (data.speech_final) {
+                const utterance = is_finals.join(" ");
+                console.log(`Speech Final: ${utterance}`);
+                is_finals = [];
+              } else {
+                // These are useful if you need real time captioning and update what the Interim Results produced
+                console.log(`Is Final: ${sentence}`);
+              }
+            } else {
+              // These are useful if you need real time captioning of what is being spoken
+              console.log(`Interim Results: ${sentence}`);
+            }
+          });
+
+          connection.on("UtteranceEnd", (data) => {
+            const utterance = is_finals.join(" ");
+            console.log(`Deepgram UtteranceEnd: ${utterance}`);
+            is_finals = [];
+          });
+
+          connection.on("SpeechStarted", (data) => {
+            // console.log("Deepgram SpeechStarted");
+          });
+
+          connection.on("error", (err) => {
+            console.error(err);
+          });
+
+          fetch(url)
+            .then((response) => response.body)
+            .then((body) => {
+              const reader = body.getReader();
+              function read() {
+                reader
+                  .read()
+                  .then(({ done, value }) => {
+                    if (done) {
+                      console.log("Stream complete");
+                      return;
+                    }
+                    connection.send(value);
+                    read();
+                  })
+                  .catch((error) => {
+                    console.error("Stream read error:", error);
+                  });
+              }
+              read();
+            })
+            .catch((error) => {
+              console.error("Fetch error:", error);
+            });
+        });
       })();
 
       // ...
