@@ -2,12 +2,22 @@ import { convertProtocolToWs, isBrowser } from "./helpers";
 import { version } from "./version";
 import type { DefaultNamespaceOptions, DefaultClientOptions } from "./types";
 
-export const NODE_VERSION = process.versions.node;
+export const NODE_VERSION =
+  typeof process !== "undefined" && process.versions && process.versions.node
+    ? process.versions.node
+    : "unknown";
+
+export const BROWSER_AGENT =
+  typeof window !== "undefined" && window.navigator && window.navigator.userAgent
+    ? window.navigator.userAgent
+    : "unknown";
 
 export const DEFAULT_HEADERS = {
   "Content-Type": `application/json`,
   "X-Client-Info": `@deepgram/sdk; ${isBrowser() ? "browser" : "server"}; v${version}`,
-  "User-Agent": `@deepgram/sdk/${version} ${isBrowser() ? "javascript" : `node/${NODE_VERSION}`}`,
+  "User-Agent": `@deepgram/sdk/${version} ${
+    isBrowser() ? `javascript ${BROWSER_AGENT}` : `node/${NODE_VERSION}`
+  }`,
 };
 
 export const DEFAULT_URL = "https://api.deepgram.com";
