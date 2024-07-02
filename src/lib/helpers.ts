@@ -16,8 +16,9 @@ export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
 
-export const isBrowser = () => typeof window !== "undefined";
-export const isServer = () => typeof process !== "undefined";
+export function isBrowser() {
+  return typeof window !== "undefined" && typeof window.document !== "undefined";
+}
 
 export function applyDefaults<O, S>(options: Partial<O> = {}, subordinate: Partial<S> = {}): S {
   return merge(subordinate, options);
