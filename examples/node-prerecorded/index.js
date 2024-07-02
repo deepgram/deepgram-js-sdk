@@ -1,5 +1,6 @@
 const { createClient } = require("../../dist/main/index");
 const fs = require("fs");
+const path = require("path");
 
 const transcribeUrl = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
@@ -21,7 +22,9 @@ const transcribeUrl = async () => {
 const transcribeFile = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const file = fs.readFileSync("./examples/spacewalk.wav");
+  const filePath = path.join(__dirname, "../spacewalk.wav");
+  console.log(filePath);
+  const file = fs.readFileSync(filePath);
 
   console.log("Transcribing file", file);
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(file, {
