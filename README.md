@@ -148,7 +148,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY);
 
 # Scoped Configuration
 
-The SDK supports scoped configurtion. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here’s how the namespace configuration works:
+The SDK supports scoped configuration. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here’s how the namespace configuration works:
 
 ## 1. Global Defaults
 
