@@ -25,6 +25,11 @@ export enum LiveTTSEvents {
   Warning = "Warning",
 
   /**
+   * Audio data event.
+   */
+  Audio = "Audio",
+
+  /**
    * Catch all for any other message event
    */
   Unhandled = "Unhandled",

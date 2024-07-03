@@ -3,6 +3,7 @@ import { CONNECTION_STATE, SOCKET_STATES } from "../lib/constants";
 import type { DeepgramClientOptions, LiveSchema } from "../lib/types";
 import type { WebSocket as WSWebSocket } from "ws";
 import { isBun } from "../lib/helpers";
+import { LiveTTSEvents } from "../lib/enums";
 
 /**
  * Represents a constructor for a WebSocket-like object that can be used in the application.
@@ -276,6 +277,48 @@ export abstract class AbstractLiveClient extends AbstractClient {
    * @abstract Requires subclasses to set up context aware event handlers.
    */
   abstract setupConnection(): void;
+
+  /**
+   * Handles incoming messages from the WebSocket connection.
+   * @param event - The MessageEvent object representing the received message.
+   */
+  protected handleMessage(event: MessageEvent): void {
+    if (typeof event.data === "string") {
+      try {
+        const data = JSON.parse(event.data);
+        this.handleTextMessage(data);
+      } catch (error) {
+        this.emit(LiveTTSEvents.Error, {
+          event,
+          message: "Unable to parse `data` as JSON.",
+          error,
+        });
+      }
+    } else if (event.data instanceof ArrayBuffer) {
+      this.handleBinaryMessage(event.data);
+    } else {
+      this.emit(LiveTTSEvents.Error, {
+        event,
+        message: "Received unknown data type.",
+      });
+    }
+  }
+
+  /**
+   * Handles text messages received from the WebSocket connection.
+   * @param data - The parsed JSON data.
+   */
+  protected handleTextMessage(data: any): void {
+    // To be implemented by subclasses
+  }
+
+  /**
+   * Handles binary messages received from the WebSocket connection.
+   * @param data - The binary data.
+   */
+  protected handleBinaryMessage(data: ArrayBuffer): void {
+    // To be implemented by subclasses
+  }
 }
 
 class WSWebSocketDummy {
