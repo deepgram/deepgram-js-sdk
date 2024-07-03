@@ -75,5 +75,3 @@ export class SpeakRestClient extends AbstractRestClient {
     return this.result.headers;
   }
 }
-
-export { SpeakRestClient as SpeakClient };

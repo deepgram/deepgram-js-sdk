@@ -90,7 +90,7 @@ export class SpeakLiveClient extends AbstractLiveClient {
   /**
    * Sends a text input message to the server.
    *
-   * @param text - The text to convert to speech.
+   * @param {string} text - The text to convert to speech.
    */
   public sendText(text: string): void {
     this.send(
@@ -111,6 +111,7 @@ export class SpeakLiveClient extends AbstractLiveClient {
       })
     );
   }
+
   /**
    * Requests the server reset the current buffer.
    */
@@ -121,6 +122,7 @@ export class SpeakLiveClient extends AbstractLiveClient {
       })
     );
   }
+
   /**
    * Requests the server close the connection.
    */
@@ -132,5 +134,3 @@ export class SpeakLiveClient extends AbstractLiveClient {
     );
   }
 }
-
-export { SpeakLiveClient as Liveclient };

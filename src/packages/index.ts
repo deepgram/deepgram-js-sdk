@@ -8,4 +8,4 @@ export * from "./ManageRestClient";
 export * from "./ModelsRestClient";
 export * from "./ReadRestClient";
 export * from "./SelfHostedRestClient";
-export * from "./SpeakRestClient";
+export * from "./SpeakClient";
