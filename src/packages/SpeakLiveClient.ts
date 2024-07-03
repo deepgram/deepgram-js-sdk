@@ -58,27 +58,33 @@ export class SpeakLiveClient extends AbstractLiveClient {
       };
 
       this.conn.onmessage = (event: MessageEvent) => {
-        try {
-          const data: any = JSON.parse(event.data.toString());
-
-          if (data.type === LiveTTSEvents.Metadata) {
-            this.emit(LiveTTSEvents.Metadata, data);
-          } else if (data.type === LiveTTSEvents.Flushed) {
-            this.emit(LiveTTSEvents.Flushed, data);
-          } else if (data.type === "Warning") {
-            this.emit(LiveTTSEvents.Warning, data);
-          } else {
-            this.emit(LiveTTSEvents.Unhandled, data);
-          }
-        } catch (error) {
-          this.emit(LiveTTSEvents.Error, {
-            event,
-            message: "Unable to parse `data` as JSON.",
-            error,
-          });
-        }
+        this.handleMessage(event);
       };
     }
+  }
+
+  /**
+   * Handles text messages received from the WebSocket connection.
+   * @param data - The parsed JSON data.
+   */
+  protected handleTextMessage(data: any): void {
+    if (data.type === LiveTTSEvents.Metadata) {
+      this.emit(LiveTTSEvents.Metadata, data);
+    } else if (data.type === LiveTTSEvents.Flushed) {
+      this.emit(LiveTTSEvents.Flushed, data);
+    } else if (data.type === LiveTTSEvents.Warning) {
+      this.emit(LiveTTSEvents.Warning, data);
+    } else {
+      this.emit(LiveTTSEvents.Unhandled, data);
+    }
+  }
+
+  /**
+   * Handles binary messages received from the WebSocket connection.
+   * @param data - The binary data.
+   */
+  protected handleBinaryMessage(data: ArrayBuffer): void {
+    this.emit(LiveTTSEvents.Audio, data);
   }
 
   /**
