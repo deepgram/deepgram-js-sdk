@@ -130,4 +130,4 @@ export class ListenLiveClient extends AbstractLiveClient {
   }
 }
 
-export { ListenLiveClient as Liveclient };
+export { ListenLiveClient as LiveClient };
