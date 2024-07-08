@@ -6,41 +6,41 @@ const live = async () => {
 
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const connection = deepgram.speak.live({ model: "aura-asteria-en" });
+  const dgConnection = deepgram.speak.live({ model: "aura-asteria-en" });
 
   let audioBuffer = Buffer.alloc(0);
 
-  connection.on(LiveTTSEvents.Open, () => {
+  dgConnection.on(LiveTTSEvents.Open, () => {
     console.log("Connection opened");
 
     // Send text data for TTS synthesis
-    connection.sendText(text);
+    dgConnection.sendText(text);
 
     // Send Flush message to the server after sending the text
-    connection.flush();
+    dgConnection.flush();
 
-    connection.on(LiveTTSEvents.Close, () => {
+    dgConnection.on(LiveTTSEvents.Close, () => {
       console.log("Connection closed");
     });
 
-    connection.on(LiveTTSEvents.Metadata, (data) => {
+    dgConnection.on(LiveTTSEvents.Metadata, (data) => {
       console.dir(data, { depth: null });
     });
 
-    connection.on(LiveTTSEvents.Audio, (data) => {
+    dgConnection.on(LiveTTSEvents.Audio, (data) => {
       console.log("Deepgram audio data received");
       // Concatenate the audio chunks into a single buffer
       const buffer = Buffer.from(data);
       audioBuffer = Buffer.concat([audioBuffer, buffer]);
     });
 
-    connection.on(LiveTTSEvents.Flushed, () => {
+    dgConnection.on(LiveTTSEvents.Flushed, () => {
       console.log("Deepgram Flushed");
       // Write the buffered audio data to a file when the flush event is received
       writeFile();
     });
 
-    connection.on(LiveTTSEvents.Error, (err) => {
+    dgConnection.on(LiveTTSEvents.Error, (err) => {
       console.error(err);
     });
   });
