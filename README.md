@@ -382,8 +382,16 @@ const vttOutput = webvtt(result);
 
 # Text to Speech
 
+## Rest
+
 ```js
 const { result } = await deepgram.speak.request({ text }, { model: "aura-asteria-en" });
+```
+
+## Websocket
+
+```js
+const connection = deepgram.speak.live({ model: "aura-asteria-en" });
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api).
