@@ -2,6 +2,7 @@ import { AbstractClient } from "./AbstractClient";
 import { SpeakLiveClient } from "./SpeakLiveClient";
 import { SpeakRestClient } from "./SpeakRestClient";
 import { SpeakSchema } from "../lib/types";
+import { TextSource } from "../lib/types";
 
 /**
  * The `SpeakClient` class extends the `AbstractClient` class and provides access to the "speak" namespace.
@@ -16,8 +17,10 @@ export class SpeakClient extends AbstractClient {
   /**
    * Returns a `SpeakRestClient` instance for interacting with the rest speak API.
    */
-  get request() {
-    return new SpeakRestClient(this.options);
+  public request(source: TextSource, options?: SpeakSchema, endpoint = ":version/speak") {
+    const client = new SpeakRestClient(this.options);
+
+    return client.request(source, options, endpoint);
   }
 
   /**

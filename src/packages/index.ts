@@ -9,3 +9,5 @@ export * from "./ModelsRestClient";
 export * from "./ReadRestClient";
 export * from "./SelfHostedRestClient";
 export * from "./SpeakClient";
+export * from "./SpeakLiveClient";
+export * from "./SpeakRestClient";

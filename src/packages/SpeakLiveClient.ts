@@ -11,9 +11,7 @@ import type { SpeakSchema, DeepgramClientOptions } from "../lib/types";
  *
  * The `configure` method allows you to send additional configuration options to the connected session.
  *
- *
  * The `requestClose` method requests the server to close the connection.
- *
  */
 export class SpeakLiveClient extends AbstractLiveClient {
   public namespace: string = "speak";
@@ -132,5 +130,34 @@ export class SpeakLiveClient extends AbstractLiveClient {
         type: "Close",
       })
     );
+  }
+
+  /**
+   * Handles incoming messages from the WebSocket connection.
+   * @param event - The MessageEvent object representing the received message.
+   */
+  protected handleMessage(event: MessageEvent): void {
+    if (typeof event.data === "string") {
+      try {
+        const data = JSON.parse(event.data);
+        this.handleTextMessage(data);
+      } catch (error) {
+        this.emit(LiveTTSEvents.Error, {
+          event,
+          message: "Unable to parse `data` as JSON.",
+          error,
+        });
+      }
+    } else if (event.data instanceof ArrayBuffer) {
+      this.handleBinaryMessage(event.data);
+    } else if (Buffer.isBuffer(event.data)) {
+      this.handleBinaryMessage(event.data.buffer);
+    } else {
+      console.log("Received unknown data type", event.data);
+      this.emit(LiveTTSEvents.Error, {
+        event,
+        message: "Received unknown data type.",
+      });
+    }
   }
 }
