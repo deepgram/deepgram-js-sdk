@@ -64,6 +64,7 @@
     "@flydotio/dockerfile": "^0.4.10",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^9.1.1",
+    "@types/node": "^18.19.39",
     "@types/sinon": "^17.0.3",
     "@types/ws": "^8.5.10",
     "chai": "^4.3.7",
