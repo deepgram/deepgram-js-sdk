@@ -223,6 +223,11 @@ interface LiveSchema extends TranscriptionSchema {
   interim_results?: boolean;
 
   /**
+   * @see https://developers.deepgram.com/docs/smart-format#using-no-delay
+   */
+  no_delay?: boolean;
+
+  /**
    * @see https://developers.deepgram.com/docs/understanding-end-of-speech-detection
    */
   utterance_end_ms?: number;
