@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import { DEFAULT_OPTIONS, DEFAULT_URL } from "../lib/constants";
 import { DeepgramError } from "../lib/errors";
 import { appendSearchParams, applyDefaults, convertLegacyOptions } from "../lib/helpers";
