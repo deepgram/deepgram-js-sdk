@@ -112,7 +112,7 @@ export class ListenLiveClient extends AbstractLiveClient {
   }
 
   /**
-   * @deprecated Since version 3.4. Will be removed in version 4.0. Use `close` instead.
+   * @deprecated Since version 3.4. Will be removed in version 4.0. Use `requestClose` instead.
    */
   public finish(): void {
     this.requestClose();
