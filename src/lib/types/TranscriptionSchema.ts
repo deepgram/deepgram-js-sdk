@@ -149,7 +149,7 @@ interface PrerecordedSchema extends TranscriptionSchema {
   /**
    * @see https://developers.deepgram.com/docs/language-detection
    */
-  detect_language?: boolean;
+  detect_language?: boolean | string[];
 
   /**
    * @see https://developers.deepgram.com/docs/topic-detection
