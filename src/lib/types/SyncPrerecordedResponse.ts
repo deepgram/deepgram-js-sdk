@@ -12,6 +12,7 @@ interface Alternative {
   entities?: Entity[];
   translations?: Translation[];
   topics?: TopicGroup[];
+  languages?: string[];
 }
 
 interface Channel {
@@ -208,4 +209,5 @@ interface WordBase {
   punctuated_word?: string;
   speaker?: number;
   speaker_confidence?: number;
+  language?: string;
 }
