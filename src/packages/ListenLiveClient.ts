@@ -112,6 +112,17 @@ export class ListenLiveClient extends AbstractLiveClient {
   }
 
   /**
+   * Sends a "Finalize" message to flush any transcription sitting in the server's buffer.
+   */
+  public finalize(): void {
+    this.send(
+      JSON.stringify({
+        type: "Finalize",
+      })
+    );
+  }
+
+  /**
    * @deprecated Since version 3.4. Will be removed in version 4.0. Use `requestClose` instead.
    */
   public finish(): void {
