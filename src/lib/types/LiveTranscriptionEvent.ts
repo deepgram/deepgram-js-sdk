@@ -9,11 +9,13 @@ export interface LiveTranscriptionEvent {
     alternatives: {
       transcript: string;
       confidence: number;
+      languages: string[];
       words: {
         word: string;
         start: number;
         end: number;
         confidence: number;
+        language: string;
         punctuated_word: string;
       }[];
     }[];
