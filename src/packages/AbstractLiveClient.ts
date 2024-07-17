@@ -120,6 +120,23 @@ export abstract class AbstractLiveClient extends AbstractClient {
     }
 
     /**
+     * @summary Bun websocket transport has a bug where it's native WebSocket implementation messes up the headers
+     * @summary This is a workaround to use the WS package for the websocket connection instead of the native Bun WebSocket
+     * @summary you can track the issue here
+     * @link https://github.com/oven-sh/bun/issues/4529
+     */
+    if (process?.versions?.bun) {
+      import("ws").then(({ default: WS }) => {
+        this.conn = new WS(requestUrl, {
+          headers: this.headers,
+        });
+        console.log(`Using WS package`);
+        this.setupConnection();
+      });
+      return;
+    }
+    
+    /**
      * Native websocket transport (browser)
      */
     if (NATIVE_WEBSOCKET_AVAILABLE) {
