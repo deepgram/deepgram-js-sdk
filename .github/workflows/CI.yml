@@ -44,6 +44,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Install dependencies
+        run: npm install
+
       # TODO: Fix JS/TS linting issues (too big of a change to be in scope of this PR)
       # - name: Lint JS/TS
       #   run: |
