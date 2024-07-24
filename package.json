@@ -50,8 +50,8 @@
     "docs": "typedoc --entryPoints src/index.ts --out docs/ --includes src/packages/**/*.ts   --emit none",
     "docs:json": "typedoc --entryPoints src/index.ts --includes src/packages/**/*.ts --json docs/spec.json   --emit none",
     "lint": "eslint src --max-warnings 0 && prettier src --check",
-    "lint:md": "markdownlint '**/*.md' --ignore '**/node_modules/**'",
-    "lint:yaml": "yamllint '**/*.yml'"
+    "lint:md": "markdownlint \"**/*.md\" --ignore \"**/node_modules/**\"",
+    "lint:yaml": "yamllint \"**/*.yml\""
   },
   "dependencies": {
     "@deepgram/captions": "^1.1.1",
