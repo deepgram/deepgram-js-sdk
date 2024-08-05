@@ -7,6 +7,7 @@ import {
   OnPremClient,
   SelfHostedRestClient,
   SpeakClient,
+  ModelsRestClient,
 } from "./packages";
 
 /**
@@ -31,6 +32,15 @@ export default class DeepgramClient extends AbstractClient {
    */
   get manage(): ManageClient {
     return new ManageClient(this.options);
+  }
+
+  /**
+   * Returns a new instance of the ModelsRestClient, which provides access to the Deepgram API's model functionality.
+   *
+   * @returns {ModelsRestClient} A new instance of the ModelsRestClient.
+   */
+  get models(): ModelsRestClient {
+    return new ModelsRestClient(this.options);
   }
 
   /**
