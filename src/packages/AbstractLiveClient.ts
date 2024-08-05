@@ -1,5 +1,5 @@
 import { AbstractClient, noop } from "./AbstractClient";
-import { CONNECTION_STATE, SOCKET_STATES } from "../lib/constants";
+import { CONNECTION_STATE, SOCKET_STATES, WS_USER_AGENT } from "../lib/constants";
 import type { DeepgramClientOptions, LiveSchema } from "../lib/types";
 import type { WebSocket as WSWebSocket } from "ws";
 import { isBun } from "../lib/helpers";
@@ -141,7 +141,13 @@ export abstract class AbstractLiveClient extends AbstractClient {
      * Native websocket transport (browser)
      */
     if (NATIVE_WEBSOCKET_AVAILABLE) {
-      this.conn = new WebSocket(requestUrl, ["token", this.namespaceOptions.key]);
+      this.conn = new WebSocket(requestUrl, [
+        "token",
+        this.namespaceOptions.key,
+        // BRENT
+        // "User-Agent",
+        // WS_USER_AGENT,
+      ]);
       this.setupConnection();
       return;
     }

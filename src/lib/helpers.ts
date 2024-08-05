@@ -23,6 +23,18 @@ export const isNode = () => NODE_VERSION !== "unknown";
 
 export const isBun = () => BUN_VERSION !== "unknown";
 
+export const getAgentMarker = () => {
+  if (isNode()) {
+    return `node/${NODE_VERSION}`;
+  } else if (isBun()) {
+    return `bun/${BUN_VERSION}`;
+  } else if (isBrowser()) {
+    return `javascript`;
+  } else {
+    return `unknown`;
+  }
+};
+
 export function applyDefaults<O, S>(options: Partial<O> = {}, subordinate: Partial<S> = {}): S {
   return merge(subordinate, options);
 }
