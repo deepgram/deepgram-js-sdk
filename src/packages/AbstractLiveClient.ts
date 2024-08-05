@@ -2,6 +2,7 @@ import { AbstractClient, noop } from "./AbstractClient";
 import { CONNECTION_STATE, SOCKET_STATES } from "../lib/constants";
 import type { DeepgramClientOptions, LiveSchema } from "../lib/types";
 import type { WebSocket as WSWebSocket } from "ws";
+import { isBun } from "../lib/helpers";
 
 /**
  * Represents a constructor for a WebSocket-like object that can be used in the application.
@@ -125,7 +126,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
      * @summary you can track the issue here
      * @link https://github.com/oven-sh/bun/issues/4529
      */
-    if (process?.versions?.bun) {
+    if (isBun()) {
       import("ws").then(({ default: WS }) => {
         this.conn = new WS(requestUrl, {
           headers: this.headers,
@@ -135,7 +136,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
       });
       return;
     }
-    
+
     /**
      * Native websocket transport (browser)
      */
