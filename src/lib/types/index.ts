@@ -8,6 +8,8 @@ export * from "./DeepgramClientOptions";
 export * from "./DeepgramResponse";
 export * from "./DeepgramSource";
 export * from "./Fetch";
+export * from "./GetModelsResponse";
+export * from "./GetModelsSchema";
 export * from "./GetProjectBalancesResponse";
 export * from "./GetProjectInvitesResponse";
 export * from "./GetProjectKeysResponse";

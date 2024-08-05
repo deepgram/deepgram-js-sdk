@@ -25,6 +25,9 @@ import type {
   UpdateProjectSchema,
   VoidResponse,
   GetTokenDetailsResponse,
+  GetModelsResponse,
+  GetModelResponse,
+  GetModelsSchema,
 } from "../lib/types";
 import { AbstractRestClient } from "./AbstractRestClient";
 
@@ -745,6 +748,85 @@ export class ManageRestClient extends AbstractRestClient {
       const result: GetProjectBalanceResponse = await this.get(requestUrl).then((result) =>
         result.json()
       );
+
+      return { result, error: null };
+    } catch (error) {
+      if (isDeepgramError(error)) {
+        return { result: null, error };
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Retrieves all models for a given project.
+   *
+   * @param projectId - The ID of the project.
+   * @param endpoint - (optional) The endpoint URL for retrieving models. Defaults to ":version/projects/:projectId/models".
+   * @returns A promise that resolves to a DeepgramResponse containing the GetModelsResponse.
+   * @example
+   * ```typescript
+   * import { createClient } from "@deepgram/sdk";
+   *
+   * const deepgram = createClient(DEEPGRAM_API_KEY);
+   * const { result: models, error } = deepgram.manage.getAllModels("projectId");
+   *
+   * if (error) {
+   *   console.error(error);
+   * } else {
+   *   console.log(models);
+   * }
+   * ```
+   */
+  async getAllModels(
+    projectId: string,
+    options: GetModelsSchema = {},
+    endpoint = ":version/projects/:projectId/models"
+  ): Promise<DeepgramResponse<GetModelsResponse>> {
+    try {
+      const requestUrl = this.getRequestUrl(endpoint, { projectId }, options);
+      const result: GetModelsResponse = await this.get(requestUrl).then((result) => result.json());
+
+      return { result, error: null };
+    } catch (error) {
+      if (isDeepgramError(error)) {
+        return { result: null, error };
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Retrieves a model from the specified project.
+   *
+   * @param projectId - The ID of the project.
+   * @param modelId - The ID of the model.
+   * @param endpoint - (optional) The endpoint URL for the request. Default value is ":version/projects/:projectId/models/:modelId".
+   * @returns A promise that resolves to a DeepgramResponse containing the GetModelResponse.
+   * @example
+   * ```typescript
+   * import { createClient } from "@deepgram/sdk";
+   *
+   * const deepgram = createClient(DEEPGRAM_API_KEY);
+   * const { result: model, error } = deepgram.models.getModel("projectId", "modelId");
+   *
+   * if (error) {
+   *   console.error(error);
+   * } else {
+   *   console.log(model);
+   * }
+   * ```
+   */
+  async getModel(
+    projectId: string,
+    modelId: string,
+    endpoint = ":version/projects/:projectId/models/:modelId"
+  ): Promise<DeepgramResponse<GetModelResponse>> {
+    try {
+      const requestUrl = this.getRequestUrl(endpoint, { projectId, modelId });
+      const result: GetModelResponse = await this.get(requestUrl).then((result) => result.json());
 
       return { result, error: null };
     } catch (error) {
