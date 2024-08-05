@@ -131,7 +131,6 @@ export abstract class AbstractLiveClient extends AbstractClient {
         this.conn = new WS(requestUrl, {
           headers: this.headers,
         });
-        console.log(`Using WS package`);
         this.setupConnection();
       });
       return;
@@ -144,9 +143,8 @@ export abstract class AbstractLiveClient extends AbstractClient {
       this.conn = new WebSocket(requestUrl, [
         "token",
         this.namespaceOptions.key,
-        // BRENT
-        // "User-Agent",
-        // WS_USER_AGENT,
+        "User-Agent",
+        WS_USER_AGENT,
       ]);
       this.setupConnection();
       return;

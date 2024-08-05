@@ -4,10 +4,7 @@
     <script src="../../dist/umd/deepgram.js"></script>
     <script>
       const { createClient } = deepgram;
-      const _deepgram = createClient("api-key-here", {
-        // BRENT
-        // global: { websocket: { options: { url: "wss://api.staging.deepgram.com:8500" } } },
-      });
+      const _deepgram = createClient("api-key-here");
 
       console.log("Deepgram Instance: ", _deepgram);
 

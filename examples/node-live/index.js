@@ -1,3 +1,4 @@
+const process = require("node:process");
 const { createClient, LiveTranscriptionEvents } = require("../../dist/main/index");
 const fetch = require("cross-fetch");
 
@@ -22,6 +23,8 @@ const live = async () => {
     endpointing: 300,
   });
 
+  let requestId;
+
   connection.on(LiveTranscriptionEvents.Open, () => {
     connection.on(LiveTranscriptionEvents.Close, () => {
       console.log("Connection closed.");
@@ -33,6 +36,8 @@ const live = async () => {
 
     connection.on(LiveTranscriptionEvents.Transcript, (data) => {
       const sentence = data.channel.alternatives[0].transcript;
+
+      requestId = data.metadata.request_id;
 
       // Ignore empty transcripts
       if (sentence.length == 0) {
@@ -80,6 +85,11 @@ const live = async () => {
           connection.send(res.read());
         });
       });
+  });
+
+  process.on("SIGINT", () => {
+    console.log("request ID: ", requestId);
+    process.exit(0);
   });
 };
 
