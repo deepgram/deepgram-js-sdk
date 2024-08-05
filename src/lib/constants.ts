@@ -1,4 +1,4 @@
-import { convertProtocolToWs, isBrowser } from "./helpers";
+import { convertProtocolToWs, isBrowser, isBun, isNode } from "./helpers";
 import { version } from "./version";
 import type { DefaultNamespaceOptions, DefaultClientOptions } from "./types";
 
@@ -7,17 +7,32 @@ export const NODE_VERSION =
     ? process.versions.node
     : "unknown";
 
+export const BUN_VERSION =
+  typeof process !== "undefined" && process.versions && process.versions.bun
+    ? process.versions.bun
+    : "unknown";
+
 export const BROWSER_AGENT =
   typeof window !== "undefined" && window.navigator && window.navigator.userAgent
     ? window.navigator.userAgent
     : "unknown";
 
+const getAgent = () => {
+  if (isNode()) {
+    return `node/${NODE_VERSION}`;
+  } else if (isBun()) {
+    return `bun/${BUN_VERSION}`;
+  } else if (isBrowser()) {
+    return `javascript ${BROWSER_AGENT}`;
+  } else {
+    return `unknown`;
+  }
+};
+
 export const DEFAULT_HEADERS = {
   "Content-Type": `application/json`,
   "X-Client-Info": `@deepgram/sdk; ${isBrowser() ? "browser" : "server"}; v${version}`,
-  "User-Agent": `@deepgram/sdk/${version} ${
-    isBrowser() ? `javascript ${BROWSER_AGENT}` : `node/${NODE_VERSION}`
-  }`,
+  "User-Agent": `@deepgram/sdk/${version} ${getAgent()}`,
 };
 
 export const DEFAULT_URL = "https://api.deepgram.com";
