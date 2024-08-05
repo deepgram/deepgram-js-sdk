@@ -228,4 +228,23 @@ describe("making manage REST requests", () => {
     assert.isNotNull(result);
     assert.containsAllDeepKeys(result, ["balance_id"]);
   });
+
+  it("should retrieve a list of models", async () => {
+    const { result, error } = await deepgram.manage.getAllModels(faker.string.uuid());
+
+    assert.isNull(error);
+    assert.isNotNull(result);
+    // Add your assertions for the response data here
+  });
+
+  it("should retrieve a models", async () => {
+    const { result, error } = await deepgram.manage.getModel(
+      faker.string.uuid(),
+      faker.string.uuid()
+    );
+
+    assert.isNull(error);
+    assert.isNotNull(result);
+    // Add your assertions for the response data here
+  });
 });
