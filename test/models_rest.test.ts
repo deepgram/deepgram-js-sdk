@@ -1,24 +1,26 @@
 import { assert } from "chai";
 import { createClient } from "../src";
 import { faker } from "@faker-js/faker";
-import { ModelsRestClient } from "../src/packages";
+import DeepgramClient from "../src/DeepgramClient";
 
-describe("ModelsRestClient", () => {
-  let modelsRestClient: ModelsRestClient;
+describe("making models REST requests", () => {
+  let deepgram: DeepgramClient;
 
   beforeEach(() => {
-    modelsRestClient = createClient(faker.string.alphanumeric(40)).models;
+    deepgram = createClient(faker.string.alphanumeric(40), {
+      global: { url: "https://api.mock.deepgram.com" },
+    });
   });
 
   it("should retrieve a list of models", async () => {
-    const { result, error } = await modelsRestClient.getAll();
+    const { result, error } = await deepgram.models.getAll();
 
     assert.isNull(error);
     assert.isNotNull(result);
   });
 
-  it("should retrieve a models", async () => {
-    const { result, error } = await modelsRestClient.getModel(faker.string.uuid());
+  it("should retrieve a model", async () => {
+    const { result, error } = await deepgram.models.getModel(faker.string.uuid());
 
     assert.isNull(error);
     assert.isNotNull(result);

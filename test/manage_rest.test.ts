@@ -237,7 +237,7 @@ describe("making manage REST requests", () => {
     // Add your assertions for the response data here
   });
 
-  it("should retrieve a models", async () => {
+  it("should retrieve a model", async () => {
     const { result, error } = await deepgram.manage.getModel(
       faker.string.uuid(),
       faker.string.uuid()
