@@ -382,8 +382,30 @@ const vttOutput = webvtt(result);
 
 # Text to Speech
 
+## Rest
+
 ```js
 const { result } = await deepgram.speak.request({ text }, { model: "aura-asteria-en" });
+```
+
+## Websocket
+
+```js
+const dgConnection = deepgram.speak.live({ model: "aura-asteria-en" });
+
+dgConnection.on(LiveTTSEvents.Open, () => {
+  console.log("Connection opened");
+
+  // Send text data for TTS synthesis
+  dgConnection.sendText(text);
+
+  // Send Flush message to the server after sending the text
+  dgConnection.flush();
+
+  dgConnection.on(LiveTTSEvents.Close, () => {
+    console.log("Connection closed");
+  });
+});
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api).
