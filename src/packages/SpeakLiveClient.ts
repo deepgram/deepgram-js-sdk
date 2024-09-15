@@ -25,7 +25,7 @@ export class SpeakLiveClient extends AbstractLiveClient {
    */
   constructor(
     options: DeepgramClientOptions,
-    speakOptions: SpeakSchema = {},
+    speakOptions: Omit<SpeakSchema, "container"> = {},
     endpoint: string = ":version/speak"
   ) {
     super(options);
