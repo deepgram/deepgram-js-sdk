@@ -111,12 +111,12 @@ export class SpeakLiveClient extends AbstractLiveClient {
   }
 
   /**
-   * Requests the server reset the current buffer.
+   * Requests the server clear the current buffer.
    */
-  public reset(): void {
+  public clear(): void {
     this.send(
       JSON.stringify({
-        type: "Reset",
+        type: "Clear",
       })
     );
   }
