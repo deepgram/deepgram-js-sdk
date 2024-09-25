@@ -44,6 +44,7 @@
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
     "build:umd": "webpack --mode=production",
+    "lint": "run-s lint:*",
     "lint:js": "eslint --no-eslintrc  -c .eslintrc-examples.js examples --max-warnings 0",
     "lint:md": "markdownlint **/*.md *.md",
     "lint:yml": "yamllint .github/workflows",

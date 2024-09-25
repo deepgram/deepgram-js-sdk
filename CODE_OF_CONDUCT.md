@@ -63,63 +63,63 @@ Contribute to the community in a positive and thoughtful way. Consider what’s 
 
 Alert community leaders if you notice a dangerous situation, someone in distress, or violations of this Code of Conduct, even if they seem inconsequential.
 
-# Additional rules for online spaces
+## Additional rules for online spaces
 
 For Deepgram’s official online spaces, like our YouTube & Twitch chats, we have some additional rules. Any of the following behaviors can result in a ban without warning.
 
-## DON'T SPAM
+### DON'T SPAM
 
 Don't spam. We'll ban you.
 
-## KEEP IT LEGAL
+### KEEP IT LEGAL
 
 If it’s illegal, it’s not allowed on our websites or in our online spaces. Please don’t share links to pirated material or other nefarious things.
 
-## NO TROLLING
+### NO TROLLING
 
 Please be earnest. Don’t use excessive sarcasm to annoy or undermine other people. And don’t bait them with bad faith comments or abuse.
 
-## PORNOGRAPHY AND OTHER NSFW STUFF
+### PORNOGRAPHY AND OTHER NSFW STUFF
 
 Please don’t post it or link to it. It doesn’t belong in our online spaces.
 
-## FOUL AND GRAPHIC LANGUAGE
+### FOUL AND GRAPHIC LANGUAGE
 
 Please do not use excessive curse words. Additionally, do not use graphic sexual or violent language — again, think of our spaces as places for people of all ages.
 
-# Enforcement & Reporting
+## Enforcement & Reporting
 
 If you are being harassed by a member of the Deepgram developer community, if you observe someone else being harassed, or you experience actions or behaviors that are contrary to our Code of Conduct, please report the behavior using our [Code of Conduct Report Form](https://developers.deepgram.com/code-of-conduct/report-form/).
 
-## Enforcement Guidelines
+### Enforcement Guidelines
 
 Community leaders will follow these Community Impact Guidelines in determining the consequences for any action they deem in violation of this Code of Conduct:
 
-### 1. Correction
+#### 1. Correction
 
 **_Community Impact:_** Use of inappropriate language or other behavior deemed unprofessional or unwelcome in the community.
 
 **_Consequence:_** A private, written warning from community leaders, providing clarity around the nature of the violation and an explanation of why the behavior was inappropriate. A public apology may be requested.
 
-### 2. Warning
+#### 2. Warning
 
 **_Community Impact:_** A violation through a single incident or series of actions.
 
 **_Consequence:_** A warning with consequences for continued behavior. No interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, for a specified period of time. This includes avoiding interactions in community spaces as well as external channels like social media. Violating these terms may lead to a temporary or permanent ban.
 
-### 3. Temporary Ban
+#### 3. Temporary Ban
 
 **_Community Impact:_** A serious violation of community standards, including sustained inappropriate behavior.
 
 **_Consequence:_** A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, is allowed during this period. Violating these terms may lead to a permanent ban.
 
-### 4. Permanent Ban
+#### 4. Permanent Ban
 
 **_Community Impact:_** Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.
 
 **_Consequence:_** A permanent ban from any sort of public interaction within the community.
 
-# Attribution
+## Attribution
 
 This Code of Conduct is adapted from:
 
