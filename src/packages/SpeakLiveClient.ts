@@ -81,7 +81,7 @@ export class SpeakLiveClient extends AbstractLiveClient {
    * Handles binary messages received from the WebSocket connection.
    * @param data - The binary data.
    */
-  protected handleBinaryMessage(data: ArrayBuffer): void {
+  protected handleBinaryMessage(data: Buffer): void {
     this.emit(LiveTTSEvents.Audio, data);
   }
 
@@ -149,9 +149,9 @@ export class SpeakLiveClient extends AbstractLiveClient {
         });
       }
     } else if (event.data instanceof ArrayBuffer) {
-      this.handleBinaryMessage(event.data);
+      this.handleBinaryMessage(Buffer.from(event.data));
     } else if (Buffer.isBuffer(event.data)) {
-      this.handleBinaryMessage(event.data.buffer);
+      this.handleBinaryMessage(event.data);
     } else {
       console.log("Received unknown data type", event.data);
       this.emit(LiveTTSEvents.Error, {
