@@ -3,7 +3,6 @@ import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   AsyncPrerecordedResponse,
   DeepgramResponse,
-  Fetch,
   FileSource,
   PrerecordedSchema,
   SyncPrerecordedResponse,

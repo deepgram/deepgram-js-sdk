@@ -34,7 +34,7 @@ export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
   const HeadersConstructor = resolveHeadersConstructor();
 
   return async (input, init) => {
-    let headers = new HeadersConstructor(init?.headers);
+    const headers = new HeadersConstructor(init?.headers);
 
     if (!headers.has("Authorization")) {
       headers.set("Authorization", `Token ${apiKey}`);
