@@ -7,6 +7,7 @@ The example projects are meant to be used to test features locally by contributo
     "@deepgram/sdk": "file:../../"
   }
 ```
+
 This tells the example prerecorded project to use the local files within this project, not an installed package from npm.
 
 ## Steps to Test Your Code
@@ -14,13 +15,14 @@ This tells the example prerecorded project to use the local files within this pr
 If you are contributing changes to this SDK, you can test those changes by using the `prerecorded` or `streaming` projects in the `examples` folder. Here are the steps to follow:
 
 ### Add Your Code
+
 Make your changes to the SDK (be sure you are on a branch you have created to do this work).
 
 ### Install dependencies for the Deepgram project
 
 In the **root** folder of this SDK, install the dependencies:
 
-```
+```bash
 npm i
 ```
 
@@ -28,7 +30,7 @@ npm i
 
 In the **root** folder of this SDK, build the project:
 
-```
+```bash
 npm run build
 ```
 
@@ -36,7 +38,7 @@ npm run build
 
 Move into the `examples` project directory for either the `prerecorded` or the `streaming` example projects:
 
-```
+```bash
 cd examples/prerecorded
 ```
 
@@ -44,7 +46,7 @@ cd examples/prerecorded
 
 Run the following command to install the example project dependencies:
 
-```
+```bash
 npm i
 ```
 
@@ -53,8 +55,8 @@ npm i
 Replace the API key where it says 'YOUR_DEEPGRAM_API_KEY'
 
 ```js
-const deepgramApiKey = "YOUR_DEEPGRAM_API_KEY"
-const file = "YOUR_FILE_LOCATION"
+const deepgramApiKey = "YOUR_DEEPGRAM_API_KEY";
+const file = "YOUR_FILE_LOCATION";
 const mimetype = "YOUR_FILE_MIME_TYPE";
 ```
 
@@ -62,6 +64,6 @@ const mimetype = "YOUR_FILE_MIME_TYPE";
 
 Make sure you're in the directory with the `index.js` file and run the project with the following command.
 
-```
+```bash
 npm run test
 ```

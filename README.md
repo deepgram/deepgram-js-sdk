@@ -72,17 +72,17 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
 
-# Migrating from earlier versions
+## Migrating from earlier versions
 
-## V2 to V3
+### V2 to V3
 
 We have published [a migration guide on our docs](https://developers.deepgram.com/docs/js-sdk-v2-to-v3-migration-guide), showing how to move from v2 to v3.
 
-## V3.\* to V3.4
+### V3.\* to V3.4
 
 We recommend using only documented interfaces, as we strictly follow semantic versioning (semver) and breaking changes may occur for undocumented interfaces. To ensure compatibility, consider pinning your versions if you need to use undocumented interfaces.
 
-# Installation
+## Installation
 
 You can install this SDK directly from [npm](https://www.npmjs.com/package/@deepgram/sdk).
 
@@ -92,7 +92,7 @@ npm install @deepgram/sdk
 # yarn add @deepgram/sdk
 ```
 
-## UMD
+### UMD
 
 You can now use plain `<script>`s to import deepgram from CDNs, like:
 
@@ -118,7 +118,7 @@ Then you can use it from a global deepgram variable:
 </script>
 ```
 
-## ESM
+### ESM
 
 You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 
@@ -132,7 +132,7 @@ You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 </script>
 ```
 
-# Initialization
+## Initialization
 
 ```js
 import { createClient } from "@deepgram/sdk";
@@ -142,26 +142,26 @@ import { createClient } from "@deepgram/sdk";
 const deepgram = createClient(DEEPGRAM_API_KEY);
 ```
 
-## Getting an API Key
+### Getting an API Key
 
 🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).
 
-# Scoped Configuration
+## Scoped Configuration
 
 The SDK supports scoped configuration. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here’s how the namespace configuration works:
 
-## 1. Global Defaults
+### 1. Global Defaults
 
 - The `global` namespace serves as the foundational configuration applicable across all other namespaces unless overridden.
 - Includes general settings like URL and headers applicable for all API calls.
 - If no specific configurations are provided for other namespaces, the `global` defaults are used.
 
-## 2. Namespace-specific Configurations
+### 2. Namespace-specific Configurations
 
 - Each namespace (`listen`, `manage`, `onprem`, `read`, `speak`) can have its specific configurations which override the `global` settings within their respective scopes.
 - Allows for detailed control over different parts of the application interacting with various Deepgram API endpoints.
 
-## 3. Transport Options
+### 3. Transport Options
 
 - Configurations for both `fetch` and `websocket` can be specified under each namespace, allowing different transport mechanisms for different operations.
 - For example, the `fetch` configuration can have its own URL and proxy settings distinct from the `websocket`.
@@ -169,9 +169,9 @@ The SDK supports scoped configuration. You'll be able to configure various aspec
 
 This configuration system enables robust customization where defaults provide a foundation, but every aspect of the client's interaction with the API can be finely controlled and tailored to specific needs through namespace-specific settings. This enhances the maintainability and scalability of the application by localizing configurations to their relevant contexts.
 
-## 4. Examples
+### 4. Examples
 
-### Change the API url used for all SDK methods
+#### Change the API url used for all SDK methods
 
 Useful for using different API environments (for e.g. beta).
 
@@ -185,7 +185,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 });
 ```
 
-### Change the API url used for transcription only
+#### Change the API url used for transcription only
 
 Useful for on-prem installations. Only affects requests to `/listen` endpoints.
 
@@ -199,7 +199,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 });
 ```
 
-### Override fetch transmitter
+#### Override fetch transmitter
 
 Useful for providing a custom http client.
 
@@ -217,7 +217,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY, {
 });
 ```
 
-### Proxy requests in the browser
+#### Proxy requests in the browser
 
 This SDK now works in the browser. If you'd like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you'll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:
 
@@ -235,7 +235,7 @@ Your proxy service should replace the Authorization header with `Authorization: 
 
 Check out our example Node-based proxy here: [Deepgram Node Proxy](https://github.com/deepgram-devs/deepgram-node-proxy).
 
-### Set custom headers for fetch
+#### Set custom headers for fetch
 
 Useful for many things.
 
@@ -247,9 +247,9 @@ const deepgram = createClient("proxy", {
 });
 ```
 
-# Transcription (Synchronous)
+## Transcription (Synchronous)
 
-## Remote Files
+### Remote Files
 
 ```js
 const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
@@ -264,7 +264,7 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-## Local Files
+### Local Files
 
 ```js
 const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
@@ -288,9 +288,9 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-# Transcription (Asynchronous / Callbacks)
+## Transcription (Asynchronous / Callbacks)
 
-## Remote Files
+### Remote Files
 
 ```js
 import { CallbackUrl } from "@deepgram/sdk";
@@ -308,7 +308,7 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallbac
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-## Local Files
+### Local Files
 
 ```js
 import { CallbackUrl } from "@deepgram/sdk";
@@ -338,9 +338,9 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallba
 
 [See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
 
-# Transcription (Live / Streaming)
+## Transcription (Live / Streaming)
 
-## Live Audio
+### Live Audio
 
 ```js
 const dgConnection = deepgram.listen.live({ model: "nova" });
@@ -360,7 +360,7 @@ To see an example, [check out our Node.js example](https://github.com/deepgram-d
 
 [See our API reference for more info](https://developers.deepgram.com/reference/streaming).
 
-# Transcribing to captions
+## Transcribing to captions
 
 ```js
 import { webvtt /* , srt */ } from "@deepgram/captions";
@@ -380,15 +380,15 @@ const vttOutput = webvtt(result);
 
 [See our standalone captions library for more information](https://github.com/deepgram/deepgram-node-captions).
 
-# Text to Speech
+## Text to Speech
 
-## Rest
+### Rest
 
 ```js
 const { result } = await deepgram.speak.request({ text }, { model: "aura-asteria-en" });
 ```
 
-## Websocket
+### Websocket
 
 ```js
 const dgConnection = deepgram.speak.live({ model: "aura-asteria-en" });
@@ -410,7 +410,7 @@ dgConnection.on(LiveTTSEvents.Open, () => {
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api).
 
-# Text Intelligence
+## Text Intelligence
 
 ```js
 const text = `The history of the phrase 'The quick brown fox jumps over the
@@ -434,9 +434,9 @@ const { result, error } = await deepgram.read.analyzeText(
 
 [See our API reference for more info](https://developers.deepgram.com/reference/analyze-text).
 
-# Projects
+## Projects
 
-## Get Projects
+### Get Projects
 
 Returns all projects accessible by the API key.
 
@@ -446,7 +446,7 @@ const { result, error } = await deepgram.manage.getProjects();
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-projects).
 
-## Get Project
+### Get Project
 
 Retrieves a specific project based on the provided project_id.
 
@@ -456,7 +456,7 @@ const { result, error } = await deepgram.manage.getProject(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-project).
 
-## Update Project
+### Update Project
 
 Update a project.
 
@@ -476,9 +476,9 @@ const { error } = await deepgram.manage.deleteProject(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-project).
 
-# Keys
+## Keys
 
-## List Keys
+### List Keys
 
 Retrieves all keys associated with the provided project_id.
 
@@ -488,7 +488,7 @@ const { result, error } = await deepgram.manage.getProjectKeys(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/list-keys).
 
-## Get Key
+### Get Key
 
 Retrieves a specific key associated with the provided project_id.
 
@@ -498,7 +498,7 @@ const { result, error } = await deepgram.manage.getProjectKey(projectId, project
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-key).
 
-## Create Key
+### Create Key
 
 Creates an API key with the provided scopes.
 
@@ -508,7 +508,7 @@ const { result, error } = await deepgram.manage.createProjectKey(projectId, opti
 
 [See our API reference for more info](https://developers.deepgram.com/reference/create-key).
 
-## Delete Key
+### Delete Key
 
 Deletes a specific key associated with the provided project_id.
 
@@ -518,9 +518,9 @@ const { error } = await deepgram.manage.deleteProjectKey(projectId, projectKeyId
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-key).
 
-# Members
+## Members
 
-## Get Members
+### Get Members
 
 Retrieves account objects for all of the accounts in the specified project_id.
 
@@ -530,7 +530,7 @@ const { result, error } = await deepgram.manage.getProjectMembers(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-members).
 
-## Remove Member
+### Remove Member
 
 Removes member account for specified member_id.
 
@@ -540,9 +540,9 @@ const { error } = await deepgram.manage.removeProjectMember(projectId, projectMe
 
 [See our API reference for more info](https://developers.deepgram.com/reference/remove-member).
 
-# Scopes
+## Scopes
 
-## Get Member Scopes
+### Get Member Scopes
 
 Retrieves scopes of the specified member in the specified project.
 
@@ -552,7 +552,7 @@ const { result, error } = await deepgram.manage.getProjectMemberScopes(projectId
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-member-scopes).
 
-## Update Scope
+### Update Scope
 
 Updates the scope for the specified member in the specified project.
 
@@ -566,9 +566,9 @@ const { result, error } = await deepgram.manage.updateProjectMemberScope(
 
 [See our API reference for more info](https://developers.deepgram.com/reference/update-scope).
 
-# Invitations
+## Invitations
 
-## List Invites
+### List Invites
 
 Retrieves all invitations associated with the provided project_id.
 
@@ -578,7 +578,7 @@ const { result, error } = await deepgram.manage.getProjectInvites(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/list-invites).
 
-## Send Invite
+### Send Invite
 
 Sends an invitation to the provided email address.
 
@@ -588,7 +588,7 @@ const { result, error } = await deepgram.manage.sendProjectInvite(projectId, opt
 
 [See our API reference for more info](https://developers.deepgram.com/reference/send-invites).
 
-## Delete Invite
+### Delete Invite
 
 Removes the specified invitation from the project.
 
@@ -598,7 +598,7 @@ const { error } = await deepgram.manage.deleteProjectInvite(projectId, email);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-invite).
 
-## Leave Project
+### Leave Project
 
 Removes the authenticated user from the project.
 
@@ -608,9 +608,9 @@ const { result, error } = await deepgram.manage.leaveProject(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/leave-project).
 
-# Usage
+## Usage
 
-## Get All Requests
+### Get All Requests
 
 Retrieves all requests associated with the provided project_id based on the provided options.
 
@@ -620,7 +620,7 @@ const { result, error } = await deepgram.manage.getProjectUsageRequest(projectId
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-all-requests).
 
-## Get Request
+### Get Request
 
 Retrieves a specific request associated with the provided project_id.
 
@@ -630,7 +630,7 @@ const { result, error } = await deepgram.manage.getProjectUsageRequest(projectId
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-request).
 
-## Summarize Usage
+### Summarize Usage
 
 Retrieves usage associated with the provided project_id based on the provided options.
 
@@ -640,7 +640,7 @@ const { result, error } = await deepgram.manage.getProjectUsageSummary(projectId
 
 [See our API reference for more info](https://developers.deepgram.com/reference/summarize-usage).
 
-## Get Fields
+### Get Fields
 
 Lists the features, models, tags, languages, and processing method used for requests in the specified project.
 
@@ -650,9 +650,9 @@ const { result, error } = await deepgram.manage.getProjectUsageFields(projectId,
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
 
-# Billing
+## Billing
 
-## Get All Balances
+### Get All Balances
 
 Retrieves the list of balance info for the specified project.
 
@@ -662,7 +662,7 @@ const { result, error } = await deepgram.manage.getProjectBalances(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-all-balances).
 
-## Get Balance
+### Get Balance
 
 Retrieves the balance info for the specified project and balance_id.
 
@@ -672,39 +672,39 @@ const { result, error } = await deepgram.manage.getProjectBalance(projectId, bal
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-balance).
 
-# On-Prem APIs
+## On-Prem APIs
 
-## List On-Prem credentials
+### List On-Prem credentials
 
 ```js
 const { result, error } = await deepgram.onprem.listCredentials(projectId);
 ```
 
-## Get On-Prem credentials
+### Get On-Prem credentials
 
 ```js
 const { result, error } = await deepgram.onprem.getCredentials(projectId, credentialId);
 ```
 
-## Create On-Prem credentials
+### Create On-Prem credentials
 
 ```js
 const { result, error } = await deepgram.onprem.createCredentials(projectId, options);
 ```
 
-## Delete On-Prem credentials
+### Delete On-Prem credentials
 
 ```js
 const { result, error } = await deepgram.onprem.deleteCredentials(projectId, credentialId);
 ```
 
-# Backwards Compatibility
+## Backwards Compatibility
 
 Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
 
 We strictly follow semver, and will not introduce breaking changes to the publicly documented interfaces of the SDK. **Use internal and undocumented interfaces without pinning your version, at your own risk.**
 
-# Development and Contributing
+## Development and Contributing
 
 Interested in contributing? We ❤️ pull requests!
 
@@ -712,11 +712,11 @@ To make sure our community is safe for all, be sure to review and agree to our
 [Code of Conduct](./CODE_OF_CONDUCT.md). Then see the
 [Contribution](./CONTRIBUTING.md) guidelines for more information.
 
-## Debugging and making changes locally
+### Debugging and making changes locally
 
 If you want to make local changes to the SDK and run the [`examples/`](./examples/), you'll need to `npm run build` first, to ensure that your changes are included in the examples that are running.
 
-# Getting Help
+## Getting Help
 
 We love to hear from you so if you have questions, comments or find a bug in the
 project, let us know! You can either:

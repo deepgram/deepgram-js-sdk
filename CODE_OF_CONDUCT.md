@@ -1,9 +1,8 @@
-
 # Code of Conduct
 
 The Deepgram developer community is filled with amazing, clever and creative people, and we're excited for you to join us. Our goal is to create safe and inclusive spaces, have meaningful conversations, and explore ways to make sure that every voice is heard and understood.
 
-#### Being a Good Community Member
+## Being a Good Community Member
 
 Because we prioritize creating a safe space for our members, we believe in actively working on how we, as individuals, can ensure a positive community environment through our own actions and mindsets.
 
@@ -68,23 +67,23 @@ Alert community leaders if you notice a dangerous situation, someone in distress
 
 For Deepgram’s official online spaces, like our YouTube & Twitch chats, we have some additional rules. Any of the following behaviors can result in a ban without warning.
 
-### DON'T SPAM
+## DON'T SPAM
 
 Don't spam. We'll ban you.
 
-### KEEP IT LEGAL
+## KEEP IT LEGAL
 
 If it’s illegal, it’s not allowed on our websites or in our online spaces. Please don’t share links to pirated material or other nefarious things.
 
-### NO TROLLING
+## NO TROLLING
 
 Please be earnest. Don’t use excessive sarcasm to annoy or undermine other people. And don’t bait them with bad faith comments or abuse.
 
-### PORNOGRAPHY AND OTHER NSFW STUFF
+## PORNOGRAPHY AND OTHER NSFW STUFF
 
 Please don’t post it or link to it. It doesn’t belong in our online spaces.
 
-### FOUL AND GRAPHIC LANGUAGE
+## FOUL AND GRAPHIC LANGUAGE
 
 Please do not use excessive curse words. Additionally, do not use graphic sexual or violent language — again, think of our spaces as places for people of all ages.
 
