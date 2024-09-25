@@ -46,6 +46,7 @@
     "build:umd": "webpack --mode=production",
     "lint:js": "eslint --no-eslintrc  -c .eslintrc-examples.js examples --max-warnings 0",
     "lint:md": "markdownlint **/*.md *.md",
+    "lint:yml": "yamllint .github/workflows",
     "lint:ts": "eslint src --max-warnings 0",
     "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
     "test": "mocha -r ts-node/register test/*test.ts test/**/*test.ts --inspect --exit",
@@ -92,7 +93,8 @@
     "typedoc": "^0.22.16",
     "typescript": "^4.5.5",
     "webpack": "^5.69.1",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "yaml-lint": "^1.7.0"
   },
   "overrides": {
     "es5-ext": "0.10.53"
