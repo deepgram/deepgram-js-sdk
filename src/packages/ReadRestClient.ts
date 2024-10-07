@@ -1,4 +1,4 @@
-import { CallbackUrl, appendSearchParams, isTextSource, isUrlSource } from "../lib/helpers";
+import { CallbackUrl, isTextSource, isUrlSource } from "../lib/helpers";
 import { DeepgramError, isDeepgramError } from "../lib/errors";
 import type {
   AnalyzeSchema,

@@ -16,7 +16,7 @@ interface WebSocketLikeConstructor {
   new (
     address: string | URL,
     _ignored?: any,
-    options?: { headers: Object | undefined }
+    options?: { headers: object | undefined }
   ): WebSocketLike;
 }
 
@@ -39,11 +39,11 @@ type SocketDataLike = string | ArrayBufferLike | Blob;
  * @property {string} message - A human-readable error message.
  * @property {string} type - The type of the error.
  */
-interface WebSocketLikeError {
-  error: any;
-  message: string;
-  type: string;
-}
+// interface WebSocketLikeError {
+//   error: any;
+//   message: string;
+//   type: string;
+// }
 
 /**
  * Indicates whether a native WebSocket implementation is available in the current environment.

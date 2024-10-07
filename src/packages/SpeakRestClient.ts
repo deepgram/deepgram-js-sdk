@@ -26,28 +26,24 @@ export class SpeakRestClient extends AbstractRestClient {
     options?: SpeakSchema,
     endpoint = ":version/speak"
   ): Promise<SpeakRestClient> {
-    try {
-      let body;
+    let body;
 
-      if (isTextSource(source)) {
-        body = JSON.stringify(source);
-      } else {
-        throw new DeepgramError("Unknown transcription source type");
-      }
-
-      const requestUrl = this.getRequestUrl(
-        endpoint,
-        {},
-        { ...{ model: "aura-asteria-en" }, ...options }
-      );
-      this.result = await this.post(requestUrl, body, {
-        headers: { Accept: "audio/*", "Content-Type": "application/json" },
-      });
-
-      return this;
-    } catch (error) {
-      throw error;
+    if (isTextSource(source)) {
+      body = JSON.stringify(source);
+    } else {
+      throw new DeepgramError("Unknown transcription source type");
     }
+
+    const requestUrl = this.getRequestUrl(
+      endpoint,
+      {},
+      { ...{ model: "aura-asteria-en" }, ...options }
+    );
+    this.result = await this.post(requestUrl, body, {
+      headers: { Accept: "audio/*", "Content-Type": "application/json" },
+    });
+
+    return this;
   }
 
   /**
