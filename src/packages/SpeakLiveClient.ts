@@ -148,6 +148,10 @@ export class SpeakLiveClient extends AbstractLiveClient {
           error,
         });
       }
+    } else if (event.data instanceof Blob) {
+      event.data.arrayBuffer().then((buffer) => {
+        this.handleBinaryMessage(Buffer.from(buffer));
+      });
     } else if (event.data instanceof ArrayBuffer) {
       this.handleBinaryMessage(Buffer.from(event.data));
     } else if (Buffer.isBuffer(event.data)) {
