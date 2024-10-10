@@ -26,7 +26,11 @@ const live = async () => {
 
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const dgConnection = deepgram.speak.live({ model: "aura-asteria-en", encoding: "linear16" });
+  const dgConnection = deepgram.speak.live({
+    model: "aura-asteria-en",
+    encoding: "linear16",
+    sample_rate: 48000,
+  });
 
   let audioBuffer = Buffer.from(wavHeader);
 
