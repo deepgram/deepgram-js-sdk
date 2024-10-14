@@ -59,13 +59,13 @@ const live = async () => {
       }
     });
 
-    connection.on(LiveTranscriptionEvents.UtteranceEnd, (data) => {
+    connection.on(LiveTranscriptionEvents.UtteranceEnd, (_data) => {
       const utterance = is_finals.join(" ");
       console.log(`Deepgram UtteranceEnd: ${utterance}`);
       is_finals = [];
     });
 
-    connection.on(LiveTranscriptionEvents.SpeechStarted, (data) => {
+    connection.on(LiveTranscriptionEvents.SpeechStarted, (_data) => {
       // console.log("Deepgram SpeechStarted");
     });
 
