@@ -1,3 +1,4 @@
+export * from "./AgentLiveSchema";
 export * from "./AnalyzeSchema";
 export * from "./AsyncAnalyzeResponse";
 export * from "./AsyncPrerecordedResponse";
