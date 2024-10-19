@@ -36,6 +36,7 @@ export const DEFAULT_HEADERS = {
 };
 
 export const DEFAULT_URL = "https://api.deepgram.com";
+export const DEFAULT_AGENT_URL = "wss://agent.deepgram.com";
 
 export const DEFAULT_GLOBAL_OPTIONS: Partial<DefaultNamespaceOptions> = {
   fetch: { options: { url: DEFAULT_URL, headers: DEFAULT_HEADERS } },
@@ -44,8 +45,16 @@ export const DEFAULT_GLOBAL_OPTIONS: Partial<DefaultNamespaceOptions> = {
   },
 };
 
+export const DEFAULT_AGENT_OPTIONS: Partial<DefaultNamespaceOptions> = {
+  fetch: { options: { url: DEFAULT_URL, headers: DEFAULT_HEADERS } },
+  websocket: {
+    options: { url: DEFAULT_AGENT_URL, _nodeOnlyHeaders: DEFAULT_HEADERS },
+  },
+};
+
 export const DEFAULT_OPTIONS: DefaultClientOptions = {
   global: DEFAULT_GLOBAL_OPTIONS,
+  agent: DEFAULT_AGENT_OPTIONS,
 };
 
 export enum SOCKET_STATES {
