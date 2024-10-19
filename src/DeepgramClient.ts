@@ -1,6 +1,7 @@
 import { DeepgramVersionError } from "./lib/errors";
 import {
   AbstractClient,
+  AgentLiveClient,
   ListenClient,
   ManageClient,
   ReadClient,
@@ -78,6 +79,16 @@ export default class DeepgramClient extends AbstractClient {
    */
   get speak(): SpeakClient {
     return new SpeakClient(this.options);
+  }
+
+  /**
+   * Returns a new instance of the AgentLiveClient, which provides access to Deepgram's Voice Agent API.
+   *
+   * @returns {AgentLiveClient} A new instance of the AgentLiveClient.
+   * @beta
+   */
+  public agent(endpoint: string = "/agent"): AgentLiveClient {
+    return new AgentLiveClient(this.options, endpoint);
   }
 
   /**
