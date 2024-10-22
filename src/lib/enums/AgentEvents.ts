@@ -6,6 +6,10 @@ export enum AgentEvents {
   Close = "Close",
   Error = "Error",
   /**
+   * Audio event?
+   */
+  Audio = "Audio",
+  /**
    * Message { type: string }
    */
   Welcome = "Welcome",

@@ -8,6 +8,7 @@ import {
   SelfHostedRestClient,
   SpeakClient,
   ModelsRestClient,
+  AgentClient,
 } from "./packages";
 
 /**
@@ -78,6 +79,16 @@ export default class DeepgramClient extends AbstractClient {
    */
   get speak(): SpeakClient {
     return new SpeakClient(this.options);
+  }
+
+  /**
+   * Returns a new instance of the AgentClient, which provides access to Deepgram's Voice Agent API.
+   *
+   * @returns {AgentClient} A new instance of the AgentClient.
+   * @beta
+   */
+  get agent(): any {
+    return new AgentClient(this.options);
   }
 
   /**

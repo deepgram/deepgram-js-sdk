@@ -1,4 +1,4 @@
-import { AgentEvents } from "../lib/enums/AgentEvents.js";
+import { AgentEvents } from "../lib/enums/AgentEvents";
 import type { AgentLiveSchema, SpeakModel } from "../lib/types";
 import type { DeepgramClientOptions } from "../lib/types";
 import { AbstractLiveClient } from "./AbstractLiveClient";
@@ -6,7 +6,7 @@ import { AbstractLiveClient } from "./AbstractLiveClient";
 export class AgentLiveClient extends AbstractLiveClient {
   public namespace: string = "agent";
 
-  constructor(options: DeepgramClientOptions, endpoint: string = ":version/agent") {
+  constructor(options: DeepgramClientOptions, endpoint: string = "/agent") {
     super(options);
     /**
      * According to the docs, this is the correct base URL for the Agent API.
@@ -44,22 +44,61 @@ export class AgentLiveClient extends AbstractLiveClient {
       };
 
       this.conn.onmessage = (event: MessageEvent) => {
-        try {
-          const data: any = JSON.parse(event.data.toString());
-
-          if (data.type in AgentEvents) {
-            this.emit(data.type, data);
-          } else {
-            this.emit(AgentEvents.Unhandled, data);
-          }
-        } catch (error) {
-          this.emit(AgentEvents.Error, {
-            event,
-            message: "Unable to parse `data` as JSON.",
-            error,
-          });
-        }
+        this.handleMessage(event);
       };
+    }
+  }
+
+  /**
+   * Handles incoming messages from the WebSocket connection.
+   * @param event - The MessageEvent object representing the received message.
+   */
+  protected handleMessage(event: MessageEvent): void {
+    if (typeof event.data === "string") {
+      try {
+        const data = JSON.parse(event.data);
+        this.handleTextMessage(data);
+      } catch (error) {
+        this.emit(AgentEvents.Error, {
+          event,
+          message: "Unable to parse `data` as JSON.",
+          error,
+        });
+      }
+    } else if (event.data instanceof Blob) {
+      event.data.arrayBuffer().then((buffer) => {
+        this.handleBinaryMessage(Buffer.from(buffer));
+      });
+    } else if (event.data instanceof ArrayBuffer) {
+      this.handleBinaryMessage(Buffer.from(event.data));
+    } else if (Buffer.isBuffer(event.data)) {
+      this.handleBinaryMessage(event.data);
+    } else {
+      console.log("Received unknown data type", event.data);
+      this.emit(AgentEvents.Error, {
+        event,
+        message: "Received unknown data type.",
+      });
+    }
+  }
+
+  /**
+   * Handles binary messages received from the WebSocket connection.
+   * @param data - The binary data.
+   */
+  protected handleBinaryMessage(data: Buffer): void {
+    this.emit(AgentEvents.Audio, data);
+  }
+
+  /**
+   * Handles text messages received from the WebSocket connection.
+   * @param data - The parsed JSON data.
+   */
+  protected handleTextMessage(data: any): void {
+    if (data.type in AgentEvents) {
+      this.emit(data.type, data);
+    } else {
+      this.emit(AgentEvents.Unhandled, data);
     }
   }
 
