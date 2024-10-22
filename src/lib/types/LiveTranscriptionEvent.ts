@@ -17,6 +17,7 @@ export interface LiveTranscriptionEvent {
         confidence: number;
         language: string;
         punctuated_word: string;
+        speaker?: number;
       }[];
     }[];
   };
