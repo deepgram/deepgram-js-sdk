@@ -8,7 +8,7 @@ import { AgentLiveClient } from "./AgentLiveClient";
  * `live(ttsOptions: SpeakSchema = {}, endpoint = ":version/speak")`: Returns an `AgentLiveClient` instance for interacting with the voice agent API.
  */
 export class AgentClient extends AbstractClient {
-  public namespace: string = "speak";
+  public namespace: string = "agent";
 
   /**
    * Returns an `AgentLiveClient` instance for interacting with the voice agent API.
