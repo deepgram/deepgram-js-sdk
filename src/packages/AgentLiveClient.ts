@@ -1,6 +1,6 @@
+import { DEFAULT_AGENT_URL } from "../lib/constants.js";
 import { AgentEvents } from "../lib/enums/AgentEvents";
-import type { AgentLiveSchema, SpeakModel } from "../lib/types";
-import type { DeepgramClientOptions } from "../lib/types";
+import type { AgentLiveSchema, SpeakModel, DeepgramClientOptions } from "../lib/types";
 import { AbstractLiveClient } from "./AbstractLiveClient";
 
 export class AgentLiveClient extends AbstractLiveClient {
@@ -8,16 +8,8 @@ export class AgentLiveClient extends AbstractLiveClient {
 
   constructor(options: DeepgramClientOptions, endpoint: string = "/agent") {
     super(options);
-    /**
-     * According to the docs, this is the correct base URL for the Agent API.
-     * TODO: Make configurable for self-hosted customers.
-     */
-    this.baseUrl = "wss://agent.deepgram.com";
+    this.baseUrl = options.agent?.websocket?.options?.url ?? DEFAULT_AGENT_URL;
 
-    /**
-     * TODO: Not sure we should send the options here.
-     * Think that needs to happen after Websocket is open.
-     */
     this.connect({}, endpoint);
   }
 
