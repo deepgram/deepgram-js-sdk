@@ -9,7 +9,7 @@ const agent = async () => {
   let audioBuffer = Buffer.alloc(0);
   let i = 0;
   const url = "https://dpgr.am/spacewalk.wav";
-  const connection = deepgram.agent.live();
+  const connection = deepgram.agent();
   connection.on(AgentEvents.Open, async () => {
     console.log("Connection opened");
 
