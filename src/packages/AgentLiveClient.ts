@@ -1,4 +1,4 @@
-import { DEFAULT_AGENT_URL } from "../lib/constants.js";
+import { DEFAULT_AGENT_URL } from "../lib/constants";
 import { AgentEvents } from "../lib/enums/AgentEvents";
 import type { AgentLiveSchema, SpeakModel, DeepgramClientOptions } from "../lib/types";
 import { AbstractLiveClient } from "./AbstractLiveClient";
