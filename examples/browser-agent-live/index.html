@@ -11,6 +11,8 @@
     const { createClient, AgentEvents } = deepgram;
     const _deepgram = createClient("put yo key here");
 
+    const audioContext = new AudioContext();
+
     console.log("Deepgram Instance: ", _deepgram);
 
     (async () => {
@@ -24,12 +26,13 @@
         await connection.configure({
           audio: {
             input: {
-              encoding: "linear16",
-              sampleRate: 44100,
+              encoding: "opus",
+              container: "ogg",
             },
             output: {
               encoding: "linear16",
-              bitrate: 32000,
+              bitrate: 48000,
+              container: "none",
             },
           },
           agent: {
@@ -79,10 +82,12 @@
         console.dir(data);
       });
 
-      connection.on(AgentEvents.Audio, (data) => {
+      connection.on(AgentEvents.Audio, async (data) => {
         console.log("Playing audio.");
-        const source = audio.createBufferSource(data);
-        source.connect(audio.destination);
+        const audioBuffer = await audioContext.decodeAudioData(data);
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
         source.start();
       });
 
@@ -101,10 +106,16 @@
       });
 
       const media = await navigator.mediaDevices.getUserMedia({
-        audio: true,
+        audio: {
+          sampleRate: 48000,
+          channelCount: 1,
+          echoCancellation: true,
+          autoGainControl: true,
+          noiseSuppression: false,
+        },
         video: false,
       });
-      const mic = new MediaRecorder(media);
+      const mic = new MediaRecorder(media, { mimeType: "audio/ogg" });
       const btn = document.querySelector("button");
       console.log(btn);
       btn.addEventListener("click", (event) => {
@@ -117,11 +128,14 @@
         }
       });
 
+      mic.onerror = (event) => {
+        console.error("Microphone Error:", event.error);
+      };
+
       mic.ondataavailable = async (event) => {
+        console.log(mic.mimeType);
         console.log("Data available.");
-        const chunk = await event.data.getReader();
-        data = data.concat(chunk);
-        await connection.send(data);
+        await connection.send(event.data);
       };
     })();
     // ...
