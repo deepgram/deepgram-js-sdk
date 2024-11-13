@@ -34,6 +34,18 @@ jobs:
 
       - name: Create a release
         run: npx semantic-release
+        with:
+          branches:
+            [
+              "+([0-9])?(.{+([0-9]),x}).x",
+              "master",
+              "main",
+              "next",
+              "next-major",
+              { name: "beta", prerelease: true },
+              { name: "alpha", prerelease: true },
+              { name: "release/*", prerelease: true },
+            ]
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
