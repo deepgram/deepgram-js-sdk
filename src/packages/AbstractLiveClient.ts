@@ -2,7 +2,7 @@ import { AbstractClient, noop } from "./AbstractClient";
 import { CONNECTION_STATE, SOCKET_STATES } from "../lib/constants";
 import type { DeepgramClientOptions, LiveSchema } from "../lib/types";
 import type { WebSocket as WSWebSocket } from "ws";
-import { isBun } from "../lib/helpers";
+import { isBun } from "../lib/runtime";
 
 /**
  * Represents a constructor for a WebSocket-like object that can be used in the application.

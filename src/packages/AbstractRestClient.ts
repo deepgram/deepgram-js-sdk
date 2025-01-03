@@ -4,7 +4,7 @@ import { fetchWithAuth, resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, RequestMethodType } from "../lib/types/Fetch";
 import { AbstractClient } from "./AbstractClient";
 import { DeepgramClientOptions } from "../lib/types";
-import { isBrowser } from "../lib/helpers";
+import { isBrowser } from "../lib/runtime";
 import merge from "deepmerge";
 
 /**
