@@ -11,17 +11,10 @@ import {
 import { Headers as CrossFetchHeaders } from "cross-fetch";
 import { Readable } from "stream";
 import merge from "deepmerge";
-import { BROWSER_AGENT, BUN_VERSION, NODE_VERSION } from "./constants";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
-
-export const isBrowser = () => BROWSER_AGENT !== "unknown";
-
-export const isNode = () => NODE_VERSION !== "unknown";
-
-export const isBun = () => BUN_VERSION !== "unknown";
 
 export function applyDefaults<O, S>(options: Partial<O> = {}, subordinate: Partial<S> = {}): S {
   return merge(subordinate, options);
