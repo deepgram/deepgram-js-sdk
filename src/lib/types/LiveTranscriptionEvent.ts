@@ -30,4 +30,5 @@ export interface LiveTranscriptionEvent {
     };
     model_uuid: string;
   };
+  from_finalize: boolean;
 }
