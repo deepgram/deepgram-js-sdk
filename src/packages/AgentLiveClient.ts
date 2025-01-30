@@ -125,7 +125,7 @@ export class AgentLiveClient extends AbstractLiveClient {
     delete opts.audio.input.sampleRate;
     opts.audio.output["sample_rate"] = options.audio.output?.sampleRate;
     delete opts.audio.output.sampleRate;
-    this.send(JSON.stringify({ type: "SettingsConfiguration", ...options }));
+    this.send(JSON.stringify({ type: "SettingsConfiguration", ...opts }));
   }
 
   /**
