@@ -99,24 +99,24 @@ type ThinkModel =
         type: "open_ai";
       };
       model: "gpt-4o-mini";
-      instructions: string;
-      functions: ThinkModelFunction[];
+      instructions?: string;
+      functions?: ThinkModelFunction[];
     }
   | {
       provider: {
         type: "anthropic";
       };
       model: "claude-3-haiku-20240307";
-      instructions: string;
-      functions: ThinkModelFunction[];
+      instructions?: string;
+      functions?: ThinkModelFunction[];
     }
   | {
       provider: {
         type: "groq";
       };
       model: "";
-      instructions: string;
-      functions: ThinkModelFunction[];
+      instructions?: string;
+      functions?: ThinkModelFunction[];
     }
   | {
       provider: {
@@ -125,8 +125,8 @@ type ThinkModel =
         key: string;
       };
       model: string;
-      instructions: string;
-      functions: ThinkModelFunction[];
+      instructions?: string;
+      functions?: ThinkModelFunction[];
     };
 
 /**
@@ -138,12 +138,12 @@ interface AgentLiveSchema extends Record<string, unknown> {
       /**
        * @default 1
        */
-      channels: number;
+      channels?: number;
       encoding: AudioEncoding;
       /**
        * @default false
        */
-      multichannel: boolean;
+      multichannel?: boolean;
       sampleRate: number;
     };
     /**
@@ -169,11 +169,11 @@ interface AgentLiveSchema extends Record<string, unknown> {
      */
     think: ThinkModel;
   };
-  context: {
+  context?: {
     /**
      * LLM message history (e.g. to restore existing conversation if websocket disconnects)
      */
-    messages: [];
+    messages: { type: "user" | "assistant"; content: string }[];
     /**
      * Whether to replay the last message, if it is an assistant message.
      */
