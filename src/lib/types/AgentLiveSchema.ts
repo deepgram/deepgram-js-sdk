@@ -169,7 +169,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
           /**
            * @see https://developers.deepgram.com/docs/keyterm
            */
-          keyterms: string[];
+          keyterms?: string[];
         };
     speak: {
       /**
