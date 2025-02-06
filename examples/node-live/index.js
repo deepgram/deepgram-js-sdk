@@ -10,7 +10,7 @@ const live = async () => {
   let is_finals = [];
 
   const connection = deepgram.listen.live({
-    model: "nova-2",
+    model: "nova-3",
     language: "en-US",
     // Apply smart formatting to the output
     smart_format: true,
@@ -20,6 +20,8 @@ const live = async () => {
     vad_events: true,
     // Time in milliseconds of silence to wait for before finalizing speech
     endpointing: 300,
+    // Keyterm Prompting allows you improve Keyword Recall Rate (KRR) for important keyterms or phrases up to 90%.
+    keyterms: ["BBC"],
   });
 
   connection.on(LiveTranscriptionEvents.Open, () => {
