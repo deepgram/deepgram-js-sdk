@@ -52,6 +52,10 @@ export class ListenRestClient extends AbstractRestClient {
         );
       }
 
+      if (options?.keyterms?.length && !options.model?.startsWith("nova-3")) {
+        throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
+      }
+
       const requestUrl = this.getRequestUrl(endpoint, {}, { ...{}, ...options });
       const result: SyncPrerecordedResponse = await this.post(requestUrl, body).then((result) =>
         result.json()

@@ -11,7 +11,8 @@ const transcribeUrl = async () => {
       url: "https://dpgr.am/spacewalk.wav",
     },
     {
-      model: "nova-2",
+      model: "nova-3",
+      keyterms: ["spacewalk"],
     }
   );
 
@@ -28,7 +29,8 @@ const transcribeFile = async () => {
 
   console.log("Transcribing file", file);
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(file, {
-    model: "nova-2",
+    model: "nova-3",
+    keyterms: ["spacewalk"],
   });
 
   if (error) console.error(error);
