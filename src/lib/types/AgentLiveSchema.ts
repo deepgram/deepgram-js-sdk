@@ -26,6 +26,8 @@ type AudioEncoding =
   | "g729";
 
 type ListenModel =
+  | "nova-3"
+  | "nova-3-general"
   | "nova-2"
   | "nova-2-meeting"
   | "nova-2-phonecall"
@@ -152,12 +154,23 @@ interface AgentLiveSchema extends Record<string, unknown> {
     output?: AudioFormat;
   };
   agent: {
-    listen: {
-      /**
-       * @see https://developers.deepgram.com/docs/model
-       */
-      model: ListenModel;
-    };
+    listen:
+      | {
+          /**
+           * @see https://developers.deepgram.com/docs/model
+           */
+          model: Exclude<ListenModel, "nova-3" | "nova-3-general">;
+        }
+      | {
+          /**
+           * @see https://developers.deepgram.com/docs/model
+           */
+          model: Extract<ListenModel, "nova-3" | "nova-3-general">;
+          /**
+           * @see https://developers.deepgram.com/docs/keyterm
+           */
+          keyterms: string[];
+        };
     speak: {
       /**
        * @see https://developers.deepgram.com/docs/tts-models

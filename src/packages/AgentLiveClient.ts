@@ -1,5 +1,6 @@
 import { DEFAULT_AGENT_URL } from "../lib/constants";
 import { AgentEvents } from "../lib/enums/AgentEvents";
+import { DeepgramError } from "../lib/errors.js";
 import type {
   AgentLiveSchema,
   SpeakModel,
@@ -119,6 +120,10 @@ export class AgentLiveClient extends AbstractLiveClient {
    * @param options.context.replay - Whether to replay the last message if it was an assistant message.
    */
   public configure(options: AgentLiveSchema): void {
+    // @ts-expect-error Not every consumer of the SDK is using TypeScript, this conditional exists to catch runtime errors for JS code where there is no compile-time checking.
+    if (!options.agent.listen.model.startsWith("nova-3") && options.agent.listen.keyterms?.length) {
+      throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
+    }
     // Converting the property names...
     const opts: Record<string, any> = { ...options };
     opts.audio.input["sample_rate"] = options.audio.input?.sampleRate;
