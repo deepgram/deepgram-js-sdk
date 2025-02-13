@@ -21,7 +21,7 @@ const live = async () => {
     // Time in milliseconds of silence to wait for before finalizing speech
     endpointing: 300,
     // Keyterm Prompting allows you improve Keyword Recall Rate (KRR) for important keyterms or phrases up to 90%.
-    keyterms: ["BBC"],
+    keyterm: ["BBC"],
   });
 
   connection.on(LiveTranscriptionEvents.Open, () => {

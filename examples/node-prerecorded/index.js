@@ -12,7 +12,7 @@ const transcribeUrl = async () => {
     },
     {
       model: "nova-3",
-      keyterms: ["spacewalk"],
+      keyterm: ["spacewalk"],
     }
   );
 
@@ -30,7 +30,7 @@ const transcribeFile = async () => {
   console.log("Transcribing file", file);
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(file, {
     model: "nova-3",
-    keyterms: ["spacewalk"],
+    keyterm: ["spacewalk"],
   });
 
   if (error) console.error(error);

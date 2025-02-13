@@ -52,7 +52,7 @@ export class ListenRestClient extends AbstractRestClient {
         );
       }
 
-      if (options?.keyterms?.length && !options.model?.startsWith("nova-3")) {
+      if (options?.keyterm?.length && !options.model?.startsWith("nova-3")) {
         throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
       }
 
