@@ -97,7 +97,7 @@ interface TranscriptionSchema extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/keyterm
    */
-  keyterms?: string[] | string;
+  keyterm?: string[] | string;
 
   /**
    * @see https://developers.deepgram.com/docs/tagging

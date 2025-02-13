@@ -121,7 +121,7 @@ export class AgentLiveClient extends AbstractLiveClient {
    */
   public configure(options: AgentLiveSchema): void {
     // @ts-expect-error Not every consumer of the SDK is using TypeScript, this conditional exists to catch runtime errors for JS code where there is no compile-time checking.
-    if (!options.agent.listen.model.startsWith("nova-3") && options.agent.listen.keyterms?.length) {
+    if (!options.agent.listen.model.startsWith("nova-3") && options.agent.listen.keyterm?.length) {
       throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
     }
     // Converting the property names...
