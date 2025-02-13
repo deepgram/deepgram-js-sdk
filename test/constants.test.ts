@@ -1,13 +1,13 @@
-import { applyDefaults, convertProtocolToWs, isBrowser } from "../src/lib/helpers";
+import { applyDefaults, convertProtocolToWs } from "../src/lib/helpers";
 import {
   CONNECTION_STATE,
   DEFAULT_GLOBAL_OPTIONS,
   DEFAULT_HEADERS,
   DEFAULT_OPTIONS,
   DEFAULT_URL,
-  NODE_VERSION,
   SOCKET_STATES,
 } from "../src/lib/constants";
+import { isBrowser, NODE_VERSION } from "../src/lib/runtime";
 import { DeepgramClientOptions } from "../src/lib/types/DeepgramClientOptions";
 import { expect } from "chai";
 import { faker } from "@faker-js/faker";
