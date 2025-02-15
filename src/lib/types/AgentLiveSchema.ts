@@ -186,7 +186,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
     /**
      * LLM message history (e.g. to restore existing conversation if websocket disconnects)
      */
-    messages: { type: "user" | "assistant"; content: string }[];
+    messages: { role: "user" | "assistant"; content: string }[];
     /**
      * Whether to replay the last message, if it is an assistant message.
      */
