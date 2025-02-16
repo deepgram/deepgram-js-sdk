@@ -1,21 +1,7 @@
-import { convertProtocolToWs, isBrowser, isBun, isNode } from "./helpers";
+import { convertProtocolToWs } from "./helpers";
+import { isBrowser, isBun, isNode, NODE_VERSION, BUN_VERSION, BROWSER_AGENT } from "./runtime";
 import { version } from "./version";
 import type { DefaultNamespaceOptions, DefaultClientOptions } from "./types";
-
-export const NODE_VERSION =
-  typeof process !== "undefined" && process.versions && process.versions.node
-    ? process.versions.node
-    : "unknown";
-
-export const BUN_VERSION =
-  typeof process !== "undefined" && process.versions && process.versions.bun
-    ? process.versions.bun
-    : "unknown";
-
-export const BROWSER_AGENT =
-  typeof window !== "undefined" && window.navigator && window.navigator.userAgent
-    ? window.navigator.userAgent
-    : "unknown";
 
 const getAgent = () => {
   if (isNode()) {
