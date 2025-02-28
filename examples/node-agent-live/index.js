@@ -28,7 +28,7 @@ const agent = async () => {
       agent: {
         listen: {
           model: "nova-3",
-          keyterm: ["spacewalk"],
+          keyterms: ["spacewalk"],
         },
         speak: {
           model: "aura-asteria-en",
