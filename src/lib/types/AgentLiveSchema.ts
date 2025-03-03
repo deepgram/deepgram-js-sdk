@@ -23,11 +23,13 @@ type AudioEncoding =
   | "amr-wb"
   | "Opus"
   | "speex"
-  | "g729";
+  | "g729"
+  | string;
 
 type ListenModel =
   | "nova-3"
   | "nova-3-general"
+  | "nova-3-medical"
   | "nova-2"
   | "nova-2-meeting"
   | "nova-2-phonecall"
@@ -56,7 +58,8 @@ type ListenModel =
   | "whisper"
   | "whisper-small"
   | "whisper-medium"
-  | "whisper-large";
+  | "whisper-large"
+  | string;
 
 type SpeakModel =
   | "aura-asteria-en"
@@ -70,7 +73,8 @@ type SpeakModel =
   | "aura-angus-en"
   | "aura-orpheus-en"
   | "aura-helios-en"
-  | "aura-zeus-en";
+  | "aura-zeus-en"
+  | string;
 
 interface ThinkModelFunction {
   name: string;
