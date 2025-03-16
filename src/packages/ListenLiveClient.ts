@@ -1,6 +1,7 @@
 import { AbstractLiveClient } from "./AbstractLiveClient";
 import { LiveTranscriptionEvents } from "../lib/enums";
 import type { LiveSchema, LiveConfigOptions, DeepgramClientOptions } from "../lib/types";
+import { DeepgramError } from "../lib/errors";
 
 /**
  * The `ListenLiveClient` class extends the `AbstractLiveClient` class and provides functionality for setting up and managing a WebSocket connection for live transcription.
@@ -33,6 +34,10 @@ export class ListenLiveClient extends AbstractLiveClient {
     endpoint: string = ":version/listen"
   ) {
     super(options);
+
+    if (transcriptionOptions.keyterm?.length && !transcriptionOptions.model?.startsWith("nova-3")) {
+      throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
+    }
 
     this.connect(transcriptionOptions, endpoint);
   }

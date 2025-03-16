@@ -1,3 +1,4 @@
+export * from "./AgentLiveSchema";
 export * from "./AnalyzeSchema";
 export * from "./AsyncAnalyzeResponse";
 export * from "./AsyncPrerecordedResponse";
@@ -8,6 +9,7 @@ export * from "./DeepgramClientOptions";
 export * from "./DeepgramResponse";
 export * from "./DeepgramSource";
 export * from "./Fetch";
+export * from "./FunctionCallResponse";
 export * from "./GetModelsResponse";
 export * from "./GetModelsSchema";
 export * from "./GetProjectBalancesResponse";

@@ -245,8 +245,8 @@ export abstract class AbstractLiveClient extends AbstractClient {
       }
 
       if (typeof data !== "string") {
-        if (data.byteLength === 0) {
-          this.log("warn", "skipping `send` for zero-byte blob", data);
+        if (!data?.byteLength) {
+          this.log("warn", "skipping `send` for zero-byte payload", data);
 
           return;
         }
