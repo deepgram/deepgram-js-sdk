@@ -32,7 +32,7 @@ import type {
 import { AbstractRestClient } from "./AbstractRestClient";
 
 /**
- * The `ManageRestClient` class provides a set of methods for interacting with the Deepgram Manage API. It extends the `AbstractRestClient` class and provides functionality for managing projects, keys, members, invites, usage, and balances.
+ * The `ManageRestClient` class provides a set of methods for interacting with the Deepgram Manage API. It extends the `AbstractRestClient` class and provides functionality for managing projects, keys, members, invites, usage, balances, and models.
  *
  * The class has a `namespace` property that is set to `"manage"`, which is used in the construction of the request URLs.
  *
@@ -60,36 +60,8 @@ import { AbstractRestClient } from "./AbstractRestClient";
  * - `getProjectUsageFields`: Retrieves a list of the available usage fields for a specific project.
  * - `getProjectBalances`: Retrieves a list of all balances associated with a specific project.
  * - `getProjectBalance`: Retrieves the details of a specific balance for a project.
- */
-/**
- * The `ManageRestClient` class provides a set of methods for interacting with the Deepgram Manage API. It extends the `AbstractRestClient` class and provides functionality for managing projects, keys, members, invites, usage, and balances.
- *
- * The class has a `namespace` property that is set to `"manage"`, which is used in the construction of the request URLs.
- *
- * The methods in this class include:
- * - `getTokenDetails`: Retrieves the details of the current authentication token.
- * - `getProjects`: Retrieves a list of all projects associated with the authenticated account.
- * - `getProject`: Retrieves the details of a specific project.
- * - `updateProject`: Updates the details of a specific project.
- * - `deleteProject`: Deletes a specific project.
- * - `getProjectKeys`: Retrieves a list of all API keys associated with a specific project.
- * - `getProjectKey`: Retrieves the details of a specific API key.
- * - `createProjectKey`: Creates a new API key for a specific project.
- * - `deleteProjectKey`: Deletes a specific API key.
- * - `getProjectMembers`: Retrieves a list of all members associated with a specific project.
- * - `removeProjectMember`: Removes a specific member from a project.
- * - `getProjectMemberScopes`: Retrieves the scopes associated with a specific project member.
- * - `updateProjectMemberScope`: Updates the scopes associated with a specific project member.
- * - `getProjectInvites`: Retrieves a list of all pending invitations for a specific project.
- * - `sendProjectInvite`: Sends a new invitation to a specific email address for a project.
- * - `deleteProjectInvite`: Deletes a specific invitation for a project.
- * - `leaveProject`: Removes the authenticated user from a specific project.
- * - `getProjectUsageRequests`: Retrieves a list of all usage requests for a specific project.
- * - `getProjectUsageRequest`: Retrieves the details of a specific usage request.
- * - `getProjectUsageSummary`: Retrieves a summary of the usage for a specific project.
- * - `getProjectUsageFields`: Retrieves a list of the available usage fields for a specific project.
- * - `getProjectBalances`: Retrieves a list of all balances associated with a specific project.
- * - `getProjectBalance`: Retrieves the details of a specific balance for a project.
+ * - `getAllModels`: Retrieves all models for a project.
+ * - `getModel`: Retrieves a specific model.
  */
 export class ManageRestClient extends AbstractRestClient {
   public namespace: string = "manage";

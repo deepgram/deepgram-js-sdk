@@ -71,6 +71,9 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Development and Contributing](#development-and-contributing)
   - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
+- [Models](#models)
+  - [Get All Models](#get-all-models)
+  - [Get Model](#get-model)
 
 ## Migrating from earlier versions
 
@@ -615,10 +618,8 @@ const { result, error } = await deepgram.manage.leaveProject(projectId);
 Retrieves all requests associated with the provided project_id based on the provided options.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsageRequest(projectId, requestId);
+const { result, error } = await deepgram.manage.getProjectUsageRequests(projectId, options);
 ```
-
-[See our API reference for more info](https://developers.deepgram.com/reference/get-all-requests).
 
 ### Get Request
 
@@ -724,3 +725,31 @@ project, let us know! You can either:
 - [Open an issue in this repository](https://github.com/deepgram/deepgram-node-sdk/issues/new)
 - [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
 - [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
+
+## Authentication
+
+### Get Token Details
+
+Retrieves the details of the current authentication token.
+
+```js
+const { result, error } = await deepgram.manage.getTokenDetails();
+```
+
+## Models
+
+### Get All Models
+
+Retrieves all models available for a given project.
+
+```js
+const { result, error } = await deepgram.manage.getAllModels(projectId, {});
+```
+
+### Get Model
+
+Retrieves details of a specific model.
+
+```js
+const { result, error } = await deepgram.manage.getModel(projectId, modelId);
+```
