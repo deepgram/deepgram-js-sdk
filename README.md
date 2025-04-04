@@ -31,8 +31,11 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Transcription (Live / Streaming)](#transcription-live--streaming)
   - [Live Audio](#live-audio)
 - [Transcribing to captions](#transcribing-to-captions)
+- [Voice Agent](#voice-agent)
 - [Text to Speech](#text-to-speech)
 - [Text Intelligence](#text-intelligence)
+- [Authentication](#authentication)
+  - [Get Token Details](#get-token-details)
 - [Projects](#projects)
   - [Get Projects](#get-projects)
   - [Get Project](#get-project)
@@ -62,6 +65,9 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Billing](#billing)
   - [Get All Balances](#get-all-balances)
   - [Get Balance](#get-balance)
+- [Models](#models)
+  - [Get All Models](#get-all-models)
+  - [Get Model](#get-model)
 - [On-Prem APIs](#on-prem-apis)
   - [List On-Prem credentials](#list-on-prem-credentials)
   - [Get On-Prem credentials](#get-on-prem-credentials)
@@ -148,7 +154,7 @@ const deepgram = createClient(DEEPGRAM_API_KEY);
 
 ## Scoped Configuration
 
-The SDK supports scoped configuration. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here’s how the namespace configuration works:
+The SDK supports scoped configuration. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here's how the namespace configuration works:
 
 ### 1. Global Defaults
 
@@ -380,6 +386,101 @@ const vttOutput = webvtt(result);
 
 [See our standalone captions library for more information](https://github.com/deepgram/deepgram-node-captions).
 
+## Voice Agent
+
+```js
+import { createClient } from "@deepgram/sdk";
+import { AgentEvents } from "@deepgram/sdk";
+
+const deepgram = createClient(DEEPGRAM_API_KEY);
+
+// Create an agent connection
+const agent = deepgram.agent.live();
+
+// Set up event handlers
+agent.on(AgentEvents.Open, () => {
+  console.log("Connection opened");
+
+  // Configure the agent once connection is established
+  agent.configure({
+    audio: {
+      input: {
+        encoding: "linear16",
+        sampleRate: 16000,
+      },
+      output: {
+        encoding: "linear16",
+        container: "wav",
+        sampleRate: 24000,
+      },
+    },
+    agent: {
+      listen: {
+        model: "nova-3",
+      },
+      speak: {
+        model: "aura-asteria-en",
+      },
+      think: {
+        provider: {
+          type: "anthropic",
+        },
+        model: "claude-3-haiku-20240307",
+        instructions: "You are a helpful AI assistant. Keep responses brief and friendly.",
+      },
+    },
+  });
+});
+
+// Handle agent responses
+agent.on(AgentEvents.Speech, (speech) => {
+  console.log("Agent is speaking:", speech);
+});
+
+agent.on(AgentEvents.Transcript, (transcript) => {
+  console.log("User said:", transcript);
+});
+
+agent.on(AgentEvents.Audio, (audio) => {
+  // Handle audio data from the agent
+  playAudio(audio); // Your audio playback implementation
+});
+
+agent.on(AgentEvents.Error, (error) => {
+  console.error("Error:", error);
+});
+
+agent.on(AgentEvents.Close, () => {
+  console.log("Connection closed");
+});
+
+// Send audio data
+function sendAudioData(audioData) {
+  agent.send(audioData);
+}
+
+// Keep the connection alive
+setInterval(() => {
+  agent.keepAlive();
+}, 8000);
+```
+
+This example demonstrates:
+
+- Setting up a WebSocket connection
+- Configuring the agent with speech, language, and audio settings
+- Handling various agent events (speech, transcripts, audio)
+- Sending audio data and keeping the connection alive
+
+For a complete implementation, you would need to:
+
+1. Add your audio input source (e.g., microphone)
+2. Implement audio playback for the agent's responses
+3. Handle any function calls if your agent uses them
+4. Add proper error handling and connection management
+
+[See our API reference for more info](https://developers.deepgram.com/reference/voice-agent-api/agent)
+
 ## Text to Speech
 
 ### Rest
@@ -433,6 +534,18 @@ const { result, error } = await deepgram.read.analyzeText(
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/analyze-text).
+
+## Authentication
+
+### Get Token Details
+
+Retrieves the details of the current authentication token.
+
+```js
+const { result, error } = await deepgram.manage.getTokenDetails();
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/authentication)
 
 ## Projects
 
@@ -615,10 +728,8 @@ const { result, error } = await deepgram.manage.leaveProject(projectId);
 Retrieves all requests associated with the provided project_id based on the provided options.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsageRequest(projectId, requestId);
+const { result, error } = await deepgram.manage.getProjectUsageRequests(projectId, options);
 ```
-
-[See our API reference for more info](https://developers.deepgram.com/reference/get-all-requests).
 
 ### Get Request
 
@@ -672,6 +783,28 @@ const { result, error } = await deepgram.manage.getProjectBalance(projectId, bal
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-balance).
 
+## Models
+
+### Get All Models
+
+Retrieves all models available for a given project.
+
+```js
+const { result, error } = await deepgram.manage.getAllModels(projectId, {});
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/management-api/models/list)
+
+### Get Model
+
+Retrieves details of a specific model.
+
+```js
+const { result, error } = await deepgram.manage.getModel(projectId, modelId);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/management-api/models/get)
+
 ## On-Prem APIs
 
 ### List On-Prem credentials
@@ -680,11 +813,15 @@ const { result, error } = await deepgram.manage.getProjectBalance(projectId, bal
 const { result, error } = await deepgram.onprem.listCredentials(projectId);
 ```
 
+[See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/list-credentials)
+
 ### Get On-Prem credentials
 
 ```js
 const { result, error } = await deepgram.onprem.getCredentials(projectId, credentialId);
 ```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/get-credentials)
 
 ### Create On-Prem credentials
 
@@ -692,11 +829,15 @@ const { result, error } = await deepgram.onprem.getCredentials(projectId, creden
 const { result, error } = await deepgram.onprem.createCredentials(projectId, options);
 ```
 
+[See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/create-credentials)
+
 ### Delete On-Prem credentials
 
 ```js
 const { result, error } = await deepgram.onprem.deleteCredentials(projectId, credentialId);
 ```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/delete-credentials)
 
 ## Backwards Compatibility
 
