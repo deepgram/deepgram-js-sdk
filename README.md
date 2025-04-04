@@ -31,6 +31,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Transcription (Live / Streaming)](#transcription-live--streaming)
   - [Live Audio](#live-audio)
 - [Transcribing to captions](#transcribing-to-captions)
+- [Voice Agent](#voice-agent)
 - [Text to Speech](#text-to-speech)
 - [Text Intelligence](#text-intelligence)
 - [Authentication](#authentication)
