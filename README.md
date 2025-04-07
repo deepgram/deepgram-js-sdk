@@ -385,13 +385,13 @@ const vttOutput = webvtt(result);
 ### Rest
 
 ```js
-const { result } = await deepgram.speak.request({ text }, { model: "aura-asteria-en" });
+const { result } = await deepgram.speak.request({ text }, { model: "aura-2-thalia-en" });
 ```
 
 ### Websocket
 
 ```js
-const dgConnection = deepgram.speak.live({ model: "aura-asteria-en" });
+const dgConnection = deepgram.speak.live({ model: "aura-2-thalia-en" });
 
 dgConnection.on(LiveTTSEvents.Open, () => {
   console.log("Connection opened");
