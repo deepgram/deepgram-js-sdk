@@ -433,12 +433,12 @@ agent.on(AgentEvents.Open, () => {
 });
 
 // Handle agent responses
-agent.on(AgentEvents.Speech, (speech) => {
-  console.log("Agent is speaking:", speech);
+agent.on(AgentEvents.AgentStartedSpeaking, (data) => {
+  console.log("Agent started speaking:", data["total_latency"]);
 });
 
-agent.on(AgentEvents.Transcript, (transcript) => {
-  console.log("User said:", transcript);
+agent.on(AgentEvents.ConversationText, (message) => {
+  console.log(`${message.role} said: ${message.content}`);
 });
 
 agent.on(AgentEvents.Audio, (audio) => {
