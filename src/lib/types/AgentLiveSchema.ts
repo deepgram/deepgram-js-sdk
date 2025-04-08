@@ -62,6 +62,7 @@ type ListenModel =
   | string;
 
 type SpeakModel =
+  | "aura-asteria-en"
   | "aura-luna-en"
   | "aura-stella-en"
   | "aura-athena-en"
