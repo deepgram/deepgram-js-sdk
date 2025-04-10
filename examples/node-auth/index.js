@@ -1,6 +1,4 @@
 const { createClient } = require("../../dist/main/index");
-const fs = require("fs");
-const path = require("path");
 
 const transcribeUrl = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
