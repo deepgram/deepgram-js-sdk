@@ -19,6 +19,15 @@ import {
  */
 export default class DeepgramClient extends AbstractClient {
   /**
+   * Returns a new instance of the AuthRestClient, which provides access to the Deepgram API's short-lived token endpoints.
+   *
+   * @returns {AuthRestClient} A new instance of the AuthRestClient.
+   * @see https://developers.deepgram.com/reference/token-based-auth-api/grant-token
+   */
+  get auth(): AuthRestClient {
+    return new AuthRestClient(this.options);
+  }
+  /**
    * Returns a new instance of the ListenClient, which provides access to the Deepgram API's listening functionality.
    *
    * @returns {ListenClient} A new instance of the ListenClient.
@@ -90,10 +99,6 @@ export default class DeepgramClient extends AbstractClient {
    */
   public agent(endpoint: string = "/agent"): AgentLiveClient {
     return new AgentLiveClient(this.options, endpoint);
-  }
-
-  get auth(): AuthRestClient {
-    return new AuthRestClient(this.options);
   }
 
   /**
