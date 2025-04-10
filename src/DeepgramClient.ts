@@ -2,6 +2,7 @@ import { DeepgramVersionError } from "./lib/errors";
 import {
   AbstractClient,
   AgentLiveClient,
+  AuthRestClient,
   ListenClient,
   ManageClient,
   ReadClient,
@@ -89,6 +90,10 @@ export default class DeepgramClient extends AbstractClient {
    */
   public agent(endpoint: string = "/agent"): AgentLiveClient {
     return new AgentLiveClient(this.options, endpoint);
+  }
+
+  get auth(): AuthRestClient {
+    return new AuthRestClient(this.options);
   }
 
   /**
