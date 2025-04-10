@@ -2,6 +2,7 @@ export * from "./AbstractClient";
 export * from "./AbstractLiveClient";
 export * from "./AbstractRestClient";
 export * from "./AgentLiveClient";
+export * from "./AuthRestClient";
 export * from "./ListenClient";
 export * from "./ListenLiveClient";
 export * from "./ListenRestClient";
