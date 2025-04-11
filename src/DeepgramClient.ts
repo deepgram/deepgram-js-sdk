@@ -19,7 +19,7 @@ import {
  */
 export default class DeepgramClient extends AbstractClient {
   /**
-   * Returns a new instance of the AuthRestClient, which provides access to the Deepgram API's short-lived token endpoints.
+   * Returns a new instance of the AuthRestClient, which provides access to the Deepgram API's temporary token endpoints.
    *
    * @returns {AuthRestClient} A new instance of the AuthRestClient.
    * @see https://developers.deepgram.com/reference/token-based-auth-api/grant-token
