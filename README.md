@@ -395,7 +395,7 @@ import { AgentEvents } from "@deepgram/sdk";
 const deepgram = createClient(DEEPGRAM_API_KEY);
 
 // Create an agent connection
-const agent = deepgram.agent.live();
+const agent = deepgram.agent();
 
 // Set up event handlers
 agent.on(AgentEvents.Open, () => {
