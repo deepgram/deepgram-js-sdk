@@ -27,7 +27,7 @@ const live = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
   const dgConnection = deepgram.speak.live({
-    model: "aura-2-thalia-en",
+    model: "aura-asteria-en",
     encoding: "linear16",
     sample_rate: 48000,
   });

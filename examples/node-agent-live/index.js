@@ -31,7 +31,7 @@ const agent = async () => {
           keyterms: ["spacewalk"],
         },
         speak: {
-          model: "aura-2-thalia-en",
+          model: "aura-asteria-en",
         },
         think: {
           provider: {
