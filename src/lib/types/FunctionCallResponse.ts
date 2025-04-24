@@ -5,9 +5,13 @@ export interface FunctionCallResponse {
   /**
    * This must be the ID that was received in the request.
    */
-  function_call_id: string;
+  id: string;
+  /**
+   * The name of the function being called.
+   */
+  name: string;
   /**
    * The result of the function call.
    */
-  output: string;
+  content: string;
 }
