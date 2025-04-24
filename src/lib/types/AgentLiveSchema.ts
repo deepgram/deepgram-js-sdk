@@ -151,7 +151,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
      */
     think?: {
       provider: {
-        type: "deepgram" | "open_ai" | "anthropic" | "x_ai" | "amazon_bedrock" | string;
+        type: "deepgram" | "open_ai" | "anthropic" | "x_ai" | string;
         model: string;
         /**
          * 0-2 for OpenAI, 0-1 for Anthropic.
