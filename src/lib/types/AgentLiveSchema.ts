@@ -67,7 +67,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
    * Set to true to enable experimental features.
    * @default false
    */
-  experimental: boolean;
+  experimental?: boolean;
   audio: {
     input?: {
       /**
