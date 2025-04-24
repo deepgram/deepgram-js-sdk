@@ -97,7 +97,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {AgentLiveClient} A new instance of the AgentLiveClient.
    * @beta
    */
-  public agent(endpoint: string = "/agent"): AgentLiveClient {
+  public agent(endpoint: string = "/:version/agent/converse"): AgentLiveClient {
     return new AgentLiveClient(this.options, endpoint);
   }
 

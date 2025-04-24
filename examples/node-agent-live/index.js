@@ -17,28 +17,36 @@ const agent = async () => {
       audio: {
         input: {
           encoding: "linear16",
-          sampleRate: 44100,
+          sample_rate: 24000,
         },
         output: {
           encoding: "linear16",
-          sampleRate: 16000,
+          sample_rate: 16000,
           container: "wav",
         },
       },
       agent: {
+        language: "en",
         listen: {
-          model: "nova-3",
-          keyterms: ["spacewalk"],
-        },
-        speak: {
-          model: "aura-asteria-en",
+          provider: {
+            type: "deepgram",
+            model: "nova-3",
+          },
         },
         think: {
           provider: {
             type: "open_ai",
+            model: "gpt-4o-mini",
           },
-          model: "gpt-4o-mini",
+          prompt: "You are a friendly AI assistant.",
         },
+        speak: {
+          provider: {
+            type: "deepgram",
+            model: "aura-2-thalia-en",
+          },
+        },
+        greeting: "Hello! How can I help you today?",
       },
     });
 

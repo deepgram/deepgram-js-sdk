@@ -12,7 +12,7 @@ import { AbstractLiveClient } from "./AbstractLiveClient";
 export class AgentLiveClient extends AbstractLiveClient {
   public namespace: string = "agent";
 
-  constructor(options: DeepgramClientOptions, endpoint: string = "/agent") {
+  constructor(options: DeepgramClientOptions, endpoint: string = "/:version/agent/converse") {
     super(options);
     this.baseUrl = options.agent?.websocket?.options?.url ?? DEFAULT_AGENT_URL;
 
@@ -59,6 +59,7 @@ export class AgentLiveClient extends AbstractLiveClient {
       } catch (error) {
         this.emit(AgentEvents.Error, {
           event,
+          data: event.data,
           message: "Unable to parse `data` as JSON.",
           error,
         });
@@ -104,33 +105,19 @@ export class AgentLiveClient extends AbstractLiveClient {
    * To be called with your model configuration BEFORE sending
    * any audio data.
    * @param options - The SettingsConfiguration object.
-   * @param options.audio.input.encoding - The encoding for your inbound (user) audio.
-   * @param options.audio.input.sampleRate - The sample rate for your inbound (user) audio.
-   * @param options.audio.output.encoding - The encoding for your outbound (agent) audio.
-   * @param options.audio.output.sampleRate - The sample rate for your outbound (agent) audio.
-   * @param options.audio.output.bitrate - The bitrate for your outbound (agent) audio.
-   * @param options.audio.output.container - The container for your outbound (agent) audio.
-   * @param options.agent.listen.model - The STT model to use for processing user audio.
-   * @param options.agent.speak.model - The TTS model to use for generating agent audio.
-   * @param options.agent.think.provider.type - The LLM provider to use.
-   * @param options.agent.think.model - The LLM model to use.
-   * @param options.agent.think.instructions - The instructions to provide to the LLM.
-   * @param options.agent.think.functions - The functions to provide to the LLM.
-   * @param options.context.messages - The message history to provide to the LLM (useful if a websocket connection is lost.)
-   * @param options.context.replay - Whether to replay the last message if it was an assistant message.
    */
   public configure(options: AgentLiveSchema): void {
-    // @ts-expect-error Not every consumer of the SDK is using TypeScript, this conditional exists to catch runtime errors for JS code where there is no compile-time checking.
-    if (!options.agent.listen.model.startsWith("nova-3") && options.agent.listen.keyterm?.length) {
+    if (
+      !options.agent.listen?.provider.model.startsWith("nova-3") &&
+      options.agent.listen?.provider.keyterms?.length
+    ) {
       throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
     }
-    // Converting the property names...
-    const opts: Record<string, any> = { ...options };
-    opts.audio.input["sample_rate"] = options.audio.input?.sampleRate;
-    delete opts.audio.input.sampleRate;
-    opts.audio.output["sample_rate"] = options.audio.output?.sampleRate;
-    delete opts.audio.output.sampleRate;
-    this.send(JSON.stringify({ type: "SettingsConfiguration", ...opts }));
+    const string = JSON.stringify({
+      type: "Settings",
+      ...options,
+    });
+    this.send(string);
   }
 
   /**
@@ -165,8 +152,6 @@ export class AgentLiveClient extends AbstractLiveClient {
   /**
    * Respond to a function call request.
    * @param response  - The response to the function call request.
-   * @param response.function_call_id - The ID that was received in the request (these MUST match).
-   * @param response.output - The result of the function call.
    */
   public functionCallResponse(response: FunctionCallResponse): void {
     this.send(JSON.stringify({ type: "FunctionCallResponse", ...response }));

@@ -11,7 +11,7 @@ export enum AgentEvents {
   Audio = "Audio",
   /**
    * Confirms the successful connection to the websocket.
-   * { type: "Welcome", session_id: "String"}
+   * { type: "Welcome", request_id: "String"}
    */
   Welcome = "Welcome",
   /**
@@ -36,7 +36,7 @@ export enum AgentEvents {
   AgentThinking = "AgentThinking",
   /**
    * A request to call client-side functions.
-   * { type: "FunctionCallRequest", function_call_id: string, function_name: string, input: Record<string, any> }
+   * { type: "FunctionCallRequest", functions: { id: string; name: string; arguments: string; client_side: boolean}[] }
    */
   FunctionCallRequest = "FunctionCallRequest",
   /**
@@ -57,14 +57,14 @@ export enum AgentEvents {
   /**
    * This event is only emitted when you send an `InjectAgentMessage` request while
    * the user is currently speaking or the server is processing user audio.
-   * { type: "InjectionRefused" }
+   * { type: "InjectionRefused", message: string }
    */
   InjectionRefused = "InjectionRefused",
   /**
    * A successful response to the `UpdateInstructions` request.
-   * { type: "InstructionsUpdated" }
+   * { type: "PromptUpdated" }
    */
-  InstructionsUpdated = "InstructionsUpdated",
+  PromptUpdated = "PromptUpdated",
   /**
    * A successful response to the `UpdateSpeak` request.
    * { type: "SpeakUpdated" }

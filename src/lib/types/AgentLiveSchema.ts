@@ -1,20 +1,3 @@
-type AudioFormat =
-  | {
-      encoding: "linear16";
-      container: "wav" | "none";
-      sampleRate: 8000 | 16000 | 24000 | 32000 | 48000;
-    }
-  | {
-      encoding: "mulaw";
-      container: "wav" | "none";
-      sampleRate: 8000 | 16000;
-    }
-  | {
-      encoding: "alaw";
-      container: "wav" | "none";
-      sampleRate: 8000 | 16000;
-    };
-
 type AudioEncoding =
   | "linear16"
   | "flac"
@@ -76,119 +59,129 @@ type SpeakModel =
   | "aura-zeus-en"
   | string;
 
-interface ThinkModelFunction {
-  name: string;
-  description: string;
-  url: string;
-  headers: [
-    {
-      key: "authorization";
-      value: string;
-    }
-  ];
-  method: "POST";
-  parameters: {
-    type: string;
-    properties: Record<
-      string,
-      {
-        type: string;
-        description: string;
-      }
-    >;
-  };
-}
-
-type ThinkModel =
-  | {
-      provider: {
-        type: "open_ai";
-      };
-      model: "gpt-4o-mini";
-      instructions?: string;
-      functions?: ThinkModelFunction[];
-    }
-  | {
-      provider: {
-        type: "anthropic";
-      };
-      model: "claude-3-haiku-20240307";
-      instructions?: string;
-      functions?: ThinkModelFunction[];
-    }
-  | {
-      provider: {
-        type: "groq";
-      };
-      model: "";
-      instructions?: string;
-      functions?: ThinkModelFunction[];
-    }
-  | {
-      provider: {
-        type: "custom";
-        url: string;
-        key: string;
-      };
-      model: string;
-      instructions?: string;
-      functions?: ThinkModelFunction[];
-    };
-
 /**
  * @see https://developers.deepgram.com/reference/voicebot-api-phase-preview#settingsconfiguration
  */
 interface AgentLiveSchema extends Record<string, unknown> {
+  /**
+   * Set to true to enable experimental features.
+   * @default false
+   */
+  experimental: boolean;
   audio: {
     input?: {
       /**
-       * @default 1
+       * @default "linear16"
        */
-      channels?: number;
       encoding: AudioEncoding;
       /**
-       * @default false
+       * @default 16000
        */
-      multichannel?: boolean;
-      sampleRate: number;
+      sample_rate: number;
     };
     /**
      * @see https://developers.deepgram.com/docs/tts-media-output-settings#audio-format-combinations
      */
-    output?: AudioFormat;
+    output?: {
+      encoding?: string;
+      sample_rate?: number;
+      bitrate?: number;
+      /**
+       * @default "none"
+       */
+      container?: string;
+    };
   };
   agent: {
-    listen: {
+    language?: {
       /**
-       * @see https://developers.deepgram.com/docs/model
+       * ISO 639-1 language code for agent language.
+       * @default "en"
        */
-      model: ListenModel;
-      /**
-       * @see https://developers.deepgram.com/docs/keyterm
-       */
-      keyterms?: string[];
+      type: string;
     };
-    speak: {
-      /**
-       * @see https://developers.deepgram.com/docs/tts-models
-       */
-      model: SpeakModel;
+    listen?: {
+      provider: {
+        type: "deepgram";
+        /**
+         * @see https://developers.deepgram.com/docs/model
+         */
+        model: ListenModel;
+        /**
+         * Only available for Nova 3.
+         * @see https://developers.deepgram.com/docs/keyterm
+         */
+        keyterms?: string[];
+      };
+    };
+    speak?: {
+      provider: {
+        type: "deepgram" | "eleven_labs" | "cartesia" | "open_ai" | string;
+        /**
+         * Deepgram OR OpenAI model to use.
+         */
+        model?: SpeakModel;
+        /**
+         * Eleven Labs OR Cartesia model to use.
+         */
+        model_id?: string;
+        /**
+         * Cartesia voice configuration.
+         */
+        voice?: {
+          mode: string;
+          id: string;
+        };
+        /**
+         * Optional Cartesia language.
+         */
+        language?: string;
+        /**
+         * Optional Eleven Labs voice.
+         */
+        language_code?: string;
+      };
+      endpoint?: {
+        url?: string;
+        headers?: Record<string, string>;
+      };
     };
     /**
      * @see https://developers.deepgram.com/reference/voicebot-api-phase-preview#supported-llm-providers-and-models
      */
-    think: ThinkModel;
+    think?: {
+      provider: {
+        type: "deepgram" | "open_ai" | "anthropic" | "x_ai" | "amazon_bedrock" | string;
+        model: string;
+        /**
+         * 0-2 for OpenAI, 0-1 for Anthropic.
+         */
+        temperature?: number;
+      };
+      /**
+       * Optional ONLY if LLM provider is Deepgram.
+       */
+      endpoint?: {
+        url?: string;
+        headers?: Record<string, string>;
+      };
+      functions?: {
+        name?: string;
+        description?: string;
+        parameters?: Record<string, unknown>;
+        endpoint?: {
+          url?: string;
+          method?: string;
+          headers?: Record<string, string>;
+        };
+      }[];
+      prompt?: string;
+    };
   };
-  context?: {
-    /**
-     * LLM message history (e.g. to restore existing conversation if websocket disconnects)
-     */
-    messages: { role: "user" | "assistant"; content: string }[];
-    /**
-     * Whether to replay the last message, if it is an assistant message.
-     */
-    replay: boolean;
-  };
+  /**
+   * Optional message the agent will say at the start of the connection.
+   */
+  greeting?: string;
 }
 
 export type { AgentLiveSchema, SpeakModel };
