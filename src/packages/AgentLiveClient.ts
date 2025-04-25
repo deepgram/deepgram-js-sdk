@@ -124,8 +124,8 @@ export class AgentLiveClient extends AbstractLiveClient {
    * Provide new instructions to the LLM.
    * @param instructions - The instructions to provide.
    */
-  public updateInstructions(instructions: string): void {
-    this.send(JSON.stringify({ type: "UpdateInstructions", instructions }));
+  public updatePrompt(instructions: string): void {
+    this.send(JSON.stringify({ type: "UpdatePrompt", instructions }));
   }
 
   /**
