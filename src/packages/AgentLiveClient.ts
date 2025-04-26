@@ -18,7 +18,7 @@ export class AgentLiveClient extends AbstractLiveClient {
 
     this.connect({}, endpoint);
   }
-
+  
   /**
    * Sets up the connection event handlers.
    * This method is responsible for handling the various events that can occur on the WebSocket connection, such as opening, closing, and receiving messages.
@@ -121,11 +121,11 @@ export class AgentLiveClient extends AbstractLiveClient {
   }
 
   /**
-   * Provide new instructions to the LLM.
-   * @param instructions - The instructions to provide.
+   * Provide new system prompt to the LLM.
+   * @param prompt - The system prompt to provide.
    */
-  public updatePrompt(instructions: string): void {
-    this.send(JSON.stringify({ type: "UpdatePrompt", instructions }));
+  public updatePrompt(prompt: string): void {
+    this.send(JSON.stringify({ type: "UpdatePrompt", prompt }));
   }
 
   /**
