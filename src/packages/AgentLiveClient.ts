@@ -3,7 +3,6 @@ import { AgentEvents } from "../lib/enums/AgentEvents";
 import { DeepgramError } from "../lib/errors";
 import type {
   AgentLiveSchema,
-  SpeakModel,
   DeepgramClientOptions,
   FunctionCallResponse,
 } from "../lib/types";
