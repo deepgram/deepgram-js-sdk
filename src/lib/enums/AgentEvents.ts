@@ -40,12 +40,8 @@ export enum AgentEvents {
    */
   FunctionCallRequest = "FunctionCallRequest",
   /**
-   * Debug message triggered when the agent is calling a function.
-   * { type: "FunctionCalling" }
-   */
-  FunctionCalling = "FunctionCalling",
-  /**
    * Triggered when the agent begins streaming an audio response.
+   * YOU WILL ONLY RECEIVE THIS EVENT IF YOU HAVE ENABLED `experimental` IN YOUR CONFIG.
    * { type: "AgentStartedSpeaking", total_latency: number, tts_latency: number, ttt_latency: number }
    */
   AgentStartedSpeaking = "AgentStartedSpeaking",

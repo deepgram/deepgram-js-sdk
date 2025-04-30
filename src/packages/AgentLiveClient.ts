@@ -132,8 +132,8 @@ export class AgentLiveClient extends AbstractLiveClient {
    * Change the speak model.
    * @param model - The new model to use.
    */
-  public updateSpeak(model: SpeakModel): void {
-    this.send(JSON.stringify({ type: "UpdateSpeak", model }));
+  public updateSpeak(speakConfig: Exclude<AgentLiveSchema["agent"]["speak"], undefined>): void {
+    this.send(JSON.stringify({ type: "UpdateSpeak", speak: speakConfig }));
   }
 
   /**
@@ -143,10 +143,10 @@ export class AgentLiveClient extends AbstractLiveClient {
    * event will be emitted.
    * @example "Hold on while I look that up for you."
    * @example "Are you still on the line?"
-   * @param message - The message to speak.
+   * @param content - The message to speak.
    */
-  public injectAgentMessage(message: string): void {
-    this.send(JSON.stringify({ type: "InjectAgentMessage", message }));
+  public injectAgentMessage(content: string): void {
+    this.send(JSON.stringify({ type: "InjectAgentMessage", content }));
   }
 
   /**
