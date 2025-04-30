@@ -142,7 +142,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
         language_code?: string;
       };
       endpoint?: {
-        url?: string;
+        url: string;
         headers?: Record<string, string>;
       };
     };
@@ -159,10 +159,10 @@ interface AgentLiveSchema extends Record<string, unknown> {
         temperature?: number;
       };
       /**
-       * Optional ONLY if LLM provider is Deepgram.
+       * Optional ONLY if LLM provider is OpenAI or Anthropic.
        */
       endpoint?: {
-        url?: string;
+        url: string;
         headers?: Record<string, string>;
       };
       functions?: {
