@@ -88,6 +88,8 @@ We have published [a migration guide on our docs](https://developers.deepgram.co
 
 We recommend using only documented interfaces, as we strictly follow semantic versioning (semver) and breaking changes may occur for undocumented interfaces. To ensure compatibility, consider pinning your versions if you need to use undocumented interfaces.
 
+The Agent interfaces have been updated to use the new Voice Agent V1 API.
+
 ## Installation
 
 You can install this SDK directly from [npm](https://www.npmjs.com/package/@deepgram/sdk).
