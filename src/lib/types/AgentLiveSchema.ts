@@ -177,11 +177,11 @@ interface AgentLiveSchema extends Record<string, unknown> {
       }[];
       prompt?: string;
     };
+    /**
+     * Optional message the agent will say at the start of the connection.
+     */
+    greeting?: string;
   };
-  /**
-   * Optional message the agent will say at the start of the connection.
-   */
-  greeting?: string;
 }
 
 export type { AgentLiveSchema, SpeakModel };
