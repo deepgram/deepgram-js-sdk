@@ -37,7 +37,7 @@ export class SpeakRestClient extends AbstractRestClient {
     const requestUrl = this.getRequestUrl(
       endpoint,
       {},
-      { ...{ model: "aura-asteria-en" }, ...options }
+      { ...{ model: "aura-2-thalia-en" }, ...options }
     );
     this.result = await this.post(requestUrl, body, {
       headers: { Accept: "audio/*", "Content-Type": "application/json" },

@@ -421,7 +421,7 @@ agent.on(AgentEvents.Open, () => {
         model: "nova-3",
       },
       speak: {
-        model: "aura-asteria-en",
+        model: "aura-2-thalia-en",
       },
       think: {
         provider: {
@@ -494,7 +494,7 @@ const { result } = await deepgram.speak.request({ text }, { model: "aura-2-thali
 ### Websocket
 
 ```js
-const dgConnection = deepgram.speak.live({ model: "aura-asteria-en" });
+const dgConnection = deepgram.speak.live({ model: "aura-2-thalia-en" });
 
 dgConnection.on(LiveTTSEvents.Open, () => {
   console.log("Connection opened");
