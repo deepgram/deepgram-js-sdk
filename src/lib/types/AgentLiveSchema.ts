@@ -135,13 +135,11 @@ interface AgentLiveSchema extends Record<string, unknown> {
     };
   };
   agent: {
-    language?: {
-      /**
-       * ISO 639-1 language code for agent language.
-       * @default "en"
-       */
-      type: string;
-    };
+    /**
+     * ISO 639-1 language code for agent language.
+     * @default "en"
+     */
+    language?: string;
     listen?: {
       provider: {
         type: "deepgram";
