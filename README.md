@@ -19,6 +19,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [4. Examples](#4-examples)
     - [Change the API url used for all SDK methods](#change-the-api-url-used-for-all-sdk-methods)
     - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
+    - [Change the API url used for the Voice Agent websocket](#change-the-api-url-used-for-the-voice-agent-websocket)
     - [Override fetch transmitter](#override-fetch-transmitter)
     - [Proxy requests in the browser](#proxy-requests-in-the-browser)
     - [Set custom headers for fetch](#set-custom-headers-for-fetch)
@@ -190,6 +191,20 @@ import { createClient } from "@deepgram/sdk";
 
 const deepgram = createClient(DEEPGRAM_API_KEY, {
   global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } },
+});
+```
+
+#### Change the API url used for the Voice Agent websocket
+
+Useful for using a voice agent proxy (for e.g. 3rd party provider auth).
+
+```js
+import { createClient } from "@deepgram/sdk";
+// - or -
+// const { createClient } = require("@deepgram/sdk");
+
+const deepgram = createClient(DEEPGRAM_API_KEY, {
+  global: { websocket: { options: { url: "ws://localhost:8080" } } },
 });
 ```
 
