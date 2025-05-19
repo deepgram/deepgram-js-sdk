@@ -23,11 +23,18 @@ const wavHeader = [
 
 const live = async () => {
   const text = [
-    "Hello, how can I help you today?",
-    "Did you catch the soccer last night?",
-    "That team I was telling you about is playing in the finals this weekend.",
-    "I'm not sure what to say, but I never expected them to get that far.",
+    "Ok. That's Malarone 250-100 Milligram Tablet at 880 Washington Avenue Se. . Say yes to cancel this prescription.",
   ];
+
+  // Create a write stream immediately when the script starts
+  const outputFile = "output.wav";
+  const fileStream = fs.createWriteStream(outputFile);
+
+  // Write the WAV header immediately
+  fileStream.write(Buffer.from(wavHeader));
+
+  // Keep track of audio data size for updating the header later
+  let audioDataSize = 0;
 
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
@@ -37,22 +44,26 @@ const live = async () => {
     sample_rate: 48000,
   });
 
-  let audioBuffer = Buffer.from(wavHeader);
-
   dgConnection.on(LiveTTSEvents.Open, () => {
     console.log("Connection opened");
 
     // Send each text item sequentially
-    text.forEach((item) => {
-      console.log(`Sending text: "${item}"`);
-      dgConnection.sendText(item);
-    });
+    (async () => {
+      for (const item of text) {
+        console.log(`Sending text: "${item}"`);
+        dgConnection.sendText(item);
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Sleep for half a second
+      }
+    })();
 
-    // Send Flush message to the server after sending all text items
-    dgConnection.flush();
+    // Send Flush message after sending all text items
+    // dgConnection.flush();
 
     dgConnection.on(LiveTTSEvents.Close, () => {
       console.log("Connection closed");
+      // Update the WAV header with the final file size
+      updateWavHeader(fileStream, audioDataSize);
+      fileStream.end();
     });
 
     dgConnection.on(LiveTTSEvents.Metadata, (data) => {
@@ -61,33 +72,45 @@ const live = async () => {
 
     dgConnection.on(LiveTTSEvents.Audio, (data) => {
       console.log("Deepgram audio data received");
-      // Concatenate the audio chunks into a single buffer
+      // Write audio data to file immediately as it's received
       const buffer = Buffer.from(data);
-      audioBuffer = Buffer.concat([audioBuffer, buffer]);
+      fileStream.write(buffer);
+      audioDataSize += buffer.length;
     });
 
     dgConnection.on(LiveTTSEvents.Flushed, () => {
       console.log("Deepgram Flushed");
-      // Write the buffered audio data to a file when the flush event is received
-      writeFile();
+      // Update the WAV header with the final file size
+      updateWavHeader(fileStream, audioDataSize);
+      fileStream.end();
+      console.log(`Audio file saved as ${outputFile}`);
     });
 
     dgConnection.on(LiveTTSEvents.Error, (err) => {
       console.error(err);
+      // Try to update the header and close the file even on error
+      updateWavHeader(fileStream, audioDataSize);
+      fileStream.end();
     });
   });
 
-  const writeFile = () => {
-    if (audioBuffer.length > 0) {
-      fs.writeFile("output.wav", audioBuffer, (err) => {
-        if (err) {
-          console.error("Error writing audio file:", err);
-        } else {
-          console.log("Audio file saved as output.wav");
-        }
-      });
-      audioBuffer = Buffer.from(wavHeader); // Reset buffer after writing
-    }
+  // Function to update the WAV header with the correct file size
+  const updateWavHeader = (stream, dataSize) => {
+    // Create a buffer for the file size (RIFF chunk size)
+    const fileSizeBuffer = Buffer.alloc(4);
+    // File size = total size - 8 bytes (for the RIFF identifier and size field)
+    const fileSize = dataSize + 36; // 36 = size of WAV header - 8
+    fileSizeBuffer.writeUInt32LE(fileSize, 0);
+
+    // Create a buffer for the data size
+    const dataSizeBuffer = Buffer.alloc(4);
+    dataSizeBuffer.writeUInt32LE(dataSize, 0);
+
+    // Update the RIFF chunk size (offset 4)
+    stream.write(fileSizeBuffer, 0, 4, 4, () => {
+      // Update the data chunk size (offset 40)
+      stream.write(dataSizeBuffer, 0, 4, 40);
+    });
   };
 };
 
