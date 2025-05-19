@@ -1,6 +1,8 @@
+console.log("Running example");
 const fs = require("fs");
 const { createClient, LiveTTSEvents } = require("../../dist/main/index");
 
+console.log("Imports made");
 // Add a wav audio container header to the file if you want to play the audio
 // using the AudioContext or media player like VLC, Media Player, or Apple Music
 // Without this header in the Chrome browser case, the audio will not play.
@@ -21,7 +23,9 @@ const wavHeader = [
   0x00, 0x00, 0x00, 0x00  // Placeholder for data size
 ];
 
+console.log("async run");
 const live = async () => {
+  console.log("inside async function");
   const text = [
     "Ok. That's Malarone 250-100 Milligram Tablet at 880 Washington Avenue Se. . Say yes to cancel this prescription.",
   ];
@@ -32,17 +36,22 @@ const live = async () => {
 
   // Write the WAV header immediately
   fileStream.write(Buffer.from(wavHeader));
+  console.log("writing to buffer");
 
   // Keep track of audio data size for updating the header later
   let audioDataSize = 0;
 
-  const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+  const deepgram = createClient("aa", {
+    speak: { websocket: { options: { url: "http://localhost:8081" } } },
+  });
+  console.log("made client");
 
   const dgConnection = deepgram.speak.live({
     model: "aura-2-thalia-en",
     encoding: "linear16",
     sample_rate: 48000,
   });
+  console.log("hooked up to remote server");
 
   dgConnection.on(LiveTTSEvents.Open, () => {
     console.log("Connection opened");
@@ -112,6 +121,9 @@ const live = async () => {
       stream.write(dataSizeBuffer, 0, 4, 40);
     });
   };
+
+  console.log("finished async function?");
 };
 
+console.log("about to execute async function");
 live();
