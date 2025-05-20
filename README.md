@@ -423,27 +423,36 @@ agent.on(AgentEvents.Open, () => {
     audio: {
       input: {
         encoding: "linear16",
-        sampleRate: 16000,
+        sampleRate: 24000,
       },
       output: {
-        encoding: "linear16",
-        container: "wav",
-        sampleRate: 24000,
+        encoding: "mp3",
+        sample_rate: 24000,
+        bitrate: 48000,
+        container: "none",
       },
     },
     agent: {
+      language: "en",
       listen: {
-        model: "nova-3",
-      },
-      speak: {
-        model: "aura-2-thalia-en",
+        provider: {
+          type: "deepgram",
+          model: "nova-3",
+        },
       },
       think: {
         provider: {
-          type: "anthropic",
+          type: "open_ai",
+          model: "gpt-4-mini",
+          temperature: 0.7,
         },
-        model: "claude-3-haiku-20240307",
-        instructions: "You are a helpful AI assistant. Keep responses brief and friendly.",
+        prompt: "You are a helpful AI assistant. Keep responses brief and friendly.",
+      },
+      speak: {
+        provider: {
+          type: "deepgram",
+          model: "aura-2-thalia-en",
+        },
       },
     },
   });
