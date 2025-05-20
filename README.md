@@ -4,9 +4,11 @@
 
 Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
 
+- [Documentation](#documentation)
 - [Migrating from earlier versions](#migrating-from-earlier-versions)
   - [V2 to V3](#v2-to-v3)
   - [V3.\* to V3.4](#v3-to-v34)
+  - [V3.\* to V4](#v3-to-v4)
 - [Installation](#installation)
   - [UMD](#umd)
   - [ESM](#esm)
@@ -23,17 +25,19 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
     - [Override fetch transmitter](#override-fetch-transmitter)
     - [Proxy requests in the browser](#proxy-requests-in-the-browser)
     - [Set custom headers for fetch](#set-custom-headers-for-fetch)
-- [Transcription (Synchronous)](#transcription-synchronous)
+- [Pre-Recorded (Synchronous)](#pre-recorded-synchronous)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
-- [Transcription (Asynchronous / Callbacks)](#transcription-asynchronous--callbacks)
+  - [Browser](#browser)
+- [Pre-Recorded (Asynchronous / Callbacks)](#pre-recorded-asynchronous--callbacks)
   - [Remote Files](#remote-files-1)
   - [Local Files](#local-files-1)
-- [Transcription (Live / Streaming)](#transcription-live--streaming)
-  - [Live Audio](#live-audio)
+  - [Browser](#browser-1)
+- [Streaming Audio)](#streaming-audio)
 - [Transcribing to captions](#transcribing-to-captions)
 - [Voice Agent](#voice-agent)
-- [Text to Speech](#text-to-speech)
+- [Text to Speech Rest](#text-to-speech-rest)
+- [Text to Speech Streaming](#text-to-speech-streaming)
 - [Text Intelligence](#text-intelligence)
 - [Authentication](#authentication)
   - [Get Token Details](#get-token-details)
@@ -67,7 +71,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Get All Balances](#get-all-balances)
   - [Get Balance](#get-balance)
 - [Models](#models)
-  - [Get All Models](#get-all-models)
+  - [Get All Project Models](#get-all-project-models)
   - [Get Model](#get-model)
 - [On-Prem APIs](#on-prem-apis)
   - [List On-Prem credentials](#list-on-prem-credentials)
@@ -79,6 +83,10 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
 
+## Documentation
+
+You can learn more about the Deepgram API at [developers.deepgram.com](https://developers.deepgram.com/docs).
+
 ## Migrating from earlier versions
 
 ### V2 to V3
@@ -89,7 +97,9 @@ We have published [a migration guide on our docs](https://developers.deepgram.co
 
 We recommend using only documented interfaces, as we strictly follow semantic versioning (semver) and breaking changes may occur for undocumented interfaces. To ensure compatibility, consider pinning your versions if you need to use undocumented interfaces.
 
-The Agent interfaces have been updated to use the new Voice Agent V1 API.
+### V3.\* to V4
+
+The Voice Agent interfaces have been updated to use the new Voice Agent V1 API. Please refer to our [Documentation](https://developers.deepgram.com/docs/voice-agent-v1-migration) on Migration to new V1 Agent API.
 
 ## Installation
 
@@ -142,6 +152,8 @@ You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 ```
 
 ## Initialization
+
+All of the examples below will require createClient.
 
 ```js
 import { createClient } from "@deepgram/sdk";
@@ -270,9 +282,11 @@ const deepgram = createClient("proxy", {
 });
 ```
 
-## Transcription (Synchronous)
+## Pre-Recorded (Synchronous)
 
 ### Remote Files
+
+Transcribe audio from a URL.
 
 ```js
 const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
@@ -285,9 +299,13 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
 );
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
+
+[See our Example for more info](). @TODO check if we need an example
 
 ### Local Files
+
+Transcribe audio from a file.
 
 ```js
 const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
@@ -309,11 +327,34 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
 );
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
-## Transcription (Asynchronous / Callbacks)
+[See our Example for more info](). @TODO check if we need an example
+
+### Browser
+
+Transcribe audio from a file in the browser.
+
+```js
+const transcribeFile = async () => {
+  const { result, error } = await _deepgram.listen.prerecorded.transcribeFile(
+    fs.readFileSync("./examples/nasa.mp4"),
+    {
+      model: "nova",
+    }
+  );
+};
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
+
+[See our Example for more info](./examples/browser-prerecorded/index.html).
+
+## Pre-Recorded (Asynchronous / Callbacks)
 
 ### Remote Files
+
+Transcribe audio from a URL.
 
 ```js
 import { CallbackUrl } from "@deepgram/sdk";
@@ -329,9 +370,13 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallbac
 );
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
+
+[See our Example for more info](./examples/node-prerecorded/index.js).
 
 ### Local Files
+
+Transcribe audio from a file.
 
 ```js
 import { CallbackUrl } from "@deepgram/sdk";
@@ -359,11 +404,36 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallba
 );
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/pre-recorded).
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
-## Transcription (Live / Streaming)
+[See our Example for more info](). @TODO check if we need an example
 
-### Live Audio
+### Browser
+
+Transcribe audio from a URL in the browser.
+
+```js
+// browser code
+const transcribeUrl = async () => {
+  const { result, error } = await _deepgram.listen.prerecorded.transcribeUrl(
+    {
+      url: "https://dpgr.am/spacewalk.wav",
+    },
+    {
+      model: "nova",
+    }
+  );
+};
+// browser code
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
+
+[See our Example for more info](./examples/browser-prerecorded/index.html).
+
+## Streaming Audio
+
+Transcribe streaming audio.
 
 ```js
 const dgConnection = deepgram.listen.live({ model: "nova" });
@@ -379,11 +449,37 @@ dgConnection.on(LiveTranscriptionEvents.Open, () => {
 });
 ```
 
-To see an example, [check out our Node.js example](https://github.com/deepgram-devs/node-live-example) or our [Browser example](https://github.com/deepgram-devs/js-live-example).
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen-streaming).
 
-[See our API reference for more info](https://developers.deepgram.com/reference/streaming).
+[See our Example for more info](https://github.com/deepgram-devs/node-live-example).
+
+### Browser
+
+Transcribe streaming audio in the browser.
+
+```js
+// browser code
+
+const connection = deepgram.listen.live({
+  model: "nova-3",
+  language: "en-US",
+  smart_format: true,
+  interim_results: true,
+  utterance_end_ms: 1000,
+  vad_events: true,
+  endpointing: 300,
+});
+
+// browser code
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen-streaming).
+
+[See Our Example for more info](https://github.com/deepgram-devs/js-live-example).
 
 ## Transcribing to captions
+
+Transcribe audio to captions.
 
 ```js
 import { webvtt /* , srt */ } from "@deepgram/captions";
@@ -405,6 +501,8 @@ const vttOutput = webvtt(result);
 
 ## Voice Agent
 
+Configure a Voice Agent.
+
 ```js
 import { createClient } from "@deepgram/sdk";
 import { AgentEvents } from "@deepgram/sdk";
@@ -423,27 +521,36 @@ agent.on(AgentEvents.Open, () => {
     audio: {
       input: {
         encoding: "linear16",
-        sampleRate: 16000,
+        sampleRate: 24000,
       },
       output: {
-        encoding: "linear16",
-        container: "wav",
-        sampleRate: 24000,
+        encoding: "mp3",
+        sample_rate: 24000,
+        bitrate: 48000,
+        container: "none",
       },
     },
     agent: {
+      language: "en",
       listen: {
-        model: "nova-3",
-      },
-      speak: {
-        model: "aura-2-thalia-en",
+        provider: {
+          type: "deepgram",
+          model: "nova-3",
+        },
       },
       think: {
         provider: {
-          type: "anthropic",
+          type: "open_ai",
+          model: "gpt-4-mini",
+          temperature: 0.7,
         },
-        model: "claude-3-haiku-20240307",
-        instructions: "You are a helpful AI assistant. Keep responses brief and friendly.",
+        prompt: "You are a helpful AI assistant. Keep responses brief and friendly.",
+      },
+      speak: {
+        provider: {
+          type: "deepgram",
+          model: "aura-2-thalia-en",
+        },
       },
     },
   });
@@ -496,17 +603,23 @@ For a complete implementation, you would need to:
 3. Handle any function calls if your agent uses them
 4. Add proper error handling and connection management
 
-[See our API reference for more info](https://developers.deepgram.com/reference/voice-agent-api/agent)
+[See our API reference for more info](https://developers.deepgram.com/reference/voice-agent-api/agent).
 
-## Text to Speech
+[See our Example for more info](./examples/node-agent-live/index.js).
 
-### Rest
+## Text to Speech Rest
+
+Convert text into speech using the REST API.
 
 ```js
 const { result } = await deepgram.speak.request({ text }, { model: "aura-2-thalia-en" });
 ```
 
-### Websocket
+[See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api/speak).
+
+[See our Example for info](./examples/node-speak/index.js)
+
+## Text to Speech Streaming
 
 ```js
 const dgConnection = deepgram.speak.live({ model: "aura-2-thalia-en" });
@@ -526,9 +639,13 @@ dgConnection.on(LiveTTSEvents.Open, () => {
 });
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api).
+[See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api/speak-streaming).
+
+[See our Example for info](./examples/node-speak-live/index.js).
 
 ## Text Intelligence
+
+Analyze Text.
 
 ```js
 const text = `The history of the phrase 'The quick brown fox jumps over the
@@ -550,7 +667,9 @@ const { result, error } = await deepgram.read.analyzeText(
 );
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/analyze-text).
+[See our API reference for more info](https://developers.deepgram.com/reference/text-intelligence-api/text-read).
+
+[See our Example for info](./examples/node-read/index.js).
 
 ## Authentication
 
@@ -563,6 +682,18 @@ const { result, error } = await deepgram.manage.getTokenDetails();
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/authentication)
+
+### Grant Token
+
+Creates a temporary token with a 30-second TTL.
+
+```js
+const { result, error } = await deepgram.auth.grantToken();
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/token-based-auth-api/grant-token).
+
+[See our Example for info](). @TODO See if we need an example
 
 ## Projects
 
@@ -596,7 +727,7 @@ const { result, error } = await deepgram.manage.updateProject(projectId, options
 
 [See our API reference for more info](https://developers.deepgram.com/reference/update-project).
 
-## Delete Project
+### Delete Project
 
 Delete a project.
 
@@ -778,6 +909,16 @@ const { result, error } = await deepgram.manage.getProjectUsageFields(projectId,
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
 
+### Summarize Usage
+
+`Deprecated` Retrieves the usage for a specific project. Use Get Project Usage Breakdown for a more comprehensive usage summary.
+
+```js
+const { result, error } = await deepgram.manage.getProjectUsage(projectId, options);
+```
+
+[See our API reference for more info](https://developers.deepgram.com/reference/management-api/usage/get).
+
 ## Billing
 
 ### Get All Balances
@@ -802,7 +943,7 @@ const { result, error } = await deepgram.manage.getProjectBalance(projectId, bal
 
 ## Models
 
-### Get All Models
+### Get All Project Models
 
 Retrieves all models available for a given project.
 
@@ -810,7 +951,7 @@ Retrieves all models available for a given project.
 const { result, error } = await deepgram.manage.getAllModels(projectId, {});
 ```
 
-[See our API reference for more info](https://developers.deepgram.com/reference/management-api/models/list)
+[See our API reference for more info](https://developers.deepgram.com/reference/management-api/projects/list-models).
 
 ### Get Model
 
@@ -826,6 +967,8 @@ const { result, error } = await deepgram.manage.getModel(projectId, modelId);
 
 ### List On-Prem credentials
 
+Lists sets of distribution credentials for the specified project.
+
 ```js
 const { result, error } = await deepgram.onprem.listCredentials(projectId);
 ```
@@ -833,6 +976,8 @@ const { result, error } = await deepgram.onprem.listCredentials(projectId);
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/list-credentials)
 
 ### Get On-Prem credentials
+
+Returns a set of distribution credentials for the specified project.
 
 ```js
 const { result, error } = await deepgram.onprem.getCredentials(projectId, credentialId);
@@ -842,6 +987,8 @@ const { result, error } = await deepgram.onprem.getCredentials(projectId, creden
 
 ### Create On-Prem credentials
 
+Creates a set of distribution credentials for the specified project.
+
 ```js
 const { result, error } = await deepgram.onprem.createCredentials(projectId, options);
 ```
@@ -849,6 +996,8 @@ const { result, error } = await deepgram.onprem.createCredentials(projectId, opt
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/create-credentials)
 
 ### Delete On-Prem credentials
+
+Deletes a set of distribution credentials for the specified project.
 
 ```js
 const { result, error } = await deepgram.onprem.deleteCredentials(projectId, credentialId);
@@ -858,9 +1007,9 @@ const { result, error } = await deepgram.onprem.deleteCredentials(projectId, cre
 
 ## Backwards Compatibility
 
-Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
+We follow semantic versioning (semver) to ensure a smooth upgrade experience. Within a major version (like 4._), we will maintain backward compatibility so your code will continue to work without breaking changes. When we release a new major version (like moving from 3._ to 4.\*), we may introduce breaking changes to improve the SDK. We'll always document these changes clearly in our release notes to help you upgrade smoothly.
 
-We strictly follow semver, and will not introduce breaking changes to the publicly documented interfaces of the SDK. **Use internal and undocumented interfaces without pinning your version, at your own risk.**
+Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
 
 ## Development and Contributing
 
