@@ -33,7 +33,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Remote Files](#remote-files-1)
   - [Local Files](#local-files-1)
   - [Browser](#browser-1)
-- [Streaming Audio)](#streaming-audio)
+- [Streaming Audio](#streaming-audio)
 - [Transcribing to captions](#transcribing-to-captions)
 - [Voice Agent](#voice-agent)
 - [Text to Speech Rest](#text-to-speech-rest)
