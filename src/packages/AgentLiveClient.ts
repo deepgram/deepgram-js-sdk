@@ -1,6 +1,5 @@
 import { DEFAULT_AGENT_URL } from "../lib/constants";
 import { AgentEvents } from "../lib/enums/AgentEvents";
-import { DeepgramError } from "../lib/errors";
 import type { AgentLiveSchema, DeepgramClientOptions, FunctionCallResponse } from "../lib/types";
 import { AbstractLiveClient } from "./AbstractLiveClient";
 
