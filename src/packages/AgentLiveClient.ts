@@ -1,11 +1,7 @@
 import { DEFAULT_AGENT_URL } from "../lib/constants";
 import { AgentEvents } from "../lib/enums/AgentEvents";
 import { DeepgramError } from "../lib/errors";
-import type {
-  AgentLiveSchema,
-  DeepgramClientOptions,
-  FunctionCallResponse,
-} from "../lib/types";
+import type { AgentLiveSchema, DeepgramClientOptions, FunctionCallResponse } from "../lib/types";
 import { AbstractLiveClient } from "./AbstractLiveClient";
 
 export class AgentLiveClient extends AbstractLiveClient {
@@ -17,7 +13,7 @@ export class AgentLiveClient extends AbstractLiveClient {
 
     this.connect({}, endpoint);
   }
-  
+
   /**
    * Sets up the connection event handlers.
    * This method is responsible for handling the various events that can occur on the WebSocket connection, such as opening, closing, and receiving messages.
@@ -106,12 +102,6 @@ export class AgentLiveClient extends AbstractLiveClient {
    * @param options - The SettingsConfiguration object.
    */
   public configure(options: AgentLiveSchema): void {
-    if (
-      !options.agent.listen?.provider.model.startsWith("nova-3") &&
-      options.agent.listen?.provider.keyterms?.length
-    ) {
-      throw new DeepgramError("Keyterms are only supported with the Nova 3 models.");
-    }
     const string = JSON.stringify({
       type: "Settings",
       ...options,
