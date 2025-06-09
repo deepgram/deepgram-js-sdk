@@ -72,6 +72,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
         };
       }[];
       prompt?: string;
+      context_length?: number | "max";
     };
     /**
      * Optional message the agent will say at the start of the connection.
