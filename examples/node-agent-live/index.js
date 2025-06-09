@@ -5,6 +5,36 @@ const { join } = require("path");
 
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
+// Add WAV header generation function
+function createWavHeader(audioData, sampleRate = 16000, channels = 1, bitsPerSample = 16) {
+  const dataLength = audioData.length;
+  const headerLength = 44;
+  const fileLength = dataLength + headerLength - 8;
+
+  const header = Buffer.alloc(headerLength);
+
+  // RIFF header
+  header.write("RIFF", 0);
+  header.writeUInt32LE(fileLength, 4);
+  header.write("WAVE", 8);
+
+  // fmt chunk
+  header.write("fmt ", 12);
+  header.writeUInt32LE(16, 16); // fmt chunk size
+  header.writeUInt16LE(1, 20); // audio format (PCM)
+  header.writeUInt16LE(channels, 22); // channels
+  header.writeUInt32LE(sampleRate, 24); // sample rate
+  header.writeUInt32LE((sampleRate * channels * bitsPerSample) / 8, 28); // byte rate
+  header.writeUInt16LE((channels * bitsPerSample) / 8, 32); // block align
+  header.writeUInt16LE(bitsPerSample, 34); // bits per sample
+
+  // data chunk
+  header.write("data", 36);
+  header.writeUInt32LE(dataLength, 40);
+
+  return header;
+}
+
 const agent = async () => {
   let audioBuffer = Buffer.alloc(0);
   let i = 0;
@@ -106,7 +136,17 @@ const agent = async () => {
 
   connection.on(AgentEvents.AgentAudioDone, async () => {
     console.log("Agent audio done");
-    await writeFile(join(__dirname, `output-${i}.wav`), audioBuffer);
+
+    // Create WAV header and combine with audio data
+    if (audioBuffer.length > 0) {
+      const wavHeader = createWavHeader(audioBuffer);
+      const wavFile = Buffer.concat([wavHeader, audioBuffer]);
+      await writeFile(join(__dirname, `output-${i}.wav`), wavFile);
+      console.log(`Wrote ${wavFile.length} bytes to output-${i}.wav`);
+    } else {
+      console.log("No audio data to write");
+    }
+
     audioBuffer = Buffer.alloc(0);
     i++;
   });
