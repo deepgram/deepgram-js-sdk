@@ -33,7 +33,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Remote Files](#remote-files-1)
   - [Local Files](#local-files-1)
   - [Browser](#browser-1)
-- [Streaming Audio)](#streaming-audio)
+- [Streaming Audio](#streaming-audio)
 - [Transcribing to captions](#transcribing-to-captions)
 - [Voice Agent](#voice-agent)
 - [Text to Speech Rest](#text-to-speech-rest)
@@ -301,8 +301,6 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
-[See our Example for more info](). @TODO check if we need an example
-
 ### Local Files
 
 Transcribe audio from a file.
@@ -328,8 +326,6 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
-
-[See our Example for more info](). @TODO check if we need an example
 
 ### Browser
 
@@ -405,8 +401,6 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallba
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
-
-[See our Example for more info](). @TODO check if we need an example
 
 ### Browser
 
@@ -692,8 +686,6 @@ const { result, error } = await deepgram.auth.grantToken();
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/token-based-auth-api/grant-token).
-
-[See our Example for info](). @TODO See if we need an example
 
 ## Projects
 
