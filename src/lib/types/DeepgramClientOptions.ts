@@ -58,6 +58,7 @@ export type DefaultClientOptions = {
  */
 export interface DeepgramClientOptions {
   key?: string | IKeyFactory;
+  accessToken?: string;
   global?: NamespaceOptions & { url?: string; headers?: { [index: string]: any } };
   listen?: NamespaceOptions;
   manage?: NamespaceOptions;
