@@ -29,7 +29,7 @@ export const resolveFetch = (customFetch?: Fetch): Fetch => {
  * @param customFetch - An optional custom fetch function to use instead of the global fetch function.
  * @returns A fetch function that can be used to make HTTP requests with the provided API key in the "Authorization" header.
  */
-export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
+export const fetchWithAuth = (apiKey: string, customFetch?: Fetch, token?: string): Fetch => {
   const fetch = resolveFetch(customFetch);
   const HeadersConstructor = resolveHeadersConstructor();
 
@@ -37,7 +37,7 @@ export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
     const headers = new HeadersConstructor(init?.headers);
 
     if (!headers.has("Authorization")) {
-      headers.set("Authorization", `Token ${apiKey}`);
+      headers.set("Authorization", token ? `Bearer ${token}` : `Token ${apiKey}`);
     }
 
     return fetch(input, { ...init, headers });
