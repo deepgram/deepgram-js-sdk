@@ -145,9 +145,14 @@ export abstract class AbstractLiveClient extends AbstractClient {
      * Native websocket transport (browser)
      */
     if (NATIVE_WEBSOCKET_AVAILABLE) {
+      const accessToken = this.accessToken;
+      const apiKey = this.namespaceOptions.key;
+      if (!accessToken && !apiKey) {
+        throw new Error("Don't know how to set authentication headers for WebSocket connection.");
+      }
       this.conn = new WebSocket(
         requestUrl,
-        this.accessToken ? ["bearer", this.accessToken] : ["token", this.namespaceOptions.key]
+        accessToken ? ["bearer", accessToken] : ["token", apiKey!]
       );
       this.setupConnection();
       return;
