@@ -24,7 +24,7 @@ interface ITransport<C, O> {
 }
 
 export type DefaultNamespaceOptions = {
-  key: string;
+  key?: string;
   fetch: {
     options: { url: TransportUrl };
   };
