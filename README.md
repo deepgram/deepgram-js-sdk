@@ -683,7 +683,10 @@ Creates a temporary token with a 30-second TTL.
 
 ```js
 const { result, error } = await deepgram.auth.grantToken();
+const deepgramWithToken = createClient({ accessToken: result.access_token });
 ```
+
+This example shows how to use the temporary token to authenticate a client instance. Note that you _must_ pass an `accessToken` property to use a temporary token. Passing the token as a raw string will error, as the SDK will treat it as an API key and use the incorrect header prefix.
 
 [See our API reference for more info](https://developers.deepgram.com/reference/token-based-auth-api/grant-token).
 

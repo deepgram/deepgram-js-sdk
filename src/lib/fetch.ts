@@ -22,6 +22,12 @@ export const resolveFetch = (customFetch?: Fetch): Fetch => {
   return (...args) => _fetch(...args);
 };
 
+interface FetchWithAuthOptions {
+  apiKey?: string;
+  customFetch?: Fetch;
+  accessToken?: string;
+}
+
 /**
  * Resolves a fetch function that includes an "Authorization" header with the provided API key.
  *
@@ -29,7 +35,11 @@ export const resolveFetch = (customFetch?: Fetch): Fetch => {
  * @param customFetch - An optional custom fetch function to use instead of the global fetch function.
  * @returns A fetch function that can be used to make HTTP requests with the provided API key in the "Authorization" header.
  */
-export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
+export const fetchWithAuth = ({
+  apiKey,
+  customFetch,
+  accessToken,
+}: Readonly<FetchWithAuthOptions>): Fetch => {
   const fetch = resolveFetch(customFetch);
   const HeadersConstructor = resolveHeadersConstructor();
 
@@ -37,7 +47,7 @@ export const fetchWithAuth = (apiKey: string, customFetch?: Fetch): Fetch => {
     const headers = new HeadersConstructor(init?.headers);
 
     if (!headers.has("Authorization")) {
-      headers.set("Authorization", `Token ${apiKey}`);
+      headers.set("Authorization", accessToken ? `Bearer ${accessToken}` : `Token ${apiKey}`);
     }
 
     return fetch(input, { ...init, headers });

@@ -90,7 +90,11 @@ export abstract class AbstractLiveClient extends AbstractClient {
     }
 
     if (!("Authorization" in this.headers)) {
-      this.headers["Authorization"] = `Token ${key}`; // Add default token
+      if (this.accessToken) {
+        this.headers["Authorization"] = `Bearer ${this.accessToken}`; // Use token if available
+      } else {
+        this.headers["Authorization"] = `Token ${key}`; // Add default token
+      }
     }
   }
 
@@ -141,7 +145,15 @@ export abstract class AbstractLiveClient extends AbstractClient {
      * Native websocket transport (browser)
      */
     if (NATIVE_WEBSOCKET_AVAILABLE) {
-      this.conn = new WebSocket(requestUrl, ["token", this.namespaceOptions.key]);
+      const accessToken = this.accessToken;
+      const apiKey = this.namespaceOptions.key;
+      if (!accessToken && !apiKey) {
+        throw new Error("Don't know how to set authentication headers for WebSocket connection.");
+      }
+      this.conn = new WebSocket(
+        requestUrl,
+        accessToken ? ["bearer", accessToken] : ["token", apiKey!]
+      );
       this.setupConnection();
       return;
     }

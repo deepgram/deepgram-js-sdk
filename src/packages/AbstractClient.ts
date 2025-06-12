@@ -23,7 +23,8 @@ export const noop = () => {};
  */
 export abstract class AbstractClient extends EventEmitter {
   protected factory: Function | undefined = undefined;
-  protected key: string;
+  protected key: string | undefined = undefined;
+  protected accessToken: string | undefined = undefined;
   protected options: DefaultClientOptions;
   public namespace: string = "global";
   public version: string = "v1";
@@ -43,24 +44,24 @@ export abstract class AbstractClient extends EventEmitter {
   constructor(options: DeepgramClientOptions) {
     super();
 
-    let key;
+    if (options.accessToken) {
+      this.accessToken = options.accessToken;
+    }
 
     if (typeof options.key === "function") {
       this.factory = options.key;
-      key = this.factory();
+      this.key = this.factory();
     } else {
-      key = options.key;
+      this.key = options.key;
     }
 
-    if (!key) {
-      key = process.env.DEEPGRAM_API_KEY as string;
+    if (!this.key) {
+      this.key = process.env.DEEPGRAM_API_KEY as string;
     }
 
-    if (!key) {
-      throw new DeepgramError("A deepgram API key is required.");
+    if (!this.key && !this.accessToken) {
+      throw new DeepgramError("A deepgram API key or temporary auth token is required.");
     }
-
-    this.key = key;
 
     options = convertLegacyOptions(options);
 
