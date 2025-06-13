@@ -284,4 +284,4 @@ interface LiveSchema extends TranscriptionSchema {
   vad_events?: boolean;
 }
 
-export type { TranscriptionSchema, LiveSchema, PrerecordedSchema };
+export type { TranscriptionSchema, PrerecordedSchema, LiveSchema };
