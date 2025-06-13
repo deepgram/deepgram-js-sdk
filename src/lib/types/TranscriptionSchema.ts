@@ -1,3 +1,44 @@
+type Models =
+  | "nova-3"
+  | "nova-3-general"
+  | "nova-3-medical"
+  | "nova-2"
+  | "nova-2-general"
+  | "nova-2-meeting"
+  | "nova-2-phonecall"
+  | "nova-2-voicemail"
+  | "nova-2-finance"
+  | "nova-2-conversationalai"
+  | "nova-2-video"
+  | "nova-2-medical"
+  | "nova-2-drivethru"
+  | "nova-2-automotive"
+  | "nova-2-atc"
+  | "nova"
+  | "nova-general"
+  | "nova-phonecall"
+  | "enhanced"
+  | "enhanced-general"
+  | "enhanced-meeting"
+  | "enhanced-phonecall"
+  | "enhanced-finance"
+  | "base"
+  | "base-general"
+  | "base-meeting"
+  | "base-phonecall"
+  | "base-voicemail"
+  | "base-finance"
+  | "base-conversationalai"
+  | "base-video"
+  | "custom"
+  | "whisper"
+  | "whisper-tiny"
+  | "whisper-base"
+  | "whisper-small"
+  | "whisper-medium"
+  | "whisper-large"
+  | (string & {});
+
 /**
  * Options for transcription
  */
@@ -5,7 +46,7 @@ interface TranscriptionSchema extends Record<string, unknown> {
   /**
    * @see https://developers.deepgram.com/docs/model
    */
-  model?: string;
+  model?: Models;
 
   /**
    * @deprecated
@@ -243,4 +284,4 @@ interface LiveSchema extends TranscriptionSchema {
   vad_events?: boolean;
 }
 
-export type { TranscriptionSchema, PrerecordedSchema, LiveSchema };
+export type { LiveSchema, PrerecordedSchema, TranscriptionSchema };
