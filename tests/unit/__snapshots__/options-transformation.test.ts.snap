@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Tests - Options Transformation Utilities convertLegacyOptions should convert legacy options to new format 1`] = `
+[
+  {
+    "_experimentalCustomFetch": "[Function]",
+    "global": {
+      "fetch": {
+        "client": "[Function]",
+      },
+    },
+  },
+  {
+    "global": {
+      "fetch": {
+        "options": {
+          "proxy": {
+            "url": "https://proxy.example.com",
+          },
+        },
+      },
+    },
+    "restProxy": {
+      "url": "https://proxy.example.com",
+    },
+  },
+  {
+    "global": {
+      "fetch": {
+        "options": {
+          "url": "https://custom-api.deepgram.com",
+        },
+      },
+      "url": "https://custom-api.deepgram.com",
+      "websocket": {
+        "options": {
+          "url": "https://custom-api.deepgram.com",
+        },
+      },
+    },
+  },
+  {
+    "global": {
+      "fetch": {
+        "options": {
+          "headers": {
+            "Custom-Header": "value",
+          },
+        },
+      },
+      "headers": {
+        "Custom-Header": "value",
+      },
+      "websocket": {
+        "options": {
+          "_nodeOnlyHeaders": {
+            "Custom-Header": "value",
+          },
+        },
+      },
+    },
+  },
+  {
+    "_experimentalCustomFetch": "[Function]",
+    "global": {
+      "fetch": {
+        "client": "[Function]",
+        "options": {
+          "headers": {
+            "Custom": "Header",
+          },
+          "proxy": {
+            "url": "https://proxy.example.com",
+          },
+          "url": "https://custom-api.deepgram.com",
+        },
+      },
+      "headers": {
+        "Custom": "Header",
+      },
+      "url": "https://custom-api.deepgram.com",
+      "websocket": {
+        "options": {
+          "_nodeOnlyHeaders": {
+            "Custom": "Header",
+          },
+          "url": "https://custom-api.deepgram.com",
+        },
+      },
+    },
+    "restProxy": {
+      "url": "https://proxy.example.com",
+    },
+  },
+  {},
+]
+`;

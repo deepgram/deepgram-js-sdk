@@ -1,0 +1,139 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Tests - Object Manipulation Utilities appendSearchParams should handle various parameter types 1`] = `
+[
+  {
+    "input": {
+      "language": "en-US",
+      "model": "nova-2",
+    },
+    "output": {
+      "language": "en-US",
+      "model": "nova-2",
+    },
+    "toString": "language=en-US&model=nova-2",
+  },
+  {
+    "input": {
+      "keywords": [
+        "hello",
+        "world",
+        "test",
+      ],
+    },
+    "output": {
+      "keywords": "test",
+    },
+    "toString": "keywords=hello&keywords=world&keywords=test",
+  },
+  {
+    "input": {
+      "punctuate": true,
+      "smart_format": false,
+    },
+    "output": {
+      "punctuate": "true",
+      "smart_format": "false",
+    },
+    "toString": "punctuate=true&smart_format=false",
+  },
+  {
+    "input": {
+      "alternatives": 3,
+      "confidence": 0.8,
+    },
+    "output": {
+      "alternatives": "3",
+      "confidence": "0.8",
+    },
+    "toString": "confidence=0.8&alternatives=3",
+  },
+  {
+    "input": {
+      "boolean": true,
+      "mixed": [
+        "array",
+        "values",
+      ],
+      "number": 42,
+      "single": "value",
+    },
+    "output": {
+      "boolean": "true",
+      "mixed": "values",
+      "number": "42",
+      "single": "value",
+    },
+    "toString": "mixed=array&mixed=values&single=value&boolean=true&number=42",
+  },
+]
+`;
+
+exports[`Unit Tests - Object Manipulation Utilities applyDefaults should merge options with defaults correctly 1`] = `
+[
+  {
+    "input": {
+      "options": {
+        "language": "en-US",
+        "model": "nova-2",
+      },
+      "subordinate": {
+        "punctuate": true,
+        "smart_format": false,
+      },
+    },
+    "output": {
+      "language": "en-US",
+      "model": "nova-2",
+      "punctuate": true,
+      "smart_format": false,
+    },
+  },
+  {
+    "input": {
+      "options": {},
+      "subordinate": {
+        "default": "value",
+      },
+    },
+    "output": {
+      "default": "value",
+    },
+  },
+  {
+    "input": {
+      "options": {
+        "override": "new",
+      },
+      "subordinate": {
+        "default": "value",
+        "override": "old",
+      },
+    },
+    "output": {
+      "default": "value",
+      "override": "new",
+    },
+  },
+  {
+    "input": {
+      "options": {
+        "nested": {
+          "deep": "value",
+        },
+      },
+      "subordinate": {
+        "nested": {
+          "other": "property",
+        },
+      },
+    },
+    "output": {
+      "nested": {
+        "deep": "value",
+        "other": "property",
+      },
+    },
+  },
+]
+`;

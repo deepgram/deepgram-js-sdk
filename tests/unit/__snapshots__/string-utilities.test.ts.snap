@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Tests - String and URL Utilities convertProtocolToWs should convert HTTP protocols to WebSocket protocols 1`] = `
+[
+  {
+    "input": "https://api.deepgram.com",
+    "output": "wss://api.deepgram.com",
+  },
+  {
+    "input": "http://api.deepgram.com",
+    "output": "ws://api.deepgram.com",
+  },
+  {
+    "input": "HTTPS://API.DEEPGRAM.COM",
+    "output": "wss://api.deepgram.com",
+  },
+  {
+    "input": "HTTP://API.DEEPGRAM.COM",
+    "output": "ws://api.deepgram.com",
+  },
+  {
+    "input": "wss://already-websocket.com",
+    "output": "wss://already-websocket.com",
+  },
+  {
+    "input": "ws://already-websocket.com",
+    "output": "ws://already-websocket.com",
+  },
+]
+`;
+
+exports[`Unit Tests - String and URL Utilities stripTrailingSlash should handle various URL formats 1`] = `
+[
+  {
+    "input": "https://api.deepgram.com/",
+    "output": "https://api.deepgram.com",
+  },
+  {
+    "input": "https://api.deepgram.com",
+    "output": "https://api.deepgram.com",
+  },
+  {
+    "input": "https://api.deepgram.com/v1/",
+    "output": "https://api.deepgram.com/v1",
+  },
+  {
+    "input": "https://api.deepgram.com/v1",
+    "output": "https://api.deepgram.com/v1",
+  },
+  {
+    "input": "/",
+    "output": "",
+  },
+  {
+    "input": "",
+    "output": "",
+  },
+  {
+    "input": "path/",
+    "output": "path",
+  },
+  {
+    "input": "path",
+    "output": "path",
+  },
+]
+`;
