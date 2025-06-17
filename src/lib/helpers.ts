@@ -47,7 +47,7 @@ export const resolveHeadersConstructor = () => {
 export const isUrlSource = (
   providedSource: PrerecordedSource | AnalyzeSource
 ): providedSource is UrlSource => {
-  if ((providedSource as UrlSource).url) return true;
+  if (providedSource && (providedSource as UrlSource).url) return true;
 
   return false;
 };
@@ -55,7 +55,7 @@ export const isUrlSource = (
 export const isTextSource = (
   providedSource: PrerecordedSource | AnalyzeSource
 ): providedSource is TextSource => {
-  if ((providedSource as TextSource).text) return true;
+  if (providedSource && (providedSource as TextSource).text) return true;
 
   return false;
 };
@@ -67,15 +67,11 @@ export const isFileSource = (providedSource: PrerecordedSource): providedSource 
 };
 
 const isBufferSource = (providedSource: PrerecordedSource): providedSource is Buffer => {
-  if (providedSource as Buffer) return true;
-
-  return false;
+  return providedSource != null && Buffer.isBuffer(providedSource);
 };
 
 const isReadStreamSource = (providedSource: PrerecordedSource): providedSource is Readable => {
-  if (providedSource as Readable) return true;
-
-  return false;
+  return providedSource != null && providedSource instanceof Readable;
 };
 
 export class CallbackUrl extends URL {
@@ -100,11 +96,11 @@ export const buildRequestUrl = (
 };
 
 export function isLiveSchema(arg: any): arg is LiveSchema {
-  return arg && typeof arg.interim_results !== "undefined";
+  return arg != null && typeof arg.interim_results !== "undefined";
 }
 
 export function isDeepgramClientOptions(arg: any): arg is DeepgramClientOptions {
-  return arg && typeof arg.global !== "undefined";
+  return arg != null && typeof arg.global !== "undefined";
 }
 
 export const convertLegacyOptions = (optionsArg: DeepgramClientOptions): DeepgramClientOptions => {
