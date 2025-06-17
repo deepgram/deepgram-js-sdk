@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node: ["18"]
+        node: ["18", "22"]
 
     runs-on: ${{ matrix.os }}
 
@@ -43,18 +43,24 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint files
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Validate build
-        run: npm run build
+        run: pnpm run build
 
       - name: Run tests
-        run: npm run test:coverage
+        run: pnpm run test:coverage
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
