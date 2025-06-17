@@ -12,27 +12,30 @@ on:
 
 jobs:
   release:
-    name: Release / Node ${{ matrix.node }}
-    strategy:
-      matrix:
-        node: ["20"]
-
+    name: Release
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
 
-      - run: |
-          npm ci
-          npm run build
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
 
       - name: Create a release
-        run: npx semantic-release
+        run: pnpm dlx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
