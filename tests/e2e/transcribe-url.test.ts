@@ -1,5 +1,6 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
+import { urlSources, commonTranscriptionOptions } from "../__fixtures__/e2e-requests";
 
 describe("transcribeUrl E2E", () => {
   let deepgram: ReturnType<typeof createClient>;
@@ -22,15 +23,9 @@ describe("transcribeUrl E2E", () => {
   });
 
   it("should transcribe audio from URL and match expected response structure", async () => {
-    const testUrl = "https://dpgr.am/spacewalk.wav";
-
     const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
-      { url: testUrl },
-      {
-        model: "nova-3",
-        smart_format: true,
-        punctuate: true,
-      }
+      urlSources.spacewalk,
+      commonTranscriptionOptions
     );
 
     // Verify no error occurred

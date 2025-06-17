@@ -1,5 +1,6 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
+import { testAudioFiles, commonTranscriptionOptions } from "../__fixtures__/e2e-requests";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -24,7 +25,7 @@ describe("transcribeFile E2E", () => {
   });
 
   it("should transcribe audio from file and match expected response structure", async () => {
-    const audioFilePath = path.join(__dirname, "../__fixtures__/spacewalk.wav");
+    const audioFilePath = path.join(__dirname, "../__fixtures__", testAudioFiles.spacewalk);
 
     // Verify the test file exists
     expect(fs.existsSync(audioFilePath)).toBe(true);
@@ -32,11 +33,10 @@ describe("transcribeFile E2E", () => {
     // Read the audio file
     const audioBuffer = fs.readFileSync(audioFilePath);
 
-    const { result, error } = await deepgram.listen.prerecorded.transcribeFile(audioBuffer, {
-      model: "nova-3",
-      smart_format: true,
-      punctuate: true,
-    });
+    const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
+      audioBuffer,
+      commonTranscriptionOptions
+    );
 
     // Verify no error occurred
     expect(error).toBeNull();
