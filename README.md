@@ -2,7 +2,11 @@
 
 [![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4) [![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
-Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your apps with world-class speech and Language AI models.
+> 🎯 **Development Setup**: This project uses [Corepack](https://nodejs.org/api/corepack.html) for package manager consistency. Run `corepack enable` once, then use `pnpm` commands normally. See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
+
+Isomorphic Javascript client for Deepgram's APIs. Power your apps with our world-class voice AI platform.
+
+<!-- TOC -->
 
 - [Documentation](#documentation)
 - [Migrating from earlier versions](#migrating-from-earlier-versions)
@@ -15,32 +19,31 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Initialization](#initialization)
   - [Getting an API Key](#getting-an-api-key)
 - [Scoped Configuration](#scoped-configuration)
-  - [1. Global Defaults](#1-global-defaults)
-  - [2. Namespace-specific Configurations](#2-namespace-specific-configurations)
-  - [3. Transport Options](#3-transport-options)
-  - [4. Examples](#4-examples)
+  - [Global Defaults](#global-defaults)
+  - [Namespace-specific Configurations](#namespace-specific-configurations)
+  - [Transport Options](#transport-options)
+  - [Examples](#examples)
     - [Change the API url used for all SDK methods](#change-the-api-url-used-for-all-sdk-methods)
-    - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
     - [Change the API url used for the Voice Agent websocket](#change-the-api-url-used-for-the-voice-agent-websocket)
+    - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
     - [Override fetch transmitter](#override-fetch-transmitter)
     - [Proxy requests in the browser](#proxy-requests-in-the-browser)
     - [Set custom headers for fetch](#set-custom-headers-for-fetch)
-- [Pre-Recorded (Synchronous)](#pre-recorded-synchronous)
+- [Browser Usage](#browser-usage)
+- [Transcription](#transcription)
   - [Remote Files](#remote-files)
   - [Local Files](#local-files)
-  - [Browser](#browser)
-- [Pre-Recorded (Asynchronous / Callbacks)](#pre-recorded-asynchronous--callbacks)
-  - [Remote Files](#remote-files-1)
-  - [Local Files](#local-files-1)
-  - [Browser](#browser-1)
-- [Streaming Audio](#streaming-audio)
-- [Transcribing to captions](#transcribing-to-captions)
+  - [Callbacks / Async](#callbacks--async)
+  - [Live Transcription (WebSocket)](#live-transcription-websocket)
+  - [Captions](#captions)
 - [Voice Agent](#voice-agent)
-- [Text to Speech Rest](#text-to-speech-rest)
-- [Text to Speech Streaming](#text-to-speech-streaming)
+- [Text to Speech](#text-to-speech)
+  - [Single-Request](#single-request)
+  - [Continuous Text Stream (WebSocket)](#continuous-text-stream-websocket)
 - [Text Intelligence](#text-intelligence)
 - [Authentication](#authentication)
   - [Get Token Details](#get-token-details)
+  - [Grant Token](#grant-token)
 - [Projects](#projects)
   - [Get Projects](#get-projects)
   - [Get Project](#get-project)
@@ -67,6 +70,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
   - [Get Request](#get-request)
   - [Summarize Usage](#summarize-usage)
   - [Get Fields](#get-fields)
+  - [Summarize Usage](#summarize-usage)
 - [Billing](#billing)
   - [Get All Balances](#get-all-balances)
   - [Get Balance](#get-balance)
@@ -82,6 +86,7 @@ Official JavaScript SDK for [Deepgram](https://www.deepgram.com/). Power your ap
 - [Development and Contributing](#development-and-contributing)
   - [Debugging and making changes locally](#debugging-and-making-changes-locally)
 - [Getting Help](#getting-help)
+<!-- /TOC -->
 
 ## Documentation
 
@@ -103,12 +108,22 @@ The Voice Agent interfaces have been updated to use the new Voice Agent V1 API. 
 
 ## Installation
 
-You can install this SDK directly from [npm](https://www.npmjs.com/package/@deepgram/sdk).
+You can install this SDK directly from [[npm](https://www.npmjs.com/package/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk).
 
 ```bash
 npm install @deepgram/sdk
-# - or -
-# yarn add @deepgram/sdk
+```
+
+or
+
+```bash
+pnpm install @deepgram/sdk
+```
+
+or
+
+```bash
+yarn add @deepgram/sdk
 ```
 
 ### UMD
@@ -130,9 +145,9 @@ Then you can use it from a global deepgram variable:
 ```html
 <script>
   const { createClient } = deepgram;
-  const _deepgram = createClient("deepgram-api-key");
+  const deepgramClient = createClient("deepgram-api-key");
 
-  console.log("Deepgram Instance: ", _deepgram);
+  console.log("Deepgram client instance: ", deepgramClient);
   // ...
 </script>
 ```
@@ -144,9 +159,9 @@ You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 ```html
 <script type="module">
   import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
-  const deepgram = createClient("deepgram-api-key");
+  const deepgramClient = createClient("deepgram-api-key");
 
-  console.log("Deepgram Instance: ", deepgram);
+  console.log("Deepgram client instance: ", deepgramClient);
   // ...
 </script>
 ```
@@ -160,7 +175,7 @@ import { createClient } from "@deepgram/sdk";
 // - or -
 // const { createClient } = require("@deepgram/sdk");
 
-const deepgram = createClient(DEEPGRAM_API_KEY);
+const deepgramClient = createClient(DEEPGRAM_API_KEY);
 ```
 
 ### Getting an API Key
@@ -171,18 +186,18 @@ const deepgram = createClient(DEEPGRAM_API_KEY);
 
 The SDK supports scoped configuration. You'll be able to configure various aspects of each namespace of the SDK from the initialization. Below outlines a flexible and customizable configuration system for the Deepgram SDK. Here's how the namespace configuration works:
 
-### 1. Global Defaults
+### Global Defaults
 
 - The `global` namespace serves as the foundational configuration applicable across all other namespaces unless overridden.
 - Includes general settings like URL and headers applicable for all API calls.
 - If no specific configurations are provided for other namespaces, the `global` defaults are used.
 
-### 2. Namespace-specific Configurations
+### Namespace-specific Configurations
 
 - Each namespace (`listen`, `manage`, `onprem`, `read`, `speak`) can have its specific configurations which override the `global` settings within their respective scopes.
 - Allows for detailed control over different parts of the application interacting with various Deepgram API endpoints.
 
-### 3. Transport Options
+### Transport Options
 
 - Configurations for both `fetch` and `websocket` can be specified under each namespace, allowing different transport mechanisms for different operations.
 - For example, the `fetch` configuration can have its own URL and proxy settings distinct from the `websocket`.
@@ -190,7 +205,7 @@ The SDK supports scoped configuration. You'll be able to configure various aspec
 
 This configuration system enables robust customization where defaults provide a foundation, but every aspect of the client's interaction with the API can be finely controlled and tailored to specific needs through namespace-specific settings. This enhances the maintainability and scalability of the application by localizing configurations to their relevant contexts.
 
-### 4. Examples
+### Examples
 
 #### Change the API url used for all SDK methods
 
@@ -201,7 +216,7 @@ import { createClient } from "@deepgram/sdk";
 // - or -
 // const { createClient } = require("@deepgram/sdk");
 
-const deepgram = createClient(DEEPGRAM_API_KEY, {
+const deepgramClient = createClient(DEEPGRAM_API_KEY, {
   global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } },
 });
 ```
@@ -215,7 +230,7 @@ import { createClient } from "@deepgram/sdk";
 // - or -
 // const { createClient } = require("@deepgram/sdk");
 
-const deepgram = createClient(DEEPGRAM_API_KEY, {
+const deepgramClient = createClient(DEEPGRAM_API_KEY, {
   global: { websocket: { options: { url: "ws://localhost:8080" } } },
 });
 ```
@@ -229,7 +244,7 @@ import { createClient } from "@deepgram/sdk";
 // - or -
 // const { createClient } = require("@deepgram/sdk");
 
-const deepgram = createClient(DEEPGRAM_API_KEY, {
+const deepgramClient = createClient(DEEPGRAM_API_KEY, {
   listen: { fetch: { options: { url: "http://localhost:8080" } } },
 });
 ```
@@ -247,7 +262,7 @@ const yourFetch = async () => {
   return Response("...etc");
 };
 
-const deepgram = createClient(DEEPGRAM_API_KEY, {
+const deepgramClient = createClient(DEEPGRAM_API_KEY, {
   global: { fetch: { client: yourFetch } },
 });
 ```
@@ -259,7 +274,7 @@ This SDK now works in the browser. If you'd like to make REST-based requests (pr
 ```js
 import { createClient } from "@deepgram/sdk";
 
-const deepgram = createClient("proxy", {
+const deepgramClient = createClient("proxy", {
   global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
 });
 ```
@@ -277,24 +292,29 @@ Useful for many things.
 ```js
 import { createClient } from "@deepgram/sdk";
 
-const deepgram = createClient("proxy", {
+const deepgramClient = createClient("proxy", {
   global: { fetch: { options: { headers: { "x-custom-header": "foo" } } } },
 });
 ```
 
-## Pre-Recorded (Synchronous)
+## Browser Usage
+
+To use this SDK in the browser, check out [UMD](#umd) and/or [ESM](#esm) initialisation.
+
+Also see [proxy requests in the browser](#proxy-requests-in-the-browser) if you're planning to make RESTful requests to our API.
+
+## Transcription
 
 ### Remote Files
 
 Transcribe audio from a URL.
 
 ```js
-const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
+  { url: "https://dpgr.am/spacewalk.wav" },
   {
-    url: "https://dpgr.am/spacewalk.wav",
-  },
-  {
-    model: "nova",
+    model: "nova-3",
+    // pre-recorded transcription options
   }
 );
 ```
@@ -306,189 +326,73 @@ const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
 Transcribe audio from a file.
 
 ```js
-const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
+const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(
   fs.createReadStream("./examples/spacewalk.wav"),
   {
-    model: "nova",
-  }
-);
-```
-
-or
-
-```js
-const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-  fs.readFileSync("./examples/spacewalk.wav"),
-  {
-    model: "nova",
+    model: "nova-3",
+    // pre-recorded transcription options
   }
 );
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
-### Browser
+### Callbacks / Async
 
-Transcribe audio from a file in the browser.
-
-```js
-const transcribeFile = async () => {
-  const { result, error } = await _deepgram.listen.prerecorded.transcribeFile(
-    fs.readFileSync("./examples/nasa.mp4"),
-    {
-      model: "nova",
-    }
-  );
-};
-```
-
-[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
-
-[See our Example for more info](./examples/browser-prerecorded/index.html).
-
-## Pre-Recorded (Asynchronous / Callbacks)
-
-### Remote Files
-
-Transcribe audio from a URL.
+We have a `Callback` version of both `transcribeFile` and `transcribeUrl`, which simply takes a `CallbackUrl` class.
 
 ```js
 import { CallbackUrl } from "@deepgram/sdk";
 
-const { result, error } = await deepgram.listen.prerecorded.transcribeUrlCallback(
-  {
-    url: "https://dpgr.am/spacewalk.wav",
-  },
+const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrlCallback(
+  { url: "https://dpgr.am/spacewalk.wav" },
   new CallbackUrl("http://callback/endpoint"),
   {
-    model: "nova",
+    model: "nova-3",
+    // pre-recorded transcription options
   }
 );
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
-[See our Example for more info](./examples/node-prerecorded/index.js).
+### Live Transcription (WebSocket)
 
-### Local Files
-
-Transcribe audio from a file.
+Connect to our websocket and transcribe live streaming audio.
 
 ```js
-import { CallbackUrl } from "@deepgram/sdk";
+const deepgramConnection = deepgramClient.listen.live({
+  model: "nova-3",
+  // live transcription options
+});
 
-const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallback(
-  fs.createReadStream("./examples/spacewalk.wav"),
-  new CallbackUrl("http://callback/endpoint"),
-  {
-    model: "nova",
-  }
-);
-```
-
-or
-
-```js
-import { CallbackUrl } from "@deepgram/sdk";
-
-const { result, error } = await deepgram.listen.prerecorded.transcribeFileCallback(
-  fs.readFileSync("./examples/spacewalk.wav"),
-  new CallbackUrl("http://callback/endpoint"),
-  {
-    model: "nova",
-  }
-);
-```
-
-[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
-
-### Browser
-
-Transcribe audio from a URL in the browser.
-
-```js
-// browser code
-const transcribeUrl = async () => {
-  const { result, error } = await _deepgram.listen.prerecorded.transcribeUrl(
-    {
-      url: "https://dpgr.am/spacewalk.wav",
-    },
-    {
-      model: "nova",
-    }
-  );
-};
-// browser code
-```
-
-[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
-
-[See our Example for more info](./examples/browser-prerecorded/index.html).
-
-## Streaming Audio
-
-Transcribe streaming audio.
-
-```js
-const dgConnection = deepgram.listen.live({ model: "nova" });
-
-dgConnection.on(LiveTranscriptionEvents.Open, () => {
-  dgConnection.on(LiveTranscriptionEvents.Transcript, (data) => {
+deepgramConnection.on(LiveTranscriptionEvents.Open, () => {
+  deepgramConnection.on(LiveTranscriptionEvents.Transcript, (data) => {
     console.log(data);
   });
 
   source.addListener("got-some-audio", async (event) => {
-    dgConnection.send(event.raw_audio_data);
+    deepgramConnection.send(event.raw_audio_data);
   });
 });
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen-streaming).
 
-[See our Example for more info](https://github.com/deepgram-devs/node-live-example).
+### Captions
 
-### Browser
-
-Transcribe streaming audio in the browser.
+Convert deepgram transcriptions to captions.
 
 ```js
-// browser code
+import { webvtt, srt } from "@deepgram/sdk";
 
-const connection = deepgram.listen.live({
+const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl({
   model: "nova-3",
-  language: "en-US",
-  smart_format: true,
-  interim_results: true,
-  utterance_end_ms: 1000,
-  vad_events: true,
-  endpointing: 300,
+  // pre-recorded transcription options
 });
 
-// browser code
-```
-
-[See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen-streaming).
-
-[See Our Example for more info](https://github.com/deepgram-devs/js-live-example).
-
-## Transcribing to captions
-
-Transcribe audio to captions.
-
-```js
-import { webvtt /* , srt */ } from "@deepgram/captions";
-
-const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
-  {
-    url: "https://dpgr.am/spacewalk.wav",
-  },
-  {
-    model: "nova",
-  }
-);
-
-const vttOutput = webvtt(result);
-// const srtOutput = srt(result);
+const vttResult = webvtt(result);
+const srtResult = srt(result);
 ```
 
 [See our standalone captions library for more information](https://github.com/deepgram/deepgram-node-captions).
@@ -498,136 +402,71 @@ const vttOutput = webvtt(result);
 Configure a Voice Agent.
 
 ```js
-import { createClient } from "@deepgram/sdk";
 import { AgentEvents } from "@deepgram/sdk";
 
-const deepgram = createClient(DEEPGRAM_API_KEY);
-
 // Create an agent connection
-const agent = deepgram.agent();
+const deepgramConnection = deepgramClient.agent();
 
 // Set up event handlers
-agent.on(AgentEvents.Open, () => {
+deepgramConnection.on(AgentEvents.Open, () => {
   console.log("Connection opened");
 
-  // Configure the agent once connection is established
-  agent.configure({
-    audio: {
-      input: {
-        encoding: "linear16",
-        sampleRate: 24000,
-      },
-      output: {
-        encoding: "mp3",
-        sample_rate: 24000,
-        bitrate: 48000,
-        container: "none",
-      },
-    },
-    agent: {
-      language: "en",
-      listen: {
-        provider: {
-          type: "deepgram",
-          model: "nova-3",
-        },
-      },
-      think: {
-        provider: {
-          type: "open_ai",
-          model: "gpt-4-mini",
-          temperature: 0.7,
-        },
-        prompt: "You are a helpful AI assistant. Keep responses brief and friendly.",
-      },
-      speak: {
-        provider: {
-          type: "deepgram",
-          model: "aura-2-thalia-en",
-        },
-      },
-    },
+  // Set up event handlers
+  deepgramConnection.on(AgentEvents.ConversationText, (data) => {
+    console.log(data);
   });
+
+  // other events
+
+  // Configure the agent once connection is established
+  deepgramConnection.configure({
+    // agent configuration
+  });
+
+  // etc...
 });
-
-// Handle agent responses
-agent.on(AgentEvents.AgentStartedSpeaking, (data) => {
-  console.log("Agent started speaking:", data["total_latency"]);
-});
-
-agent.on(AgentEvents.ConversationText, (message) => {
-  console.log(`${message.role} said: ${message.content}`);
-});
-
-agent.on(AgentEvents.Audio, (audio) => {
-  // Handle audio data from the agent
-  playAudio(audio); // Your audio playback implementation
-});
-
-agent.on(AgentEvents.Error, (error) => {
-  console.error("Error:", error);
-});
-
-agent.on(AgentEvents.Close, () => {
-  console.log("Connection closed");
-});
-
-// Send audio data
-function sendAudioData(audioData) {
-  agent.send(audioData);
-}
-
-// Keep the connection alive
-setInterval(() => {
-  agent.keepAlive();
-}, 8000);
 ```
-
-This example demonstrates:
-
-- Setting up a WebSocket connection
-- Configuring the agent with speech, language, and audio settings
-- Handling various agent events (speech, transcripts, audio)
-- Sending audio data and keeping the connection alive
-
-For a complete implementation, you would need to:
-
-1. Add your audio input source (e.g., microphone)
-2. Implement audio playback for the agent's responses
-3. Handle any function calls if your agent uses them
-4. Add proper error handling and connection management
 
 [See our API reference for more info](https://developers.deepgram.com/reference/voice-agent-api/agent).
 
-[See our Example for more info](./examples/node-agent-live/index.js).
+## Text to Speech
 
-## Text to Speech Rest
+### Single-Request
 
 Convert text into speech using the REST API.
 
 ```js
-const { result } = await deepgram.speak.request({ text }, { model: "aura-2-thalia-en" });
+const { result } = await deepgramClient.speak.request(
+  { text },
+  {
+    model: "aura-2-thalia-en",
+    // text to speech options
+  }
+);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api/speak).
 
-[See our Example for info](./examples/node-speak/index.js)
+### Continuous Text Stream (WebSocket)
 
-## Text to Speech Streaming
+Connect to our websocket and send a continuous text stream to generate speech.
 
 ```js
-const dgConnection = deepgram.speak.live({ model: "aura-2-thalia-en" });
+const deepgramConnection = deepgramClient.speak.live({
+  model: "aura-2-thalia-en",
+  // live text to speech options
+});
 
-dgConnection.on(LiveTTSEvents.Open, () => {
+deepgramConnection.on(LiveTTSEvents.Open, () => {
   console.log("Connection opened");
 
   // Send text data for TTS synthesis
-  dgConnection.sendText(text);
+  deepgramConnection.sendText(text);
 
   // Send Flush message to the server after sending the text
-  dgConnection.flush();
+  deepgramConnection.flush();
 
-  dgConnection.on(LiveTTSEvents.Close, () => {
+  deepgramConnection.on(LiveTTSEvents.Close, () => {
     console.log("Connection closed");
   });
 });
@@ -635,35 +474,25 @@ dgConnection.on(LiveTTSEvents.Open, () => {
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api/speak-streaming).
 
-[See our Example for info](./examples/node-speak-live/index.js).
-
 ## Text Intelligence
 
-Analyze Text.
+Analyze text using our intelligence AI features.
 
 ```js
 const text = `The history of the phrase 'The quick brown fox jumps over the
 lazy dog'. The earliest known appearance of the phrase was in The Boston
-Journal. In an article titled "Current Notes" in the February 9, 1885, edition,
-the phrase is mentioned as a good practice sentence for writing students: "A
-favorite copy set by writing teachers for their pupils is the following,
-because it contains every letter of the alphabet: 'A quick brown fox jumps over
-the lazy dog.'" Dozens of other newspapers published the phrase over the
-next few months, all using the version of the sentence starting with "A" rather
-than "The". The earliest known use of the phrase starting with "The" is from
-the 1888 book Illustrative Shorthand by Linda Bronson.[3] The modern form
-(starting with "The") became more common even though it is slightly longer than
-the original (starting with "A").`;
+Journal...`;
 
-const { result, error } = await deepgram.read.analyzeText(
+const { result, error } = await deepgramClient.read.analyzeText(
   { text },
-  { language: "en", topics: true, sentiment: true }
+  {
+    language: "en",
+    // text intelligence options
+  }
 );
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-intelligence-api/text-read).
-
-[See our Example for info](./examples/node-read/index.js).
 
 ## Authentication
 
@@ -672,7 +501,7 @@ const { result, error } = await deepgram.read.analyzeText(
 Retrieves the details of the current authentication token.
 
 ```js
-const { result, error } = await deepgram.manage.getTokenDetails();
+const { result, error } = await deepgramClient.manage.getTokenDetails();
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/authentication)
@@ -682,7 +511,7 @@ const { result, error } = await deepgram.manage.getTokenDetails();
 Creates a temporary token with a 30-second TTL.
 
 ```js
-const { result, error } = await deepgram.auth.grantToken();
+const { result, error } = await deepgramClient.auth.grantToken();
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/token-based-auth-api/grant-token).
@@ -694,7 +523,7 @@ const { result, error } = await deepgram.auth.grantToken();
 Returns all projects accessible by the API key.
 
 ```js
-const { result, error } = await deepgram.manage.getProjects();
+const { result, error } = await deepgramClient.manage.getProjects();
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-projects).
@@ -704,7 +533,7 @@ const { result, error } = await deepgram.manage.getProjects();
 Retrieves a specific project based on the provided project_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProject(projectId);
+const { result, error } = await deepgramClient.manage.getProject(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-project).
@@ -714,7 +543,7 @@ const { result, error } = await deepgram.manage.getProject(projectId);
 Update a project.
 
 ```js
-const { result, error } = await deepgram.manage.updateProject(projectId, options);
+const { result, error } = await deepgramClient.manage.updateProject(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/update-project).
@@ -724,7 +553,7 @@ const { result, error } = await deepgram.manage.updateProject(projectId, options
 Delete a project.
 
 ```js
-const { error } = await deepgram.manage.deleteProject(projectId);
+const { error } = await deepgramClient.manage.deleteProject(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-project).
@@ -736,7 +565,7 @@ const { error } = await deepgram.manage.deleteProject(projectId);
 Retrieves all keys associated with the provided project_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectKeys(projectId);
+const { result, error } = await deepgramClient.manage.getProjectKeys(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/list-keys).
@@ -746,7 +575,7 @@ const { result, error } = await deepgram.manage.getProjectKeys(projectId);
 Retrieves a specific key associated with the provided project_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectKey(projectId, projectKeyId);
+const { result, error } = await deepgramClient.manage.getProjectKey(projectId, projectKeyId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-key).
@@ -756,7 +585,7 @@ const { result, error } = await deepgram.manage.getProjectKey(projectId, project
 Creates an API key with the provided scopes.
 
 ```js
-const { result, error } = await deepgram.manage.createProjectKey(projectId, options);
+const { result, error } = await deepgramClient.manage.createProjectKey(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/create-key).
@@ -766,7 +595,7 @@ const { result, error } = await deepgram.manage.createProjectKey(projectId, opti
 Deletes a specific key associated with the provided project_id.
 
 ```js
-const { error } = await deepgram.manage.deleteProjectKey(projectId, projectKeyId);
+const { error } = await deepgramClient.manage.deleteProjectKey(projectId, projectKeyId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-key).
@@ -778,7 +607,7 @@ const { error } = await deepgram.manage.deleteProjectKey(projectId, projectKeyId
 Retrieves account objects for all of the accounts in the specified project_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectMembers(projectId);
+const { result, error } = await deepgramClient.manage.getProjectMembers(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-members).
@@ -788,7 +617,7 @@ const { result, error } = await deepgram.manage.getProjectMembers(projectId);
 Removes member account for specified member_id.
 
 ```js
-const { error } = await deepgram.manage.removeProjectMember(projectId, projectMemberId);
+const { error } = await deepgramClient.manage.removeProjectMember(projectId, projectMemberId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/remove-member).
@@ -800,7 +629,10 @@ const { error } = await deepgram.manage.removeProjectMember(projectId, projectMe
 Retrieves scopes of the specified member in the specified project.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectMemberScopes(projectId, projectMemberId);
+const { result, error } = await deepgramClient.manage.getProjectMemberScopes(
+  projectId,
+  projectMemberId
+);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-member-scopes).
@@ -810,7 +642,7 @@ const { result, error } = await deepgram.manage.getProjectMemberScopes(projectId
 Updates the scope for the specified member in the specified project.
 
 ```js
-const { result, error } = await deepgram.manage.updateProjectMemberScope(
+const { result, error } = await deepgramClient.manage.updateProjectMemberScope(
   projectId,
   projectMemberId,
   options
@@ -826,7 +658,7 @@ const { result, error } = await deepgram.manage.updateProjectMemberScope(
 Retrieves all invitations associated with the provided project_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectInvites(projectId);
+const { result, error } = await deepgramClient.manage.getProjectInvites(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/list-invites).
@@ -836,7 +668,7 @@ const { result, error } = await deepgram.manage.getProjectInvites(projectId);
 Sends an invitation to the provided email address.
 
 ```js
-const { result, error } = await deepgram.manage.sendProjectInvite(projectId, options);
+const { result, error } = await deepgramClient.manage.sendProjectInvite(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/send-invites).
@@ -846,7 +678,7 @@ const { result, error } = await deepgram.manage.sendProjectInvite(projectId, opt
 Removes the specified invitation from the project.
 
 ```js
-const { error } = await deepgram.manage.deleteProjectInvite(projectId, email);
+const { error } = await deepgramClient.manage.deleteProjectInvite(projectId, email);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-invite).
@@ -856,7 +688,7 @@ const { error } = await deepgram.manage.deleteProjectInvite(projectId, email);
 Removes the authenticated user from the project.
 
 ```js
-const { result, error } = await deepgram.manage.leaveProject(projectId);
+const { result, error } = await deepgramClient.manage.leaveProject(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/leave-project).
@@ -868,7 +700,7 @@ const { result, error } = await deepgram.manage.leaveProject(projectId);
 Retrieves all requests associated with the provided project_id based on the provided options.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsageRequests(projectId, options);
+const { result, error } = await deepgramClient.manage.getProjectUsageRequests(projectId, options);
 ```
 
 ### Get Request
@@ -876,7 +708,7 @@ const { result, error } = await deepgram.manage.getProjectUsageRequests(projectI
 Retrieves a specific request associated with the provided project_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsageRequest(projectId, requestId);
+const { result, error } = await deepgramClient.manage.getProjectUsageRequest(projectId, requestId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-request).
@@ -886,7 +718,7 @@ const { result, error } = await deepgram.manage.getProjectUsageRequest(projectId
 Retrieves usage associated with the provided project_id based on the provided options.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsageSummary(projectId, options);
+const { result, error } = await deepgramClient.manage.getProjectUsageSummary(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/summarize-usage).
@@ -896,7 +728,7 @@ const { result, error } = await deepgram.manage.getProjectUsageSummary(projectId
 Lists the features, models, tags, languages, and processing method used for requests in the specified project.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsageFields(projectId, options);
+const { result, error } = await deepgramClient.manage.getProjectUsageFields(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
@@ -906,7 +738,7 @@ const { result, error } = await deepgram.manage.getProjectUsageFields(projectId,
 `Deprecated` Retrieves the usage for a specific project. Use Get Project Usage Breakdown for a more comprehensive usage summary.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectUsage(projectId, options);
+const { result, error } = await deepgramClient.manage.getProjectUsage(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/management-api/usage/get).
@@ -918,7 +750,7 @@ const { result, error } = await deepgram.manage.getProjectUsage(projectId, optio
 Retrieves the list of balance info for the specified project.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectBalances(projectId);
+const { result, error } = await deepgramClient.manage.getProjectBalances(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-all-balances).
@@ -928,7 +760,7 @@ const { result, error } = await deepgram.manage.getProjectBalances(projectId);
 Retrieves the balance info for the specified project and balance_id.
 
 ```js
-const { result, error } = await deepgram.manage.getProjectBalance(projectId, balanceId);
+const { result, error } = await deepgramClient.manage.getProjectBalance(projectId, balanceId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-balance).
@@ -940,7 +772,7 @@ const { result, error } = await deepgram.manage.getProjectBalance(projectId, bal
 Retrieves all models available for a given project.
 
 ```js
-const { result, error } = await deepgram.manage.getAllModels(projectId, {});
+const { result, error } = await deepgramClient.manage.getAllModels(projectId, {});
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/management-api/projects/list-models).
@@ -950,7 +782,7 @@ const { result, error } = await deepgram.manage.getAllModels(projectId, {});
 Retrieves details of a specific model.
 
 ```js
-const { result, error } = await deepgram.manage.getModel(projectId, modelId);
+const { result, error } = await deepgramClient.manage.getModel(projectId, modelId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/management-api/models/get)
@@ -962,7 +794,7 @@ const { result, error } = await deepgram.manage.getModel(projectId, modelId);
 Lists sets of distribution credentials for the specified project.
 
 ```js
-const { result, error } = await deepgram.onprem.listCredentials(projectId);
+const { result, error } = await deepgramClient.onprem.listCredentials(projectId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/list-credentials)
@@ -972,7 +804,7 @@ const { result, error } = await deepgram.onprem.listCredentials(projectId);
 Returns a set of distribution credentials for the specified project.
 
 ```js
-const { result, error } = await deepgram.onprem.getCredentials(projectId, credentialId);
+const { result, error } = await deepgramClient.onprem.getCredentials(projectId, credentialId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/get-credentials)
@@ -982,7 +814,7 @@ const { result, error } = await deepgram.onprem.getCredentials(projectId, creden
 Creates a set of distribution credentials for the specified project.
 
 ```js
-const { result, error } = await deepgram.onprem.createCredentials(projectId, options);
+const { result, error } = await deepgramClient.onprem.createCredentials(projectId, options);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/create-credentials)
@@ -992,14 +824,12 @@ const { result, error } = await deepgram.onprem.createCredentials(projectId, opt
 Deletes a set of distribution credentials for the specified project.
 
 ```js
-const { result, error } = await deepgram.onprem.deleteCredentials(projectId, credentialId);
+const { result, error } = await deepgramClient.onprem.deleteCredentials(projectId, credentialId);
 ```
 
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/delete-credentials)
 
 ## Backwards Compatibility
-
-We follow semantic versioning (semver) to ensure a smooth upgrade experience. Within a major version (like 4._), we will maintain backward compatibility so your code will continue to work without breaking changes. When we release a new major version (like moving from 3._ to 4.\*), we may introduce breaking changes to improve the SDK. We'll always document these changes clearly in our release notes to help you upgrade smoothly.
 
 Older SDK versions will receive Priority 1 (P1) bug support only. Security issues, both in our code and dependencies, are promptly addressed. Significant bugs without clear workarounds are also given priority attention.
 
@@ -1013,7 +843,7 @@ To make sure our community is safe for all, be sure to review and agree to our
 
 ### Debugging and making changes locally
 
-If you want to make local changes to the SDK and run the [`examples/`](./examples/), you'll need to `npm run build` first, to ensure that your changes are included in the examples that are running.
+If you want to make local changes to the SDK and run the [`examples/`](./examples/), you'll need to `pnpm build` first, to ensure that your changes are included in the examples that are running.
 
 ## Getting Help
 
