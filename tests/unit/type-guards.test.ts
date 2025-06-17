@@ -10,45 +10,36 @@ import { Readable } from "stream";
 describe("Unit Tests - Type Guards and Validators", () => {
   describe("isUrlSource", () => {
     it("should identify URL sources correctly", () => {
-      const testCases = [
-        { url: "https://dpgr.am/spacewalk.wav" },
-        { text: "This is not a URL source" },
-        { url: "file://local.wav" },
-        { buffer: Buffer.from("fake audio") },
-        { invalidProperty: "value" },
-        {},
-        null,
-        undefined,
-      ];
+      // Valid URL sources
+      expect(isUrlSource({ url: "https://dpgr.am/spacewalk.wav" })).toBe(true);
+      expect(isUrlSource({ url: "file://local.wav" })).toBe(true);
+      expect(isUrlSource({ url: "" })).toBe(false); // Empty string should be false
 
-      const results = testCases.map((source) => ({
-        input: source,
-        output: source ? isUrlSource(source as any) : false,
-      }));
-
-      expect(results).toMatchSnapshot();
+      // Invalid sources
+      expect(isUrlSource({ text: "This is not a URL source" } as any)).toBe(false);
+      expect(isUrlSource({ buffer: Buffer.from("fake audio") } as any)).toBe(false);
+      expect(isUrlSource({ invalidProperty: "value" } as any)).toBe(false);
+      expect(isUrlSource({} as any)).toBe(false);
+      expect(isUrlSource(null as any)).toBe(false);
+      expect(isUrlSource(undefined as any)).toBe(false);
     });
   });
 
   describe("isTextSource", () => {
     it("should identify text sources correctly", () => {
-      const testCases = [
-        { text: "This is a text source" },
-        { url: "https://dpgr.am/spacewalk.wav" },
-        { text: "" },
-        { text: "Multi-line\ntext content" },
-        { invalidProperty: "value" },
-        {},
-        null,
-        undefined,
-      ];
+      // Valid text sources
+      expect(isTextSource({ text: "This is a text source" })).toBe(true);
+      expect(isTextSource({ text: "Multi-line\ntext content" })).toBe(true);
 
-      const results = testCases.map((source) => ({
-        input: source,
-        output: source ? isTextSource(source as any) : false,
-      }));
+      // Empty string should be falsy
+      expect(isTextSource({ text: "" })).toBe(false);
 
-      expect(results).toMatchSnapshot();
+      // Invalid sources
+      expect(isTextSource({ url: "https://dpgr.am/spacewalk.wav" } as any)).toBe(false);
+      expect(isTextSource({ invalidProperty: "value" } as any)).toBe(false);
+      expect(isTextSource({} as any)).toBe(false);
+      expect(isTextSource(null as any)).toBe(false);
+      expect(isTextSource(undefined as any)).toBe(false);
     });
   });
 
@@ -62,67 +53,53 @@ describe("Unit Tests - Type Guards and Validators", () => {
         },
       });
 
-      const testCases = [
-        buffer,
-        readable,
-        { url: "https://dpgr.am/spacewalk.wav" },
-        { text: "This is text" },
-        "string data",
-        {},
-        null,
-        undefined,
-      ];
+      // Valid file sources
+      expect(isFileSource(buffer)).toBe(true);
+      expect(isFileSource(readable)).toBe(true);
 
-      const results = testCases.map((source) => ({
-        input: source?.constructor?.name || typeof source,
-        output: isFileSource(source as any),
-      }));
-
-      expect(results).toMatchSnapshot();
+      // Invalid sources
+      expect(isFileSource({ url: "https://dpgr.am/spacewalk.wav" } as any)).toBe(false);
+      expect(isFileSource({ text: "This is text" } as any)).toBe(false);
+      expect(isFileSource("string data" as any)).toBe(false);
+      expect(isFileSource({} as any)).toBe(false);
+      expect(isFileSource(null as any)).toBe(false);
+      expect(isFileSource(undefined as any)).toBe(false);
+      expect(isFileSource(123 as any)).toBe(false);
+      expect(isFileSource([] as any)).toBe(false);
     });
   });
 
   describe("isLiveSchema", () => {
     it("should identify live schema correctly", () => {
-      const testCases = [
-        { interim_results: true },
-        { interim_results: false },
-        { language: "en-US", model: "nova-2" },
-        { interim_results: true, language: "en-US" },
-        {},
-        null,
-        undefined,
-        "not an object",
-      ];
+      // Valid live schemas
+      expect(isLiveSchema({ interim_results: true })).toBe(true);
+      expect(isLiveSchema({ interim_results: false })).toBe(true);
+      expect(isLiveSchema({ interim_results: true, language: "en-US" })).toBe(true);
 
-      const results = testCases.map((arg) => ({
-        input: arg,
-        output: isLiveSchema(arg),
-      }));
-
-      expect(results).toMatchSnapshot();
+      // Invalid schemas - interim_results must be defined
+      expect(isLiveSchema({ language: "en-US", model: "nova-2" })).toBe(false);
+      expect(isLiveSchema({})).toBe(false);
+      expect(isLiveSchema(null)).toBe(false);
+      expect(isLiveSchema(undefined)).toBe(false);
+      expect(isLiveSchema("not an object")).toBe(false);
+      expect(isLiveSchema(123)).toBe(false);
     });
   });
 
   describe("isDeepgramClientOptions", () => {
     it("should identify Deepgram client options correctly", () => {
-      const testCases = [
-        { global: { url: "https://api.deepgram.com" } },
-        { global: {} },
-        { apiKey: "test-key" },
-        { global: { headers: { Custom: "Header" } } },
-        {},
-        null,
-        undefined,
-        "not an object",
-      ];
+      // Valid client options
+      expect(isDeepgramClientOptions({ global: { url: "https://api.deepgram.com" } })).toBe(true);
+      expect(isDeepgramClientOptions({ global: {} })).toBe(true);
+      expect(isDeepgramClientOptions({ global: { headers: { Custom: "Header" } } })).toBe(true);
 
-      const results = testCases.map((arg) => ({
-        input: arg,
-        output: isDeepgramClientOptions(arg),
-      }));
-
-      expect(results).toMatchSnapshot();
+      // Invalid options - global property must be defined
+      expect(isDeepgramClientOptions({ apiKey: "test-key" })).toBe(false);
+      expect(isDeepgramClientOptions({})).toBe(false);
+      expect(isDeepgramClientOptions(null)).toBe(false);
+      expect(isDeepgramClientOptions(undefined)).toBe(false);
+      expect(isDeepgramClientOptions("not an object")).toBe(false);
+      expect(isDeepgramClientOptions(123)).toBe(false);
     });
   });
 });
