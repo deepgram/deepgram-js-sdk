@@ -1,0 +1,62 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`transcribeUrl E2E should transcribe audio from URL and match expected response structure: transcribeUrl-response-structure 1`] = `
+{
+  "metadata": {
+    "channels": "<number>",
+    "created": "<string>",
+    "duration": "<number>",
+    "model_info": {
+      "3b3aabe4-608a-46ac-9585-7960a25daf1a": {
+        "arch": "<string>",
+        "name": "<string>",
+        "version": "<string>"
+      }
+    },
+    "models": [
+      "<string>"
+    ],
+    "request_id": "<string>",
+    "sha256": "<string>",
+    "transaction_key": "<string>"
+  },
+  "results": {
+    "channels": [
+      {
+        "alternatives": [
+          {
+            "confidence": "<number>",
+            "paragraphs": {
+              "paragraphs": [
+                {
+                  "end": "<number>",
+                  "num_words": "<number>",
+                  "sentences": [
+                    {
+                      "end": "<number>",
+                      "start": "<number>",
+                      "text": "<string>"
+                    }
+                  ],
+                  "start": "<number>"
+                }
+              ],
+              "transcript": "<string>"
+            },
+            "transcript": "<string>",
+            "words": [
+              {
+                "confidence": "<number>",
+                "end": "<number>",
+                "punctuated_word": "<string>",
+                "start": "<number>",
+                "word": "<string>"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+`;
