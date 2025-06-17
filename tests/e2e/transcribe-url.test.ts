@@ -1,19 +1,24 @@
 import { createClient } from "../../src/index";
-import { structureOnlySerializer } from "../__utils__";
+import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 
 describe("transcribeUrl E2E", () => {
   let deepgram: ReturnType<typeof createClient>;
 
   beforeAll(() => {
-    // Ensure we have an API key from .env
-    if (!process.env.DEEPGRAM_API_KEY) {
-      throw new Error("DEEPGRAM_API_KEY must be set in .env file for e2e tests");
-    }
+    // Set up API mocks (only active when not updating snapshots)
+    setupApiMocks();
 
-    deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+    // Use mock API key when mocking, real one when updating snapshots
+    const apiKey = process.env.DEEPGRAM_API_KEY || "mock-api-key";
+    deepgram = createClient(apiKey);
 
     // Add our custom serializer
     expect.addSnapshotSerializer(structureOnlySerializer);
+  });
+
+  afterAll(() => {
+    // Clean up mocks
+    cleanupApiMocks();
   });
 
   it("should transcribe audio from URL and match expected response structure", async () => {
