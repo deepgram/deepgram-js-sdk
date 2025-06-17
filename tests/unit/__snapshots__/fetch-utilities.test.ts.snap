@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Tests - Fetch Utilities fetchWithAuth should create authenticated fetch function 1`] = `
+[
+  {
+    "input": {
+      "apiKey": "test-api-key",
+      "customFetch": undefined,
+    },
+    "output": {
+      "isFunction": true,
+    },
+  },
+  {
+    "input": {
+      "apiKey": "test-api-key",
+      "customFetch": "[CustomFunction]",
+    },
+    "output": {
+      "isFunction": true,
+    },
+  },
+]
+`;
+
+exports[`Unit Tests - Fetch Utilities resolveFetch should resolve fetch function correctly 1`] = `
+[
+  {
+    "input": undefined,
+    "output": {
+      "isFunction": true,
+      "name": "[Anonymous]",
+    },
+  },
+  {
+    "input": "[CustomFunction]",
+    "output": {
+      "isFunction": true,
+      "name": "[Anonymous]",
+    },
+  },
+]
+`;
+
+exports[`Unit Tests - Fetch Utilities resolveHeadersConstructor should return appropriate Headers constructor 1`] = `
+{
+  "canInstantiate": true,
+  "isFunction": true,
+  "name": "Headers",
+}
+`;
+
+exports[`Unit Tests - Fetch Utilities resolveResponse should resolve Response constructor 1`] = `
+{
+  "canInstantiate": true,
+  "isFunction": true,
+  "name": "Response",
+}
+`;

@@ -1,0 +1,245 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Tests - Type Guards and Validators isDeepgramClientOptions should identify Deepgram client options correctly 1`] = `
+[
+  {
+    "input": {
+      "global": {
+        "url": "https://api.deepgram.com",
+      },
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "global": {},
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "apiKey": "test-key",
+    },
+    "output": false,
+  },
+  {
+    "input": {
+      "global": {
+        "headers": {
+          "Custom": "Header",
+        },
+      },
+    },
+    "output": true,
+  },
+  {
+    "input": {},
+    "output": false,
+  },
+  {
+    "input": null,
+    "output": null,
+  },
+  {
+    "input": undefined,
+    "output": undefined,
+  },
+  {
+    "input": "not an object",
+    "output": false,
+  },
+]
+`;
+
+exports[`Unit Tests - Type Guards and Validators isFileSource should identify file sources correctly 1`] = `
+[
+  {
+    "input": "Buffer",
+    "output": true,
+  },
+  {
+    "input": "Readable",
+    "output": true,
+  },
+  {
+    "input": "Object",
+    "output": true,
+  },
+  {
+    "input": "Object",
+    "output": true,
+  },
+  {
+    "input": "String",
+    "output": true,
+  },
+  {
+    "input": "Object",
+    "output": true,
+  },
+  {
+    "input": "object",
+    "output": false,
+  },
+  {
+    "input": "undefined",
+    "output": false,
+  },
+]
+`;
+
+exports[`Unit Tests - Type Guards and Validators isLiveSchema should identify live schema correctly 1`] = `
+[
+  {
+    "input": {
+      "interim_results": true,
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "interim_results": false,
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "language": "en-US",
+      "model": "nova-2",
+    },
+    "output": false,
+  },
+  {
+    "input": {
+      "interim_results": true,
+      "language": "en-US",
+    },
+    "output": true,
+  },
+  {
+    "input": {},
+    "output": false,
+  },
+  {
+    "input": null,
+    "output": null,
+  },
+  {
+    "input": undefined,
+    "output": undefined,
+  },
+  {
+    "input": "not an object",
+    "output": false,
+  },
+]
+`;
+
+exports[`Unit Tests - Type Guards and Validators isTextSource should identify text sources correctly 1`] = `
+[
+  {
+    "input": {
+      "text": "This is a text source",
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "url": "https://dpgr.am/spacewalk.wav",
+    },
+    "output": false,
+  },
+  {
+    "input": {
+      "text": "",
+    },
+    "output": false,
+  },
+  {
+    "input": {
+      "text": "Multi-line
+text content",
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "invalidProperty": "value",
+    },
+    "output": false,
+  },
+  {
+    "input": {},
+    "output": false,
+  },
+  {
+    "input": null,
+    "output": false,
+  },
+  {
+    "input": undefined,
+    "output": false,
+  },
+]
+`;
+
+exports[`Unit Tests - Type Guards and Validators isUrlSource should identify URL sources correctly 1`] = `
+[
+  {
+    "input": {
+      "url": "https://dpgr.am/spacewalk.wav",
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "text": "This is not a URL source",
+    },
+    "output": false,
+  },
+  {
+    "input": {
+      "url": "file://local.wav",
+    },
+    "output": true,
+  },
+  {
+    "input": {
+      "buffer": {
+        "data": [
+          102,
+          97,
+          107,
+          101,
+          32,
+          97,
+          117,
+          100,
+          105,
+          111,
+        ],
+        "type": "Buffer",
+      },
+    },
+    "output": false,
+  },
+  {
+    "input": {
+      "invalidProperty": "value",
+    },
+    "output": false,
+  },
+  {
+    "input": {},
+    "output": false,
+  },
+  {
+    "input": null,
+    "output": false,
+  },
+  {
+    "input": undefined,
+    "output": false,
+  },
+]
+`;
