@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage getProjectKey E2E should retrieve a specific project key by ID: manage-getProjectKey-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "api_key": {
+      "api_key_id": "<string>",
+      "comment": "<string>",
+      "created": "<string>",
+      "scopes": [
+        "<string>"
+      ]
+    },
+    "member": {
+      "email": "<string>",
+      "first_name": "<string>",
+      "last_name": "<string>",
+      "member_id": "<string>"
+    }
+  }
+}
+`;

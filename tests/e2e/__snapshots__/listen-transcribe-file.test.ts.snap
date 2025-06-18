@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`transcribeUrl E2E should transcribe audio from URL and match expected response structure: transcribeUrl-response-structure 1`] = `
+exports[`listen transcribeFile E2E should transcribe audio from file and match expected response structure: listen-transcribeFile-response-structure 1`] = `
 {
   "metadata": {
     "channels": "<number>",

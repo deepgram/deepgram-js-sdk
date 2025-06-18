@@ -1,8 +1,10 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
-import { urlSources, commonTranscriptionOptions } from "../__fixtures__/e2e-requests";
+import { testAudioFiles, commonTranscriptionOptions } from "../__fixtures__/listen";
+import * as fs from "fs";
+import * as path from "path";
 
-describe("transcribeUrl E2E", () => {
+describe("listen transcribeFile E2E", () => {
   let deepgram: ReturnType<typeof createClient>;
 
   beforeAll(() => {
@@ -22,9 +24,17 @@ describe("transcribeUrl E2E", () => {
     cleanupApiMocks();
   });
 
-  it("should transcribe audio from URL and match expected response structure", async () => {
-    const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
-      urlSources.spacewalk,
+  it("should transcribe audio from file and match expected response structure", async () => {
+    const audioFilePath = path.join(__dirname, "../__fixtures__", testAudioFiles.spacewalk);
+
+    // Verify the test file exists
+    expect(fs.existsSync(audioFilePath)).toBe(true);
+
+    // Read the audio file
+    const audioBuffer = fs.readFileSync(audioFilePath);
+
+    const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
+      audioBuffer,
       commonTranscriptionOptions
     );
 
@@ -38,7 +48,7 @@ describe("transcribeUrl E2E", () => {
     }
 
     // Test the structure with snapshot (using custom serializer for non-deterministic content)
-    expect(result).toMatchSnapshot("transcribeUrl-response-structure");
+    expect(result).toMatchSnapshot("listen-transcribeFile-response-structure");
 
     // Essential structural validation - verify we have the required properties
     expect(result.metadata).toBeDefined();
