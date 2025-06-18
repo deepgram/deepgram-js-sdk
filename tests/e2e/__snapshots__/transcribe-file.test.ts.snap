@@ -7,7 +7,7 @@ exports[`transcribeFile E2E should transcribe audio from file and match expected
     "created": "<string>",
     "duration": "<number>",
     "model_info": {
-      "3b3aabe4-608a-46ac-9585-7960a25daf1a": {
+      "mock-model-uuid": {
         "arch": "<string>",
         "name": "<string>",
         "version": "<string>"
