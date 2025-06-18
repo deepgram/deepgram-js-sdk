@@ -1,8 +1,9 @@
 import { createClient } from "../../src/index";
+import { SpeakRestClient } from "../../src/packages/SpeakRestClient";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
-import { testTextSources, commonTTSOptions } from "../__fixtures__/e2e-requests";
+import { testTextSources, commonTTSOptions } from "../__fixtures__/speak";
 
-describe("TTS REST API E2E", () => {
+describe("speak request E2E", () => {
   let deepgram: ReturnType<typeof createClient>;
 
   beforeAll(() => {
@@ -55,7 +56,7 @@ describe("TTS REST API E2E", () => {
 
     // Test the structure with snapshot
     const headerObj = Object.fromEntries(headers.entries());
-    expect(headerObj).toMatchSnapshot("tts-rest-response-headers");
+    expect(headerObj).toMatchSnapshot("speak-request-response-headers");
 
     // Verify audio stream is readable
     expect(audioStream).toBeInstanceOf(ReadableStream);
@@ -172,4 +173,22 @@ describe("TTS REST API E2E", () => {
     expect(headers).toBeTruthy();
     expect(headers.get("content-type")).toContain("audio/");
   }, 30000);
+
+  it("should throw error when trying to getStream before making a request", async () => {
+    const apiKey = process.env.DEEPGRAM_API_KEY || "mock-api-key";
+    const speakClient = new SpeakRestClient({ key: apiKey });
+
+    await expect(speakClient.getStream()).rejects.toThrow(
+      "Tried to get stream before making request"
+    );
+  });
+
+  it("should throw error when trying to getHeaders before making a request", async () => {
+    const apiKey = process.env.DEEPGRAM_API_KEY || "mock-api-key";
+    const speakClient = new SpeakRestClient({ key: apiKey });
+
+    await expect(speakClient.getHeaders()).rejects.toThrow(
+      "Tried to get headers before making request"
+    );
+  });
 });

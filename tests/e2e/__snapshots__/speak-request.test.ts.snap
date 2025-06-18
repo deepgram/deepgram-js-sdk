@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TTS REST API E2E should generate speech from text and return audio data: tts-rest-response-headers 1`] = `
+exports[`speak request E2E should generate speech from text and return audio data: speak-request-response-headers 1`] = `
 {
   "content-length": "<string>",
   "content-type": "<string>",

@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth grantToken E2E should generate a temporary access token: auth-grantToken-response-structure 1`] = `
+{
+  "access_token": "<string>",
+  "expires_in": "<number>"
+}
+`;

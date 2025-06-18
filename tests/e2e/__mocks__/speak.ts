@@ -1,5 +1,5 @@
 /**
- * Mock response for TTS REST API endpoint
+ * Mock response for Speak API endpoint
  * Based on actual Deepgram TTS API response structure
  * Since TTS returns binary audio data, we'll simulate this with a mock buffer
  */
