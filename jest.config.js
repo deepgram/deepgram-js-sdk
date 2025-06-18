@@ -47,4 +47,8 @@ module.exports = {
   // Clear mocks between tests
   clearMocks: true,
   restoreMocks: true,
+
+  // Force Jest to exit after tests complete
+  // This prevents hanging caused by lingering HTTP connections (TLSWRAP handles)
+  forceExit: true,
 };

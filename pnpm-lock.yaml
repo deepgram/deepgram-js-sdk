@@ -50,9 +50,6 @@ importers:
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
@@ -71,9 +68,6 @@ importers:
       markdownlint-cli:
         specifier: ^0.42.0
         version: 0.42.0
-      nock:
-        specifier: ^13.5.4
-        version: 13.5.6
       nodemon:
         specifier: ^3.0.1
         version: 3.1.10
@@ -2054,20 +2048,6 @@ packages:
       }
     engines: { node: ">=8" }
 
-  dotenv-cli@8.0.0:
-    resolution:
-      {
-        integrity: sha512-aLqYbK7xKOiTMIRf1lDPbI+Y+Ip/wo5k3eyp6ePysVaSqbyxjyK3dK35BTxG+rmd7djf5q2UPs4noPNH+cj0Qw==,
-      }
-    hasBin: true
-
-  dotenv-expand@10.0.0:
-    resolution:
-      {
-        integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==,
-      }
-    engines: { node: ">=12" }
-
   dotenv@16.5.0:
     resolution:
       {
@@ -3597,12 +3577,6 @@ packages:
         integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==,
       }
 
-  json-stringify-safe@5.0.1:
-    resolution:
-      {
-        integrity: sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==,
-      }
-
   json5@2.2.3:
     resolution:
       {
@@ -4053,13 +4027,6 @@ packages:
         integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==,
       }
 
-  nock@13.5.6:
-    resolution:
-      {
-        integrity: sha512-o2zOYiCpzRqSzPj0Zt/dQ/DqZeYoaQ7TUonc/xUPjCGl9WeHpNbxgVvOquXYAaJzI0M9BXV3HTzG0p8IUAbBTQ==,
-      }
-    engines: { node: ">= 10.13" }
-
   node-fetch@2.7.0:
     resolution:
       {
@@ -4424,13 +4391,6 @@ packages:
         integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==,
       }
     engines: { node: ">= 6" }
-
-  propagate@2.0.1:
-    resolution:
-      {
-        integrity: sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==,
-      }
-    engines: { node: ">= 8" }
 
   prr@1.0.1:
     resolution:
@@ -7205,15 +7165,6 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  dotenv-cli@8.0.0:
-    dependencies:
-      cross-spawn: 7.0.6
-      dotenv: 16.5.0
-      dotenv-expand: 10.0.0
-      minimist: 1.2.8
-
-  dotenv-expand@10.0.0: {}
-
   dotenv@16.5.0: {}
 
   dunder-proto@1.0.1:
@@ -8393,8 +8344,6 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
-  json-stringify-safe@5.0.1: {}
-
   json5@2.2.3: {}
 
   jsonc-parser@3.3.1: {}
@@ -8622,14 +8571,6 @@ snapshots:
 
   nice-try@1.0.5: {}
 
-  nock@13.5.6:
-    dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
-      json-stringify-safe: 5.0.1
-      propagate: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
-
   node-fetch@2.7.0:
     dependencies:
       whatwg-url: 5.0.0
@@ -8837,8 +8778,6 @@ snapshots:
     dependencies:
       kleur: 3.0.3
       sisteransi: 1.0.5
-
-  propagate@2.0.1: {}
 
   prr@1.0.1: {}
 

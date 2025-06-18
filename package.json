@@ -55,6 +55,8 @@
     "docs:json": "typedoc --entryPoints src/index.ts --includes src/packages/**/*.ts --json docs/spec.json   --emit none",
     "test": "jest",
     "test:unit": "jest --testPathPattern=tests/unit",
+    "test:e2e": "jest --testPathPattern=tests/e2e",
+    "test:e2e:offline": "node scripts/test-offline.js",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false"
@@ -82,7 +84,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "markdownlint": "^0.35.0",
     "markdownlint-cli": "^0.42.0",
-    "nock": "^13.5.4",
     "nodemon": "^3.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.5.1",
