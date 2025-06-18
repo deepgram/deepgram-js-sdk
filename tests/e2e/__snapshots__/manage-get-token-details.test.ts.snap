@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage getTokenDetails E2E should retrieve token details for the authenticated user: manage-getTokenDetails-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "api_key_id": "<string>",
+    "created": "<string>",
+    "scopes": [
+      "<string>"
+    ]
+  }
+}
+`;

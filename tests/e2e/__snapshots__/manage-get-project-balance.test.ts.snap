@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage getProjectBalance E2E should retrieve a specific project balance by ID: manage-getProjectBalance-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "amount": "<number>",
+    "balance_id": "<string>",
+    "purchase": "<string>",
+    "units": "<string>"
+  }
+}
+`;
