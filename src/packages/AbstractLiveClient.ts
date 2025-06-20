@@ -127,6 +127,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
       this.conn = new this.transport(requestUrl, undefined, {
         headers: this.headers,
       });
+      this.setupConnection();
       return;
     }
 
@@ -143,6 +144,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
         });
         console.log(`Using WS package`);
       });
+      this.setupConnection();
       return;
     }
 
@@ -154,6 +156,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
         requestUrl,
         accessToken ? ["bearer", accessToken] : ["token", apiKey!]
       );
+      this.setupConnection();
       return;
     }
 
