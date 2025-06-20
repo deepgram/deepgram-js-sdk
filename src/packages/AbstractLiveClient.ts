@@ -113,6 +113,12 @@ export abstract class AbstractLiveClient extends AbstractClient {
     };
 
     const requestUrl = this.getRequestUrl(endpoint, {}, transcriptionOptions);
+    const accessToken = this.accessToken;
+    const apiKey = this.key;
+
+    if (!accessToken && !apiKey) {
+      throw new Error("No key or access token provided for WebSocket connection.");
+    }
 
     /**
      * Custom websocket transport
@@ -136,7 +142,6 @@ export abstract class AbstractLiveClient extends AbstractClient {
           headers: this.headers,
         });
         console.log(`Using WS package`);
-        this.setupConnection();
       });
       return;
     }
@@ -145,16 +150,10 @@ export abstract class AbstractLiveClient extends AbstractClient {
      * Native websocket transport (browser)
      */
     if (NATIVE_WEBSOCKET_AVAILABLE) {
-      const accessToken = this.accessToken;
-      const apiKey = this.namespaceOptions.key;
-      if (!accessToken && !apiKey) {
-        throw new Error("Don't know how to set authentication headers for WebSocket connection.");
-      }
       this.conn = new WebSocket(
         requestUrl,
         accessToken ? ["bearer", accessToken] : ["token", apiKey!]
       );
-      this.setupConnection();
       return;
     }
 
@@ -174,8 +173,9 @@ export abstract class AbstractLiveClient extends AbstractClient {
       this.conn = new WS(requestUrl, undefined, {
         headers: this.headers,
       });
-      this.setupConnection();
     });
+
+    this.setupConnection();
   }
 
   /**
