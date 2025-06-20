@@ -515,7 +515,7 @@ export class ManageRestClient extends AbstractRestClient {
   ): Promise<VoidResponse> {
     try {
       const requestUrl = this.getRequestUrl(endpoint, { projectId, email });
-      await this.delete(requestUrl).then((result) => result.json());
+      await this.delete(requestUrl);
 
       return { error: null };
     } catch (error) {

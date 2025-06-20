@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage updateProjectMemberScope E2E should update a project member's scope: manage-updateProjectMemberScope-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "message": "<string>"
+  }
+}
+`;

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`read analyzeTextCallback E2E should analyze text with callback and return async response: read-analyze-text-callback-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "request_id": "<string>"
+  }
+}
+`;

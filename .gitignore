@@ -105,6 +105,3 @@ dist
 .tern-port
 
 docs/v2
-
-# testing
-testServer/
