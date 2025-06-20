@@ -62,13 +62,6 @@ function isUpdatingSnapshots(): boolean {
     process.argv.includes("-u") ||
     process.env.DEEPGRAM_FORCE_REAL_API === "true";
 
-  if (isUpdateMode) {
-    console.log(
-      "🔍 Detected snapshot update mode - arguments:",
-      process.argv.filter((arg) => arg.includes("update") || arg === "-u")
-    );
-  }
-
   return isUpdateMode;
 }
 
@@ -81,13 +74,9 @@ function createMockFetch(): typeof fetch {
       typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
     const method = init?.method || "GET";
 
-    console.log("🎭 Mock fetch intercepted:", method, url);
-
     // Mock Deepgram API endpoints
     if (url.includes("api.deepgram.com")) {
       if (url.includes("/v1/listen") && method === "POST") {
-        console.log("🎭 -> Mocking transcription request");
-
         // Check if it's a callback request (async)
         const isCallbackRequest = url.includes("callback=");
 
@@ -118,8 +107,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/speak") && method === "POST") {
-        console.log("🎭 -> Mocking TTS request");
-
         return new Response(mockAudioBuffer, {
           status: 200,
           headers: new Headers(mockTTSHeaders),
@@ -127,8 +114,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/models") && method === "GET") {
-        console.log("🎭 -> Mocking models request");
-
         // Check if it's a specific model request (has model ID in path)
         const modelIdMatch = url.match(/\/v1\/models\/([^?]+)/);
         const responseData = modelIdMatch ? mockGetModelResponse : mockGetAllModelsResponse;
@@ -140,8 +125,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/auth/grant") && method === "POST") {
-        console.log("🎭 -> Mocking auth grant token request");
-
         return new Response(JSON.stringify(mockGrantTokenResponse), {
           status: 200,
           headers: { "content-type": "application/json" },
@@ -149,8 +132,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/read") && method === "POST") {
-        console.log("🎭 -> Mocking read/analyze request");
-
         // Check if it's a callback request (async)
         const isCallbackRequest = url.includes("callback=");
 
@@ -197,8 +178,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/onprem/distribution/credentials")) {
-        console.log("🎭 -> Mocking self-hosted credentials request");
-
         if (method === "GET") {
           // Check if it's a specific credential request (has credential ID in path)
           const credentialIdMatch = url.match(/\/credentials\/([^?]+)$/);
@@ -228,7 +207,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/auth/token") && method === "GET") {
-        console.log("🎭 -> Mocking auth token details request");
         return new Response(JSON.stringify(mockGetTokenDetailsResponse), {
           status: 200,
           headers: { "content-type": "application/json" },
@@ -236,8 +214,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/projects") && method === "GET") {
-        console.log("🎭 -> Mocking manage projects request");
-
         // Check for project keys endpoint
         if (url.includes("/keys")) {
           // Check if it's a specific key request (has key ID in path after /keys/)
@@ -342,8 +318,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/projects") && method === "POST") {
-        console.log("🎭 -> Mocking manage projects POST request");
-
         // Check for project key creation
         if (url.includes("/keys")) {
           return new Response(JSON.stringify(mockCreateProjectKeyResponse), {
@@ -362,8 +336,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/projects") && method === "PATCH") {
-        console.log("🎭 -> Mocking manage projects PATCH request");
-
         // Check for project updates
         if (url.match(/\/v1\/projects\/[^/]+$/)) {
           return new Response(JSON.stringify(mockUpdateProjectResponse), {
@@ -374,8 +346,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/projects") && method === "PUT") {
-        console.log("🎭 -> Mocking manage projects PUT request");
-
         // Check for member scope updates
         if (url.includes("/scopes")) {
           return new Response(JSON.stringify(mockUpdateProjectMemberScopeResponse), {
@@ -386,8 +356,6 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/projects") && method === "DELETE") {
-        console.log("🎭 -> Mocking manage projects DELETE request");
-
         // Check for leave project (special case - returns JSON response)
         if (url.includes("/leave")) {
           return new Response(JSON.stringify(mockLeaveProjectResponse), {
@@ -431,23 +399,20 @@ function createMockFetch(): typeof fetch {
     }
 
     // If we get here, it's not a Deepgram API request we're mocking
-    console.log("🎭 -> Unmocked request, throwing error to simulate offline");
     throw new Error(`Network request blocked in offline test mode: ${method} ${url}`);
   };
 }
 
 /**
- * Sets up API mocks for e2e tests when not updating snapshots
+ * Sets up API mocks for e2e tests
  * This allows tests to run without internet/API key requirements
+ * E2E tests use mocks by default, but can be toggled to real APIs
  */
 export function setupApiMocks(): void {
-  // Only mock if we're NOT updating snapshots
-  if (isUpdatingSnapshots()) {
-    console.log("📸 Snapshot update mode: Using real API calls");
-    return;
+  // Check if we should use real APIs instead of mocks
+  if (process.env.DEEPGRAM_FORCE_REAL_API === "true") {
+    return; // Skip mock setup - use real APIs
   }
-
-  console.log("🎭 Mock mode: Using custom fetch mocks");
 
   // Store original implementations
   originalFetch = global.fetch;
@@ -477,8 +442,6 @@ export function setupApiMocks(): void {
   } catch (_e) {
     // Might not be available
   }
-
-  console.log("🎭 Custom fetch mocks setup complete");
 }
 
 /**
@@ -505,6 +468,4 @@ export function cleanupApiMocks(): void {
       // Might not be available
     }
   }
-
-  console.log("🎭 Custom fetch mocks cleaned up");
 }
