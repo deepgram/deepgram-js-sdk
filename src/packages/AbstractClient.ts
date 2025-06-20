@@ -44,10 +44,15 @@ export abstract class AbstractClient extends EventEmitter {
   constructor(options: DeepgramClientOptions) {
     super();
 
-    if (options.accessToken) {
+    // run the factory for the access token if it's a function
+    if (typeof options.accessToken === "function") {
+      this.factory = options.accessToken;
+      this.accessToken = this.factory();
+    } else {
       this.accessToken = options.accessToken;
     }
 
+    // run the factory for the key if it's a function
     if (typeof options.key === "function") {
       this.factory = options.key;
       this.key = this.factory();
@@ -55,10 +60,12 @@ export abstract class AbstractClient extends EventEmitter {
       this.key = options.key;
     }
 
-    if (!this.key) {
+    // if we still have neither, try to use the DEEPGRAM_API_KEY environment variable
+    if (!this.key && !this.accessToken) {
       this.key = process.env.DEEPGRAM_API_KEY as string;
     }
 
+    // if we STILL have neither, throw an error
     if (!this.key && !this.accessToken) {
       throw new DeepgramError("A deepgram API key or temporary auth token is required.");
     }
