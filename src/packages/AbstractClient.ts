@@ -36,6 +36,7 @@ export abstract class AbstractClient extends EventEmitter {
    *
    * @param options - The options to configure the DeepgramClient instance.
    * @param options.key - The Deepgram API key to use for authentication. If not provided, the `DEEPGRAM_API_KEY` environment variable will be used.
+   * @param options.accessToken - The Deepgram access token to use for authentication. If not provided, the `DEEPGRAM_ACCESS_TOKEN` environment variable will be used.
    * @param options.global - Global options that apply to all requests made by the DeepgramClient instance.
    * @param options.global.fetch - Options to configure the fetch requests made by the DeepgramClient instance.
    * @param options.global.fetch.options - Additional options to pass to the fetch function, such as `url` and `headers`.
@@ -60,14 +61,20 @@ export abstract class AbstractClient extends EventEmitter {
       this.key = options.key;
     }
 
-    // if we still have neither, try to use the DEEPGRAM_API_KEY environment variable
+    // implement priority-based credential resolution for environment variables
     if (!this.key && !this.accessToken) {
-      this.key = process.env.DEEPGRAM_API_KEY as string;
+      // check for DEEPGRAM_ACCESS_TOKEN first (higher priority)
+      this.accessToken = process.env.DEEPGRAM_ACCESS_TOKEN as string;
+
+      // if still no access token, fall back to DEEPGRAM_API_KEY (lower priority)
+      if (!this.accessToken) {
+        this.key = process.env.DEEPGRAM_API_KEY as string;
+      }
     }
 
     // if we STILL have neither, throw an error
     if (!this.key && !this.accessToken) {
-      throw new DeepgramError("A deepgram API key or temporary auth token is required.");
+      throw new DeepgramError("A deepgram API key or access token is required.");
     }
 
     options = convertLegacyOptions(options);
