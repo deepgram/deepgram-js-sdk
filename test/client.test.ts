@@ -27,7 +27,7 @@ describe("testing creation of a deepgram client object", () => {
   });
 
   it("it should throw an error if no valid apiKey is provided", () => {
-    expect(() => createClient("")).to.throw("A deepgram API key is required");
+    expect(() => createClient("")).to.throw("A deepgram API key or access token is required");
   });
 
   it("it should throw an error if invalid options are provided", () => {
@@ -35,7 +35,7 @@ describe("testing creation of a deepgram client object", () => {
     // console.log(client);
     // process.exit(1);
     expect(() => createClient({ global: { fetch: { options: { url: "" } } } })).to.throw(
-      `A deepgram API key is required.`
+      `A deepgram API key or access token is required.`
     );
   });
 
