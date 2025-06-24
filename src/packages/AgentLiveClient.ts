@@ -22,19 +22,15 @@ export class AgentLiveClient extends AbstractLiveClient {
    * - When a message is received, it parses the message and emits the appropriate event based on the message type.
    */
   public setupConnection(): void {
+    // Set up standard connection events (open, close, error) using abstracted method
+    this.setupConnectionEvents({
+      Open: AgentEvents.Open,
+      Close: AgentEvents.Close,
+      Error: AgentEvents.Error,
+    });
+
+    // Set up message handling specific to agent conversations
     if (this.conn) {
-      this.conn.onopen = () => {
-        this.emit(AgentEvents.Open, this);
-      };
-
-      this.conn.onclose = (event: any) => {
-        this.emit(AgentEvents.Close, event);
-      };
-
-      this.conn.onerror = (event: ErrorEvent) => {
-        this.emit(AgentEvents.Error, event);
-      };
-
       this.conn.onmessage = (event: MessageEvent) => {
         this.handleMessage(event);
       };
@@ -53,9 +49,13 @@ export class AgentLiveClient extends AbstractLiveClient {
       } catch (error) {
         this.emit(AgentEvents.Error, {
           event,
-          data: event.data,
+          data:
+            event.data?.toString().substring(0, 200) +
+            (event.data?.toString().length > 200 ? "..." : ""),
           message: "Unable to parse `data` as JSON.",
           error,
+          url: this.conn?.url,
+          readyState: this.conn?.readyState,
         });
       }
     } else if (event.data instanceof Blob) {
@@ -71,6 +71,9 @@ export class AgentLiveClient extends AbstractLiveClient {
       this.emit(AgentEvents.Error, {
         event,
         message: "Received unknown data type.",
+        url: this.conn?.url,
+        readyState: this.conn?.readyState,
+        dataType: typeof event.data,
       });
     }
   }
