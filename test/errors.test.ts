@@ -4,6 +4,7 @@ import {
   DeepgramError,
   DeepgramUnknownError,
   DeepgramVersionError,
+  DeepgramWebSocketError,
   isDeepgramError,
 } from "../src/lib/errors";
 
@@ -126,5 +127,89 @@ describe("DeepgramVersionError", () => {
     expect(error.message).to.equal(
       "You are attempting to use an old format for a newer SDK version. Read more here: https://dpgr.am/js-v3"
     );
+  });
+});
+
+describe("DeepgramWebSocketError", () => {
+  it("should have the correct name property", () => {
+    const error = new DeepgramWebSocketError("Test WebSocket error");
+    expect(error.name).to.equal("DeepgramWebSocketError");
+  });
+
+  it("should extend the DeepgramError class", () => {
+    const error = new DeepgramWebSocketError("Test WebSocket error");
+    expect(error).to.be.an.instanceOf(DeepgramError);
+  });
+
+  it("should store enhanced error information", () => {
+    const mockEvent = {
+      type: "error",
+      message: "Connection failed",
+      timeStamp: Date.now(),
+    } as any;
+    const error = new DeepgramWebSocketError("Test WebSocket error", {
+      originalEvent: mockEvent,
+      statusCode: 502,
+      requestId: "test-request-123",
+      responseHeaders: { "dg-request-id": "test-request-123" },
+      url: "wss://api.deepgram.com/v1/listen",
+      readyState: 0,
+    });
+
+    expect(error.originalEvent).to.equal(mockEvent);
+    expect(error.statusCode).to.equal(502);
+    expect(error.requestId).to.equal("test-request-123");
+    expect(error.responseHeaders).to.deep.equal({ "dg-request-id": "test-request-123" });
+    expect(error.url).to.equal("wss://api.deepgram.com/v1/listen");
+    expect(error.readyState).to.equal(0);
+  });
+
+  it("should work with minimal options", () => {
+    const error = new DeepgramWebSocketError("Simple error");
+    expect(error.message).to.equal("Simple error");
+    expect(error.statusCode).to.be.undefined;
+    expect(error.requestId).to.be.undefined;
+    expect(error.originalEvent).to.be.undefined;
+  });
+
+  it("should correctly serialize to JSON", () => {
+    const mockEvent = {
+      type: "error",
+      message: "Connection failed",
+      timeStamp: 1234567890,
+    } as any;
+    const error = new DeepgramWebSocketError("Test WebSocket error", {
+      originalEvent: mockEvent,
+      statusCode: 502,
+      requestId: "test-request-123",
+      responseHeaders: { "dg-request-id": "test-request-123" },
+      url: "wss://api.deepgram.com/v1/listen",
+      readyState: 0,
+    });
+
+    const json = error.toJSON();
+    expect(json.name).to.equal("DeepgramWebSocketError");
+    expect(json.message).to.equal("Test WebSocket error");
+    expect(json.statusCode).to.equal(502);
+    expect(json.requestId).to.equal("test-request-123");
+    expect(json.responseHeaders).to.deep.equal({ "dg-request-id": "test-request-123" });
+    expect(json.url).to.equal("wss://api.deepgram.com/v1/listen");
+    expect(json.readyState).to.equal(0);
+    expect(json.originalEvent).to.deep.equal({
+      type: mockEvent.type,
+      timeStamp: mockEvent.timeStamp,
+    });
+  });
+
+  it("should serialize properly with undefined originalEvent", () => {
+    const error = new DeepgramWebSocketError("Test error", { statusCode: 401 });
+    const json = error.toJSON();
+    expect(json.originalEvent).to.be.undefined;
+    expect(json.statusCode).to.equal(401);
+  });
+
+  it("should be detected by isDeepgramError", () => {
+    const error = new DeepgramWebSocketError("Test WebSocket error");
+    expect(isDeepgramError(error)).to.be.true;
   });
 });
