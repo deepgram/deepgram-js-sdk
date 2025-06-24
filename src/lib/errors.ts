@@ -48,3 +48,55 @@ export class DeepgramVersionError extends DeepgramError {
     this.name = "DeepgramVersionError";
   }
 }
+
+/**
+ * Enhanced WebSocket error that captures additional debugging information
+ * including status codes, request IDs, and response headers when available.
+ */
+export class DeepgramWebSocketError extends DeepgramError {
+  originalEvent?: ErrorEvent | Event;
+  statusCode?: number;
+  requestId?: string;
+  responseHeaders?: Record<string, string>;
+  url?: string;
+  readyState?: number;
+
+  constructor(
+    message: string,
+    options: {
+      originalEvent?: ErrorEvent | Event;
+      statusCode?: number;
+      requestId?: string;
+      responseHeaders?: Record<string, string>;
+      url?: string;
+      readyState?: number;
+    } = {}
+  ) {
+    super(message);
+    this.name = "DeepgramWebSocketError";
+    this.originalEvent = options.originalEvent;
+    this.statusCode = options.statusCode;
+    this.requestId = options.requestId;
+    this.responseHeaders = options.responseHeaders;
+    this.url = options.url;
+    this.readyState = options.readyState;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      statusCode: this.statusCode,
+      requestId: this.requestId,
+      responseHeaders: this.responseHeaders,
+      url: this.url,
+      readyState: this.readyState,
+      originalEvent: this.originalEvent
+        ? {
+            type: this.originalEvent.type,
+            timeStamp: this.originalEvent.timeStamp,
+          }
+        : undefined,
+    };
+  }
+}
