@@ -356,7 +356,14 @@ describe("Unit Tests - Live Client Connection State", () => {
       const errorEvent = { type: "error", message: "Connection failed" };
       mockConnection.onerror(errorEvent);
 
-      expect(errorSpy).toHaveBeenCalledWith(errorEvent);
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "error",
+          message: expect.stringContaining("Connection failed"),
+          error: expect.any(Object),
+          readyState: expect.any(Number),
+        })
+      );
     });
   });
 });
