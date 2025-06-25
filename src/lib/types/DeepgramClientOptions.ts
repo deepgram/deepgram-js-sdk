@@ -24,7 +24,8 @@ interface ITransport<C, O> {
 }
 
 export type DefaultNamespaceOptions = {
-  key: string;
+  key?: string | IKeyFactory;
+  accessToken?: string | IKeyFactory;
   fetch: {
     options: { url: TransportUrl };
   };
@@ -34,7 +35,8 @@ export type DefaultNamespaceOptions = {
 } & NamespaceOptions;
 
 export interface NamespaceOptions {
-  key?: string;
+  key?: string | IKeyFactory;
+  accessToken?: string | IKeyFactory;
   fetch?: ITransport<IFetch, TransportFetchOptions>;
   websocket?: ITransport<IWebSocket, TransportWebSocketOptions>;
 }
@@ -58,6 +60,7 @@ export type DefaultClientOptions = {
  */
 export interface DeepgramClientOptions {
   key?: string | IKeyFactory;
+  accessToken?: string | IKeyFactory;
   global?: NamespaceOptions & { url?: string; headers?: { [index: string]: any } };
   listen?: NamespaceOptions;
   manage?: NamespaceOptions;

@@ -29,7 +29,9 @@ export abstract class AbstractRestClient extends AbstractClient {
       );
     }
 
-    this.fetch = fetchWithAuth(this.key, this.namespaceOptions.fetch.client);
+    const { accessToken, key: apiKey, fetch: customFetch } = this;
+
+    this.fetch = fetchWithAuth({ accessToken, apiKey, customFetch });
 
     if (this.proxy) {
       this.baseUrl = this.namespaceOptions.fetch.options.proxy!.url;

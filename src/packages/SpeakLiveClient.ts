@@ -42,19 +42,15 @@ export class SpeakLiveClient extends AbstractLiveClient {
    * - When a message is received, it parses the message and emits the appropriate event based on the message type, such as `LiveTTSEvents.Metadata`, `LiveTTSEvents.Flushed`, and `LiveTTSEvents.Warning`.
    */
   public setupConnection(): void {
+    // Set up standard connection events (open, close, error) using abstracted method
+    this.setupConnectionEvents({
+      Open: LiveTTSEvents.Open,
+      Close: LiveTTSEvents.Close,
+      Error: LiveTTSEvents.Error,
+    });
+
+    // Set up message handling specific to text-to-speech
     if (this.conn) {
-      this.conn.onopen = () => {
-        this.emit(LiveTTSEvents.Open, this);
-      };
-
-      this.conn.onclose = (event: any) => {
-        this.emit(LiveTTSEvents.Close, event);
-      };
-
-      this.conn.onerror = (event: ErrorEvent) => {
-        this.emit(LiveTTSEvents.Error, event);
-      };
-
       this.conn.onmessage = (event: MessageEvent) => {
         this.handleMessage(event);
       };
@@ -146,6 +142,11 @@ export class SpeakLiveClient extends AbstractLiveClient {
           event,
           message: "Unable to parse `data` as JSON.",
           error,
+          url: this.conn?.url,
+          readyState: this.conn?.readyState,
+          data:
+            event.data?.toString().substring(0, 200) +
+            (event.data?.toString().length > 200 ? "..." : ""),
         });
       }
     } else if (event.data instanceof Blob) {
@@ -161,6 +162,9 @@ export class SpeakLiveClient extends AbstractLiveClient {
       this.emit(LiveTTSEvents.Error, {
         event,
         message: "Received unknown data type.",
+        url: this.conn?.url,
+        readyState: this.conn?.readyState,
+        dataType: typeof event.data,
       });
     }
   }

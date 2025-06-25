@@ -51,19 +51,15 @@ export class ListenLiveClient extends AbstractLiveClient {
    * - When a message is received, it parses the message and emits the appropriate event based on the message type, such as `LiveTranscriptionEvents.Metadata`, `LiveTranscriptionEvents.Transcript`, `LiveTranscriptionEvents.UtteranceEnd`, and `LiveTranscriptionEvents.SpeechStarted`.
    */
   public setupConnection(): void {
+    // Set up standard connection events (open, close, error) using abstracted method
+    this.setupConnectionEvents({
+      Open: LiveTranscriptionEvents.Open,
+      Close: LiveTranscriptionEvents.Close,
+      Error: LiveTranscriptionEvents.Error,
+    });
+
+    // Set up message handling specific to transcription
     if (this.conn) {
-      this.conn.onopen = () => {
-        this.emit(LiveTranscriptionEvents.Open, this);
-      };
-
-      this.conn.onclose = (event: any) => {
-        this.emit(LiveTranscriptionEvents.Close, event);
-      };
-
-      this.conn.onerror = (event: ErrorEvent) => {
-        this.emit(LiveTranscriptionEvents.Error, event);
-      };
-
       this.conn.onmessage = (event: MessageEvent) => {
         try {
           const data: any = JSON.parse(event.data.toString());
@@ -84,6 +80,11 @@ export class ListenLiveClient extends AbstractLiveClient {
             event,
             message: "Unable to parse `data` as JSON.",
             error,
+            url: this.conn?.url,
+            readyState: this.conn?.readyState,
+            data:
+              event.data?.toString().substring(0, 200) +
+              (event.data?.toString().length > 200 ? "..." : ""),
           });
         }
       };

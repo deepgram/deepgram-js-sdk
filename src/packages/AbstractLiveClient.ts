@@ -3,6 +3,7 @@ import { CONNECTION_STATE, SOCKET_STATES } from "../lib/constants";
 import type { DeepgramClientOptions, LiveSchema } from "../lib/types";
 import type { WebSocket as WSWebSocket } from "ws";
 import { isBun } from "../lib/runtime";
+import { DeepgramWebSocketError } from "../lib/errors";
 
 /**
  * Represents a constructor for a WebSocket-like object that can be used in the application.
@@ -90,7 +91,11 @@ export abstract class AbstractLiveClient extends AbstractClient {
     }
 
     if (!("Authorization" in this.headers)) {
-      this.headers["Authorization"] = `Token ${key}`; // Add default token
+      if (this.accessToken) {
+        this.headers["Authorization"] = `Bearer ${this.accessToken}`; // Use token if available
+      } else {
+        this.headers["Authorization"] = `Token ${key}`; // Add default token
+      }
     }
   }
 
@@ -109,6 +114,12 @@ export abstract class AbstractLiveClient extends AbstractClient {
     };
 
     const requestUrl = this.getRequestUrl(endpoint, {}, transcriptionOptions);
+    const accessToken = this.accessToken;
+    const apiKey = this.key;
+
+    if (!accessToken && !apiKey) {
+      throw new Error("No key or access token provided for WebSocket connection.");
+    }
 
     /**
      * Custom websocket transport
@@ -117,6 +128,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
       this.conn = new this.transport(requestUrl, undefined, {
         headers: this.headers,
       });
+      this.setupConnection();
       return;
     }
 
@@ -132,8 +144,8 @@ export abstract class AbstractLiveClient extends AbstractClient {
           headers: this.headers,
         });
         console.log(`Using WS package`);
-        this.setupConnection();
       });
+      this.setupConnection();
       return;
     }
 
@@ -141,7 +153,10 @@ export abstract class AbstractLiveClient extends AbstractClient {
      * Native websocket transport (browser)
      */
     if (NATIVE_WEBSOCKET_AVAILABLE) {
-      this.conn = new WebSocket(requestUrl, ["token", this.namespaceOptions.key]);
+      this.conn = new WebSocket(
+        requestUrl,
+        accessToken ? ["bearer", accessToken] : ["token", apiKey!]
+      );
       this.setupConnection();
       return;
     }
@@ -162,8 +177,9 @@ export abstract class AbstractLiveClient extends AbstractClient {
       this.conn = new WS(requestUrl, undefined, {
         headers: this.headers,
       });
-      this.setupConnection();
     });
+
+    this.setupConnection();
   }
 
   /**
@@ -268,6 +284,235 @@ export abstract class AbstractLiveClient extends AbstractClient {
    */
   get proxy(): boolean {
     return this.key === "proxy" && !!this.namespaceOptions.websocket.options.proxy?.url;
+  }
+
+  /**
+   * Extracts enhanced error information from a WebSocket error event.
+   * This method attempts to capture additional debugging information such as
+   * status codes, request IDs, and response headers when available.
+   *
+   * @example
+   * ```typescript
+   * // Enhanced error information is now available in error events:
+   * connection.on(LiveTranscriptionEvents.Error, (err) => {
+   *   console.error("WebSocket Error:", err.message);
+   *
+   *   // Access HTTP status code (e.g., 502, 403, etc.)
+   *   if (err.statusCode) {
+   *     console.error(`HTTP Status Code: ${err.statusCode}`);
+   *   }
+   *
+   *   // Access Deepgram request ID for support tickets
+   *   if (err.requestId) {
+   *     console.error(`Deepgram Request ID: ${err.requestId}`);
+   *   }
+   *
+   *   // Access WebSocket URL and connection state
+   *   if (err.url) {
+   *     console.error(`WebSocket URL: ${err.url}`);
+   *   }
+   *
+   *   if (err.readyState !== undefined) {
+   *     const stateNames = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
+   *     console.error(`Connection State: ${stateNames[err.readyState]}`);
+   *   }
+   *
+   *   // Access response headers for additional debugging
+   *   if (err.responseHeaders) {
+   *     console.error("Response Headers:", err.responseHeaders);
+   *   }
+   *
+   *   // Access the enhanced error object for detailed debugging
+   *   if (err.error?.name === 'DeepgramWebSocketError') {
+   *     console.error("Enhanced Error Details:", err.error.toJSON());
+   *   }
+   * });
+   * ```
+   *
+   * @param event - The error event from the WebSocket
+   * @param conn - The WebSocket connection object
+   * @returns Enhanced error information object
+   */
+  protected extractErrorInformation(
+    event: ErrorEvent | Event,
+    conn?: WebSocketLike
+  ): {
+    statusCode?: number;
+    requestId?: string;
+    responseHeaders?: Record<string, string>;
+    url?: string;
+    readyState?: number;
+  } {
+    const errorInfo: {
+      statusCode?: number;
+      requestId?: string;
+      responseHeaders?: Record<string, string>;
+      url?: string;
+      readyState?: number;
+    } = {};
+
+    // Extract basic connection information
+    if (conn) {
+      errorInfo.readyState = conn.readyState;
+      errorInfo.url = typeof conn.url === "string" ? conn.url : conn.url?.toString();
+    }
+
+    // Try to extract additional information from the WebSocket connection
+    // This works with the 'ws' package which exposes more detailed error information
+    if (conn && typeof conn === "object") {
+      const wsConn = conn as any;
+
+      // Extract status code if available (from 'ws' package)
+      if (wsConn._req && wsConn._req.res) {
+        errorInfo.statusCode = wsConn._req.res.statusCode;
+
+        // Extract response headers if available
+        if (wsConn._req.res.headers) {
+          errorInfo.responseHeaders = { ...wsConn._req.res.headers };
+
+          // Extract request ID from Deepgram response headers
+          const requestId =
+            wsConn._req.res.headers["dg-request-id"] || wsConn._req.res.headers["x-dg-request-id"];
+          if (requestId) {
+            errorInfo.requestId = requestId;
+          }
+        }
+      }
+
+      // For native WebSocket, try to extract information from the event
+      if (event && "target" in event && event.target) {
+        const target = event.target as any;
+        if (target.url) {
+          errorInfo.url = target.url;
+        }
+        if (target.readyState !== undefined) {
+          errorInfo.readyState = target.readyState;
+        }
+      }
+    }
+
+    return errorInfo;
+  }
+
+  /**
+   * Creates an enhanced error object with additional debugging information.
+   * This method provides backward compatibility by including both the original
+   * error event and enhanced error information.
+   *
+   * @param event - The original error event
+   * @param enhancedInfo - Additional error information extracted from the connection
+   * @returns An object containing both original and enhanced error information
+   */
+  protected createEnhancedError(
+    event: ErrorEvent | Event,
+    enhancedInfo: {
+      statusCode?: number;
+      requestId?: string;
+      responseHeaders?: Record<string, string>;
+      url?: string;
+      readyState?: number;
+    }
+  ) {
+    // Create the enhanced error for detailed debugging
+    const enhancedError = new DeepgramWebSocketError(
+      (event as ErrorEvent).message || "WebSocket connection error",
+      {
+        originalEvent: event,
+        ...enhancedInfo,
+      }
+    );
+
+    // Return an object that maintains backward compatibility
+    // while providing enhanced information
+    return {
+      // Original event for backward compatibility
+      ...event,
+      // Enhanced error information
+      error: enhancedError,
+      // Additional fields for easier access
+      statusCode: enhancedInfo.statusCode,
+      requestId: enhancedInfo.requestId,
+      responseHeaders: enhancedInfo.responseHeaders,
+      url: enhancedInfo.url,
+      readyState: enhancedInfo.readyState,
+      // Enhanced message with more context
+      message: this.buildEnhancedErrorMessage(event, enhancedInfo),
+    };
+  }
+
+  /**
+   * Builds an enhanced error message with additional context information.
+   *
+   * @param event - The original error event
+   * @param enhancedInfo - Additional error information
+   * @returns A more descriptive error message
+   */
+  protected buildEnhancedErrorMessage(
+    event: ErrorEvent | Event,
+    enhancedInfo: {
+      statusCode?: number;
+      requestId?: string;
+      responseHeaders?: Record<string, string>;
+      url?: string;
+      readyState?: number;
+    }
+  ): string {
+    let message = (event as ErrorEvent).message || "WebSocket connection error";
+
+    const details: string[] = [];
+
+    if (enhancedInfo.statusCode) {
+      details.push(`Status: ${enhancedInfo.statusCode}`);
+    }
+
+    if (enhancedInfo.requestId) {
+      details.push(`Request ID: ${enhancedInfo.requestId}`);
+    }
+
+    if (enhancedInfo.readyState !== undefined) {
+      const stateNames = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
+      const stateName =
+        stateNames[enhancedInfo.readyState] || `Unknown(${enhancedInfo.readyState})`;
+      details.push(`Ready State: ${stateName}`);
+    }
+
+    if (enhancedInfo.url) {
+      details.push(`URL: ${enhancedInfo.url}`);
+    }
+
+    if (details.length > 0) {
+      message += ` (${details.join(", ")})`;
+    }
+
+    return message;
+  }
+
+  /**
+   * Sets up the standard connection event handlers (open, close, error) for WebSocket connections.
+   * This method abstracts the common connection event registration pattern used across all live clients.
+   *
+   * @param events - Object containing the event constants for the specific client type
+   * @param events.Open - Event constant for connection open
+   * @param events.Close - Event constant for connection close
+   * @param events.Error - Event constant for connection error
+   * @protected
+   */
+  protected setupConnectionEvents(events: { Open: string; Close: string; Error: string }): void {
+    if (this.conn) {
+      this.conn.onopen = () => {
+        this.emit(events.Open, this);
+      };
+
+      this.conn.onclose = (event: any) => {
+        this.emit(events.Close, event);
+      };
+
+      this.conn.onerror = (event: ErrorEvent) => {
+        const enhancedInfo = this.extractErrorInformation(event, this.conn || undefined);
+        const enhancedError = this.createEnhancedError(event, enhancedInfo);
+        this.emit(events.Error, enhancedError);
+      };
+    }
   }
 
   /**

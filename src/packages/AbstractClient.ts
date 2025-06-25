@@ -23,7 +23,8 @@ export const noop = () => {};
  */
 export abstract class AbstractClient extends EventEmitter {
   protected factory: Function | undefined = undefined;
-  protected key: string;
+  protected key: string | undefined = undefined;
+  protected accessToken: string | undefined = undefined;
   protected options: DefaultClientOptions;
   public namespace: string = "global";
   public version: string = "v1";
@@ -35,6 +36,7 @@ export abstract class AbstractClient extends EventEmitter {
    *
    * @param options - The options to configure the DeepgramClient instance.
    * @param options.key - The Deepgram API key to use for authentication. If not provided, the `DEEPGRAM_API_KEY` environment variable will be used.
+   * @param options.accessToken - The Deepgram access token to use for authentication. If not provided, the `DEEPGRAM_ACCESS_TOKEN` environment variable will be used.
    * @param options.global - Global options that apply to all requests made by the DeepgramClient instance.
    * @param options.global.fetch - Options to configure the fetch requests made by the DeepgramClient instance.
    * @param options.global.fetch.options - Additional options to pass to the fetch function, such as `url` and `headers`.
@@ -43,24 +45,37 @@ export abstract class AbstractClient extends EventEmitter {
   constructor(options: DeepgramClientOptions) {
     super();
 
-    let key;
+    // run the factory for the access token if it's a function
+    if (typeof options.accessToken === "function") {
+      this.factory = options.accessToken;
+      this.accessToken = this.factory();
+    } else {
+      this.accessToken = options.accessToken;
+    }
 
+    // run the factory for the key if it's a function
     if (typeof options.key === "function") {
       this.factory = options.key;
-      key = this.factory();
+      this.key = this.factory();
     } else {
-      key = options.key;
+      this.key = options.key;
     }
 
-    if (!key) {
-      key = process.env.DEEPGRAM_API_KEY as string;
+    // implement priority-based credential resolution for environment variables
+    if (!this.key && !this.accessToken) {
+      // check for DEEPGRAM_ACCESS_TOKEN first (higher priority)
+      this.accessToken = process.env.DEEPGRAM_ACCESS_TOKEN as string;
+
+      // if still no access token, fall back to DEEPGRAM_API_KEY (lower priority)
+      if (!this.accessToken) {
+        this.key = process.env.DEEPGRAM_API_KEY as string;
+      }
     }
 
-    if (!key) {
-      throw new DeepgramError("A deepgram API key is required.");
+    // if we STILL have neither, throw an error
+    if (!this.key && !this.accessToken) {
+      throw new DeepgramError("A deepgram API key or access token is required.");
     }
-
-    this.key = key;
 
     options = convertLegacyOptions(options);
 
