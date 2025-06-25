@@ -95,7 +95,7 @@ Since AI responses are non-deterministic, snapshots capture structure, not conte
 
 ## 📁 Organization
 
-```
+```text
 tests/                          # 53 test suites, 213 tests total
 ├── __fixtures__/              # Input data & request objects by product area
 │   ├── listen.ts             # Listen/Speech-to-Text fixtures
