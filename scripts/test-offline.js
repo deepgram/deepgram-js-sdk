@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /* eslint-env node */
-/* eslint-disable @typescript-eslint/no-var-requires, import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports */
 
 /**
  * Test script to verify e2e tests work properly offline
