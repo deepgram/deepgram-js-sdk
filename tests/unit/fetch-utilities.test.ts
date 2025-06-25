@@ -54,7 +54,7 @@ describe("Unit Tests - Fetch Utilities", () => {
     it("should add Authorization header when not present", async () => {
       const mockFetch = jest.fn().mockResolvedValue({ ok: true });
       const apiKey = "test-api-key";
-      const authenticatedFetch = fetchWithAuth(apiKey, mockFetch);
+      const authenticatedFetch = fetchWithAuth({ apiKey, customFetch: mockFetch });
 
       await authenticatedFetch("https://api.example.com/test", {});
 
@@ -73,7 +73,7 @@ describe("Unit Tests - Fetch Utilities", () => {
     it("should not override existing Authorization header", async () => {
       const mockFetch = jest.fn().mockResolvedValue({ ok: true });
       const apiKey = "test-api-key";
-      const authenticatedFetch = fetchWithAuth(apiKey, mockFetch);
+      const authenticatedFetch = fetchWithAuth({ apiKey, customFetch: mockFetch });
 
       const existingHeaders = new Headers();
       existingHeaders.set("Authorization", "Bearer existing-token");
@@ -90,7 +90,7 @@ describe("Unit Tests - Fetch Utilities", () => {
     it("should preserve other headers", async () => {
       const mockFetch = jest.fn().mockResolvedValue({ ok: true });
       const apiKey = "test-api-key";
-      const authenticatedFetch = fetchWithAuth(apiKey, mockFetch);
+      const authenticatedFetch = fetchWithAuth({ apiKey, customFetch: mockFetch });
 
       const headers = { "Content-Type": "application/json", "X-Custom": "value" };
 
