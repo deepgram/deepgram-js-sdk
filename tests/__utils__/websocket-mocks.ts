@@ -328,19 +328,38 @@ export class WebSocketScenario {
    * Wait for WebSocket connection to be established
    */
   private async waitForConnection(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (this.mockWebSocket.isOpen()) {
         resolve();
-      } else {
-        const checkConnection = () => {
-          if (this.mockWebSocket.isOpen()) {
-            resolve();
-          } else {
-            setTimeout(checkConnection, 10);
-          }
-        };
-        checkConnection();
+        return;
       }
+
+      let timeoutId: NodeJS.Timeout | null = null;
+      let intervalId: NodeJS.Timeout | null = null;
+
+      // Set up timeout to reject if connection doesn't open within 5 seconds
+      timeoutId = setTimeout(() => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+        reject(new Error("WebSocket connection timeout: Connection did not open within 5 seconds"));
+      }, 5000);
+
+      // Poll for connection with cleanup on success
+      const checkConnection = () => {
+        if (this.mockWebSocket.isOpen()) {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          if (intervalId) {
+            clearInterval(intervalId);
+          }
+          resolve();
+        }
+      };
+
+      // Start polling every 10ms
+      intervalId = setInterval(checkConnection, 10);
     });
   }
 }
