@@ -1,7 +1,7 @@
 type Provider = { type: string } & Record<string, unknown>;
 
 /**
- * @see https://developers.deepgram.com/reference/voicebot-api-phase-preview#settingsconfiguration
+ * @see https://developers.deepgram.com/docs/configure-voice-agent
  */
 interface AgentLiveSchema extends Record<string, unknown> {
   /**
@@ -48,9 +48,15 @@ interface AgentLiveSchema extends Record<string, unknown> {
         url: string;
         headers?: Record<string, string>;
       };
-    };
+    } | {
+      provider: Provider;
+      endpoint?: {
+        url: string;
+        headers?: Record<string, string>;
+      };
+    }[];
     /**
-     * @see https://developers.deepgram.com/reference/voicebot-api-phase-preview#supported-llm-providers-and-models
+     * @see https://developers.deepgram.com/docs/voice-agent-tts-models
      */
     think?: {
       provider: Provider;

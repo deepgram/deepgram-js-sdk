@@ -536,5 +536,66 @@ describe("Unit Tests - Live Client Message Handling", () => {
 
       expect(mockConnection.send).toHaveBeenCalledWith(JSON.stringify({ type: "KeepAlive" }));
     });
+
+    describe("speak provider configuration", () => {
+      it("should accept single provider", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should accept array of providers", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            speak: [
+              { provider: { type: "deepgram", model: "aura-2-zeus-en" } },
+              {
+                provider: { type: "openai", model: "tts-1", voice: "shimmer" },
+                endpoint: { url: "https://api.openai.com/v1/audio/speech", headers: { auth: "key" } }
+              },
+            ],
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+    });
+
+    describe("updateSpeak method", () => {
+      it("should update with single provider", () => {
+        const provider = { provider: { type: "deepgram", model: "aura-2-zeus-en" } };
+
+        client.updateSpeak(provider);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "UpdateSpeak", speak: provider })
+        );
+      });
+
+      it("should update with array of providers", () => {
+        const providers = [
+          { provider: { type: "deepgram", model: "aura-2-zeus-en" } },
+          { provider: { type: "openai", model: "tts-1", voice: "shimmer" } },
+        ];
+
+        client.updateSpeak(providers);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "UpdateSpeak", speak: providers })
+        );
+      });
+    });
   });
 });
