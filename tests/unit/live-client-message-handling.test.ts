@@ -536,5 +536,33 @@ describe("Unit Tests - Live Client Message Handling", () => {
 
       expect(mockConnection.send).toHaveBeenCalledWith(JSON.stringify({ type: "KeepAlive" }));
     });
+
+    it("should send injectUserMessage correctly", () => {
+      const content = "Hello! Can you hear me?";
+      client.injectUserMessage(content);
+
+      expect(mockConnection.send).toHaveBeenCalledWith(
+        JSON.stringify({ type: "InjectUserMessage", content })
+      );
+    });
+
+    it("should send injectUserMessage with different content types", () => {
+      const testCases = [
+        "What's the weather like today?",
+        "Simple greeting",
+        "Multi-line\nmessage content",
+        "", // Edge case: empty string
+      ];
+
+      testCases.forEach((content) => {
+        jest.clearAllMocks(); // Reset mock between test cases
+
+        client.injectUserMessage(content);
+
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "InjectUserMessage", content })
+        );
+      });
+    });
   });
 });
