@@ -1,98 +1,54 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
+
 const { createClient, LiveTranscriptionEvents } = require("../../dist/main/index");
 const fetch = require("cross-fetch");
+require("dotenv").config();
 
 const live = async () => {
-  console.log("transcribing url with auth factory");
+  const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const authFactory = async () => {
-    const deepgramTokenClient = createClient(process.env.DEEPGRAM_API_KEY);
+  // First, generate a temporary token
+  const { result: token, error } = await deepgram.auth.grantToken(
+    {
+      comment: "temporary token for live transcription example",
+      scopes: ["usage:write"],
+      time_to_live_in_seconds: 60,
+    },
+    {
+      // Optional: you can set a custom time-to-live for the token
+    }
+  );
 
-    const { result: tokenResult, error: tokenError } = await deepgramTokenClient.auth.grantToken();
+  if (error) {
+    console.error(error);
+    return;
+  }
 
-    if (tokenError) console.error(tokenError);
-    if (!tokenError) return tokenResult.access_token;
-  };
-
-  const deepgramClient = createClient({ accessToken: authFactory });
-
-  const url = "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
-
-  // We will collect the is_final=true messages here so we can use them when the person finishes speaking
-  let is_finals = [];
-
-  const connection = deepgramClient.listen.live({
+  // Now, use the temporary token to create a new client
+  const deepgramWithToken = createClient(token.key);
+  const connection = deepgramWithToken.listen.live({
     model: "nova-3",
-    language: "en-US",
-    // Apply smart formatting to the output
-    smart_format: true,
-    // To get UtteranceEnd, the following must be set:
-    interim_results: true,
-    utterance_end_ms: 1000,
-    vad_events: true,
-    // Time in milliseconds of silence to wait for before finalizing speech
-    endpointing: 300,
-    // Keyterm Prompting allows you improve Keyword Recall Rate (KRR) for important keyterms or phrases up to 90%.
-    keyterm: ["BBC"],
   });
 
   connection.on(LiveTranscriptionEvents.Open, () => {
-    connection.on(LiveTranscriptionEvents.Close, () => {
-      console.log("Connection closed.");
-    });
+    console.log("Connection opened.");
 
-    connection.on(LiveTranscriptionEvents.Metadata, (data) => {
-      console.log(`Deepgram Metadata: ${data}`);
-    });
-
-    connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-      const sentence = data.channel.alternatives[0].transcript;
-
-      // Ignore empty transcripts
-      if (sentence.length == 0) {
-        return;
-      }
-      if (data.is_final) {
-        // We need to collect these and concatenate them together when we get a speech_final=true
-        // See docs: https://developers.deepgram.com/docs/understand-endpointing-interim-results
-        is_finals.push(sentence);
-
-        // Speech final means we have detected sufficent silence to consider this end of speech
-        // Speech final is the lowest latency result as it triggers as soon an the endpointing value has triggered
-        if (data.speech_final) {
-          const utterance = is_finals.join(" ");
-          console.log(`Speech Final: ${utterance}`);
-          is_finals = [];
-        } else {
-          // These are useful if you need real time captioning and update what the Interim Results produced
-          console.log(`Is Final: ${sentence}`);
-        }
-      } else {
-        // These are useful if you need real time captioning of what is being spoken
-        console.log(`Interim Results: ${sentence}`);
-      }
-    });
-
-    connection.on(LiveTranscriptionEvents.UtteranceEnd, (_data) => {
-      const utterance = is_finals.join(" ");
-      console.log(`Deepgram UtteranceEnd: ${utterance}`);
-      is_finals = [];
-    });
-
-    connection.on(LiveTranscriptionEvents.SpeechStarted, (_data) => {
-      // console.log("Deepgram SpeechStarted");
-    });
-
-    connection.on(LiveTranscriptionEvents.Error, (err) => {
-      console.error(err);
-    });
-
-    fetch(url)
+    fetch("http://stream.live.vc.bbcmedia.co.uk/bbc_world_service")
       .then((r) => r.body)
       .then((res) => {
         res.on("readable", () => {
           connection.send(res.read());
         });
       });
+
+    connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+      console.log(data.channel.alternatives[0].transcript);
+    });
+
+    connection.on(LiveTranscriptionEvents.Close, () => {
+      console.log("Connection closed.");
+    });
   });
 };
 

@@ -1018,7 +1018,7 @@ To make sure our community is safe for all, be sure to review and agree to our
 
 ### Debugging and making changes locally
 
-If you want to make local changes to the SDK and run the [`examples/`](./examples/), you'll need to `npm run build` first, to ensure that your changes are included in the examples that are running.
+If you want to make local changes to the SDK and run the [`examples/`](./examples/), you'll need to `pnpm run build` first, to ensure that your changes are included in the examples that are running.
 
 ## Getting Help
 

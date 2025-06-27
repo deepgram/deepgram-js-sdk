@@ -1,0 +1,12 @@
+{
+  "name": "deepgram-node-agent-live-example",
+  "version": "1.0.0",
+  "description": "A simple example of using the Deepgram JS SDK to interact with a live agent in Node.js.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
