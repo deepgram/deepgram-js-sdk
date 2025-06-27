@@ -1,6 +1,10 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
+
 const { createClient } = require("../../dist/main/index");
-const fs = require("fs");
-const path = require("path");
+const { readFileSync } = require("fs");
+const { resolve } = require("path");
+require("dotenv").config();
 
 const transcribeUrlAuthWithFactory = async () => {
   console.log("transcribing url with auth factory");
@@ -79,9 +83,9 @@ const transcribeFile = async () => {
 
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  const filePath = path.join(__dirname, "../spacewalk.wav");
+  const filePath = resolve(__dirname, "../spacewalk.wav");
   console.log(filePath);
-  const file = fs.readFileSync(filePath);
+  const file = readFileSync(filePath);
 
   console.log("Transcribing file", file);
   const { result, error } = await deepgram.listen.prerecorded.transcribeFile(file, {
@@ -92,9 +96,25 @@ const transcribeFile = async () => {
   if (!error) console.dir(result, { depth: 1 });
 };
 
+const transcribe = async () => {
+  const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+  const audio = readFileSync(resolve(__dirname, "../spacewalk.wav"));
+
+  const { result, error } = await deepgram.listen.prerecorded.transcribeFile(audio, {
+    model: "nova-3",
+  });
+
+  if (error) {
+    console.error(error);
+  } else {
+    console.log(result.results.channels[0].alternatives[0].transcript);
+  }
+};
+
 (async () => {
   await transcribeUrl();
   await transcribeFile();
   await transcribeUrlAuthWithFactory();
   await transcribeUrlWithAccessToken();
+  await transcribe();
 })();

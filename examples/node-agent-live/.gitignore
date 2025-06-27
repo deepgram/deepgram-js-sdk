@@ -1,2 +1,4 @@
 chatlog.txt
 output-*.wav
+node_modules
+.env

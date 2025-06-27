@@ -1,84 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Deepgram Live Transcription</title>
+  </head>
+
+  <body>
+    <h1>Live Transcription</h1>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <pre id="transcript"></pre>
+
     <script src="../../dist/umd/deepgram.js"></script>
     <script>
-      const { createClient } = deepgram;
-      const _deepgram = createClient("api-key");
+      const startButton = document.getElementById("start");
+      const stopButton = document.getElementById("stop");
+      const transcriptEl = document.getElementById("transcript");
 
-      console.log("Deepgram Instance: ", _deepgram);
+      let connection;
+      let mediaRecorder;
 
-      (async () => {
-        const url = "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
+      const setup = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const apiKey = urlParams.get("key");
 
-        // We will collect the is_final=true messages here so we can use them when the person finishes speaking
-        let is_finals = [];
+        if (!apiKey) {
+          alert("Please add your DEEPGRAM_API_KEY to the query string.");
+          return;
+        }
 
-        const connection = _deepgram.listen.live({
-          model: "nova-2",
-          language: "en-US",
-          // Apply smart formatting to the output
-          smart_format: true,
-          // To get UtteranceEnd, the following must be set:
-          interim_results: true,
-          utterance_end_ms: 1000,
-          vad_events: true,
-          // Time in milliseconds of silence to wait for before finalizing speech
-          endpointing: 300,
+        const deepgram = deepgram.createClient(apiKey);
+        connection = deepgram.listen.live({
+          model: "nova-3",
         });
 
-        connection.on("open", () => {
-          connection.on("close", () => {
-            console.log("Connection closed.");
-          });
+        connection.on(deepgram.LiveTranscriptionEvents.Open, () => {
+          console.log("Connection opened.");
 
-          connection.on("Metadata", (data) => {
-            console.log(`Deepgram Metadata: ${data}`);
-          });
-
-          connection.on("Results", (data) => {
-            const sentence = data.channel.alternatives[0].transcript;
-
-            // Ignore empty transcripts
-            if (sentence.length == 0) {
-              return;
-            }
-            if (data.is_final) {
-              // We need to collect these and concatenate them together when we get a speech_final=true
-              // See docs: https://developers.deepgram.com/docs/understand-endpointing-interim-results
-              is_finals.push(sentence);
-
-              // Speech final means we have detected sufficent silence to consider this end of speech
-              // Speech final is the lowest latency result as it triggers as soon an the endpointing value has triggered
-              if (data.speech_final) {
-                const utterance = is_finals.join(" ");
-                console.log(`Speech Final: ${utterance}`);
-                is_finals = [];
-              } else {
-                // These are useful if you need real time captioning and update what the Interim Results produced
-                console.log(`Is Final: ${sentence}`);
-              }
-            } else {
-              // These are useful if you need real time captioning of what is being spoken
-              console.log(`Interim Results: ${sentence}`);
-            }
-          });
-
-          connection.on("UtteranceEnd", (data) => {
-            const utterance = is_finals.join(" ");
-            console.log(`Deepgram UtteranceEnd: ${utterance}`);
-            is_finals = [];
-          });
-
-          connection.on("SpeechStarted", (data) => {
-            // console.log("Deepgram SpeechStarted");
-          });
-
-          connection.on("error", (err) => {
-            console.error(err);
-          });
-
-          fetch(url)
+          fetch("http://stream.live.vc.bbcmedia.co.uk/bbc_world_service")
             .then((response) => response.body)
             .then((body) => {
               const reader = body.getReader();
@@ -103,13 +61,38 @@
               console.error("Fetch error:", error);
             });
         });
-      })();
 
-      // ...
+        connection.on(deepgram.LiveTranscriptionEvents.Transcript, (data) => {
+          transcriptEl.textContent = data.channel.alternatives[0].transcript;
+        });
+
+        connection.on(deepgram.LiveTranscriptionEvents.Close, () => {
+          console.log("Connection closed.");
+        });
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            connection.send(event.data);
+          }
+        };
+      };
+
+      startButton.onclick = () => {
+        if (!connection) {
+          setup().then(() => {
+            mediaRecorder.start(1000);
+          });
+        } else {
+          mediaRecorder.start(1000);
+        }
+      };
+
+      stopButton.onclick = () => {
+        mediaRecorder.stop();
+        connection.finish();
+      };
     </script>
-  </head>
-
-  <body>
-    Running test... check the developer console.
   </body>
 </html>

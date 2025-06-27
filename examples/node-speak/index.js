@@ -1,22 +1,43 @@
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
+
 const { createClient } = require("../../dist/main/index");
-const fs = require("fs");
-const { pipeline } = require("stream");
-const { promisify } = require("util");
-const streamPipeline = promisify(pipeline);
+const { writeFileSync } = require("fs");
+const { resolve } = require("path");
+require("dotenv").config();
 
-const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+const speak = async () => {
+  const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+  const text = "Hello, world! This is a test of the Deepgram JS SDK.";
 
-const text = "Hello, how can I help you today?";
+  const response = await deepgram.speak.request(
+    { text },
+    {
+      model: "aura-asteria-en",
+    }
+  );
 
-const getAudio = async () => {
-  const { result } = await deepgram.speak.request({ text }, { model: "aura-2-thalia-en" });
+  const stream = await response.getStream();
+  const headers = await response.getHeaders();
 
-  if (!result.ok) {
-    throw new Error(`HTTP error! Status: ${result}`);
+  if (stream) {
+    const buffer = await new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(chunks)));
+      stream.on("error", reject);
+    });
+
+    const filePath = resolve(__dirname, "output.mp3");
+    writeFileSync(filePath, buffer);
+    console.log(`Audio file saved to ${filePath}`);
+  } else {
+    console.error("Error: Could not get audio stream.");
   }
 
-  const fileStream = fs.createWriteStream("audio.wav");
-  await streamPipeline(result.body, fileStream);
+  if (headers) {
+    console.log("Headers:", headers);
+  }
 };
 
-getAudio();
+speak();
