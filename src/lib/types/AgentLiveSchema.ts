@@ -1,5 +1,13 @@
 type Provider = { type: string } & Record<string, unknown>;
 
+type SpeakProvider = {
+  provider: Provider;
+  endpoint?: {
+    url: string;
+    headers?: Record<string, string>;
+  };
+};
+
 /**
  * @see https://developers.deepgram.com/docs/configure-voice-agent
  */
@@ -42,19 +50,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
     listen?: {
       provider: Provider;
     };
-    speak?: {
-      provider: Provider;
-      endpoint?: {
-        url: string;
-        headers?: Record<string, string>;
-      };
-    } | {
-      provider: Provider;
-      endpoint?: {
-        url: string;
-        headers?: Record<string, string>;
-      };
-    }[];
+    speak?: SpeakProvider | SpeakProvider[];
     /**
      * @see https://developers.deepgram.com/docs/voice-agent-tts-models
      */
@@ -87,4 +83,4 @@ interface AgentLiveSchema extends Record<string, unknown> {
   };
 }
 
-export type { AgentLiveSchema };
+export type { AgentLiveSchema, SpeakProvider };
