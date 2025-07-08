@@ -4,10 +4,7 @@
 
 > 🎯 **Development Setup**: This project uses [Corepack](https://nodejs.org/api/corepack.html) for package manager consistency. Run `corepack enable` once, then use `pnpm` commands normally. See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
 
-Isomorphic Javascript client for Deepgram's APIs. Power your apps with our world-class voice AI platform.
-
 <!-- TOC -->
-
 - [Documentation](#documentation)
 - [Migrating from earlier versions](#migrating-from-earlier-versions)
   - [V2 to V3](#v2-to-v3)

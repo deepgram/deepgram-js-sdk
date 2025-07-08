@@ -141,6 +141,17 @@ export class AgentLiveClient extends AbstractLiveClient {
   }
 
   /**
+   * Send a text-based message to the agent as if it came from the user.
+   * This allows you to inject user messages into the conversation for the agent to respond to.
+   * @example "Hello! Can you hear me?"
+   * @example "What's the weather like today?"
+   * @param content - The specific phrase or statement the agent should respond to.
+   */
+  public injectUserMessage(content: string): void {
+    this.send(JSON.stringify({ type: "InjectUserMessage", content }));
+  }
+
+  /**
    * Respond to a function call request.
    * @param response  - The response to the function call request.
    */

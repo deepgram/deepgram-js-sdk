@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage getProjectMemberScopes E2E should retrieve member scopes for a specific project member: manage-getProjectMemberScopes-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "scopes": [
+      "<string>"
+    ]
+  }
+}
+`;

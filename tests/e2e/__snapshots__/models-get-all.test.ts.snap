@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`models getAll E2E should retrieve all available models: models-getAll-response-structure 1`] = `
+{
+  "stt": [
+    {
+      "architecture": "<string>",
+      "batch": "<boolean>",
+      "canonical_name": "<string>",
+      "languages": [
+        "<string>"
+      ],
+      "metadata": {
+        "tier": "<string>"
+      },
+      "name": "<string>",
+      "streaming": "<boolean>",
+      "uuid": "<string>",
+      "version": "<string>"
+    }
+  ],
+  "tts": [
+    {
+      "architecture": "<string>",
+      "canonical_name": "<string>",
+      "languages": [
+        "<string>"
+      ],
+      "metadata": {
+        "tier": "<string>"
+      },
+      "name": "<string>",
+      "uuid": "<string>",
+      "version": "<string>"
+    }
+  ]
+}
+`;

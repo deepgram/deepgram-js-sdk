@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`listen transcribeUrlCallback E2E should transcribe URL with callback and return async response: listen-transcribe-url-callback-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "request_id": "<string>"
+  }
+}
+`;

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage createProjectKey E2E should create a new API key for a specific project: manage-createProjectKey-response-structure 1`] = `
+{
+  "error": null,
+  "result": {
+    "api_key_id": "<string>",
+    "comment": "<string>",
+    "created": "<string>",
+    "key": "<string>",
+    "scopes": [
+      "<string>"
+    ]
+  }
+}
+`;

@@ -1,53 +1,41 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Deepgram Prerecorded Transcription</title>
+  </head>
+
+  <body>
+    <h1>Prerecorded Transcription</h1>
+    <p>Open the console to see the transcription results.</p>
+    <button onclick="transcribe()">Transcribe</button>
+
     <script src="../../dist/umd/deepgram.js"></script>
     <script>
-      const { createClient } = deepgram;
-      const _deepgram = createClient("deepgram-api-key", {
-        global: {
-          fetch: {
-            options: {
-              url: "https://api.mock.deepgram.com",
-            },
-          },
-        },
-      });
+      const transcribe = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const apiKey = urlParams.get("key");
 
-      console.log("Deepgram Instance: ", _deepgram);
+        if (!apiKey) {
+          alert("Please add your DEEPGRAM_API_KEY to the query string. .e.g. ?key=YOUR_API_KEY");
+          return;
+        }
 
-      const transcribeUrl = async () => {
-        const { result, error } = await _deepgram.listen.prerecorded.transcribeUrl(
+        const deepgram = deepgram.createClient(apiKey);
+        const audioUrl = "https://dpgr.am/spacewalk.wav";
+
+        const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+          { url: audioUrl },
           {
-            url: "https://dpgr.am/spacewalk.wav",
-          },
-          {
-            model: "nova",
+            model: "nova-3",
           }
         );
 
-        if (error) console.error(error, result);
-        if (!error) console.dir(result, { depth: null });
+        if (error) {
+          console.error(error);
+        } else {
+          console.log(result.results.channels[0].alternatives[0].transcript);
+        }
       };
-
-      const transcribeFile = async () => {
-        const { result, error } = await _deepgram.listen.prerecorded.transcribeFile(
-          fs.readFileSync("./examples/nasa.mp4"),
-          {
-            model: "nova",
-          }
-        );
-
-        if (error) console.error(error, result);
-        if (!error) console.dir(result, { depth: null });
-      };
-
-      transcribeUrl();
-      transcribeFile();
-      // ...
     </script>
-  </head>
-  <body>
-    Running test... check the developer console.
   </body>
 </html>
