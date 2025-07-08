@@ -1,6 +1,6 @@
 # Deepgram JavaScript SDK
 
-[![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4) [![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
+[![Static Badge](https://img.shields.io/badge/%24__-Discord-blue?logo=discord&logoColor=white&link=https%3A%2F%2Fdiscord.gg%2Fdeepgram)](https://discord.gg/deepgram) [![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
 
 > 🎯 **Development Setup**: This project uses [Corepack](https://nodejs.org/api/corepack.html) for package manager consistency. Run `corepack enable` once, then use `pnpm` commands normally. See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
 
