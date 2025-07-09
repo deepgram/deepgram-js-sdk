@@ -9,8 +9,9 @@ import {
   TranscriptionSchema,
 } from "./types";
 import { Headers as CrossFetchHeaders } from "cross-fetch";
-import { Readable } from "stream";
+import type { Readable } from "stream";
 import merge from "deepmerge";
+import { isBrowser } from "./runtime";
 
 export function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -71,7 +72,18 @@ const isBufferSource = (providedSource: PrerecordedSource): providedSource is Bu
 };
 
 const isReadStreamSource = (providedSource: PrerecordedSource): providedSource is Readable => {
-  return providedSource != null && providedSource instanceof Readable;
+  if (providedSource == null) return false;
+
+  // In browser environments, there's no Readable stream from Node.js
+  if (isBrowser()) return false;
+
+  // Check for stream-like properties without importing Readable
+  return (
+    typeof providedSource === "object" &&
+    typeof (providedSource as any).pipe === "function" &&
+    typeof (providedSource as any).read === "function" &&
+    typeof (providedSource as any)._readableState === "object"
+  );
 };
 
 export class CallbackUrl extends URL {
