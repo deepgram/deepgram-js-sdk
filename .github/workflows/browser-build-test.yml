@@ -69,5 +69,6 @@ jobs:
           echo "import { createClient } from '@deepgram/sdk';" > index.ts
           echo "const client = createClient('test-key');" >> index.ts
           echo "console.log('Deepgram client created:', client);" >> index.ts
-          echo "module.exports = { entry: './index.ts', module: { rules: [{ test: /\.ts$/, use: 'ts-loader' }] } };" > webpack.config.js
+          echo '{"compilerOptions": {"target": "es5", "module": "commonjs", "strict": true, "esModuleInterop": true, "skipLibCheck": true}}' > tsconfig.json
+          echo "module.exports = { entry: './index.ts', module: { rules: [{ test: /\.ts$/, use: 'ts-loader' }] }, resolve: { extensions: ['.ts', '.js'] } };" > webpack.config.js
           npx webpack --mode production
