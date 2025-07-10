@@ -43,6 +43,8 @@ jobs:
           npm install $GITHUB_WORKSPACE
           echo "import { createClient } from '@deepgram/sdk';" > src/test.ts
           echo "const client = createClient('test-key');" >> src/test.ts
+          echo "console.log('Deepgram client created:', client);" >> src/test.ts
+          echo "export { client };" >> src/test.ts
           npm run build
 
       - name: Test with Create React App
@@ -53,6 +55,8 @@ jobs:
           npm install $GITHUB_WORKSPACE
           echo "import { createClient } from '@deepgram/sdk';" > src/test.ts
           echo "const client = createClient('test-key');" >> src/test.ts
+          echo "console.log('Deepgram client created:', client);" >> src/test.ts
+          echo "export { client };" >> src/test.ts
           npm run build
 
       - name: Test with plain webpack
@@ -64,5 +68,6 @@ jobs:
           npm install $GITHUB_WORKSPACE
           echo "import { createClient } from '@deepgram/sdk';" > index.ts
           echo "const client = createClient('test-key');" >> index.ts
+          echo "console.log('Deepgram client created:', client);" >> index.ts
           echo "module.exports = { entry: './index.ts', module: { rules: [{ test: /\.ts$/, use: 'ts-loader' }] } };" > webpack.config.js
           npx webpack --mode production
