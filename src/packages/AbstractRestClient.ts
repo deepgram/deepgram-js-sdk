@@ -1,5 +1,5 @@
 import { DeepgramApiError, DeepgramError, DeepgramUnknownError } from "../lib/errors";
-import type { Readable } from "stream";
+import type { Readable } from "node:stream";
 import { fetchWithAuth, resolveResponse } from "../lib/fetch";
 import type { Fetch, FetchOptions, RequestMethodType } from "../lib/types/Fetch";
 import { AbstractClient } from "./AbstractClient";

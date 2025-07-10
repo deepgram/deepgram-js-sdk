@@ -5,7 +5,7 @@ import {
   isLiveSchema,
   isDeepgramClientOptions,
 } from "../../src/lib/helpers";
-import { Readable } from "stream";
+import { Readable } from "node:stream";
 
 describe("Unit Tests - Type Guards and Validators", () => {
   describe("isUrlSource", () => {
@@ -100,6 +100,95 @@ describe("Unit Tests - Type Guards and Validators", () => {
       expect(isDeepgramClientOptions(undefined)).toBe(false);
       expect(isDeepgramClientOptions("not an object")).toBe(false);
       expect(isDeepgramClientOptions(123)).toBe(false);
+    });
+  });
+});
+
+describe("isFileSource with duck-typed stream detection", () => {
+  let isBrowserMock: jest.SpyInstance;
+
+  beforeEach(() => {
+    // Import and mock the isBrowser function
+    const runtime = require("../../src/lib/runtime"); // eslint-disable-line @typescript-eslint/no-require-imports
+    isBrowserMock = jest.spyOn(runtime, "isBrowser");
+  });
+
+  afterEach(() => {
+    isBrowserMock.mockRestore();
+  });
+
+  describe("in Node.js environment", () => {
+    beforeEach(() => {
+      isBrowserMock.mockReturnValue(false);
+    });
+
+    it("should detect objects with all required stream properties", () => {
+      const streamLikeObject = {
+        pipe: jest.fn(),
+        read: jest.fn(),
+        _readableState: { flowing: null, ended: false },
+      };
+
+      expect(isFileSource(streamLikeObject as any)).toBe(true);
+    });
+
+    it("should reject objects missing pipe method", () => {
+      const invalidStream = {
+        read: jest.fn(),
+        _readableState: {},
+      };
+
+      expect(isFileSource(invalidStream as any)).toBe(false);
+    });
+
+    it("should reject objects missing read method", () => {
+      const invalidStream = {
+        pipe: jest.fn(),
+        _readableState: {},
+      };
+
+      expect(isFileSource(invalidStream as any)).toBe(false);
+    });
+
+    it("should reject objects missing _readableState", () => {
+      const invalidStream = {
+        pipe: jest.fn(),
+        read: jest.fn(),
+      };
+
+      expect(isFileSource(invalidStream as any)).toBe(false);
+    });
+
+    it("should reject objects where methods are not functions", () => {
+      const invalidStream = {
+        pipe: "not a function",
+        read: jest.fn(),
+        _readableState: {},
+      };
+
+      expect(isFileSource(invalidStream as any)).toBe(false);
+    });
+  });
+
+  describe("in browser environment", () => {
+    beforeEach(() => {
+      isBrowserMock.mockReturnValue(true);
+    });
+
+    it("should always return false for stream-like objects", () => {
+      const streamLikeObject = {
+        pipe: jest.fn(),
+        read: jest.fn(),
+        _readableState: {},
+      };
+
+      // Even with all properties, should return false in browser
+      expect(isFileSource(streamLikeObject as any)).toBe(false);
+    });
+
+    it("should still detect Buffer objects", () => {
+      const buffer = Buffer.from("test data");
+      expect(isFileSource(buffer)).toBe(true);
     });
   });
 });
