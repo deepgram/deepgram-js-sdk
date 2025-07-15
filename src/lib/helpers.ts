@@ -9,7 +9,7 @@ import {
   TranscriptionSchema,
 } from "./types";
 import { Headers as CrossFetchHeaders } from "cross-fetch";
-import type { Readable } from "stream";
+import type { Readable } from "node:stream";
 import merge from "deepmerge";
 import { isBrowser } from "./runtime";
 
