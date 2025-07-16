@@ -125,7 +125,22 @@ function createMockFetch(): typeof fetch {
       }
 
       if (url.includes("/v1/auth/grant") && method === "POST") {
-        return new Response(JSON.stringify(mockGrantTokenResponse), {
+        // Handle the ttl_seconds parameter from the request body
+        const responseData = { ...mockGrantTokenResponse };
+
+        if (init?.body) {
+          try {
+            const requestBody = JSON.parse(init.body as string);
+            if (requestBody.ttl_seconds) {
+              // Update the expires_in value based on ttl_seconds
+              responseData.expires_in = requestBody.ttl_seconds;
+            }
+          } catch (e) {
+            // If parsing fails, use default response
+          }
+        }
+
+        return new Response(JSON.stringify(responseData), {
           status: 200,
           headers: { "content-type": "application/json" },
         });

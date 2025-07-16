@@ -8,25 +8,27 @@ require("dotenv").config();
 const live = async () => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-  // First, generate a temporary token
-  const { result: token, error } = await deepgram.auth.grantToken(
-    {
-      comment: "temporary token for live transcription example",
-      scopes: ["usage:write"],
-      time_to_live_in_seconds: 60,
-    },
-    {
-      // Optional: you can set a custom time-to-live for the token
-    }
-  );
+  // First, generate a temporary token with 60 second TTL
+  console.log("🔍 Requesting token with ttl_seconds: 60");
+  const { result: token, error } = await deepgram.auth.grantToken({
+    ttl_seconds: 60,
+  });
 
   if (error) {
-    console.error(error);
+    console.error("❌ Failed to generate token:", error);
     return;
   }
 
+  // Log successful token generation
+  console.log("✅ Token generated successfully!");
+  console.log(`   • Expires in: ${token.expires_in} seconds`);
+  console.log(`   • Token preview: ${token.access_token.substring(0, 20)}...`);
+  console.log("");
+
   // Now, use the temporary token to create a new client
-  const deepgramWithToken = createClient(token.key);
+  // Note: Must use 'accessToken' property, not 'key'
+  const deepgramWithToken = createClient({ accessToken: token.access_token });
+  console.log("✅ Client created with temporary token - ready for live transcription!");
   const connection = deepgramWithToken.listen.live({
     model: "nova-3",
   });
