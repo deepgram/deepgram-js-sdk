@@ -55,7 +55,66 @@ describe("auth grantToken E2E", () => {
 
   it("should handle custom endpoint for token generation", async () => {
     const customEndpoint = ":version/auth/grant";
-    const { result, error } = await deepgram.auth.grantToken(customEndpoint);
+    const { result, error } = await deepgram.auth.grantToken({}, customEndpoint);
+
+    // Verify no error occurred
+    expect(error).toBeNull();
+    expect(result).toBeTruthy();
+
+    if (!result) {
+      throw new Error("Result should not be null after toBeTruthy check");
+    }
+
+    // Verify the response structure is consistent
+    expect(result).toHaveProperty("access_token");
+    expect(result).toHaveProperty("expires_in");
+    expect(typeof result.access_token).toBe("string");
+    expect(typeof result.expires_in).toBe("number");
+  }, 30000);
+
+  it("should generate token with custom ttl_seconds", async () => {
+    const { result, error } = await deepgram.auth.grantToken({ ttl_seconds: 60 });
+
+    // Verify no error occurred
+    expect(error).toBeNull();
+    expect(result).toBeTruthy();
+
+    if (!result) {
+      throw new Error("Result should not be null after toBeTruthy check");
+    }
+
+    // Verify the response structure is consistent
+    expect(result).toHaveProperty("access_token");
+    expect(result).toHaveProperty("expires_in");
+    expect(typeof result.access_token).toBe("string");
+    expect(typeof result.expires_in).toBe("number");
+
+    // Verify access token is a non-empty string
+    expect(result.access_token.length).toBeGreaterThan(0);
+    expect(result.expires_in).toBeGreaterThan(0);
+  }, 30000);
+
+  it("should handle ttl_seconds with custom endpoint", async () => {
+    const customEndpoint = ":version/auth/grant";
+    const { result, error } = await deepgram.auth.grantToken({ ttl_seconds: 120 }, customEndpoint);
+
+    // Verify no error occurred
+    expect(error).toBeNull();
+    expect(result).toBeTruthy();
+
+    if (!result) {
+      throw new Error("Result should not be null after toBeTruthy check");
+    }
+
+    // Verify the response structure is consistent
+    expect(result).toHaveProperty("access_token");
+    expect(result).toHaveProperty("expires_in");
+    expect(typeof result.access_token).toBe("string");
+    expect(typeof result.expires_in).toBe("number");
+  }, 30000);
+
+  it("should handle empty options object (backward compatibility)", async () => {
+    const { result, error } = await deepgram.auth.grantToken({});
 
     // Verify no error occurred
     expect(error).toBeNull();
