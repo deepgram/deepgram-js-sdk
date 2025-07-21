@@ -637,8 +637,7 @@ describe("Unit Tests - Live Client Message Handling", () => {
           agent: {
             language: "en",
             listen: {
-              provider: { type: "deepgram", model: "nova-2" },
-              smart_format: true,
+              provider: { type: "deepgram", model: "nova-3", smart_format: true },
             },
             speak: {
               provider: { type: "deepgram", model: "aura-2-zeus-en" },
@@ -658,8 +657,7 @@ describe("Unit Tests - Live Client Message Handling", () => {
           agent: {
             language: "en",
             listen: {
-              provider: { type: "deepgram", model: "nova-2" },
-              smart_format: false,
+              provider: { type: "deepgram", model: "nova-3", smart_format: false },
             },
             speak: {
               provider: { type: "deepgram", model: "aura-2-zeus-en" },
