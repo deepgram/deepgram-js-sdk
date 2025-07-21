@@ -27,6 +27,7 @@ export * from "./GetProjectUsageSummaryResponse";
 export * from "./GetProjectUsageSummarySchema";
 export * from "./GetTokenDetailsResponse";
 export * from "./GrantTokenResponse";
+export * from "./GrantTokenSchema";
 export * from "./ListOnPremCredentialsResponse";
 export * from "./LiveConfigOptions";
 export * from "./LiveMetadataEvent";
