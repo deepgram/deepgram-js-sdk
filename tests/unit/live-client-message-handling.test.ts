@@ -575,6 +575,61 @@ describe("Unit Tests - Live Client Message Handling", () => {
       });
     });
 
+    describe("mip_opt_out configuration", () => {
+      it("should accept mip_opt_out as true", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            mip_opt_out: true,
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should accept mip_opt_out as false", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            mip_opt_out: false,
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should work without mip_opt_out (default behavior)", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+    });
+
     describe("updateSpeak method", () => {
       it("should update with single provider", () => {
         const provider = { provider: { type: "deepgram", model: "aura-2-zeus-en" } };
