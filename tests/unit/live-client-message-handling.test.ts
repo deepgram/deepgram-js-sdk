@@ -630,6 +630,70 @@ describe("Unit Tests - Live Client Message Handling", () => {
       });
     });
 
+    describe("smart_format configuration", () => {
+      it("should accept smart_format as true", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            listen: {
+              provider: { type: "deepgram", model: "nova-2" },
+              smart_format: true,
+            },
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should accept smart_format as false", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            listen: {
+              provider: { type: "deepgram", model: "nova-2" },
+              smart_format: false,
+            },
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should work without smart_format (default behavior)", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            listen: {
+              provider: { type: "deepgram", model: "nova-2" },
+            },
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+    });
+
     describe("updateSpeak method", () => {
       it("should update with single provider", () => {
         const provider = { provider: { type: "deepgram", model: "aura-2-zeus-en" } };

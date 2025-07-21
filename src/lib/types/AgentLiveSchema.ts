@@ -49,6 +49,11 @@ interface AgentLiveSchema extends Record<string, unknown> {
     language?: string;
     listen?: {
       provider: Provider;
+      /**
+       * @see https://developers.deepgram.com/docs/smart-format
+       * @default false
+       */
+      smart_format?: boolean;
     };
     speak?: SpeakProvider | SpeakProvider[];
     /**
