@@ -630,6 +630,99 @@ describe("Unit Tests - Live Client Message Handling", () => {
       });
     });
 
+    describe("tags configuration", () => {
+      it("should accept tags as an array of strings", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          tags: ["customer-service", "priority-high", "english"],
+          agent: {
+            language: "en",
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should accept empty tags array", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          tags: [],
+          agent: {
+            language: "en",
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should accept single tag in array", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          tags: ["support"],
+          agent: {
+            language: "en",
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should work without tags (default behavior)", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          agent: {
+            language: "en",
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+
+      it("should accept tags combined with other agent settings", () => {
+        const config = {
+          audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          tags: ["demo", "testing", "agent-v2"],
+          agent: {
+            language: "en",
+            mip_opt_out: true,
+            greeting: "Hello, how can I assist you today?",
+            speak: {
+              provider: { type: "deepgram", model: "aura-2-zeus-en" },
+            },
+          },
+        };
+
+        client.configure(config);
+        expect(mockConnection.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: "Settings", ...config })
+        );
+      });
+    });
+
     describe("updateSpeak method", () => {
       it("should update with single provider", () => {
         const provider = { provider: { type: "deepgram", model: "aura-2-zeus-en" } };
