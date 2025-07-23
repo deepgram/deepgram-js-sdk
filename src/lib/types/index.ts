@@ -28,6 +28,8 @@ export * from "./GetProjectUsageSummarySchema";
 export * from "./GetTokenDetailsResponse";
 export * from "./GrantTokenResponse";
 export * from "./GrantTokenSchema";
+export * from "./HistoryConversationText";
+export * from "./HistoryFunctionCall";
 export * from "./ListOnPremCredentialsResponse";
 export * from "./LiveConfigOptions";
 export * from "./LiveMetadataEvent";
