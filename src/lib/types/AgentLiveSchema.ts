@@ -8,6 +8,9 @@ type SpeakProvider = {
   };
 };
 
+import type { HistoryConversationText } from "./HistoryConversationText";
+import type { HistoryFunctionCall } from "./HistoryFunctionCall";
+
 /**
  * @see https://developers.deepgram.com/docs/configure-voice-agent
  */
@@ -17,6 +20,19 @@ interface AgentLiveSchema extends Record<string, unknown> {
    * @default false
    */
   experimental?: boolean;
+
+  /**
+   * Configuration flags for agent features
+   */
+  flags?: {
+    /**
+     * @see https://developers.deepgram.com/docs/configure-voice-agent#agentcontext
+     * Enable or disable history message reporting
+     * @default true
+     */
+    history?: boolean;
+  };
+
   audio: {
     input?: {
       /**
@@ -47,6 +63,17 @@ interface AgentLiveSchema extends Record<string, unknown> {
      * @default "en"
      */
     language?: string;
+
+    /**
+     * Conversation context including the history of messages and function calls
+     */
+    context?: {
+      /**
+       * Conversation history as a list of messages and function calls
+       */
+      messages?: (HistoryConversationText | HistoryFunctionCall)[];
+    };
+
     listen?: {
       provider: Provider;
     };
