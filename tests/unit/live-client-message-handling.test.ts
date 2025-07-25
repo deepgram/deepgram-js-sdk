@@ -575,13 +575,13 @@ describe("Unit Tests - Live Client Message Handling", () => {
       });
     });
 
-    describe("mip_opt_out configuration", () => {
-      it("should accept mip_opt_out as true", () => {
+    describe("mips_opt_out configuration", () => {
+      it("should accept mips_opt_out as true", () => {
         const config = {
           audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          mips_opt_out: true,
           agent: {
             language: "en",
-            mip_opt_out: true,
             speak: {
               provider: { type: "deepgram", model: "aura-2-zeus-en" },
             },
@@ -594,12 +594,12 @@ describe("Unit Tests - Live Client Message Handling", () => {
         );
       });
 
-      it("should accept mip_opt_out as false", () => {
+      it("should accept mips_opt_out as false", () => {
         const config = {
           audio: { input: { encoding: "linear16", sample_rate: 16000 } },
+          mips_opt_out: false,
           agent: {
             language: "en",
-            mip_opt_out: false,
             speak: {
               provider: { type: "deepgram", model: "aura-2-zeus-en" },
             },
@@ -612,7 +612,7 @@ describe("Unit Tests - Live Client Message Handling", () => {
         );
       });
 
-      it("should work without mip_opt_out (default behavior)", () => {
+      it("should work without mips_opt_out (default behavior)", () => {
         const config = {
           audio: { input: { encoding: "linear16", sample_rate: 16000 } },
           agent: {
