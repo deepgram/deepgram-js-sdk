@@ -17,6 +17,11 @@ interface AgentLiveSchema extends Record<string, unknown> {
    * @default false
    */
   experimental?: boolean;
+  /**
+   * To opt out of Deepgram Model Improvement Program.
+   * @default false
+   */
+  mips_opt_out?: boolean;
   audio: {
     input?: {
       /**
@@ -80,11 +85,6 @@ interface AgentLiveSchema extends Record<string, unknown> {
      * Optional message the agent will say at the start of the connection.
      */
     greeting?: string;
-    /**
-     * To opt out of Deepgram Model Improvement Program.
-     * @default false
-     */
-    mip_opt_out?: boolean;
   };
 }
 
