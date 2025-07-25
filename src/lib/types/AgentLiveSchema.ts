@@ -18,6 +18,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
    */
   experimental?: boolean;
   /**
+   * @see https://developers.deepgram.com/docs/the-deepgram-model-improvement-partnership-program
    * To opt out of Deepgram Model Improvement Program.
    * @default false
    */
