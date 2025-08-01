@@ -24,7 +24,7 @@ interface AgentLiveSchema extends Record<string, unknown> {
    */
   mips_opt_out?: boolean;
   /**
-  * Tags to associate with the request. Can be used for filtered searching.
+   * Tags to associate with the request. Can be used for filtered searching.
    */
   tags?: string[];
   audio: {
