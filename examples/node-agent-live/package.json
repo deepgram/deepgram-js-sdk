@@ -7,7 +7,9 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "cross-fetch": "^4.1.0",
     "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "cross-fetch": "^4.1.0"
   }
 }
