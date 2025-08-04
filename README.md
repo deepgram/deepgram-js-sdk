@@ -5,6 +5,7 @@
 > 🎯 **Development Setup**: This project uses [Corepack](https://nodejs.org/api/corepack.html) for package manager consistency. Run `corepack enable` once, then use `pnpm` commands normally. See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
 
 <!-- TOC -->
+
 - [Documentation](#documentation)
 - [Migrating from earlier versions](#migrating-from-earlier-versions)
   - [V2 to V3](#v2-to-v3)
@@ -13,7 +14,14 @@
 - [Installation](#installation)
   - [UMD](#umd)
   - [ESM](#esm)
-- [Initialization](#initialization)
+- [Authentication](#authentication)
+  - [1. API Key Authentication (Recommended)](#1-api-key-authentication-recommended)
+  - [2. Access Token Authentication](#2-access-token-authentication)
+  - [3. Proxy Authentication](#3-proxy-authentication)
+  - [Getting Credentials](#getting-credentials)
+    - [API Keys](#api-keys)
+    - [Access Tokens](#access-tokens)
+  - [Environment Variables](#environment-variables)
   - [Getting an API Key](#getting-an-api-key)
 - [Scoped Configuration](#scoped-configuration)
   - [Global Defaults](#global-defaults)
@@ -38,9 +46,9 @@
   - [Single-Request](#single-request)
   - [Continuous Text Stream (WebSocket)](#continuous-text-stream-websocket)
 - [Text Intelligence](#text-intelligence)
-- [Authentication](#authentication)
+- [Token Management](#token-management)
   - [Get Token Details](#get-token-details)
-  - [Grant Token](#grant-token)
+  - [Grant Access Token](#grant-access-token)
 - [Projects](#projects)
   - [Get Projects](#get-projects)
   - [Get Project](#get-project)
@@ -72,6 +80,7 @@
   - [Get All Balances](#get-all-balances)
   - [Get Balance](#get-balance)
 - [Models](#models)
+  - [Get All Models](#get-all-models)
   - [Get All Project Models](#get-all-project-models)
   - [Get Model](#get-model)
 - [On-Prem APIs](#on-prem-apis)
@@ -163,17 +172,87 @@ You can now use type="module" `<script>`s to import deepgram from CDNs, like:
 </script>
 ```
 
-## Initialization
+## Authentication
 
-All of the examples below will require createClient.
+The Deepgram SDK supports three authentication methods:
+
+### 1. API Key Authentication (Recommended)
+
+Uses `Token` scheme in Authorization header.
 
 ```js
 import { createClient } from "@deepgram/sdk";
-// - or -
-// const { createClient } = require("@deepgram/sdk");
 
-const deepgramClient = createClient(DEEPGRAM_API_KEY);
+// Method 1: Pass API key as first parameter
+const deepgramClient = createClient("YOUR_DEEPGRAM_API_KEY");
+
+// Method 2: Pass API key in options object
+const deepgramClient = createClient({ key: "YOUR_DEEPGRAM_API_KEY" });
+
+// Method 3: Use environment variable (DEEPGRAM_API_KEY)
+const deepgramClient = createClient();
 ```
+
+### 2. Access Token Authentication
+
+Uses `Bearer` scheme in Authorization header. Access tokens are temporary (30-second TTL) and must be obtained using an API key.
+
+```js
+import { createClient } from "@deepgram/sdk";
+
+// Must use accessToken property in options object
+const deepgramClient = createClient({ accessToken: "YOUR_ACCESS_TOKEN" });
+
+// Or use environment variable (DEEPGRAM_ACCESS_TOKEN)
+const deepgramClient = createClient();
+```
+
+### 3. Proxy Authentication
+
+For browser environments or custom proxy setups. Pass `"proxy"` as the API key.
+
+```js
+import { createClient } from "@deepgram/sdk";
+
+const deepgramClient = createClient("proxy", {
+  global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
+});
+```
+
+> **Important**: Your proxy must set the `Authorization: token DEEPGRAM_API_KEY` header and forward requests to Deepgram's API.
+
+### Getting Credentials
+
+#### API Keys
+
+Create API keys via the Management API:
+
+```js
+const { result, error } = await deepgramClient.manage.createProjectKey(projectId, {
+  comment: "My API key",
+  scopes: ["usage:write"], // or ["asr:write"]
+});
+```
+
+**Endpoint**: `POST https://api.deepgram.com/v1/projects/:project_id/keys`
+
+#### Access Tokens
+
+Generate temporary access tokens (requires existing API key):
+
+```js
+const { result, error } = await deepgramClient.auth.grantToken();
+// Returns: { access_token: string, expires_in: 30 }
+```
+
+**Endpoint**: `POST https://api.deepgram.com/v1/auth/grant`
+
+### Environment Variables
+
+The SDK automatically checks for credentials in this priority order:
+
+1. `DEEPGRAM_ACCESS_TOKEN` (highest priority)
+2. `DEEPGRAM_API_KEY` (fallback)
 
 ### Getting an API Key
 
@@ -289,7 +368,7 @@ Useful for many things.
 ```js
 import { createClient } from "@deepgram/sdk";
 
-const deepgramClient = createClient("proxy", {
+const deepgramClient = createClient({
   global: { fetch: { options: { headers: { "x-custom-header": "foo" } } } },
 });
 ```
@@ -316,6 +395,8 @@ const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
 );
 ```
 
+**API Endpoint**: `POST https://api.deepgram.com/v1/listen`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
 ### Local Files
@@ -331,6 +412,8 @@ const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile
   }
 );
 ```
+
+**API Endpoint**: `POST https://api.deepgram.com/v1/listen`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
@@ -350,6 +433,8 @@ const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrlC
   }
 );
 ```
+
+**API Endpoint**: `POST https://api.deepgram.com/v1/listen?callback=http://callback/endpoint`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen).
 
@@ -373,6 +458,8 @@ deepgramConnection.on(LiveTranscriptionEvents.Open, () => {
   });
 });
 ```
+
+**WebSocket Endpoint**: `wss://api.deepgram.com/v1/listen`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/speech-to-text-api/listen-streaming).
 
@@ -424,6 +511,8 @@ deepgramConnection.on(AgentEvents.Open, () => {
 });
 ```
 
+**WebSocket Endpoint**: `wss://agent.deepgram.com/v1/agent/converse`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/voice-agent-api/agent).
 
 ## Text to Speech
@@ -441,6 +530,8 @@ const { result } = await deepgramClient.speak.request(
   }
 );
 ```
+
+**API Endpoint**: `POST https://api.deepgram.com/v1/speak`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api/speak).
 
@@ -469,6 +560,8 @@ deepgramConnection.on(LiveTTSEvents.Open, () => {
 });
 ```
 
+**WebSocket Endpoint**: `wss://api.deepgram.com/v1/speak`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/text-to-speech-api/speak-streaming).
 
 ## Text Intelligence
@@ -489,9 +582,11 @@ const { result, error } = await deepgramClient.read.analyzeText(
 );
 ```
 
+**API Endpoint**: `POST https://api.deepgram.com/v1/read`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/text-intelligence-api/text-read).
 
-## Authentication
+## Token Management
 
 ### Get Token Details
 
@@ -501,17 +596,26 @@ Retrieves the details of the current authentication token.
 const { result, error } = await deepgramClient.manage.getTokenDetails();
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/auth/token`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/authentication)
 
-### Grant Token
+### Grant Access Token
 
-Creates a temporary token with a 30-second TTL.
+Creates a temporary access token with a 30-second TTL. Requires an existing API key for authentication.
 
 ```js
+// Create a temporary access token
 const { result, error } = await deepgramClient.auth.grantToken();
+// Returns: { access_token: string, expires_in: 30 }
+
+// Use the access token in a new client instance
+const tempClient = createClient({ accessToken: result.access_token });
 ```
 
-This example shows how to use the temporary token to authenticate a client instance. Note that you _must_ pass an `accessToken` property to use a temporary token. Passing the token as a raw string will error, as the SDK will treat it as an API key and use the incorrect header prefix.
+**API Endpoint**: `POST https://api.deepgram.com/v1/auth/grant`
+
+> **Important**: You _must_ pass an `accessToken` property to use a temporary token. Passing the token as a raw string will treat it as an API key and use the incorrect authorization scheme.
 
 [See our API reference for more info](https://developers.deepgram.com/reference/token-based-auth-api/grant-token).
 
@@ -525,6 +629,8 @@ Returns all projects accessible by the API key.
 const { result, error } = await deepgramClient.manage.getProjects();
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/get-projects).
 
 ### Get Project
@@ -534,6 +640,8 @@ Retrieves a specific project based on the provided project_id.
 ```js
 const { result, error } = await deepgramClient.manage.getProject(projectId);
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-project).
 
@@ -545,6 +653,8 @@ Update a project.
 const { result, error } = await deepgramClient.manage.updateProject(projectId, options);
 ```
 
+**API Endpoint**: `PATCH https://api.deepgram.com/v1/projects/:projectId`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/update-project).
 
 ### Delete Project
@@ -554,6 +664,8 @@ Delete a project.
 ```js
 const { error } = await deepgramClient.manage.deleteProject(projectId);
 ```
+
+**API Endpoint**: `DELETE https://api.deepgram.com/v1/projects/:projectId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-project).
 
@@ -567,6 +679,8 @@ Retrieves all keys associated with the provided project_id.
 const { result, error } = await deepgramClient.manage.getProjectKeys(projectId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/keys`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/list-keys).
 
 ### Get Key
@@ -577,15 +691,25 @@ Retrieves a specific key associated with the provided project_id.
 const { result, error } = await deepgramClient.manage.getProjectKey(projectId, projectKeyId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/keys/:keyId`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/get-key).
 
 ### Create Key
 
-Creates an API key with the provided scopes.
+Creates an API key with the provided scopes. Required scopes: `usage:write` for full access or `asr:write` for transcription only.
 
 ```js
-const { result, error } = await deepgramClient.manage.createProjectKey(projectId, options);
+const { result, error } = await deepgramClient.manage.createProjectKey(projectId, {
+  comment: "My API key",
+  scopes: ["usage:write"], // Required: array of scope strings
+  tags: ["production"], // Optional: array of tag strings
+  time_to_live_in_seconds: 86400, // Optional: TTL in seconds
+  // OR use expiration_date: "2024-12-31T23:59:59Z" // Optional: ISO date string
+});
 ```
+
+**API Endpoint**: `POST https://api.deepgram.com/v1/projects/:projectId/keys`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/create-key).
 
@@ -596,6 +720,8 @@ Deletes a specific key associated with the provided project_id.
 ```js
 const { error } = await deepgramClient.manage.deleteProjectKey(projectId, projectKeyId);
 ```
+
+**API Endpoint**: `DELETE https://api.deepgram.com/v1/projects/:projectId/keys/:keyId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-key).
 
@@ -609,6 +735,8 @@ Retrieves account objects for all of the accounts in the specified project_id.
 const { result, error } = await deepgramClient.manage.getProjectMembers(projectId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/members`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/get-members).
 
 ### Remove Member
@@ -618,6 +746,8 @@ Removes member account for specified member_id.
 ```js
 const { error } = await deepgramClient.manage.removeProjectMember(projectId, projectMemberId);
 ```
+
+**API Endpoint**: `DELETE https://api.deepgram.com/v1/projects/:projectId/members/:memberId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/remove-member).
 
@@ -634,6 +764,8 @@ const { result, error } = await deepgramClient.manage.getProjectMemberScopes(
 );
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/members/:memberId/scopes`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/get-member-scopes).
 
 ### Update Scope
@@ -648,6 +780,8 @@ const { result, error } = await deepgramClient.manage.updateProjectMemberScope(
 );
 ```
 
+**API Endpoint**: `PUT https://api.deepgram.com/v1/projects/:projectId/members/:memberId/scopes`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/update-scope).
 
 ## Invitations
@@ -660,6 +794,8 @@ Retrieves all invitations associated with the provided project_id.
 const { result, error } = await deepgramClient.manage.getProjectInvites(projectId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/invites`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/list-invites).
 
 ### Send Invite
@@ -669,6 +805,8 @@ Sends an invitation to the provided email address.
 ```js
 const { result, error } = await deepgramClient.manage.sendProjectInvite(projectId, options);
 ```
+
+**API Endpoint**: `POST https://api.deepgram.com/v1/projects/:projectId/invites`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/send-invites).
 
@@ -680,6 +818,8 @@ Removes the specified invitation from the project.
 const { error } = await deepgramClient.manage.deleteProjectInvite(projectId, email);
 ```
 
+**API Endpoint**: `DELETE https://api.deepgram.com/v1/projects/:projectId/invites/:email`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/delete-invite).
 
 ### Leave Project
@@ -689,6 +829,8 @@ Removes the authenticated user from the project.
 ```js
 const { result, error } = await deepgramClient.manage.leaveProject(projectId);
 ```
+
+**API Endpoint**: `DELETE https://api.deepgram.com/v1/projects/:projectId/leave`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/leave-project).
 
@@ -702,6 +844,8 @@ Retrieves all requests associated with the provided project_id based on the prov
 const { result, error } = await deepgramClient.manage.getProjectUsageRequests(projectId, options);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/requests`
+
 ### Get Request
 
 Retrieves a specific request associated with the provided project_id.
@@ -709,6 +853,8 @@ Retrieves a specific request associated with the provided project_id.
 ```js
 const { result, error } = await deepgramClient.manage.getProjectUsageRequest(projectId, requestId);
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/requests/:requestId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-request).
 
@@ -720,6 +866,8 @@ Retrieves usage associated with the provided project_id based on the provided op
 const { result, error } = await deepgramClient.manage.getProjectUsageSummary(projectId, options);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/usage`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/summarize-usage).
 
 ### Get Fields
@@ -729,6 +877,8 @@ Lists the features, models, tags, languages, and processing method used for requ
 ```js
 const { result, error } = await deepgramClient.manage.getProjectUsageFields(projectId, options);
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/usage/fields`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
 
@@ -752,6 +902,8 @@ Retrieves the list of balance info for the specified project.
 const { result, error } = await deepgramClient.manage.getProjectBalances(projectId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/balances`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/get-all-balances).
 
 ### Get Balance
@@ -762,9 +914,21 @@ Retrieves the balance info for the specified project and balance_id.
 const { result, error } = await deepgramClient.manage.getProjectBalance(projectId, balanceId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/balances/:balanceId`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/get-balance).
 
 ## Models
+
+### Get All Models
+
+Retrieves all models available globally.
+
+```js
+const { result, error } = await deepgramClient.models.getAll();
+```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/models`
 
 ### Get All Project Models
 
@@ -773,6 +937,8 @@ Retrieves all models available for a given project.
 ```js
 const { result, error } = await deepgramClient.manage.getAllModels(projectId, {});
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/models`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/management-api/projects/list-models).
 
@@ -783,6 +949,8 @@ Retrieves details of a specific model.
 ```js
 const { result, error } = await deepgramClient.manage.getModel(projectId, modelId);
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/models/:modelId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/management-api/models/get)
 
@@ -796,6 +964,8 @@ Lists sets of distribution credentials for the specified project.
 const { result, error } = await deepgramClient.onprem.listCredentials(projectId);
 ```
 
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/onprem/distribution/credentials`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/list-credentials)
 
 ### Get On-Prem credentials
@@ -805,6 +975,8 @@ Returns a set of distribution credentials for the specified project.
 ```js
 const { result, error } = await deepgramClient.onprem.getCredentials(projectId, credentialId);
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/onprem/distribution/credentials/:credentialsId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/get-credentials)
 
@@ -816,6 +988,8 @@ Creates a set of distribution credentials for the specified project.
 const { result, error } = await deepgramClient.onprem.createCredentials(projectId, options);
 ```
 
+**API Endpoint**: `POST https://api.deepgram.com/v1/projects/:projectId/onprem/distribution/credentials`
+
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/create-credentials)
 
 ### Delete On-Prem credentials
@@ -825,6 +999,8 @@ Deletes a set of distribution credentials for the specified project.
 ```js
 const { result, error } = await deepgramClient.onprem.deleteCredentials(projectId, credentialId);
 ```
+
+**API Endpoint**: `DELETE https://api.deepgram.com/v1/projects/:projectId/onprem/distribution/credentials/:credentialsId`
 
 [See our API reference for more info](https://developers.deepgram.com/reference/self-hosted-api/delete-credentials)
 
