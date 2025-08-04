@@ -75,7 +75,7 @@
   - [Get Request](#get-request)
   - [Summarize Usage](#summarize-usage)
   - [Get Fields](#get-fields)
-  - [Summarize Usage](#summarize-usage)
+  - [Summarize Usage (Deprecated)](#summarize-usage-1)
 - [Billing](#billing)
   - [Get All Balances](#get-all-balances)
   - [Get Balance](#get-balance)
@@ -230,11 +230,11 @@ Create API keys via the Management API:
 ```js
 const { result, error } = await deepgramClient.manage.createProjectKey(projectId, {
   comment: "My API key",
-  scopes: ["usage:write"], // or ["asr:write"]
+  scopes: ["usage:write"],
 });
 ```
 
-**Endpoint**: `POST https://api.deepgram.com/v1/projects/:project_id/keys`
+**Endpoint**: `POST https://api.deepgram.com/v1/projects/:projectId/keys`
 
 #### Access Tokens
 
@@ -375,9 +375,44 @@ const deepgramClient = createClient({
 
 ## Browser Usage
 
-To use this SDK in the browser, check out [UMD](#umd) and/or [ESM](#esm) initialisation.
+The SDK works in modern browsers with some considerations:
 
-Also see [proxy requests in the browser](#proxy-requests-in-the-browser) if you're planning to make RESTful requests to our API.
+### WebSocket Features (Full Support)
+
+- **Live Transcription**: ✅ Direct connection to `wss://api.deepgram.com`
+- **Voice Agent**: ✅ Direct connection to `wss://agent.deepgram.com`
+- **Live Text-to-Speech**: ✅ Direct connection to `wss://api.deepgram.com`
+
+### REST API Features (Proxy Required)
+
+- **Pre-recorded Transcription**: ⚠️ Requires proxy due to CORS
+- **Text Intelligence**: ⚠️ Requires proxy due to CORS
+- **Management APIs**: ⚠️ Requires proxy due to CORS
+
+### Setup Options
+
+#### Option 1: CDN (UMD)
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
+<script>
+  const { createClient } = deepgram;
+  const deepgramClient = createClient("YOUR_API_KEY");
+</script>
+```
+
+#### Option 2: CDN (ESM)
+
+```html
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
+  const deepgramClient = createClient("YOUR_API_KEY");
+</script>
+```
+
+#### Option 3: Proxy for REST APIs
+
+See [proxy requests in the browser](#proxy-requests-in-the-browser) for REST API access.
 
 ## Transcription
 
@@ -697,7 +732,7 @@ const { result, error } = await deepgramClient.manage.getProjectKey(projectId, p
 
 ### Create Key
 
-Creates an API key with the provided scopes. Required scopes: `usage:write` for full access or `asr:write` for transcription only.
+Creates an API key with the provided scopes.
 
 ```js
 const { result, error } = await deepgramClient.manage.createProjectKey(projectId, {
@@ -889,6 +924,8 @@ const { result, error } = await deepgramClient.manage.getProjectUsageFields(proj
 ```js
 const { result, error } = await deepgramClient.manage.getProjectUsage(projectId, options);
 ```
+
+**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/usage` (deprecated)
 
 [See our API reference for more info](https://developers.deepgram.com/reference/management-api/usage/get).
 
