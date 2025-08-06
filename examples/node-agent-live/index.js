@@ -8,7 +8,7 @@ require("dotenv").config();
 console.log("🔑 API Key loaded successfully");
 
 const agent = async () => {
-  // Check for API key
+  // Checks for API key
   if (!process.env.DEEPGRAM_API_KEY) {
     console.error("❌ Error: DEEPGRAM_API_KEY environment variable is required");
     console.log("💡 Run with: DEEPGRAM_API_KEY=your_api_key_here npm start");
