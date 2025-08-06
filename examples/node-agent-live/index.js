@@ -68,7 +68,6 @@ const agent = async () => {
         greeting: "Hello! I'm a Deepgram voice agent. How can I help you today?"
       },
     };
-
     connection.configure(config);
   });
 
