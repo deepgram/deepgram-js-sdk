@@ -1,6 +1,12 @@
 import { DEFAULT_AGENT_URL } from "../lib/constants";
 import { AgentEvents } from "../lib/enums/AgentEvents";
-import type { AgentLiveSchema, DeepgramClientOptions, FunctionCallResponse } from "../lib/types";
+import type {
+  AgentLiveSchema,
+  DeepgramClientOptions,
+  FunctionCallResponse,
+  HistoryConversationText,
+  HistoryFunctionCall,
+} from "../lib/types";
 import { AbstractLiveClient } from "./AbstractLiveClient";
 
 export class AgentLiveClient extends AbstractLiveClient {
@@ -166,5 +172,33 @@ export class AgentLiveClient extends AbstractLiveClient {
    */
   public keepAlive(): void {
     this.send(JSON.stringify({ type: "KeepAlive" }));
+  }
+
+  /**
+   * Send conversation history text to provide context to the agent.
+   * @param historyMessage - The history conversation text message.
+   */
+  public sendHistoryConversationText(historyMessage: HistoryConversationText): void {
+    this.send(JSON.stringify(historyMessage));
+  }
+
+  /**
+   * Send function call history to provide context to the agent.
+   * @param historyMessage - The history function call message.
+   */
+  public sendHistoryFunctionCall(historyMessage: HistoryFunctionCall): void {
+    this.send(JSON.stringify(historyMessage));
+  }
+
+  /**
+   * Send multiple history messages at once to provide comprehensive context to the agent.
+   * @param historyMessages - Array of history messages (conversation text and/or function calls).
+   */
+  public sendHistoryMessages(
+    historyMessages: (HistoryConversationText | HistoryFunctionCall)[]
+  ): void {
+    historyMessages.forEach((message) => {
+      this.send(JSON.stringify(message));
+    });
   }
 }
