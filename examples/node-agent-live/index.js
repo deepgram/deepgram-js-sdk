@@ -8,7 +8,7 @@ require("dotenv").config();
 console.log("🔑 API Key loaded successfully");
 
 const agent = async () => {
-  // Checks for API key
+  // Check for API key
   if (!process.env.DEEPGRAM_API_KEY) {
     console.error("❌ Error: DEEPGRAM_API_KEY environment variable is required");
     console.log("💡 Run with: DEEPGRAM_API_KEY=your_api_key_here npm start");
@@ -20,6 +20,21 @@ const agent = async () => {
 
   console.log("📞 Connecting to Deepgram Agent API...");
   const connection = deepgram.agent();
+
+  // Fix for SDK timing issue: manually attach event handlers after WebSocket is created
+  setTimeout(() => {
+    if (connection.conn) {
+      connection.conn.onopen = () => connection.emit("Open", connection);
+      connection.conn.onclose = (event) => connection.emit("Close", event);
+      connection.conn.onerror = (event) => connection.emit("Error", event);
+      connection.conn.onmessage = (event) => connection.handleMessage(event);
+
+      // If already connected, manually trigger Open event
+      if (connection.conn.readyState === 1) {
+        connection.emit("Open", connection);
+      }
+    }
+  }, 2000);
 
   // Error handler
   connection.on(AgentEvents.Error, (error) => {
@@ -53,7 +68,6 @@ const agent = async () => {
         greeting: "Hello! I'm a Deepgram voice agent. How can I help you today?"
       },
     };
-
     connection.configure(config);
   });
 
