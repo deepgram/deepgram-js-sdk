@@ -14,7 +14,7 @@ import { DeepgramWebSocketError } from "../lib/errors";
  * @returns A WebSocket-like object that implements the WebSocketLike interface.
  */
 interface WebSocketLikeConstructor {
-  new(
+  new (
     address: string | URL,
     _ignored?: any,
     options?: { headers: object | undefined }
@@ -196,7 +196,7 @@ export abstract class AbstractLiveClient extends AbstractClient {
    */
   public disconnect(code?: number, reason?: string): void {
     if (this.conn) {
-      this.conn.onclose = function () { }; // noop
+      this.conn.onclose = function () {}; // noop
       if (code) {
         this.conn.close(code, reason ?? "");
       } else {
@@ -525,12 +525,12 @@ export abstract class AbstractLiveClient extends AbstractClient {
 class WSWebSocketDummy {
   binaryType: string = "arraybuffer";
   close: Function;
-  onclose: Function = () => { };
-  onerror: Function = () => { };
-  onmessage: Function = () => { };
-  onopen: Function = () => { };
+  onclose: Function = () => {};
+  onerror: Function = () => {};
+  onmessage: Function = () => {};
+  onopen: Function = () => {};
   readyState: number = SOCKET_STATES.connecting;
-  send: Function = () => { };
+  send: Function = () => {};
   url: string | URL | null = null;
 
   constructor(address: URL, _protocols: undefined, options: { close: Function }) {
