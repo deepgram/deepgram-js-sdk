@@ -1,3 +1,6 @@
+import type { HistoryConversationText } from "./HistoryConversationText";
+import type { HistoryFunctionCall } from "./HistoryFunctionCall";
+
 type Provider = { type: string } & Record<string, unknown>;
 
 type SpeakProvider = {
@@ -7,9 +10,6 @@ type SpeakProvider = {
     headers?: Record<string, string>;
   };
 };
-
-import type { HistoryConversationText } from "./HistoryConversationText";
-import type { HistoryFunctionCall } from "./HistoryFunctionCall";
 
 /**
  * @see https://developers.deepgram.com/docs/configure-voice-agent
