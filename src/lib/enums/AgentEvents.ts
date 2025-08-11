@@ -68,6 +68,12 @@ export enum AgentEvents {
   SpeakUpdated = "SpeakUpdated",
 
   /**
+   * Triggered when history events are received from the agent.
+   * { type: "History", role: string, content: string }
+   */
+  History = "History",
+
+  /**
    * Catch all for any other message event
    */
   Unhandled = "Unhandled",
