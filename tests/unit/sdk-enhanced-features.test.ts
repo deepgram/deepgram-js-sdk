@@ -1,7 +1,23 @@
 import { createClient, ListenV2 } from "../../src/sdk";
 import { LiveTranscriptionEvents } from "../../src/core/lib/enums/LiveTranscriptionEvents";
 
+// Mock WebSocket to prevent real connections in unit tests
+const mockWebSocket = {
+  readyState: 1, // OPEN
+  close: jest.fn(),
+  send: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+};
+
+// Mock the WebSocket constructor
+(global as any).WebSocket = jest.fn(() => mockWebSocket);
+
 describe("SDK Enhanced Features", () => {
+  afterEach(() => {
+    // Clean up any created connections
+    jest.clearAllMocks();
+  });
   describe("ListenV2 Middleware", () => {
     it("should allow global middleware registration", () => {
       expect(() => {
@@ -45,6 +61,8 @@ describe("SDK Enhanced Features", () => {
       expect(() => {
         const connection = client.listen.live({ model: "nova-3" });
         expect(connection).toBeDefined();
+        // Clean up the connection
+        connection.finish();
       }).not.toThrow();
     });
 
@@ -57,6 +75,9 @@ describe("SDK Enhanced Features", () => {
 
         // Should have the enhanced use method for instance middleware
         expect(typeof (connection as any).use).toBe("function");
+
+        // Clean up the connection
+        connection.finish();
       }).not.toThrow();
     });
 
@@ -70,6 +91,9 @@ describe("SDK Enhanced Features", () => {
           before: () => console.log("User started speaking"),
         });
       }).not.toThrow();
+
+      // Clean up the connection
+      connection.finish();
     });
   });
 
