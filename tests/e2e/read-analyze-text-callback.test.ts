@@ -1,8 +1,8 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { callbackUrls, testReadSources, commonAnalysisOptions } from "../__fixtures__/read";
-import type { DeepgramResponse, AsyncAnalyzeResponse } from "../../src/lib/types";
-import { CallbackUrl } from "../../src/lib/helpers";
+import type { DeepgramResponse, AsyncAnalyzeResponse } from "../../src/core/lib/types";
+import { CallbackUrl } from "../../src/core/lib/helpers";
 
 describe("read analyzeTextCallback E2E", () => {
   let deepgram: ReturnType<typeof createClient>;

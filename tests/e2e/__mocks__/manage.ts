@@ -22,7 +22,7 @@ import type {
   GetModelResponse,
   GetTokenDetailsResponse,
   VoidResponse,
-} from "../../../src/lib/types";
+} from "../../../src/core/lib/types";
 
 // Projects
 export const mockGetProjectsResponse: GetProjectsResponse = {

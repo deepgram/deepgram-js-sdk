@@ -1,10 +1,10 @@
-import { ListenLiveClient } from "../../src/packages/ListenLiveClient";
-import { SpeakLiveClient } from "../../src/packages/SpeakLiveClient";
-import { AgentLiveClient } from "../../src/packages/AgentLiveClient";
-import { LiveTranscriptionEvents } from "../../src/lib/enums/LiveTranscriptionEvents";
-import { LiveTTSEvents } from "../../src/lib/enums/LiveTTSEvents";
-import { AgentEvents } from "../../src/lib/enums/AgentEvents";
-import { SOCKET_STATES } from "../../src/lib/constants";
+import { ListenLiveClient } from "../../src/core/packages/ListenLiveClient";
+import { SpeakLiveClient } from "../../src/core/packages/SpeakLiveClient";
+import { AgentLiveClient } from "../../src/core/packages/AgentLiveClient";
+import { LiveTranscriptionEvents } from "../../src/core/lib/enums/LiveTranscriptionEvents";
+import { LiveTTSEvents } from "../../src/core/lib/enums/LiveTTSEvents";
+import { AgentEvents } from "../../src/core/lib/enums/AgentEvents";
+import { SOCKET_STATES } from "../../src/core/lib/constants";
 
 describe("Unit Tests - Live Client Message Handling", () => {
   describe("ListenLiveClient Message Handling", () => {
@@ -562,7 +562,10 @@ describe("Unit Tests - Live Client Message Handling", () => {
               { provider: { type: "deepgram", model: "aura-2-zeus-en" } },
               {
                 provider: { type: "openai", model: "tts-1", voice: "shimmer" },
-                endpoint: { url: "https://api.openai.com/v1/audio/speech", headers: { auth: "key" } }
+                endpoint: {
+                  url: "https://api.openai.com/v1/audio/speech",
+                  headers: { auth: "key" },
+                },
               },
             ],
           },

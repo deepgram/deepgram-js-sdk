@@ -1,5 +1,5 @@
-import { resolveHeadersConstructor } from "../../src/lib/helpers";
-import { resolveFetch, fetchWithAuth, resolveResponse } from "../../src/lib/fetch";
+import { resolveHeadersConstructor } from "../../src/core/lib/helpers";
+import { resolveFetch, fetchWithAuth, resolveResponse } from "../../src/core/lib/fetch";
 
 describe("Unit Tests - Fetch Utilities", () => {
   describe("resolveHeadersConstructor", () => {

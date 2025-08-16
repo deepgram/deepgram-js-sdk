@@ -1,4 +1,4 @@
-import { convertLegacyOptions } from "../../src/lib/helpers";
+import { convertLegacyOptions } from "../../src/core/lib/helpers";
 
 describe("Unit Tests - Options Transformation Utilities", () => {
   describe("convertLegacyOptions", () => {

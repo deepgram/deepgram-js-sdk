@@ -3,7 +3,7 @@
  * Based on actual Deepgram API response structure
  */
 
-import type { AsyncPrerecordedResponse } from "../../../src/lib/types";
+import type { AsyncPrerecordedResponse } from "../../../src/core/lib/types";
 
 export const mockTranscribeFileResponse = {
   metadata: {

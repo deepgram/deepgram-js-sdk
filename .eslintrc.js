@@ -4,6 +4,9 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  env: {
+    node: true,
+  },
   rules: {
     // TODO: Enable these once we've fixed the issues
     "@typescript-eslint/no-explicit-any": "off",
@@ -23,4 +26,19 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      // Apply test-specific rules to test files
+      files: [
+        "tests/**/*.ts",
+        "tests/**/*.js",
+        "**/*.test.ts",
+        "**/*.test.js",
+        "**/*.spec.ts",
+        "**/*.spec.js",
+      ],
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      ...require("./.eslintrc.test.js"),
+    },
+  ],
 };

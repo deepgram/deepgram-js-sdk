@@ -4,7 +4,7 @@ import {
   DEFAULT_OPTIONS,
   SOCKET_STATES,
   CONNECTION_STATE,
-} from "../../src/lib/constants";
+} from "../../src/core/lib/constants";
 
 describe("Unit Tests - Constants and Configuration", () => {
   describe("DEFAULT_HEADERS", () => {

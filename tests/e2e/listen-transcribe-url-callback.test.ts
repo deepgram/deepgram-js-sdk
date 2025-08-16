@@ -1,8 +1,8 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { callbackUrls, urlSources, transcriptionOptions } from "../__fixtures__/listen";
-import type { DeepgramResponse, AsyncPrerecordedResponse } from "../../src/lib/types";
-import { CallbackUrl } from "../../src/lib/helpers";
+import type { DeepgramResponse, AsyncPrerecordedResponse } from "../../src/core/lib/types";
+import { CallbackUrl } from "../../src/core/lib/helpers";
 
 describe("listen transcribeUrlCallback E2E", () => {
   let deepgram: ReturnType<typeof createClient>;
