@@ -1,27 +1,35 @@
 import type { AbstractLiveClient } from "../../core/packages/AbstractLiveClient";
-import type { ListenV2Middleware, MiddlewareContext } from "./types";
+import type { Middleware, MiddlewareContext } from "./types";
 
 /**
- * Registry for managing Listen v2 middlewares at global and instance levels
+ * Registry for managing middlewares at global and instance levels
  */
 export class MiddlewareRegistry {
-  /** Global middlewares that apply to all Listen v2 sessions */
-  private static globalMiddlewares: ListenV2Middleware[] = [];
+  /** Global middlewares that apply to all sessions */
+  private static globalMiddlewares: Middleware[] = [];
 
   /** Instance-specific middlewares per session */
-  private instanceMiddlewares = new Map<AbstractLiveClient, ListenV2Middleware[]>();
+  private instanceMiddlewares = new Map<AbstractLiveClient, Middleware[]>();
 
   /**
-   * Register a global middleware that applies to all Listen v2 sessions
+   * Register a global middleware that applies to all sessions
    */
-  static use(middleware: ListenV2Middleware): void {
+  static use(middleware: Middleware): void {
     this.globalMiddlewares.push(middleware);
+  }
+
+  /**
+   * Register a middleware that applies to sessions using this registry instance
+   */
+  use(middleware: Middleware): void {
+    // For now, add to global middlewares, but this could be made registry-specific
+    MiddlewareRegistry.globalMiddlewares.push(middleware);
   }
 
   /**
    * Add middleware specific to a session instance
    */
-  addInstanceMiddleware(session: AbstractLiveClient, middleware: ListenV2Middleware): void {
+  addInstanceMiddleware(session: AbstractLiveClient, middleware: Middleware): void {
     if (!this.instanceMiddlewares.has(session)) {
       this.instanceMiddlewares.set(session, []);
     }
@@ -31,7 +39,7 @@ export class MiddlewareRegistry {
   /**
    * Get all middlewares (global + instance) for a specific session and event
    */
-  getMiddlewares(session: AbstractLiveClient, event: string): ListenV2Middleware[] {
+  getMiddlewares(session: AbstractLiveClient, event: string): Middleware[] {
     const global = MiddlewareRegistry.globalMiddlewares.filter((mw) => mw.event === event);
     const instance =
       this.instanceMiddlewares.get(session)?.filter((mw) => mw.event === event) || [];

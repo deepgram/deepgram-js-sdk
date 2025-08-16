@@ -1,13 +1,14 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
 
-const { createClient, LiveTranscriptionEvents, ListenV2 } = require("../../dist/main/index");
+const { createClient, LiveTranscriptionEvents } = require("../../dist/main/index");
 require("dotenv").config();
 
 // Example of using the enhanced Listen v2 with middleware
 const enhancedLive = async () => {
   // Register global middleware for all Listen v2 sessions
-  ListenV2.use({
+  const { ListenClient } = require("../../dist/main/index");
+  ListenClient.use({
     event: "Results",
     before: (payload) => {
       // Add processing timestamp
@@ -21,7 +22,7 @@ const enhancedLive = async () => {
     },
   });
 
-  ListenV2.use({
+  ListenClient.use({
     event: "Metadata",
     before: (metadata) => {
       console.log("🔧 Middleware: Session metadata received:", {

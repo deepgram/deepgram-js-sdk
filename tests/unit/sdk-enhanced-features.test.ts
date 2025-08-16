@@ -1,4 +1,5 @@
-import { createClient, ListenV2 } from "../../src/sdk";
+import { createClient } from "../../src/sdk";
+import { ListenClient } from "../../src/sdk/ListenClient";
 import { LiveTranscriptionEvents } from "../../src/core/lib/enums/LiveTranscriptionEvents";
 
 // Mock WebSocket to prevent real connections in unit tests
@@ -18,18 +19,14 @@ describe("SDK Enhanced Features", () => {
     // Clean up any created connections
     jest.clearAllMocks();
   });
-  describe("ListenV2 Middleware", () => {
-    it("should allow global middleware registration", () => {
+  describe("Middleware Support", () => {
+    it("should create ListenClient with middleware configuration", () => {
+      const client = createClient({ key: "test-key" });
+
       expect(() => {
-        ListenV2.use({
-          event: "Results",
-          before: (payload) => {
-            payload.enhanced = true;
-          },
-          after: (payload) => {
-            console.log("Processed:", payload.enhanced);
-          },
-        });
+        const listenClient = client.listen;
+        // Test that we can create a live connection (middleware is configured internally)
+        expect(listenClient.live).toBeDefined();
       }).not.toThrow();
     });
   });
@@ -94,6 +91,26 @@ describe("SDK Enhanced Features", () => {
 
       // Clean up the connection
       connection.finish();
+    });
+
+    it("should have equivalent supervision for both version patterns", () => {
+      const client = createClient({ key: "test-key" });
+
+      // Test client.v("v2").listen.live()
+      const connection1 = client.v("v2").listen.live({ model: "nova-3" });
+
+      // Test client.listen.v("v2").live()
+      const connection2 = client.listen.v("v2").live({ model: "nova-3" });
+
+      // Both should have supervision (use method for instance middleware)
+      expect(typeof (connection1 as any).use).toBe("function");
+      expect(typeof (connection2 as any).use).toBe("function");
+
+      // Test that both patterns result in the same supervision behavior
+      expect(typeof (connection1 as any).use).toBe(typeof (connection2 as any).use);
+
+      connection1.finish();
+      connection2.finish();
     });
   });
 

@@ -1,20 +1,13 @@
 import { ListenClient as CoreListenClient } from "../core/packages/ListenClient";
 import { ListenLiveClient as CoreListenLiveClient } from "../core/packages/ListenLiveClient";
-import { ListenRestClient } from "../core/packages/ListenRestClient";
-import { ListenV2Supervisor } from "./listen/ListenV2Supervisor";
+import { Supervisor, type SupervisorConfig } from "./supervisor/Supervisor";
+import type { MiddlewareContext } from "./middleware/types";
 import type { LiveSchema } from "../core/lib/types";
 
 /**
  * Enhanced ListenClient that wraps the core ListenClient and adds v2 supervision
  */
 export class ListenClient extends CoreListenClient {
-  /**
-   * Returns a ListenRestClient for prerecorded transcription (unchanged from core)
-   */
-  get prerecorded() {
-    return new ListenRestClient(this.options);
-  }
-
   /**
    * Creates a live transcription connection with optional v2 supervision
    *
@@ -29,34 +22,41 @@ export class ListenClient extends CoreListenClient {
     // Create the core live client
     const coreClient = new CoreListenLiveClient(this.options, transcriptionOptions, endpoint);
 
-    // Check if this should be supervised (Listen v2)
-    if (this.shouldSupervise(endpoint)) {
-      // Attach v2 supervision (turn counting, reconnection, middleware)
-      ListenV2Supervisor.attach(coreClient);
+    if (this.shouldSupervise("v2")) {
+      this.attachSupervision(coreClient);
     }
 
     return coreClient;
   }
 
   /**
+   * Attach supervision to a Listen live client session
+   */
+  private attachSupervision(session: CoreListenLiveClient): void {
+    const config: SupervisorConfig = {
+      clientType: "listen",
+      version: this.version,
+      middlewares: [
+        {
+          event: "SpeechStarted",
+          before: (payload: any, ctx: MiddlewareContext) => {
+            console.log("before:SpeechStarted", payload, ctx);
+          },
+          after: (payload: any, ctx: MiddlewareContext) => {
+            console.log("after:SpeechStarted", payload, ctx);
+          },
+        },
+      ],
+    };
+
+    Supervisor.attach(session, config);
+  }
+
+  /**
    * Determine if a session should be supervised based on endpoint and version
    */
-  private shouldSupervise(endpoint: string): boolean {
-    // Resolve the endpoint template with current version
-    const resolvedEndpoint = endpoint.replace(":version", this.version);
-
-    // Supervise if:
-    // 1. Version is explicitly v2, OR
-    // 2. Resolved endpoint ends with /v2/listen
-    const isV2 = this.version === "v2" || resolvedEndpoint.endsWith("/v2/listen");
-
-    // Debug logging for tests
-    if (process.env.NODE_ENV === "test") {
-      console.log(
-        `shouldSupervise: version=${this.version}, endpoint=${endpoint}, resolved=${resolvedEndpoint}, isV2=${isV2}`
-      );
-    }
-
+  private shouldSupervise(version: string): boolean {
+    const isV2 = this.version === version;
     return isV2;
   }
 }

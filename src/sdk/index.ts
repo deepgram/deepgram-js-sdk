@@ -58,8 +58,9 @@ export * from "../core/lib/helpers";
 /**
  * Export SDK-specific functionality
  */
-export { ListenV2 } from "./listen/ListenV2Supervisor";
-export type { ListenV2Middleware, MiddlewareContext, SessionPlugin } from "./middleware/types";
+export { Supervisor } from "./supervisor/Supervisor";
+export type { Middleware, MiddlewareContext } from "./middleware/types";
+export type { SupervisorConfig } from "./supervisor/Supervisor";
 
 /**
  * Captions. These will be tree-shaken if unused.
