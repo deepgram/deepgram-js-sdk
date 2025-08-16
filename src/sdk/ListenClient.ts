@@ -23,7 +23,7 @@ export class ListenClient extends CoreListenClient {
     const coreClient = new CoreListenLiveClient(this.options, transcriptionOptions, endpoint);
 
     if (this.shouldSupervise("v2")) {
-      this.attachSupervision(coreClient);
+      this.attachListenV2Supervision(coreClient);
     }
 
     return coreClient;
@@ -32,7 +32,7 @@ export class ListenClient extends CoreListenClient {
   /**
    * Attach supervision to a Listen live client session
    */
-  private attachSupervision(session: CoreListenLiveClient): void {
+  private attachListenV2Supervision(session: CoreListenLiveClient): void {
     const config: SupervisorConfig = {
       clientType: "listen",
       version: this.version,
