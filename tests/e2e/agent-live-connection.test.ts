@@ -1,6 +1,6 @@
-import { AgentLiveClient } from "../../src/packages/AgentLiveClient";
-import { AgentEvents } from "../../src/lib/enums/AgentEvents";
-import { CONNECTION_STATE } from "../../src/lib/constants";
+import { AgentLiveClient } from "../../src/core/packages/AgentLiveClient";
+import { AgentEvents } from "../../src/core/lib/enums/AgentEvents";
+import { CONNECTION_STATE } from "../../src/core/lib/constants";
 import { MockWebSocket, WebSocketScenario, mockWebSocketData } from "../__utils__/websocket-mocks";
 
 // Helper to wait for events

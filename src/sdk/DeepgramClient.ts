@@ -1,6 +1,5 @@
 import { DeepgramClient as CoreDeepgramClient } from "../core";
 import { ListenClient } from "./ListenClient";
-import type { DeepgramClientOptions } from "../core/lib/types";
 
 /**
  * The SDK DeepgramClient that wraps the core client and adds enhanced functionality.
@@ -15,6 +14,10 @@ export default class DeepgramClient extends CoreDeepgramClient {
    * @returns {ListenClient} An enhanced ListenClient with v2 supervision capabilities.
    */
   get listen(): ListenClient {
+    // Call the core validation first to ensure version is supported
+    void super.listen;
+
+    // Then create our enhanced client
     const client = new ListenClient(this.options);
     // Pass the version from this client to the child client
     client.version = this.version;
@@ -22,5 +25,5 @@ export default class DeepgramClient extends CoreDeepgramClient {
   }
 
   // All other methods forward directly to the core client
-  // (auth, manage, models, selfhosted, read, speak, agent remain unchanged)
+  // Version validation is handled at the core level
 }

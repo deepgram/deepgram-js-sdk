@@ -1,5 +1,5 @@
 import { createClient } from "../../src/index";
-import { SpeakRestClient } from "../../src/packages/SpeakRestClient";
+import { SpeakRestClient } from "../../src/core/packages/SpeakRestClient";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { testTextSources, commonTTSOptions } from "../__fixtures__/speak";
 

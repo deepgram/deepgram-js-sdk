@@ -1,6 +1,6 @@
 import { createClient } from "../../src/index";
-import { ReadRestClient } from "../../src/packages/ReadRestClient";
-import { DeepgramError } from "../../src/lib/errors";
+import { ReadRestClient } from "../../src/core/packages/ReadRestClient";
+import { DeepgramError } from "../../src/core/lib/errors";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { testReadSources, commonAnalysisOptions } from "../__fixtures__/read";
 

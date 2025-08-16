@@ -1,6 +1,6 @@
-import { SpeakLiveClient } from "../../src/packages/SpeakLiveClient";
-import { LiveTTSEvents } from "../../src/lib/enums/LiveTTSEvents";
-import { CONNECTION_STATE } from "../../src/lib/constants";
+import { SpeakLiveClient } from "../../src/core/packages/SpeakLiveClient";
+import { LiveTTSEvents } from "../../src/core/lib/enums/LiveTTSEvents";
+import { CONNECTION_STATE } from "../../src/core/lib/constants";
 import { MockWebSocket, WebSocketScenario, mockWebSocketData } from "../__utils__/websocket-mocks";
 
 // Helper to wait for events

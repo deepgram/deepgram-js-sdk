@@ -2,7 +2,7 @@ import { ListenClient as CoreListenClient } from "../core/packages/ListenClient"
 import { ListenLiveClient as CoreListenLiveClient } from "../core/packages/ListenLiveClient";
 import { ListenRestClient } from "../core/packages/ListenRestClient";
 import { ListenV2Supervisor } from "./listen/ListenV2Supervisor";
-import type { DeepgramClientOptions, LiveSchema } from "../core/lib/types";
+import type { LiveSchema } from "../core/lib/types";
 
 /**
  * Enhanced ListenClient that wraps the core ListenClient and adds v2 supervision

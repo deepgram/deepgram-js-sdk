@@ -1,6 +1,6 @@
 import { createClient } from "../../src/index";
-import { SelfHostedRestClient } from "../../src/packages/SelfHostedRestClient";
-import { DeepgramError } from "../../src/lib/errors";
+import { SelfHostedRestClient } from "../../src/core/packages/SelfHostedRestClient";
+import { DeepgramError } from "../../src/core/lib/errors";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { testProjectIds } from "../__fixtures__/selfhosted";
 

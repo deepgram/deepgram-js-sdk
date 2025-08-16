@@ -1,6 +1,6 @@
 import { createClient } from "../../src/index";
-import { AuthRestClient } from "../../src/packages/AuthRestClient";
-import { DeepgramError } from "../../src/lib/errors";
+import { AuthRestClient } from "../../src/core/packages/AuthRestClient";
+import { DeepgramError } from "../../src/core/lib/errors";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 
 describe("auth grantToken E2E", () => {
