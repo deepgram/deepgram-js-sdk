@@ -1,4 +1,4 @@
-import { buildRequestUrl } from "../../src/lib/helpers";
+import { buildRequestUrl } from "../../src/core/lib/helpers";
 
 describe("Unit Tests - URL Building Utilities", () => {
   describe("buildRequestUrl", () => {

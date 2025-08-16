@@ -1,4 +1,4 @@
-import { applyDefaults, appendSearchParams } from "../../src/lib/helpers";
+import { applyDefaults, appendSearchParams } from "../../src/core/lib/helpers";
 
 describe("Unit Tests - Object Manipulation Utilities", () => {
   describe("applyDefaults", () => {

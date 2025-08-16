@@ -1,4 +1,4 @@
-import { stripTrailingSlash, convertProtocolToWs } from "../../src/lib/helpers";
+import { stripTrailingSlash, convertProtocolToWs } from "../../src/core/lib/helpers";
 
 describe("Unit Tests - String and URL Utilities", () => {
   describe("stripTrailingSlash", () => {

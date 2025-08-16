@@ -1,8 +1,8 @@
-import { ListenLiveClient } from "../../src/packages/ListenLiveClient";
-import { SpeakLiveClient } from "../../src/packages/SpeakLiveClient";
-import { AgentLiveClient } from "../../src/packages/AgentLiveClient";
-import { CONNECTION_STATE, SOCKET_STATES } from "../../src/lib/constants";
-import { LiveTranscriptionEvents } from "../../src/lib/enums/LiveTranscriptionEvents";
+import { ListenLiveClient } from "../../src/core/packages/ListenLiveClient";
+import { SpeakLiveClient } from "../../src/core/packages/SpeakLiveClient";
+import { AgentLiveClient } from "../../src/core/packages/AgentLiveClient";
+import { CONNECTION_STATE, SOCKET_STATES } from "../../src/core/lib/constants";
+import { LiveTranscriptionEvents } from "../../src/core/lib/enums/LiveTranscriptionEvents";
 
 describe("Unit Tests - Live Client Connection State", () => {
   describe("Connection State Management", () => {

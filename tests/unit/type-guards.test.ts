@@ -4,7 +4,7 @@ import {
   isFileSource,
   isLiveSchema,
   isDeepgramClientOptions,
-} from "../../src/lib/helpers";
+} from "../../src/core/lib/helpers";
 import { Readable } from "node:stream";
 
 describe("Unit Tests - Type Guards and Validators", () => {
@@ -109,7 +109,7 @@ describe("isFileSource with duck-typed stream detection", () => {
 
   beforeEach(() => {
     // Import and mock the isBrowser function
-    const runtime = require("../../src/lib/runtime"); // eslint-disable-line @typescript-eslint/no-require-imports
+    const runtime = require("../../src/core/lib/runtime"); // eslint-disable-line @typescript-eslint/no-require-imports
     isBrowserMock = jest.spyOn(runtime, "isBrowser");
   });
 

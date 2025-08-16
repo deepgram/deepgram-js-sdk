@@ -1,0 +1,12 @@
+{
+  "name": "node-listen-v2-enhanced",
+  "version": "1.0.0",
+  "description": "Example of enhanced Listen v2 with middleware and supervision",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
