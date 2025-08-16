@@ -1,6 +1,6 @@
-import { ListenLiveClient } from "../../src/packages/ListenLiveClient";
-import { LiveTranscriptionEvents } from "../../src/lib/enums/LiveTranscriptionEvents";
-import { CONNECTION_STATE } from "../../src/lib/constants";
+import { ListenLiveClient } from "../../src/core/packages/ListenLiveClient";
+import { LiveTranscriptionEvents } from "../../src/core/lib/enums/LiveTranscriptionEvents";
+import { CONNECTION_STATE } from "../../src/core/lib/constants";
 import { MockWebSocket, WebSocketScenario, mockWebSocketData } from "../__utils__/websocket-mocks";
 
 // Helper to wait for events

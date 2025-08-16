@@ -1,6 +1,6 @@
 import { createClient } from "../../src/index";
-import { ModelsRestClient } from "../../src/packages/ModelsRestClient";
-import { DeepgramError } from "../../src/lib/errors";
+import { ModelsRestClient } from "../../src/core/packages/ModelsRestClient";
+import { DeepgramError } from "../../src/core/lib/errors";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 
 describe("models getAll E2E", () => {

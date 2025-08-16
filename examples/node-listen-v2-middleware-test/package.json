@@ -1,0 +1,13 @@
+{
+  "name": "node-listen-v2-middleware-test",
+  "version": "1.0.0",
+  "description": "Test v2 middleware functionality on v1 endpoint",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cross-fetch": "^3.1.5",
+    "dotenv": "^16.0.0"
+  }
+}

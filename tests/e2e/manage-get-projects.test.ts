@@ -1,6 +1,6 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
-import type { DeepgramResponse, GetProjectsResponse } from "../../src/lib/types";
+import type { DeepgramResponse, GetProjectsResponse } from "../../src/core/lib/types";
 
 describe("manage getProjects E2E", () => {
   let deepgram: ReturnType<typeof createClient>;

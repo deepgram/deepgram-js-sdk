@@ -1,0 +1,20 @@
+{
+  "name": "version-patterns-demo",
+  "version": "1.0.0",
+  "description": "Demonstration that both version patterns result in identical supervision",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  },
+  "keywords": [
+    "deepgram",
+    "transcription",
+    "supervision",
+    "version-patterns"
+  ],
+  "author": "Deepgram",
+  "license": "MIT"
+}

@@ -1,8 +1,8 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { callbackUrls, testAudioFiles, transcriptionOptions } from "../__fixtures__/listen";
-import type { DeepgramResponse, AsyncPrerecordedResponse } from "../../src/lib/types";
-import { CallbackUrl } from "../../src/lib/helpers";
+import type { DeepgramResponse, AsyncPrerecordedResponse } from "../../src/core/lib/types";
+import { CallbackUrl } from "../../src/core/lib/helpers";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 

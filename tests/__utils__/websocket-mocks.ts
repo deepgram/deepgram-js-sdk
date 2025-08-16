@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { SOCKET_STATES } from "../../src/lib/constants";
+import { SOCKET_STATES } from "../../src/core/lib/constants";
 
 /**
  * Mock WebSocket data for different live client scenarios

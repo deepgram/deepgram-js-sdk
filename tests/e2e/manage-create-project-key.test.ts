@@ -1,7 +1,7 @@
 import { createClient } from "../../src/index";
 import { structureOnlySerializer, setupApiMocks, cleanupApiMocks } from "../__utils__";
 import { testProjectIds, keyOptions } from "../__fixtures__/manage";
-import type { DeepgramResponse, CreateProjectKeyResponse } from "../../src/lib/types";
+import type { DeepgramResponse, CreateProjectKeyResponse } from "../../src/core/lib/types";
 
 describe("manage createProjectKey E2E", () => {
   let deepgram: ReturnType<typeof createClient>;

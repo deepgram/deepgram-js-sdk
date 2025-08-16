@@ -1,0 +1,21 @@
+{
+  "name": "node-listen-v2-flux-ready",
+  "version": "1.0.0",
+  "description": "Example demonstrating Listen v2 architecture ready for flux model integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  },
+  "keywords": [
+    "deepgram",
+    "transcription",
+    "websocket",
+    "flux",
+    "middleware"
+  ],
+  "author": "Deepgram",
+  "license": "MIT"
+}

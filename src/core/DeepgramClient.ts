@@ -1,4 +1,4 @@
-import { DeepgramVersionError } from "./lib/errors";
+import { DeepgramVersionError, DeepgramError } from "./lib/errors";
 import {
   AbstractClient,
   AgentLiveClient,
@@ -19,12 +19,56 @@ import {
  */
 export default class DeepgramClient extends AbstractClient {
   /**
+   * Supported API versions for different features
+   */
+  private static readonly SUPPORTED_VERSIONS = {
+    listen: ["v1", "v2"], // Listen supports both v1 and v2
+    speak: ["v1"], // Speak only supports v1 currently
+    read: ["v1"], // Read only supports v1 currently
+    manage: ["v1"], // Management API only supports v1
+    models: ["v1"], // Models API only supports v1
+    auth: ["v1"], // Auth API only supports v1
+    selfhosted: ["v1"], // Self-hosted only supports v1
+    agent: ["v1"], // Agent API only supports v1 currently
+  };
+
+  /**
+   * Validates if a version is supported for a specific API
+   */
+  private validateVersion(api: string, version: string): void {
+    // First check if the version exists at all
+    const allSupportedVersions = new Set<string>();
+    Object.values(DeepgramClient.SUPPORTED_VERSIONS).forEach((versions) => {
+      versions.forEach((v) => allSupportedVersions.add(v));
+    });
+
+    if (!allSupportedVersions.has(version)) {
+      throw new DeepgramError(
+        `Version '${version}' is not supported by any API. Available versions: ${Array.from(
+          allSupportedVersions
+        ).join(", ")}`
+      );
+    }
+
+    // Then check if it's supported for this specific API
+    const supportedVersions =
+      DeepgramClient.SUPPORTED_VERSIONS[api as keyof typeof DeepgramClient.SUPPORTED_VERSIONS];
+    if (!supportedVersions.includes(version)) {
+      throw new DeepgramError(
+        `Version '${version}' is not supported for ${api} API. Supported versions: ${supportedVersions.join(
+          ", "
+        )}`
+      );
+    }
+  }
+  /**
    * Returns a new instance of the AuthRestClient, which provides access to the Deepgram API's temporary token endpoints.
    *
    * @returns {AuthRestClient} A new instance of the AuthRestClient.
    * @see https://developers.deepgram.com/reference/token-based-auth-api/grant-token
    */
   get auth(): AuthRestClient {
+    this.validateVersion("auth", this.version);
     return new AuthRestClient(this.options);
   }
   /**
@@ -33,6 +77,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {ListenClient} A new instance of the ListenClient.
    */
   get listen(): ListenClient {
+    this.validateVersion("listen", this.version);
     return new ListenClient(this.options);
   }
 
@@ -42,6 +87,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {ManageClient} A new instance of the ManageClient.
    */
   get manage(): ManageClient {
+    this.validateVersion("manage", this.version);
     return new ManageClient(this.options);
   }
 
@@ -51,6 +97,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {ModelsRestClient} A new instance of the ModelsRestClient.
    */
   get models(): ModelsRestClient {
+    this.validateVersion("models", this.version);
     return new ModelsRestClient(this.options);
   }
 
@@ -70,6 +117,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {SelfHostedRestClient} A new instance of the SelfHostedRestClient.
    */
   get selfhosted(): SelfHostedRestClient {
+    this.validateVersion("selfhosted", this.version);
     return new SelfHostedRestClient(this.options);
   }
 
@@ -79,6 +127,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {ReadClient} A new instance of the ReadClient.
    */
   get read(): ReadClient {
+    this.validateVersion("read", this.version);
     return new ReadClient(this.options);
   }
 
@@ -88,6 +137,7 @@ export default class DeepgramClient extends AbstractClient {
    * @returns {SpeakClient} A new instance of the SpeakClient.
    */
   get speak(): SpeakClient {
+    this.validateVersion("speak", this.version);
     return new SpeakClient(this.options);
   }
 
@@ -98,6 +148,7 @@ export default class DeepgramClient extends AbstractClient {
    * @beta
    */
   public agent(endpoint: string = "/:version/agent/converse"): AgentLiveClient {
+    this.validateVersion("agent", this.version);
     return new AgentLiveClient(this.options, endpoint);
   }
 

@@ -2,7 +2,7 @@
  * Mock response data for Read API endpoints
  */
 
-import type { AsyncAnalyzeResponse } from "../../../src/lib/types";
+import type { AsyncAnalyzeResponse } from "../../../src/core/lib/types";
 
 export const mockAnalyzeTextResponse = {
   metadata: {
