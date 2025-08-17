@@ -1,0 +1,875 @@
+> nx run core:test
+
+[33m[1m[1m●[22m[1m Validation Warning[22m:[39m
+[33m[39m
+[33m  Unknown option [1m"coverageReporters"[22m with value [1m["text", "lcov", "html", "json"][22m was found.[39m
+[33m  This is probably a typing mistake. Fixing it will remove this message.[39m
+[33m[39m
+[33m  [1mConfiguration Documentation:[22m[39m
+[33m  https://jestjs.io/docs/configuration[39m
+[33m[39m
+[33m[1m[1m●[22m[1m Validation Warning[22m:[39m
+[33m[39m
+[33m  Unknown option [1m"testTimeout"[22m with value [1m10000[22m was found.[39m
+[33m  This is probably a typing mistake. Fixing it will remove this message.[39m
+[33m[39m
+[33m  [1mConfiguration Documentation:[22m[39m
+[33m  https://jestjs.io/docs/configuration[39m
+[33m[39m
+[1m[2mDetermining test suites to run...[22m[22m[999D[K
+[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A  [1m● [22mConsole
+
+    [2mconsole.log[22m
+      Received unknown data type { some: 'weird data type' }
+[2m[22m
+[2m      [2mat AgentLiveClient.handleMessage ([22m[2msrc/packages/AgentLiveClient.ts[2m:70:15)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-message-handling.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mlive-client-connection-state.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mtype-guards.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mauth-grant-token.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1magent-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mspeak-live-connection.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mfetch-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-list-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-all.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mobject-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mconstants.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-requests.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1moptions-transformation.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmodels-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-summary.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-create-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-fields.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-request.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-request.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-usage-request.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-keys.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-keys.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-keys.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-keys.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-keys.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-keys.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project-member-scope.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balances.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balances.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balances.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balances.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balances.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balances.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1murl-builders.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file-callback.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file-callback.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-members.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-members.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-members.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-members.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-members.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-members.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-key.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-key.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balance.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balance.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balance.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balance.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balance.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-balance.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/unit/[22m[1mstring-utilities.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-file.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-member-scopes.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-member-scopes.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-member-scopes.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-member-scopes.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-member-scopes.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-member-scopes.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-invites.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-invites.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-invites.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-invites.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-invites.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project-invites.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-get-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-get-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-get-credentials.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-get-credentials.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-get-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-send-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url-callback.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url-callback.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text-callback.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text-callback.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-text-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url-callback.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url-callback.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mread-analyze-url-callback.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-projects.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-projects.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-projects.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-projects.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-projects.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-projects.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-token-details.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-token-details.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-token-details.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-token-details.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-token-details.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-token-details.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mlisten-transcribe-url.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-create-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-create-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-create-credentials.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-create-credentials.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-create-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-update-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-delete-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-delete-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-delete-credentials.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-delete-credentials.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mselfhosted-delete-credentials.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-all-models.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-all-models.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-all-models.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-all-models.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-all-models.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-all-models.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-model.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-model.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-get-model.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-leave-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-leave-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-leave-project.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-leave-project.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-leave-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-remove-project-member.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-remove-project-member.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-remove-project-member.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-remove-project-member.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-remove-project-member.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-invite.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-invite.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-invite.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-key.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-key.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project-key.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project.test.ts[22m
+[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project.test.ts[22m
+[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [2mpackages/core/tests/e2e/[22m[1mmanage-delete-project.test.ts[22m
+[K[1A[K[1A[999D[K
+[1mTest Suites: [22m[1m[32m53 passed[39m[22m, 53 total
+[1mTests:       [22m[1m[32m232 passed[39m[22m, 232 total
+[1mSnapshots:   [22m[1m[32m39 passed[39m[22m, 39 total
+[1mTime:[22m        12.119 s
+[2mRan all test suites[22m[2m.[22m

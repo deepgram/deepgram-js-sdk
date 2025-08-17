@@ -562,7 +562,10 @@ describe("Unit Tests - Live Client Message Handling", () => {
               { provider: { type: "deepgram", model: "aura-2-zeus-en" } },
               {
                 provider: { type: "openai", model: "tts-1", voice: "shimmer" },
-                endpoint: { url: "https://api.openai.com/v1/audio/speech", headers: { auth: "key" } }
+                endpoint: {
+                  url: "https://api.openai.com/v1/audio/speech",
+                  headers: { auth: "key" },
+                },
               },
             ],
           },

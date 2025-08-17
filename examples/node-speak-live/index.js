@@ -1,7 +1,7 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
 
-const { createClient, LiveTTSEvents } = require("../../dist/main/index");
+const { createClient, LiveTTSEvents } = require("../../packages/core/dist/main/index");
 const { writeFileSync } = require("fs");
 const { resolve } = require("path");
 require("dotenv").config();

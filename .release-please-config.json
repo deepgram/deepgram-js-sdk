@@ -1,0 +1,20 @@
+{
+  "bootstrap-sha": "HEAD",
+  "packages": {
+    "packages/core": {
+      "package-name": "@deepgram/sdk",
+      "component": "@deepgram/sdk"
+    }
+  },
+  "release-type": "node",
+  "bump-minor-pre-major": false,
+  "bump-patch-for-minor-pre-major": false,
+  "draft": true,
+  "prerelease": false,
+  "include-v-in-tag": true,
+  "tag-separator": "@",
+  "separate-pull-requests": false,
+  "group-pull-request-title-pattern": "chore: release${component ? ` ${component}` : ''} ${version}",
+  "release-search-depth": 400,
+  "commit-search-depth": 500
+}

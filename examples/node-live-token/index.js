@@ -1,7 +1,7 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
 
-const { createClient, LiveTranscriptionEvents } = require("../../dist/main/index");
+const { createClient, LiveTranscriptionEvents } = require("../../packages/core/dist/main/index");
 const fetch = require("cross-fetch");
 require("dotenv").config();
 

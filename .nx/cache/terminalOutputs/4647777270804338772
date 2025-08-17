@@ -1,0 +1,120 @@
+> pnpm run clean
+
+
+> @deepgram/sdk@0.0.0-automated clean /Users/lukeoliff/Projects/deepgram/deepgram-js-sdk/packages/core
+> rimraf dist
+
+> pnpm run format
+
+
+> @deepgram/sdk@0.0.0-automated format /Users/lukeoliff/Projects/deepgram/deepgram-js-sdk/packages/core
+> prettier --write "src/**/*.ts"
+
+src/DeepgramClient.ts[2K[1G[90msrc/DeepgramClient.ts[39m 83ms
+src/index.ts[2K[1G[90msrc/index.ts[39m 7ms
+src/lib/constants.ts[2K[1G[90msrc/lib/constants.ts[39m 6ms
+src/lib/enums/AgentEvents.ts[2K[1G[90msrc/lib/enums/AgentEvents.ts[39m 1ms
+src/lib/enums/index.ts[2K[1G[90msrc/lib/enums/index.ts[39m 1ms
+src/lib/enums/LiveConnectionState.ts[2K[1G[90msrc/lib/enums/LiveConnectionState.ts[39m 2ms
+src/lib/enums/LiveTranscriptionEvents.ts[2K[1G[90msrc/lib/enums/LiveTranscriptionEvents.ts[39m 1ms
+src/lib/enums/LiveTTSEvents.ts[2K[1G[90msrc/lib/enums/LiveTTSEvents.ts[39m 2ms
+src/lib/errors.ts[2K[1G[90msrc/lib/errors.ts[39m 6ms
+src/lib/fetch.ts[2K[1G[90msrc/lib/fetch.ts[39m 5ms
+src/lib/helpers.ts[2K[1G[90msrc/lib/helpers.ts[39m 7ms
+src/lib/runtime.ts[2K[1G[90msrc/lib/runtime.ts[39m 2ms
+src/lib/types/AgentLiveSchema.ts[2K[1G[90msrc/lib/types/AgentLiveSchema.ts[39m 3ms
+src/lib/types/AnalyzeSchema.ts[2K[1G[90msrc/lib/types/AnalyzeSchema.ts[39m 2ms
+src/lib/types/AsyncAnalyzeResponse.ts[2K[1G[90msrc/lib/types/AsyncAnalyzeResponse.ts[39m 1ms
+src/lib/types/AsyncPrerecordedResponse.ts[2K[1G[90msrc/lib/types/AsyncPrerecordedResponse.ts[39m 0ms
+src/lib/types/CreateOnPremCredentialsSchema.ts[2K[1G[90msrc/lib/types/CreateOnPremCredentialsSchema.ts[39m 1ms
+src/lib/types/CreateProjectKeyResponse.ts[2K[1G[90msrc/lib/types/CreateProjectKeyResponse.ts[39m 0ms
+src/lib/types/CreateProjectKeySchema.ts[2K[1G[90msrc/lib/types/CreateProjectKeySchema.ts[39m 1ms
+src/lib/types/DeepgramClientOptions.ts[2K[1G[90msrc/lib/types/DeepgramClientOptions.ts[39m 3ms
+src/lib/types/DeepgramResponse.ts[2K[1G[90msrc/lib/types/DeepgramResponse.ts[39m 1ms
+src/lib/types/DeepgramSource.ts[2K[1G[90msrc/lib/types/DeepgramSource.ts[39m 1ms
+src/lib/types/Fetch.ts[2K[1G[90msrc/lib/types/Fetch.ts[39m 1ms
+src/lib/types/FunctionCallResponse.ts[2K[1G[90msrc/lib/types/FunctionCallResponse.ts[39m 1ms
+src/lib/types/GetModelsResponse.ts[2K[1G[90msrc/lib/types/GetModelsResponse.ts[39m 1ms
+src/lib/types/GetModelsSchema.ts[2K[1G[90msrc/lib/types/GetModelsSchema.ts[39m 1ms
+src/lib/types/GetProjectBalancesResponse.ts[2K[1G[90msrc/lib/types/GetProjectBalancesResponse.ts[39m 1ms
+src/lib/types/GetProjectInvitesResponse.ts[2K[1G[90msrc/lib/types/GetProjectInvitesResponse.ts[39m 1ms
+src/lib/types/GetProjectKeysResponse.ts[2K[1G[90msrc/lib/types/GetProjectKeysResponse.ts[39m 1ms
+src/lib/types/GetProjectMemberScopesResponse.ts[2K[1G[90msrc/lib/types/GetProjectMemberScopesResponse.ts[39m 0ms
+src/lib/types/GetProjectMembersResponse.ts[2K[1G[90msrc/lib/types/GetProjectMembersResponse.ts[39m 1ms
+src/lib/types/GetProjectResponse.ts[2K[1G[90msrc/lib/types/GetProjectResponse.ts[39m 1ms
+src/lib/types/GetProjectsResponse.ts[2K[1G[90msrc/lib/types/GetProjectsResponse.ts[39m 0ms
+src/lib/types/GetProjectUsageFieldsResponse.ts[2K[1G[90msrc/lib/types/GetProjectUsageFieldsResponse.ts[39m 1ms
+src/lib/types/GetProjectUsageFieldsSchema.ts[2K[1G[90msrc/lib/types/GetProjectUsageFieldsSchema.ts[39m 1ms
+src/lib/types/GetProjectUsageRequestsResponse.ts[2K[1G[90msrc/lib/types/GetProjectUsageRequestsResponse.ts[39m 2ms
+src/lib/types/GetProjectUsageRequestsSchema.ts[2K[1G[90msrc/lib/types/GetProjectUsageRequestsSchema.ts[39m 1ms
+src/lib/types/GetProjectUsageSummaryResponse.ts[2K[1G[90msrc/lib/types/GetProjectUsageSummaryResponse.ts[39m 1ms
+src/lib/types/GetProjectUsageSummarySchema.ts[2K[1G[90msrc/lib/types/GetProjectUsageSummarySchema.ts[39m 1ms
+src/lib/types/GetTokenDetailsResponse.ts[2K[1G[90msrc/lib/types/GetTokenDetailsResponse.ts[39m 0ms
+src/lib/types/GrantTokenResponse.ts[2K[1G[90msrc/lib/types/GrantTokenResponse.ts[39m 0ms
+src/lib/types/GrantTokenSchema.ts[2K[1G[90msrc/lib/types/GrantTokenSchema.ts[39m 0ms
+src/lib/types/index.ts[2K[1G[90msrc/lib/types/index.ts[39m 1ms
+src/lib/types/ListOnPremCredentialsResponse.ts[2K[1G[90msrc/lib/types/ListOnPremCredentialsResponse.ts[39m 1ms
+src/lib/types/LiveConfigOptions.ts[2K[1G[90msrc/lib/types/LiveConfigOptions.ts[39m 0ms
+src/lib/types/LiveMetadataEvent.ts[2K[1G[90msrc/lib/types/LiveMetadataEvent.ts[39m 0ms
+src/lib/types/LiveTranscriptionEvent.ts[2K[1G[90msrc/lib/types/LiveTranscriptionEvent.ts[39m 1ms
+src/lib/types/MessageResponse.ts[2K[1G[90msrc/lib/types/MessageResponse.ts[39m 1ms
+src/lib/types/SendProjectInviteSchema.ts[2K[1G[90msrc/lib/types/SendProjectInviteSchema.ts[39m 1ms
+src/lib/types/SpeakSchema.ts[2K[1G[90msrc/lib/types/SpeakSchema.ts[39m 1ms
+src/lib/types/SpeechStartedEvent.ts[2K[1G[90msrc/lib/types/SpeechStartedEvent.ts[39m 0ms
+src/lib/types/SyncAnalyzeResponse.ts[2K[1G[90msrc/lib/types/SyncAnalyzeResponse.ts[39m 1ms
+src/lib/types/SyncPrerecordedResponse.ts[2K[1G[90msrc/lib/types/SyncPrerecordedResponse.ts[39m 4ms
+src/lib/types/TranscriptionSchema.ts[2K[1G[90msrc/lib/types/TranscriptionSchema.ts[39m 3ms
+src/lib/types/UpdateProjectMemberScopeSchema.ts[2K[1G[90msrc/lib/types/UpdateProjectMemberScopeSchema.ts[39m 0ms
+src/lib/types/UpdateProjectSchema.ts[2K[1G[90msrc/lib/types/UpdateProjectSchema.ts[39m 0ms
+src/lib/types/UtteranceEndEvent.ts[2K[1G[90msrc/lib/types/UtteranceEndEvent.ts[39m 0ms
+src/lib/types/VoidResponse.ts[2K[1G[90msrc/lib/types/VoidResponse.ts[39m 0ms
+src/lib/version.ts[2K[1G[90msrc/lib/version.ts[39m 0ms
+src/packages/AbstractClient.ts[2K[1G[90msrc/packages/AbstractClient.ts[39m 5ms
+src/packages/AbstractLiveClient.ts[2K[1G[90msrc/packages/AbstractLiveClient.ts[39m 19ms
+src/packages/AbstractRestClient.ts[2K[1G[90msrc/packages/AbstractRestClient.ts[39m 6ms
+src/packages/AgentLiveClient.ts[2K[1G[90msrc/packages/AgentLiveClient.ts[39m 6ms
+src/packages/AuthRestClient.ts[2K[1G[90msrc/packages/AuthRestClient.ts[39m 2ms
+src/packages/index.ts[2K[1G[90msrc/packages/index.ts[39m 0ms
+src/packages/ListenClient.ts[2K[1G[90msrc/packages/ListenClient.ts[39m 1ms
+src/packages/ListenLiveClient.ts[2K[1G[90msrc/packages/ListenLiveClient.ts[39m 3ms
+src/packages/ListenRestClient.ts[2K[1G[90msrc/packages/ListenRestClient.ts[39m 5ms
+src/packages/ManageRestClient.ts[2K[1G[90msrc/packages/ManageRestClient.ts[39m 18ms
+src/packages/ModelsRestClient.ts[2K[1G[90msrc/packages/ModelsRestClient.ts[39m 3ms
+src/packages/ReadRestClient.ts[2K[1G[90msrc/packages/ReadRestClient.ts[39m 4ms
+src/packages/SelfHostedRestClient.ts[2K[1G[90msrc/packages/SelfHostedRestClient.ts[39m 4ms
+src/packages/SpeakClient.ts[2K[1G[90msrc/packages/SpeakClient.ts[39m 2ms
+src/packages/SpeakLiveClient.ts[2K[1G[90msrc/packages/SpeakLiveClient.ts[39m 3ms
+src/packages/SpeakRestClient.ts[2K[1G[90msrc/packages/SpeakRestClient.ts[39m 2ms
+> pnpm run build:main
+
+
+> @deepgram/sdk@0.0.0-automated build:main /Users/lukeoliff/Projects/deepgram/deepgram-js-sdk/packages/core
+> tsc -p tsconfig.json
+
+> pnpm run build:module
+
+
+> @deepgram/sdk@0.0.0-automated build:module /Users/lukeoliff/Projects/deepgram/deepgram-js-sdk/packages/core
+> tsc -p tsconfig.module.json
+
+> pnpm run build:umd
+
+
+> @deepgram/sdk@0.0.0-automated build:umd /Users/lukeoliff/Projects/deepgram/deepgram-js-sdk/packages/core
+> webpack --mode=production
+
+asset [1m[32mdeepgram.js[39m[22m 82.1 KiB [1m[32m[emitted][39m[22m [1m[32m[minimized][39m[22m (name: main)
+orphan modules 4.99 KiB [1m[33m[orphan][39m[22m 6 modules
+runtime modules 1.13 KiB 5 modules
+modules by path [1m./src/lib/[39m[22m 30 KiB 57 modules
+modules by path [1m./src/packages/*.ts[39m[22m 121 KiB
+  [1m./src/packages/index.ts[39m[22m 1.52 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+  [1m./src/packages/AbstractClient.ts[39m[22m 5.9 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+  + 14 modules
+modules by path [1m../../node_modules/.pnpm/[39m[22m 55.7 KiB
+  modules by path [1m../../node_modules/.pnpm/dayjs@1.11.13/node_modules/dayjs/[39m[22m 9.19 KiB 2 modules
+  + 5 modules
+modules by path [1m./src/*.ts[39m[22m 7.37 KiB
+  [1m./src/index.ts[39m[22m 2.95 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+  [1m./src/DeepgramClient.ts[39m[22m 4.42 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+webpack 5.99.9 compiled [1m[32msuccessfully[39m[22m in 1038 ms

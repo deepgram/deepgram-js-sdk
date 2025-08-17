@@ -1,7 +1,7 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
 
-const { createClient } = require("../../dist/main/index");
+const { createClient } = require("../../packages/core/dist/main/index");
 require("dotenv").config();
 
 const analyze = async () => {

@@ -1,4 +1,6 @@
-// .eslintrc.js
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports */
+
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",

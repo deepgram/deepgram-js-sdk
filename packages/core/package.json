@@ -1,0 +1,65 @@
+{
+  "name": "@deepgram/sdk",
+  "version": "4.11.2",
+  "description": "Isomorphic Javascript client for Deepgram",
+  "keywords": [
+    "javascript",
+    "typescript",
+    "deepgram",
+    "asr",
+    "speech",
+    "sdk"
+  ],
+  "homepage": "https://github.com/deepgram/deepgram-js-sdk",
+  "bugs": "https://github.com/deepgram/deepgram-js-sdk/issues",
+  "license": "MIT",
+  "author": {
+    "name": "Deepgram DevRel Team",
+    "email": "devrel@deepgram.com"
+  },
+  "contributors": [
+    "Brian Barrow",
+    "Brian Hillis",
+    "Luke Oliff",
+    "Michael Jolley",
+    "Sandra Rodgers",
+    "Shir Goldberg"
+  ],
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "dist/main/index.js",
+  "module": "dist/module/index.js",
+  "types": "dist/module/index.d.ts",
+  "sideEffects": false,
+  "repository": "deepgram/deepgram-js-sdk",
+  "scripts": {
+    "clean": "rimraf dist",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "build": "run-s clean format build:*",
+    "build:main": "tsc -p tsconfig.json",
+    "build:module": "tsc -p tsconfig.module.json",
+    "build:umd": "webpack --mode=production",
+    "lint": "eslint src --max-warnings 0",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:e2e": "jest --testPathPattern=tests/e2e",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false"
+  },
+  "dependencies": {
+    "@deepgram/captions": "^1.1.1",
+    "@types/node": "^18.19.39",
+    "cross-fetch": "^3.1.5",
+    "deepmerge": "^4.3.1",
+    "events": "^3.3.0",
+    "ws": "^8.17.0"
+  },
+  "jsdelivr": "dist/umd/deepgram.js",
+  "unpkg": "dist/umd/deepgram.js"
+}
