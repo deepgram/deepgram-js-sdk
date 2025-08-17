@@ -1,5 +1,6 @@
 {
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["# Deepgram JavaScript SDK"]
-  }
+  },
+  "nxConsole.generateAiAgentRules": true
 }
