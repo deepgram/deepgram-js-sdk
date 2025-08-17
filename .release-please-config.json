@@ -16,5 +16,7 @@
   "separate-pull-requests": false,
   "group-pull-request-title-pattern": "chore: release${component ? ` ${component}` : ''} ${version}",
   "release-search-depth": 400,
-  "commit-search-depth": 500
+  "commit-search-depth": 500,
+  "skip-github-release": true,
+  "skip-github-pull-request": true
 }
