@@ -6,244 +6,88 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".release-please-manifest.json",
-        "hash": "5874370087332797523"
-      },
-      {
-        "file": "examples/browser-prerecorded/README.md",
-        "hash": "7947509275243959768"
-      },
-      {
-        "file": "examples/node-read/.gitignore",
-        "hash": "17299587655029984067"
-      },
-      {
-        "file": ".eslintrc.js",
-        "hash": "7606026524479775271"
-      },
-      {
-        "file": "examples/node-agent-live/.gitignore",
-        "hash": "10161194291945245414"
-      },
-      {
-        "file": "commitlint.config.js",
-        "hash": "9374536378442791815"
-      },
-      {
-        "file": "jest.preset.js",
-        "hash": "14555959286724100034"
-      },
-      {
-        "file": ".markdownlint.jsonc",
-        "hash": "13374929450021764103"
-      },
-      {
-        "file": "docs/Nx Monorepo Setup.md",
-        "hash": "15634640865169173812"
-      },
-      {
-        "file": "examples/node-prerecorded/package.json",
-        "hash": "10273731706273359226"
-      },
-      {
-        "file": "examples/node-live-token/package.json",
-        "hash": "6352985485763064540"
-      },
-      {
-        "file": "examples/node-live/README.md",
-        "hash": "731595547344644844"
-      },
-      {
-        "file": "examples/node-speak/index.js",
-        "hash": "2584859202861685928"
-      },
-      {
-        "file": "examples/node-prerecorded/.gitignore",
-        "hash": "17299587655029984067"
-      },
-      {
-        "file": "LICENSE",
-        "hash": "12102250298260718754"
-      },
-      {
-        "file": ".nvmrc",
-        "hash": "16433706957784978846"
-      },
-      {
-        "file": ".prettierrc",
-        "hash": "9738884466241479135"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "11032200167474039617"
-      },
-      {
-        "file": "examples/node-speak-live/.gitignore",
-        "hash": "13982738158248498571"
-      },
-      {
-        "file": "jest.config.js",
-        "hash": "14555959286724100034"
-      },
-      {
-        "file": "examples/node-live/.gitignore",
-        "hash": "17299587655029984067"
-      },
-      {
-        "file": "examples/node-live/index.js",
-        "hash": "9283717436338698827"
-      },
-      {
-        "file": "examples/node-agent-live/package.json",
-        "hash": "15722307268108401013"
-      },
-      {
-        "file": "examples/browser-live/index.html",
-        "hash": "10958074799826115411"
-      },
-      {
-        "file": "CODE_OF_CONDUCT.md",
-        "hash": "3524824569424739717"
-      },
-      {
-        "file": ".github/CODEOWNERS",
-        "hash": "16625597587716422347"
-      },
-      {
-        "file": ".github/workflows/release.yml",
-        "hash": "6010390413016919694"
-      },
-      {
-        "file": "test-release.sh",
-        "hash": "2095751329561956805"
-      },
-      {
-        "file": "tsconfig.json",
-        "hash": "5310919572560163254"
-      },
-      {
-        "file": ".github/workflows/browser-build-test.yml",
-        "hash": "13271110533750660606"
-      },
-      {
-        "file": "examples/node-agent-live/README.md",
-        "hash": "41931132396186718"
-      },
-      {
-        "file": ".npmignore",
-        "hash": "13941880315428201104"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "11112400266021783951"
-      },
-      {
-        "file": "examples/node-speak/package.json",
-        "hash": "13171617032142401901"
+        "file": "package.json",
+        "hash": "4828485590758339368"
       },
       {
         "file": ".eslintignore",
         "hash": "13500354349587955551"
       },
       {
-        "file": "examples/node-prerecorded/index.js",
-        "hash": "8696207433555266357"
-      },
-      {
-        "file": ".github/ISSUE_TEMPLATE/config.yml",
-        "hash": "1155058513019261009"
-      },
-      {
-        "file": "examples/nasa.mp4",
-        "hash": "13579802523601992925"
-      },
-      {
-        "file": "examples/node-read/README.md",
-        "hash": "6196565157541551620"
-      },
-      {
-        "file": ".github/PULL_REQUEST_TEMPLATE/pull_request_template.md",
-        "hash": "12672541926019091115"
-      },
-      {
-        "file": ".github/workflows/release-test.yml",
-        "hash": "16354172436132889096"
-      },
-      {
-        "file": ".github/PULL_REQUEST_TEMPLATE.md",
-        "hash": "7942098307288111581"
+        "file": ".npmignore",
+        "hash": "13941880315428201104"
       },
       {
         "file": "examples/node-speak-live/index.js",
         "hash": "11600027414766858626"
       },
       {
-        "file": ".npmrc",
-        "hash": "15798695319215163638"
+        "file": "examples/node-speak-live/.gitignore",
+        "hash": "13982738158248498571"
       },
       {
-        "file": "examples/browser-live/README.md",
-        "hash": "2406885405352535090"
-      },
-      {
-        "file": "README.md",
-        "hash": "13785260502909097165"
-      },
-      {
-        "file": "examples/node-speak/README.md",
-        "hash": "6522316481090731204"
-      },
-      {
-        "file": ".release-please-config.json",
-        "hash": "5496662556989954993"
-      },
-      {
-        "file": "examples/node-live-token/.gitignore",
-        "hash": "17299587655029984067"
-      },
-      {
-        "file": "examples/node-agent-live/index.js",
-        "hash": "188890290051261947"
-      },
-      {
-        "file": "examples/browser-prerecorded/index.html",
-        "hash": "16274509450428772900"
-      },
-      {
-        "file": "examples/node-read/index.js",
-        "hash": "11996782474878996424"
-      },
-      {
-        "file": "examples/node-speak-live/package.json",
-        "hash": "9791298487824888874"
-      },
-      {
-        "file": "examples/README.md",
-        "hash": "12775208746197555388"
-      },
-      {
-        "file": "examples/node-live/package.json",
-        "hash": "10221105008517125944"
-      },
-      {
-        "file": ".github/ISSUE_TEMPLATE/feature-request.md",
-        "hash": "10807432652921176138"
-      },
-      {
-        "file": "examples/node-prerecorded/README.md",
-        "hash": "5029624791661930219"
+        "file": ".github/workflows/release.yml",
+        "hash": "6010390413016919694"
       },
       {
         "file": "pnpm-workspace.yaml",
         "hash": "15068071380531678201"
       },
       {
-        "file": "examples/node-read/package.json",
-        "hash": "9181247309797581502"
+        "file": ".github/PULL_REQUEST_TEMPLATE.md",
+        "hash": "7942098307288111581"
       },
       {
-        "file": "CONTRIBUTING.md",
-        "hash": "9030694374056796200"
+        "file": ".github/workflows/release-test.yml",
+        "hash": "16354172436132889096"
+      },
+      {
+        "file": "examples/node-agent-live/package.json",
+        "hash": "15722307268108401013"
+      },
+      {
+        "file": "examples/node-speak/index.js",
+        "hash": "2584859202861685928"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/config.yml",
+        "hash": "1155058513019261009"
+      },
+      {
+        "file": ".release-please-config.json",
+        "hash": "9394324299048121956"
+      },
+      {
+        "file": "examples/node-prerecorded/.gitignore",
+        "hash": "17299587655029984067"
+      },
+      {
+        "file": "examples/node-speak-live/README.md",
+        "hash": "14750668311116702020"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "11112400266021783951"
+      },
+      {
+        "file": "nx.json",
+        "hash": "6581205628072099523"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "14555959286724100034"
+      },
+      {
+        "file": "SECURITY.md",
+        "hash": "12172231247941122521"
+      },
+      {
+        "file": "examples/node-agent-live/README.md",
+        "hash": "41931132396186718"
+      },
+      {
+        "file": "test-release.sh",
+        "hash": "2095751329561956805"
       },
       {
         "file": "examples/node-live-token/README.md",
@@ -254,44 +98,200 @@
         "hash": "5464923987428775797"
       },
       {
-        "file": ".github/ISSUE_TEMPLATE/bug_report.md",
-        "hash": "9628593792635209133"
+        "file": "examples/node-prerecorded/index.js",
+        "hash": "8696207433555266357"
       },
       {
-        "file": ".github/workflows/CI.yml",
-        "hash": "811705081083084218"
+        "file": ".github/PULL_REQUEST_TEMPLATE/pull_request_template.md",
+        "hash": "12672541926019091115"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/feature-request.md",
+        "hash": "10807432652921176138"
+      },
+      {
+        "file": "examples/node-speak-live/package.json",
+        "hash": "9791298487824888874"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "5310919572560163254"
+      },
+      {
+        "file": "examples/node-speak/README.md",
+        "hash": "6522316481090731204"
+      },
+      {
+        "file": "examples/node-agent-live/.gitignore",
+        "hash": "10161194291945245414"
+      },
+      {
+        "file": "examples/browser-prerecorded/index.html",
+        "hash": "17926024841797239747"
+      },
+      {
+        "file": "examples/node-prerecorded/package.json",
+        "hash": "10273731706273359226"
+      },
+      {
+        "file": "README.md",
+        "hash": "13785260502909097165"
+      },
+      {
+        "file": ".npmrc",
+        "hash": "15798695319215163638"
+      },
+      {
+        "file": "examples/node-prerecorded/README.md",
+        "hash": "5029624791661930219"
+      },
+      {
+        "file": "examples/node-live/.gitignore",
+        "hash": "17299587655029984067"
+      },
+      {
+        "file": "examples/node-live/package.json",
+        "hash": "10221105008517125944"
+      },
+      {
+        "file": "examples/nasa.mp4",
+        "hash": "13579802523601992925"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "9738884466241479135"
+      },
+      {
+        "file": "examples/node-live-token/.gitignore",
+        "hash": "17299587655029984067"
+      },
+      {
+        "file": "examples/node-read/index.js",
+        "hash": "11996782474878996424"
+      },
+      {
+        "file": "examples/README.md",
+        "hash": "12775208746197555388"
+      },
+      {
+        "file": "examples/node-read/README.md",
+        "hash": "6196565157541551620"
+      },
+      {
+        "file": "examples/browser-live/README.md",
+        "hash": "2406885405352535090"
       },
       {
         "file": "pnpm-lock.yaml",
         "hash": "5506049361579496721"
       },
       {
+        "file": "docs/Nx Monorepo Setup.md",
+        "hash": "15634640865169173812"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "hash": "9628593792635209133"
+      },
+      {
         "file": "examples/node-live-token/index.js",
         "hash": "18407910355535162646"
       },
       {
-        "file": "nx.json",
-        "hash": "13643822405103776509"
+        "file": ".gitignore",
+        "hash": "11032200167474039617"
       },
       {
-        "file": "SECURITY.md",
-        "hash": "12172231247941122521"
+        "file": "examples/node-read/package.json",
+        "hash": "9181247309797581502"
       },
       {
-        "file": "examples/node-speak-live/README.md",
-        "hash": "14750668311116702020"
-      },
-      {
-        "file": "package.json",
-        "hash": "4828485590758339368"
+        "file": "CODE_OF_CONDUCT.md",
+        "hash": "3524824569424739717"
       },
       {
         "file": "examples/node-speak/.gitignore",
         "hash": "13982738158248498571"
       },
       {
+        "file": "examples/node-speak/package.json",
+        "hash": "13171617032142401901"
+      },
+      {
+        "file": "LICENSE",
+        "hash": "12102250298260718754"
+      },
+      {
+        "file": "examples/node-live/index.js",
+        "hash": "9283717436338698827"
+      },
+      {
+        "file": ".release-please-manifest.json",
+        "hash": "10381386934122953514"
+      },
+      {
+        "file": "jest.config.js",
+        "hash": "14555959286724100034"
+      },
+      {
+        "file": "examples/node-live/README.md",
+        "hash": "731595547344644844"
+      },
+      {
+        "file": "examples/node-live-token/package.json",
+        "hash": "6352985485763064540"
+      },
+      {
+        "file": "examples/browser-prerecorded/README.md",
+        "hash": "7947509275243959768"
+      },
+      {
+        "file": ".github/workflows/browser-build-test.yml",
+        "hash": "13271110533750660606"
+      },
+      {
+        "file": ".github/workflows/CI.yml",
+        "hash": "811705081083084218"
+      },
+      {
+        "file": ".github/CODEOWNERS",
+        "hash": "16625597587716422347"
+      },
+      {
+        "file": ".eslintrc.js",
+        "hash": "7606026524479775271"
+      },
+      {
+        "file": "examples/node-read/.gitignore",
+        "hash": "17299587655029984067"
+      },
+      {
+        "file": "CONTRIBUTING.md",
+        "hash": "9030694374056796200"
+      },
+      {
+        "file": ".markdownlint.jsonc",
+        "hash": "13374929450021764103"
+      },
+      {
+        "file": "commitlint.config.js",
+        "hash": "9374536378442791815"
+      },
+      {
         "file": ".vscode/settings.json",
         "hash": "7660159607792384915"
+      },
+      {
+        "file": "examples/browser-live/index.html",
+        "hash": "3917748965547071412"
+      },
+      {
+        "file": "examples/node-agent-live/index.js",
+        "hash": "188890290051261947"
+      },
+      {
+        "file": ".nvmrc",
+        "hash": "16433706957784978846"
       }
     ],
     "projectFileMap": {
@@ -302,7 +302,7 @@
         },
         {
           "file": "packages/core/package.json",
-          "hash": "16278060165952734863",
+          "hash": "5284081828137920514",
           "deps": [
             "npm:@deepgram/captions",
             "npm:@types/node@18.19.112",
@@ -314,7 +314,7 @@
         },
         {
           "file": "packages/core/project.json",
-          "hash": "13995384924401418261"
+          "hash": "11240194110260433633"
         },
         {
           "file": "packages/core/src/DeepgramClient.ts",
@@ -1041,7 +1041,7 @@
         },
         {
           "file": "packages/core/tests/unit/live-client-message-handling.test.ts",
-          "hash": "9361734614339014426"
+          "hash": "13263056467371951662"
         },
         {
           "file": "packages/core/tests/unit/object-utilities.test.ts",
