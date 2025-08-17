@@ -3,6 +3,10 @@
     "nx-mcp": {
       "command": "npx",
       "args": ["-y", "nx-mcp@latest"]
+    },
+    "deepctl": {
+      "command": "pipx",
+      "args": ["run", "deepctl", "mcp"]
     }
   }
 }
