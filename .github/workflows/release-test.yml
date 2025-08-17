@@ -1,0 +1,80 @@
+name: Release Test
+
+on:
+  push:
+    branches:
+      - test-monorepo-release
+  workflow_dispatch:
+
+jobs:
+  test-release:
+    name: Test Release Process
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: Test Release Please (Dry Run)
+        uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Show Release Please Output
+        run: |
+          echo "🔍 Release Please Results:"
+          echo "Releases Created: ${{ steps.release.outputs.releases_created }}"
+          echo "Release Created: ${{ steps.release.outputs.release_created }}"
+          echo "Tag Name: ${{ steps.release.outputs.tag_name }}"
+          echo "Version: ${{ steps.release.outputs.version }}"
+          echo "PR Number: ${{ steps.release.outputs.pr }}"
+
+      - name: Test NPM Package Build
+        run: |
+          cd packages/core
+          echo "📦 Testing package contents:"
+          echo "Package name: $(cat package.json | jq -r .name)"
+          echo "Package version: $(cat package.json | jq -r .version)"
+          echo "Main entry: $(cat package.json | jq -r .main)"
+          echo "Module entry: $(cat package.json | jq -r .module)"
+          echo "Types entry: $(cat package.json | jq -r .types)"
+
+          echo "📁 Checking dist directory:"
+          ls -la dist/ || echo "No dist directory found"
+
+          echo "🧪 NPM Pack Test (creates tarball without publishing):"
+          npm pack --dry-run
+
+      - name: Validate Package Structure
+        run: |
+          cd packages/core
+          echo "🔍 Validating package structure:"
+
+          # Check required files exist
+          test -f dist/main/index.js && echo "✅ CommonJS build exists" || echo "❌ CommonJS build missing"
+          test -f dist/module/index.js && echo "✅ ESM build exists" || echo "❌ ESM build missing"
+          test -f dist/umd/deepgram.js && echo "✅ UMD build exists" || echo "❌ UMD build missing"
+          test -f dist/module/index.d.ts && echo "✅ Type definitions exist" || echo "❌ Type definitions missing"
+
+          echo "📊 Package size:"
+          du -sh dist/

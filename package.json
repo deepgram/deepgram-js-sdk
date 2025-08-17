@@ -1,15 +1,8 @@
 {
-  "name": "@deepgram/sdk",
-  "version": "0.0.0-automated",
-  "description": "Isomorphic Javascript client for Deepgram",
-  "keywords": [
-    "javascript",
-    "typescript",
-    "deepgram",
-    "asr",
-    "speech",
-    "sdk"
-  ],
+  "name": "@deepgram/deepgram-js-sdk-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Deepgram JavaScript SDK Monorepo",
   "packageManager": "pnpm@10.12.1",
   "homepage": "https://github.com/deepgram/deepgram-js-sdk",
   "bugs": "https://github.com/deepgram/deepgram-js-sdk/issues",
@@ -26,52 +19,32 @@
     "Sandra Rodgers",
     "Shir Goldberg"
   ],
-  "files": [
-    "dist",
-    "src"
-  ],
   "engines": {
     "node": ">=18.0.0"
   },
-  "main": "dist/main/index.js",
-  "module": "dist/module/index.js",
-  "types": "dist/module/index.d.ts",
-  "sideEffects": false,
-  "repository": "deepgram/deepgram-js-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepgram/deepgram-js-sdk.git"
+  },
   "scripts": {
-    "clean": "rimraf dist docs/v2",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "build": "run-s clean format build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
-    "build:umd": "webpack --mode=production",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
     "lint": "run-s lint:*",
     "lint:js": "eslint -c .eslintrc-examples.js examples --max-warnings 0",
     "lint:md": "markdownlint **/*.md *.md",
     "lint:yml": "yamllint .github/workflows",
-    "lint:ts": "eslint src --max-warnings 0",
-    "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "docs": "typedoc --entryPoints src/index.ts --out docs/ --includes src/packages/**/*.ts   --emit none",
-    "docs:json": "typedoc --entryPoints src/index.ts --includes src/packages/**/*.ts --json docs/spec.json   --emit none",
-    "test": "jest",
-    "test:unit": "jest --testPathPattern=tests/unit",
-    "test:e2e": "jest --testPathPattern=tests/e2e",
-    "test:e2e:offline": "node scripts/test-offline.js",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false"
-  },
-  "dependencies": {
-    "@deepgram/captions": "^1.1.1",
-    "@types/node": "^18.19.39",
-    "cross-fetch": "^3.1.5",
-    "deepmerge": "^4.3.1",
-    "events": "^3.3.0",
-    "ws": "^8.17.0"
+    "lint:packages": "nx run-many -t lint",
+    "format": "prettier --write \"packages/**/*.ts\"",
+    "docs": "typedoc --entryPoints packages/core/src/index.ts --out docs/ --includes packages/core/src/packages/**/*.ts --emit none",
+    "docs:json": "typedoc --entryPoints packages/core/src/index.ts --includes packages/core/src/packages/**/*.ts --json docs/spec.json --emit none",
+    "clean": "nx run-many -t clean && rimraf docs/v2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.7",
     "@commitlint/config-conventional": "^17.6.7",
+    "@nx/jest": "^21.4.0",
+    "@nx/js": "^21.4.0",
+    "@nx/webpack": "^21.4.0",
     "@types/jest": "^29.5.12",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
@@ -87,10 +60,11 @@
     "markdownlint-cli": "^0.42.0",
     "nodemon": "^3.0.1",
     "npm-run-all": "^4.1.5",
+    "nx": "^21.4.0",
     "prettier": "^2.5.1",
     "pretty-quick": "^3.1.3",
+    "release-please": "^17.1.1",
     "rimraf": "^3.0.2",
-    "semantic-release-plugin-update-version-in-files": "^1.1.0",
     "stream-browserify": "^3.0.0",
     "ts-jest": "^29.1.2",
     "ts-loader": "^8.0.11",
@@ -111,7 +85,5 @@
       "pre-commit": "pretty-quick --staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  },
-  "jsdelivr": "dist/umd/deepgram.js",
-  "unpkg": "dist/umd/deepgram.js"
+  }
 }

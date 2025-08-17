@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-      - next
-      - rc
-      - beta
-      - alpha
   workflow_dispatch:
 
 jobs:
@@ -34,8 +30,35 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm run build
 
-      - name: Create a release
-        run: pnpm dlx semantic-release
+      - name: Create Release Pull Request or Publish to NPM
+        uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Publish to NPM (Dry Run)
+        if: ${{ steps.release.outputs.releases_created }}
+        run: |
+          cd packages/core
+          echo "🧪 DRY RUN: Would publish to NPM"
+
+          PACKAGE_NAME=$(cat package.json | jq -r .name)
+          PACKAGE_VERSION=$(cat package.json | jq -r .version)
+
+          echo "Package: $PACKAGE_NAME"
+          echo "Version: $PACKAGE_VERSION"
+
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+          # Check if version contains prerelease identifiers
+          if [[ "$PACKAGE_VERSION" =~ -[a-zA-Z] ]]; then
+            echo "📦 Publishing prerelease version with --tag next"
+            npm publish --dry-run --access public --tag next
+          else
+            echo "📦 Publishing stable version with --tag latest"
+            npm publish --dry-run --access public --tag latest
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

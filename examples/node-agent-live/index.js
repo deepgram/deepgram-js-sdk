@@ -1,7 +1,7 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, no-console */
 
-const { createClient, AgentEvents } = require("../../dist/main/index");
+const { createClient, AgentEvents } = require("../../packages/core/dist/main/index");
 const fetch = require("cross-fetch");
 require("dotenv").config();
 
@@ -23,7 +23,7 @@ const agent = async () => {
 
   // Error handler
   connection.on(AgentEvents.Error, (error) => {
-    if (error.code === 'CLIENT_MESSAGE_TIMEOUT') {
+    if (error.code === "CLIENT_MESSAGE_TIMEOUT") {
       console.log("⏰ Agent session timed out");
     } else {
       console.error("❌ Agent error:", error.description || error.message);
@@ -41,16 +41,16 @@ const agent = async () => {
         listen: {
           provider: {
             type: "deepgram",
-            model: "nova-3"
-          }
+            model: "nova-3",
+          },
         },
         speak: {
           provider: {
             type: "deepgram",
-            model: "aura-asteria-en"
-          }
+            model: "aura-asteria-en",
+          },
         },
-        greeting: "Hello! I'm a Deepgram voice agent. How can I help you today?"
+        greeting: "Hello! I'm a Deepgram voice agent. How can I help you today?",
       },
     };
 
