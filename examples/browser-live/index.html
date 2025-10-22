@@ -1,98 +1,292 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Deepgram Live Transcription</title>
-  </head>
+<head>
+  <title>Deepgram Live Transcription</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #stop {
+      background-color: #f44336;
+    }
+    #stop:hover:not(:disabled) {
+      background-color: #da190b;
+    }
+    #transcript {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 4px;
+      min-height: 200px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .status.connected {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .status.info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+    input[type="password"] {
+      width: 100%;
+      max-width: 500px;
+      padding: 8px;
+      margin: 10px 0;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Transcription with Deepgram</h1>
+  <div>
+    <label for="apiKey">Deepgram API Key:</label><br>
+    <input type="password" id="apiKey" placeholder="Enter your API key">
+  </div>
+  <button id="start">Start Recording</button>
+  <button id="stop" disabled>Stop Recording</button>
+  <div id="status"></div>
+  <h2>Transcript:</h2>
+  <pre id="transcript">Transcript will appear here...</pre>
 
-  <body>
-    <h1>Live Transcription</h1>
-    <button id="start">Start</button>
-    <button id="stop">Stop</button>
-    <pre id="transcript"></pre>
+  <script>
+    const startButton = document.getElementById("start");
+    const stopButton = document.getElementById("stop");
+    const transcriptEl = document.getElementById("transcript");
+    const statusEl = document.getElementById("status");
+    const apiKeyInput = document.getElementById("apiKey");
+    
+    let socket;
+    let mediaRecorder;
+    let audioStream;
+    let fullTranscript = "";
+    let audioContext;
+    let sourceNode;
+    let processorNode;
 
-    <script src="../../dist/umd/deepgram.js"></script>
-    <script>
-      const startButton = document.getElementById("start");
-      const stopButton = document.getElementById("stop");
-      const transcriptEl = document.getElementById("transcript");
+    function showStatus(message, type = 'info') {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
 
-      let connection;
-      let mediaRecorder;
+    const startRecording = async () => {
+      const apiKey = apiKeyInput.value.trim();
+      
+      if (!apiKey) {
+        alert("Please enter your Deepgram API key");
+        return;
+      }
 
-      const setup = async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const apiKey = urlParams.get("key");
-
-        if (!apiKey) {
-          alert("Please add your DEEPGRAM_API_KEY to the query string.");
-          return;
-        }
-
-        const deepgram = deepgram.createClient(apiKey);
-        connection = deepgram.listen.live({
-          model: "nova-3",
+      try {
+        showStatus("Requesting microphone access...", "info");
+        
+        // Get microphone access with specific constraints
+        audioStream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            channelCount: 1,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
         });
+        
+        showStatus("Connecting to Deepgram...", "info");
+        
+        // Get the sample rate from the audio track
+        const audioTrack = audioStream.getAudioTracks()[0];
+        const settings = audioTrack.getSettings();
+        const sampleRate = settings.sampleRate || 48000;
+        
+        console.log("Audio settings:", settings);
+        console.log("Sample rate:", sampleRate);
+        
+        // Create WebSocket connection to Deepgram
+        const wsUrl = `wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=${sampleRate}&channels=1&model=nova-2&language=en&punctuate=true&smart_format=true&interim_results=true`;
+        
+        socket = new WebSocket(wsUrl, ['token', apiKey]);
+        socket.binaryType = 'arraybuffer';
 
-        connection.on(deepgram.LiveTranscriptionEvents.Open, () => {
-          console.log("Connection opened.");
-
-          fetch("http://stream.live.vc.bbcmedia.co.uk/bbc_world_service")
-            .then((response) => response.body)
-            .then((body) => {
-              const reader = body.getReader();
-              function read() {
-                reader
-                  .read()
-                  .then(({ done, value }) => {
-                    if (done) {
-                      console.log("Stream complete");
-                      return;
-                    }
-                    connection.send(value);
-                    read();
-                  })
-                  .catch((error) => {
-                    console.error("Stream read error:", error);
-                  });
+        socket.onopen = async () => {
+          showStatus("✓ Connected - Recording in progress", "connected");
+          console.log("WebSocket connection opened");
+          
+          fullTranscript = "";
+          transcriptEl.textContent = "";
+          
+          // Create AudioContext with the correct sample rate
+          audioContext = new (window.AudioContext || window.webkitAudioContext)({
+            sampleRate: sampleRate
+          });
+          
+          sourceNode = audioContext.createMediaStreamSource(audioStream);
+          
+          // Use ScriptProcessorNode (deprecated but widely supported)
+          const bufferSize = 4096;
+          processorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+          
+          processorNode.onaudioprocess = (e) => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+              const inputData = e.inputBuffer.getChannelData(0);
+              
+              // Convert Float32Array to Int16Array (PCM 16-bit)
+              const int16Array = new Int16Array(inputData.length);
+              for (let i = 0; i < inputData.length; i++) {
+                // Clamp to [-1, 1] and convert to 16-bit integer
+                const sample = Math.max(-1, Math.min(1, inputData[i]));
+                int16Array[i] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
               }
-              read();
-            })
-            .catch((error) => {
-              console.error("Fetch error:", error);
-            });
-        });
+              
+              // Send the raw PCM data
+              socket.send(int16Array.buffer);
+            }
+          };
+          
+          // Connect the nodes
+          sourceNode.connect(processorNode);
+          processorNode.connect(audioContext.destination);
+          
+          startButton.disabled = true;
+          stopButton.disabled = false;
+        };
 
-        connection.on(deepgram.LiveTranscriptionEvents.Transcript, (data) => {
-          transcriptEl.textContent = data.channel.alternatives[0].transcript;
-        });
-
-        connection.on(deepgram.LiveTranscriptionEvents.Close, () => {
-          console.log("Connection closed.");
-        });
-
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            connection.send(event.data);
+        socket.onmessage = (message) => {
+          try {
+            const data = JSON.parse(message.data);
+            
+            if (data.type === "Results" && data.channel) {
+              const transcript = data.channel.alternatives[0].transcript;
+              
+              if (transcript && transcript.trim() !== "") {
+                if (data.is_final) {
+                  // Add final transcript to the full transcript
+                  fullTranscript += transcript + " ";
+                  transcriptEl.textContent = fullTranscript;
+                  console.log("Final:", transcript);
+                } else {
+                  // Show interim results (temporary)
+                  transcriptEl.textContent = fullTranscript + transcript;
+                }
+              }
+            } else if (data.type === "Metadata") {
+              console.log("Metadata received:", data);
+            }
+          } catch (error) {
+            console.error("Error parsing message:", error);
           }
         };
-      };
 
-      startButton.onclick = () => {
-        if (!connection) {
-          setup().then(() => {
-            mediaRecorder.start(1000);
-          });
+        socket.onerror = (error) => {
+          console.error("WebSocket error:", error);
+          showStatus("Connection error - check your API key", "error");
+        };
+
+        socket.onclose = (event) => {
+          console.log("WebSocket connection closed", event.code, event.reason);
+          if (event.code !== 1000) {
+            showStatus(`Disconnected (${event.code}: ${event.reason || 'Unknown error'})`, "error");
+          } else {
+            showStatus("Disconnected", "info");
+          }
+          
+          startButton.disabled = false;
+          stopButton.disabled = true;
+        };
+
+      } catch (error) {
+        console.error("Error:", error);
+        showStatus("Error: " + error.message, "error");
+        
+        if (error.name === 'NotAllowedError') {
+          alert("Microphone access denied. Please allow microphone access and try again.");
         } else {
-          mediaRecorder.start(1000);
+          alert("Error starting recording: " + error.message);
         }
-      };
+        
+        startButton.disabled = false;
+        stopButton.disabled = true;
+      }
+    };
 
-      stopButton.onclick = () => {
-        mediaRecorder.stop();
-        connection.finish();
-      };
-    </script>
-  </body>
+    const stopRecording = () => {
+      // Disconnect audio nodes
+      if (processorNode) {
+        processorNode.disconnect();
+        processorNode.onaudioprocess = null;
+        processorNode = null;
+      }
+      
+      if (sourceNode) {
+        sourceNode.disconnect();
+        sourceNode = null;
+      }
+      
+      // Close audio context
+      if (audioContext && audioContext.state !== 'closed') {
+        audioContext.close();
+        audioContext = null;
+      }
+      
+      // Stop all audio tracks
+      if (audioStream) {
+        audioStream.getTracks().forEach(track => track.stop());
+        audioStream = null;
+      }
+      
+      // Close WebSocket
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+        socket = null;
+      }
+      
+      startButton.disabled = false;
+      stopButton.disabled = true;
+      showStatus("Recording stopped", "info");
+    };
+
+    startButton.onclick = startRecording;
+    stopButton.onclick = stopRecording;
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+      stopRecording();
+    });
+  </script>
+</body>
 </html>
