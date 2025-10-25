@@ -1,102 +1,15 @@
-# Deepgram JavaScript SDK
+# Deepgram API TypeScript Library
 
-[![Static Badge](https://img.shields.io/badge/%24__-Discord-blue?logo=discord&logoColor=white&link=https%3A%2F%2Fdiscord.gg%2Fdeepgram)](https://discord.gg/deepgram) [![CI](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml/badge.svg)](https://github.com/deepgram/node-sdk/actions/workflows/CI.yml) [![npm (scoped)](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?style=flat-rounded)](CODE_OF_CONDUCT.md)
+![](https://developers.deepgram.com)
 
-> 🎯 **Development Setup**: This project uses [Corepack](https://nodejs.org/api/corepack.html) for package manager consistency. Run `corepack enable` once, then use `pnpm` commands normally. See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fdeepgram%2Fdeepgram-js-sdk)
+[![npm shield](https://img.shields.io/npm/v/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk)
 
-<!-- TOC -->
-
-- [Documentation](#documentation)
-- [Migrating from earlier versions](#migrating-from-earlier-versions)
-  - [V2 to V3](#v2-to-v3)
-  - [V3.\* to V3.4](#v3-to-v34)
-  - [V3.\* to V4](#v3-to-v4)
-- [Installation](#installation)
-  - [UMD](#umd)
-  - [ESM](#esm)
-- [Authentication](#authentication)
-  - [1. API Key Authentication (Recommended)](#1-api-key-authentication-recommended)
-  - [2. Access Token Authentication](#2-access-token-authentication)
-  - [3. Proxy Authentication](#3-proxy-authentication)
-  - [Getting Credentials](#getting-credentials)
-    - [API Keys](#api-keys)
-    - [Access Tokens](#access-tokens)
-  - [Environment Variables](#environment-variables)
-  - [Getting an API Key](#getting-an-api-key)
-- [Scoped Configuration](#scoped-configuration)
-  - [Global Defaults](#global-defaults)
-  - [Namespace-specific Configurations](#namespace-specific-configurations)
-  - [Transport Options](#transport-options)
-  - [Examples](#examples)
-    - [Change the API url used for all SDK methods](#change-the-api-url-used-for-all-sdk-methods)
-    - [Change the API url used for the Voice Agent websocket](#change-the-api-url-used-for-the-voice-agent-websocket)
-    - [Change the API url used for transcription only](#change-the-api-url-used-for-transcription-only)
-    - [Override fetch transmitter](#override-fetch-transmitter)
-    - [Proxy requests in the browser](#proxy-requests-in-the-browser)
-    - [Set custom headers for fetch](#set-custom-headers-for-fetch)
-- [Browser Usage](#browser-usage)
-- [Transcription](#transcription)
-  - [Remote Files](#remote-files)
-  - [Local Files](#local-files)
-  - [Callbacks / Async](#callbacks--async)
-  - [Live Transcription (WebSocket)](#live-transcription-websocket)
-  - [Captions](#captions)
-- [Voice Agent](#voice-agent)
-- [Text to Speech](#text-to-speech)
-  - [Single-Request](#single-request)
-  - [Continuous Text Stream (WebSocket)](#continuous-text-stream-websocket)
-- [Text Intelligence](#text-intelligence)
-- [Token Management](#token-management)
-  - [Get Token Details](#get-token-details)
-  - [Grant Access Token](#grant-access-token)
-- [Projects](#projects)
-  - [Get Projects](#get-projects)
-  - [Get Project](#get-project)
-  - [Update Project](#update-project)
-  - [Delete Project](#delete-project)
-- [Keys](#keys)
-  - [List Keys](#list-keys)
-  - [Get Key](#get-key)
-  - [Create Key](#create-key)
-  - [Delete Key](#delete-key)
-- [Members](#members)
-  - [Get Members](#get-members)
-  - [Remove Member](#remove-member)
-- [Scopes](#scopes)
-  - [Get Member Scopes](#get-member-scopes)
-  - [Update Scope](#update-scope)
-- [Invitations](#invitations)
-  - [List Invites](#list-invites)
-  - [Send Invite](#send-invite)
-  - [Delete Invite](#delete-invite)
-  - [Leave Project](#leave-project)
-- [Usage](#usage)
-  - [Get All Requests](#get-all-requests)
-  - [Get Request](#get-request)
-  - [Summarize Usage](#summarize-usage)
-  - [Get Fields](#get-fields)
-  - [Summarize Usage (Deprecated)](#summarize-usage-1)
-- [Billing](#billing)
-  - [Get All Balances](#get-all-balances)
-  - [Get Balance](#get-balance)
-- [Models](#models)
-  - [Get All Models](#get-all-models)
-  - [Get All Project Models](#get-all-project-models)
-  - [Get Model](#get-model)
-- [On-Prem APIs](#on-prem-apis)
-  - [List On-Prem credentials](#list-on-prem-credentials)
-  - [Get On-Prem credentials](#get-on-prem-credentials)
-  - [Create On-Prem credentials](#create-on-prem-credentials)
-  - [Delete On-Prem credentials](#delete-on-prem-credentials)
-- [Backwards Compatibility](#backwards-compatibility)
-- [Development and Contributing](#development-and-contributing)
-  - [Debugging and making changes locally](#debugging-and-making-changes-locally)
-- [Getting Help](#getting-help)
-<!-- /TOC -->
+Power your apps with world-class speech and Language AI models
 
 ## Documentation
 
-You can learn more about the Deepgram API at [developers.deepgram.com](https://developers.deepgram.com/docs).
+API reference documentation is available [here](https://developers.deepgram.com/reference/deepgram-api-overview).
 
 ## Migrating from earlier versions
 
@@ -114,62 +27,8 @@ The Voice Agent interfaces have been updated to use the new Voice Agent V1 API. 
 
 ## Installation
 
-You can install this SDK directly from [[npm](https://www.npmjs.com/package/@deepgram/sdk)](https://www.npmjs.com/package/@deepgram/sdk).
-
-```bash
-npm install @deepgram/sdk
-```
-
-or
-
-```bash
-pnpm install @deepgram/sdk
-```
-
-or
-
-```bash
-yarn add @deepgram/sdk
-```
-
-### UMD
-
-You can now use plain `<script>`s to import deepgram from CDNs, like:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
-```
-
-or even:
-
-```html
-<script src="https://unpkg.com/@deepgram/sdk"></script>
-```
-
-Then you can use it from a global deepgram variable:
-
-```html
-<script>
-  const { createClient } = deepgram;
-  const deepgramClient = createClient("deepgram-api-key");
-
-  console.log("Deepgram client instance: ", deepgramClient);
-  // ...
-</script>
-```
-
-### ESM
-
-You can now use type="module" `<script>`s to import deepgram from CDNs, like:
-
-```html
-<script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
-  const deepgramClient = createClient("deepgram-api-key");
-
-  console.log("Deepgram client instance: ", deepgramClient);
-  // ...
-</script>
+```sh
+npm i -s @deepgram/sdk
 ```
 
 ## Authentication
@@ -215,7 +74,7 @@ For browser environments or custom proxy setups. Pass `"proxy"` as the API key.
 import { createClient } from "@deepgram/sdk";
 
 const deepgramClient = createClient("proxy", {
-  global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
+    global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
 });
 ```
 
@@ -229,8 +88,8 @@ Create API keys via the Management API:
 
 ```js
 const { result, error } = await deepgramClient.manage.createProjectKey(projectId, {
-  comment: "My API key",
-  scopes: ["usage:write"],
+    comment: "My API key",
+    scopes: ["usage:write"],
 });
 ```
 
@@ -293,7 +152,7 @@ import { createClient } from "@deepgram/sdk";
 // const { createClient } = require("@deepgram/sdk");
 
 const deepgramClient = createClient(DEEPGRAM_API_KEY, {
-  global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } },
+    global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } },
 });
 ```
 
@@ -307,7 +166,7 @@ import { createClient } from "@deepgram/sdk";
 // const { createClient } = require("@deepgram/sdk");
 
 const deepgramClient = createClient(DEEPGRAM_API_KEY, {
-  global: { websocket: { options: { url: "ws://localhost:8080" } } },
+    global: { websocket: { options: { url: "ws://localhost:8080" } } },
 });
 ```
 
@@ -321,7 +180,7 @@ import { createClient } from "@deepgram/sdk";
 // const { createClient } = require("@deepgram/sdk");
 
 const deepgramClient = createClient(DEEPGRAM_API_KEY, {
-  listen: { fetch: { options: { url: "http://localhost:8080" } } },
+    listen: { fetch: { options: { url: "http://localhost:8080" } } },
 });
 ```
 
@@ -335,11 +194,11 @@ import { createClient } from "@deepgram/sdk";
 // const { createClient } = require("@deepgram/sdk");
 
 const yourFetch = async () => {
-  return Response("...etc");
+    return Response("...etc");
 };
 
 const deepgramClient = createClient(DEEPGRAM_API_KEY, {
-  global: { fetch: { client: yourFetch } },
+    global: { fetch: { client: yourFetch } },
 });
 ```
 
@@ -351,7 +210,7 @@ This SDK now works in the browser. If you'd like to make REST-based requests (pr
 import { createClient } from "@deepgram/sdk";
 
 const deepgramClient = createClient("proxy", {
-  global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
+    global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
 });
 ```
 
@@ -369,7 +228,7 @@ Useful for many things.
 import { createClient } from "@deepgram/sdk";
 
 const deepgramClient = createClient({
-  global: { fetch: { options: { headers: { "x-custom-header": "foo" } } } },
+    global: { fetch: { options: { headers: { "x-custom-header": "foo" } } } },
 });
 ```
 
@@ -396,8 +255,8 @@ The SDK works in modern browsers with some considerations:
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
 <script>
-  const { createClient } = deepgram;
-  const deepgramClient = createClient("YOUR_API_KEY");
+    const { createClient } = deepgram;
+    const deepgramClient = createClient("YOUR_API_KEY");
 </script>
 ```
 
@@ -405,8 +264,8 @@ The SDK works in modern browsers with some considerations:
 
 ```html
 <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
-  const deepgramClient = createClient("YOUR_API_KEY");
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@deepgram/sdk/+esm";
+    const deepgramClient = createClient("YOUR_API_KEY");
 </script>
 ```
 
@@ -422,11 +281,11 @@ Transcribe audio from a URL.
 
 ```js
 const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-  { url: "https://dpgr.am/spacewalk.wav" },
-  {
-    model: "nova-3",
-    // pre-recorded transcription options
-  }
+    { url: "https://dpgr.am/spacewalk.wav" },
+    {
+        model: "nova-3",
+        // pre-recorded transcription options
+    },
 );
 ```
 
@@ -440,11 +299,11 @@ Transcribe audio from a file.
 
 ```js
 const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(
-  fs.createReadStream("./examples/spacewalk.wav"),
-  {
-    model: "nova-3",
-    // pre-recorded transcription options
-  }
+    fs.createReadStream("./examples/spacewalk.wav"),
+    {
+        model: "nova-3",
+        // pre-recorded transcription options
+    },
 );
 ```
 
@@ -460,12 +319,12 @@ We have a `Callback` version of both `transcribeFile` and `transcribeUrl`, which
 import { CallbackUrl } from "@deepgram/sdk";
 
 const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrlCallback(
-  { url: "https://dpgr.am/spacewalk.wav" },
-  new CallbackUrl("http://callback/endpoint"),
-  {
-    model: "nova-3",
-    // pre-recorded transcription options
-  }
+    { url: "https://dpgr.am/spacewalk.wav" },
+    new CallbackUrl("http://callback/endpoint"),
+    {
+        model: "nova-3",
+        // pre-recorded transcription options
+    },
 );
 ```
 
@@ -479,18 +338,18 @@ Connect to our websocket and transcribe live streaming audio.
 
 ```js
 const deepgramConnection = deepgramClient.listen.live({
-  model: "nova-3",
-  // live transcription options
+    model: "nova-3",
+    // live transcription options
 });
 
 deepgramConnection.on(LiveTranscriptionEvents.Open, () => {
-  deepgramConnection.on(LiveTranscriptionEvents.Transcript, (data) => {
-    console.log(data);
-  });
+    deepgramConnection.on(LiveTranscriptionEvents.Transcript, (data) => {
+        console.log(data);
+    });
 
-  source.addListener("got-some-audio", async (event) => {
-    deepgramConnection.send(event.raw_audio_data);
-  });
+    source.addListener("got-some-audio", async (event) => {
+        deepgramConnection.send(event.raw_audio_data);
+    });
 });
 ```
 
@@ -506,8 +365,8 @@ Convert deepgram transcriptions to captions.
 import { webvtt, srt } from "@deepgram/sdk";
 
 const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl({
-  model: "nova-3",
-  // pre-recorded transcription options
+    model: "nova-3",
+    // pre-recorded transcription options
 });
 
 const vttResult = webvtt(result);
@@ -528,21 +387,21 @@ const deepgramConnection = deepgramClient.agent();
 
 // Set up event handlers
 deepgramConnection.on(AgentEvents.Open, () => {
-  console.log("Connection opened");
+    console.log("Connection opened");
 
-  // Set up event handlers
-  deepgramConnection.on(AgentEvents.ConversationText, (data) => {
-    console.log(data);
-  });
+    // Set up event handlers
+    deepgramConnection.on(AgentEvents.ConversationText, (data) => {
+        console.log(data);
+    });
 
-  // other events
+    // other events
 
-  // Configure the agent once connection is established
-  deepgramConnection.configure({
-    // agent configuration
-  });
+    // Configure the agent once connection is established
+    deepgramConnection.configure({
+        // agent configuration
+    });
 
-  // etc...
+    // etc...
 });
 ```
 
@@ -558,11 +417,11 @@ Convert text into speech using the REST API.
 
 ```js
 const { result } = await deepgramClient.speak.request(
-  { text },
-  {
-    model: "aura-2-thalia-en",
-    // text to speech options
-  }
+    { text },
+    {
+        model: "aura-2-thalia-en",
+        // text to speech options
+    },
 );
 ```
 
@@ -576,22 +435,22 @@ Connect to our websocket and send a continuous text stream to generate speech.
 
 ```js
 const deepgramConnection = deepgramClient.speak.live({
-  model: "aura-2-thalia-en",
-  // live text to speech options
+    model: "aura-2-thalia-en",
+    // live text to speech options
 });
 
 deepgramConnection.on(LiveTTSEvents.Open, () => {
-  console.log("Connection opened");
+    console.log("Connection opened");
 
-  // Send text data for TTS synthesis
-  deepgramConnection.sendText(text);
+    // Send text data for TTS synthesis
+    deepgramConnection.sendText(text);
 
-  // Send Flush message to the server after sending the text
-  deepgramConnection.flush();
+    // Send Flush message to the server after sending the text
+    deepgramConnection.flush();
 
-  deepgramConnection.on(LiveTTSEvents.Close, () => {
-    console.log("Connection closed");
-  });
+    deepgramConnection.on(LiveTTSEvents.Close, () => {
+        console.log("Connection closed");
+    });
 });
 ```
 
@@ -609,11 +468,11 @@ lazy dog'. The earliest known appearance of the phrase was in The Boston
 Journal...`;
 
 const { result, error } = await deepgramClient.read.analyzeText(
-  { text },
-  {
-    language: "en",
-    // text intelligence options
-  }
+    { text },
+    {
+        language: "en",
+        // text intelligence options
+    },
 );
 ```
 
@@ -736,11 +595,11 @@ Creates an API key with the provided scopes.
 
 ```js
 const { result, error } = await deepgramClient.manage.createProjectKey(projectId, {
-  comment: "My API key",
-  scopes: ["usage:write"], // Required: array of scope strings
-  tags: ["production"], // Optional: array of tag strings
-  time_to_live_in_seconds: 86400, // Optional: TTL in seconds
-  // OR use expiration_date: "2024-12-31T23:59:59Z" // Optional: ISO date string
+    comment: "My API key",
+    scopes: ["usage:write"], // Required: array of scope strings
+    tags: ["production"], // Optional: array of tag strings
+    time_to_live_in_seconds: 86400, // Optional: TTL in seconds
+    // OR use expiration_date: "2024-12-31T23:59:59Z" // Optional: ISO date string
 });
 ```
 
@@ -793,10 +652,7 @@ const { error } = await deepgramClient.manage.removeProjectMember(projectId, pro
 Retrieves scopes of the specified member in the specified project.
 
 ```js
-const { result, error } = await deepgramClient.manage.getProjectMemberScopes(
-  projectId,
-  projectMemberId
-);
+const { result, error } = await deepgramClient.manage.getProjectMemberScopes(projectId, projectMemberId);
 ```
 
 **API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/members/:memberId/scopes`
@@ -808,11 +664,7 @@ const { result, error } = await deepgramClient.manage.getProjectMemberScopes(
 Updates the scope for the specified member in the specified project.
 
 ```js
-const { result, error } = await deepgramClient.manage.updateProjectMemberScope(
-  projectId,
-  projectMemberId,
-  options
-);
+const { result, error } = await deepgramClient.manage.updateProjectMemberScope(projectId, projectMemberId, options);
 ```
 
 **API Endpoint**: `PUT https://api.deepgram.com/v1/projects/:projectId/members/:memberId/scopes`
@@ -869,65 +721,21 @@ const { result, error } = await deepgramClient.manage.leaveProject(projectId);
 
 [See our API reference for more info](https://developers.deepgram.com/reference/leave-project).
 
+## Reference
+
+A full reference for this library is available [here](https://github.com/deepgram/deepgram-js-sdk/blob/HEAD/./reference.md).
+
 ## Usage
 
-### Get All Requests
+Instantiate and use the client with the following:
 
-Retrieves all requests associated with the provided project_id based on the provided options.
+```typescript
+import { createReadStream } from "fs";
+import { DeepgramClient } from "@deepgram/sdk";
 
-```js
-const { result, error } = await deepgramClient.manage.getProjectUsageRequests(projectId, options);
+const client = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
+await client.listen.v1.media.transcribeFile(createReadStream("path/to/file"), {});
 ```
-
-**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/requests`
-
-### Get Request
-
-Retrieves a specific request associated with the provided project_id.
-
-```js
-const { result, error } = await deepgramClient.manage.getProjectUsageRequest(projectId, requestId);
-```
-
-**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/requests/:requestId`
-
-[See our API reference for more info](https://developers.deepgram.com/reference/get-request).
-
-### Summarize Usage
-
-Retrieves usage associated with the provided project_id based on the provided options.
-
-```js
-const { result, error } = await deepgramClient.manage.getProjectUsageSummary(projectId, options);
-```
-
-**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/usage`
-
-[See our API reference for more info](https://developers.deepgram.com/reference/summarize-usage).
-
-### Get Fields
-
-Lists the features, models, tags, languages, and processing method used for requests in the specified project.
-
-```js
-const { result, error } = await deepgramClient.manage.getProjectUsageFields(projectId, options);
-```
-
-**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/usage/fields`
-
-[See our API reference for more info](https://developers.deepgram.com/reference/get-fields).
-
-### Summarize Usage
-
-`Deprecated` Retrieves the usage for a specific project. Use Get Project Usage Breakdown for a more comprehensive usage summary.
-
-```js
-const { result, error } = await deepgramClient.manage.getProjectUsage(projectId, options);
-```
-
-**API Endpoint**: `GET https://api.deepgram.com/v1/projects/:projectId/usage` (deprecated)
-
-[See our API reference for more info](https://developers.deepgram.com/reference/management-api/usage/get).
 
 ## Billing
 
@@ -1065,3 +873,589 @@ project, let us know! You can either:
 - [Open an issue in this repository](https://github.com/deepgram/deepgram-node-sdk/issues/new)
 - [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
 - [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
+
+## Request And Response Types
+
+The SDK exports all request and response types as TypeScript interfaces. Simply import them with the
+following namespace:
+
+```typescript
+import { Deepgram } from "@deepgram/sdk";
+
+const request: Deepgram.GrantV1Request = {
+    ...
+};
+```
+
+## Exception Handling
+
+When the API returns a non-success status code (4xx or 5xx response), a subclass of the following error
+will be thrown.
+
+```typescript
+import { DeepgramError } from "@deepgram/sdk";
+
+try {
+    await client.listen.v1.media.transcribeFile(...);
+} catch (err) {
+    if (err instanceof DeepgramError) {
+        console.log(err.statusCode);
+        console.log(err.message);
+        console.log(err.body);
+        console.log(err.rawResponse);
+    }
+}
+```
+
+## File Uploads
+
+You can upload files using the client:
+
+```typescript
+import { createReadStream } from "fs";
+
+await client.listen.v1.media.transcribeFile(createReadStream("path/to/file"), ...);
+await client.listen.v1.media.transcribeFile(new ReadableStream(), ...);
+await client.listen.v1.media.transcribeFile(Buffer.from('binary data'), ...);
+await client.listen.v1.media.transcribeFile(new Blob(['binary data'], { type: 'audio/mpeg' }), ...);
+await client.listen.v1.media.transcribeFile(new File(['binary data'], 'file.mp3'), ...);
+await client.listen.v1.media.transcribeFile(new ArrayBuffer(8), ...);
+await client.listen.v1.media.transcribeFile(new Uint8Array([0, 1, 2]), ...);
+```
+
+The client accepts a variety of types for file upload parameters:
+
+- Stream types: `fs.ReadStream`, `stream.Readable`, and `ReadableStream`
+- Buffered types: `Buffer`, `Blob`, `File`, `ArrayBuffer`, `ArrayBufferView`, and `Uint8Array`
+
+### Metadata
+
+You can configure metadata when uploading a file:
+
+```typescript
+const file: Uploadable.WithMetadata = {
+    data: createReadStream("path/to/file"),
+    filename: "my-file", // optional
+    contentType: "audio/mpeg", // optional
+    contentLength: 1949, // optional
+};
+```
+
+Alternatively, you can upload a file directly from a file path:
+
+```typescript
+const file: Uploadable.FromPath = {
+    path: "path/to/file",
+    filename: "my-file", // optional
+    contentType: "audio/mpeg", // optional
+    contentLength: 1949, // optional
+};
+```
+
+The metadata is used to set the `Content-Length`, `Content-Type`, and `Content-Disposition` headers. If not provided, the client will attempt to determine them automatically.
+For example, `fs.ReadStream` has a `path` property which the SDK uses to retrieve the file size from the filesystem without loading it into memory.
+
+## Binary Response
+
+You can consume binary data from endpoints using the `BinaryResponse` type which lets you choose how to consume the data:
+
+```typescript
+const response = await client.speak.v1.audio.generate(...);
+const stream: ReadableStream<Uint8Array> = response.stream();
+// const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
+// const blob: Blob = response.blob();
+// const bytes: Uint8Array = response.bytes();
+// You can only use the response body once, so you must choose one of the above methods.
+// If you want to check if the response body has been used, you can use the following property.
+const bodyUsed = response.bodyUsed;
+```
+
+<details>
+<summary>Save binary response to a file</summary>
+
+<blockquote>
+<details>
+<summary>Node.js</summary>
+
+<blockquote>
+<details>
+<summary>ReadableStream (most-efficient)</summary>
+
+```ts
+import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+
+const response = await client.speak.v1.audio.generate(...);
+
+const stream = response.stream();
+const nodeStream = Readable.fromWeb(stream);
+const writeStream = createWriteStream('path/to/file');
+
+await pipeline(nodeStream, writeStream);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>ArrayBuffer</summary>
+
+```ts
+import { writeFile } from 'fs/promises';
+
+const response = await client.speak.v1.audio.generate(...);
+
+const arrayBuffer = await response.arrayBuffer();
+await writeFile('path/to/file', Buffer.from(arrayBuffer));
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Blob</summary>
+
+```ts
+import { writeFile } from 'fs/promises';
+
+const response = await client.speak.v1.audio.generate(...);
+
+const blob = await response.blob();
+const arrayBuffer = await blob.arrayBuffer();
+await writeFile('output.bin', Buffer.from(arrayBuffer));
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Bytes (UIntArray8)</summary>
+
+```ts
+import { writeFile } from 'fs/promises';
+
+const response = await client.speak.v1.audio.generate(...);
+
+const bytes = await response.bytes();
+await writeFile('path/to/file', bytes);
+```
+
+</details>
+</blockquote>
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Bun</summary>
+
+<blockquote>
+<details>
+<summary>ReadableStream (most-efficient)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const stream = response.stream();
+await Bun.write('path/to/file', stream);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>ArrayBuffer</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const arrayBuffer = await response.arrayBuffer();
+await Bun.write('path/to/file', arrayBuffer);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Blob</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const blob = await response.blob();
+await Bun.write('path/to/file', blob);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Bytes (UIntArray8)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const bytes = await response.bytes();
+await Bun.write('path/to/file', bytes);
+```
+
+</details>
+</blockquote>
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Deno</summary>
+
+<blockquote>
+<details>
+<summary>ReadableStream (most-efficient)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const stream = response.stream();
+const file = await Deno.open('path/to/file', { write: true, create: true });
+await stream.pipeTo(file.writable);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>ArrayBuffer</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const arrayBuffer = await response.arrayBuffer();
+await Deno.writeFile('path/to/file', new Uint8Array(arrayBuffer));
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Blob</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const blob = await response.blob();
+const arrayBuffer = await blob.arrayBuffer();
+await Deno.writeFile('path/to/file', new Uint8Array(arrayBuffer));
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Bytes (UIntArray8)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const bytes = await response.bytes();
+await Deno.writeFile('path/to/file', bytes);
+```
+
+</details>
+</blockquote>
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Browser</summary>
+
+<blockquote>
+<details>
+<summary>Blob (most-efficient)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const blob = await response.blob();
+const url = URL.createObjectURL(blob);
+
+// trigger download
+const a = document.createElement('a');
+a.href = url;
+a.download = 'filename';
+a.click();
+URL.revokeObjectURL(url);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>ReadableStream</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const stream = response.stream();
+const reader = stream.getReader();
+const chunks = [];
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  chunks.push(value);
+}
+
+const blob = new Blob(chunks);
+const url = URL.createObjectURL(blob);
+
+// trigger download
+const a = document.createElement('a');
+a.href = url;
+a.download = 'filename';
+a.click();
+URL.revokeObjectURL(url);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>ArrayBuffer</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const arrayBuffer = await response.arrayBuffer();
+const blob = new Blob([arrayBuffer]);
+const url = URL.createObjectURL(blob);
+
+// trigger download
+const a = document.createElement('a');
+a.href = url;
+a.download = 'filename';
+a.click();
+URL.revokeObjectURL(url);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Bytes (UIntArray8)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const bytes = await response.bytes();
+const blob = new Blob([bytes]);
+const url = URL.createObjectURL(blob);
+
+// trigger download
+const a = document.createElement('a');
+a.href = url;
+a.download = 'filename';
+a.click();
+URL.revokeObjectURL(url);
+```
+
+</details>
+</blockquote>
+
+</details>
+</blockquote>
+
+</details>
+</blockquote>
+
+<details>
+<summary>Convert binary response to text</summary>
+
+<blockquote>
+<details>
+<summary>ReadableStream</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const stream = response.stream();
+const text = await new Response(stream).text();
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>ArrayBuffer</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const arrayBuffer = await response.arrayBuffer();
+const text = new TextDecoder().decode(arrayBuffer);
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Blob</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const blob = await response.blob();
+const text = await blob.text();
+```
+
+</details>
+</blockquote>
+
+<blockquote>
+<details>
+<summary>Bytes (UIntArray8)</summary>
+
+```ts
+const response = await client.speak.v1.audio.generate(...);
+
+const bytes = await response.bytes();
+const text = new TextDecoder().decode(bytes);
+```
+
+</details>
+</blockquote>
+
+</details>
+
+## Advanced
+
+### Additional Headers
+
+If you would like to send additional headers as part of the request, use the `headers` request option.
+
+```typescript
+const response = await client.listen.v1.media.transcribeFile(..., {
+    headers: {
+        'X-Custom-Header': 'custom value'
+    }
+});
+```
+
+### Additional Query String Parameters
+
+If you would like to send additional query string parameters as part of the request, use the `queryParams` request option.
+
+```typescript
+const response = await client.listen.v1.media.transcribeFile(..., {
+    queryParams: {
+        'customQueryParamKey': 'custom query param value'
+    }
+});
+```
+
+### Retries
+
+The SDK is instrumented with automatic retries with exponential backoff. A request will be retried as long
+as the request is deemed retryable and the number of retry attempts has not grown larger than the configured
+retry limit (default: 2).
+
+A request is deemed retryable when any of the following HTTP status codes is returned:
+
+- [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) (Timeout)
+- [429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) (Too Many Requests)
+- [5XX](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500) (Internal Server Errors)
+
+Use the `maxRetries` request option to configure this behavior.
+
+```typescript
+const response = await client.listen.v1.media.transcribeFile(..., {
+    maxRetries: 0 // override maxRetries at the request level
+});
+```
+
+### Timeouts
+
+The SDK defaults to a 60 second timeout. Use the `timeoutInSeconds` option to configure this behavior.
+
+```typescript
+const response = await client.listen.v1.media.transcribeFile(..., {
+    timeoutInSeconds: 30 // override timeout to 30s
+});
+```
+
+### Aborting Requests
+
+The SDK allows users to abort requests at any point by passing in an abort signal.
+
+```typescript
+const controller = new AbortController();
+const response = await client.listen.v1.media.transcribeFile(..., {
+    abortSignal: controller.signal
+});
+controller.abort(); // aborts the request
+```
+
+### Access Raw Response Data
+
+The SDK provides access to raw response data, including headers, through the `.withRawResponse()` method.
+The `.withRawResponse()` method returns a promise that results to an object with a `data` and a `rawResponse` property.
+
+```typescript
+const { data, rawResponse } = await client.listen.v1.media.transcribeFile(...).withRawResponse();
+
+console.log(data);
+console.log(rawResponse.headers['X-My-Header']);
+```
+
+### Runtime Compatibility
+
+The SDK works in the following runtimes:
+
+- Node.js 18+
+- Vercel
+- Cloudflare Workers
+- Deno v1.25+
+- Bun 1.0+
+- React Native
+
+### Customizing Fetch Client
+
+The SDK provides a way for you to customize the underlying HTTP client / Fetch function. If you're running in an
+unsupported environment, this provides a way for you to break glass and ensure the SDK works.
+
+```typescript
+import { DeepgramClient } from "@deepgram/sdk";
+
+const client = new DeepgramClient({
+    ...
+    fetcher: // provide your implementation here
+});
+```
+
+## Contributing
+
+While we value open-source contributions to this SDK, this library is generated programmatically.
+Additions made directly to this library would have to be moved over to our generation code,
+otherwise they would be overwritten upon the next generated release. Feel free to open a PR as
+a proof of concept, but know that we will not be able to merge it as-is. We suggest opening
+an issue first to discuss with us!
+
+On the other hand, contributions to the README are always very welcome!
