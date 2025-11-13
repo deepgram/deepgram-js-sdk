@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Deepgram SDK Browser Test - transcribeFile</title>
+</head>
+<body>
+    <h1>Deepgram SDK Browser Test - transcribeFile</h1>
+    <div id="status">Loading...</div>
+    <pre id="result"></pre>
+    
+    <script src="./deepgram-browser-bundle.js"></script>
+    <script>
+        const statusEl = document.getElementById('status');
+        const resultEl = document.getElementById('result');
+        
+        async function runTest() {
+            try {
+                statusEl.textContent = 'Loading audio file...';
+                console.log('Fetching audio file');
+                
+                // Fetch the audio file
+                const audioResponse = await fetch('./audio.wav');
+                if (!audioResponse.ok) {
+                    throw new Error('Failed to load audio file');
+                }
+                const audioBlob = await audioResponse.blob();
+                console.log('Audio file loaded:', audioBlob.size, 'bytes');
+                
+                statusEl.textContent = 'Creating Deepgram client...';
+                console.log('SDK loaded, creating client');
+                
+                // The bundle exposes DeepgramSDK globally
+                const { DeepgramClient } = DeepgramSDK;
+                
+                const client = new DeepgramClient({
+                    apiKey: '{{DEEPGRAM_API_KEY}}'
+                });
+                
+                statusEl.textContent = 'Sending request with audio file...';
+                console.log('Request sent');
+                
+                // Convert Blob to ArrayBuffer for transcribeFile
+                const audioBuffer = await audioBlob.arrayBuffer();
+                
+                const response = await client.listen.v1.media.transcribeFile(
+                    audioBuffer,
+                    {
+                        model: 'nova-3'
+                    }
+                );
+                
+                statusEl.textContent = 'Response received!';
+                console.log('Response received');
+                
+                const resultData = {
+                    success: true,
+                    hasResults: !!response?.results,
+                    hasChannels: !!response?.results?.channels,
+                    channelCount: response?.results?.channels?.length || 0,
+                    firstTranscript: response?.results?.channels?.[0]?.alternatives?.[0]?.transcript || null,
+                    audioSize: audioBlob.size
+                };
+                
+                resultEl.textContent = JSON.stringify(resultData, null, 2);
+                window.testResult = resultData;
+                
+            } catch (error) {
+                statusEl.textContent = 'Error: ' + error.message;
+                console.error('Error:', error);
+                
+                const errorData = {
+                    success: false,
+                    error: error.message,
+                    stack: error.stack
+                };
+                
+                resultEl.textContent = JSON.stringify(errorData, null, 2);
+                window.testResult = errorData;
+            }
+        }
+        
+        runTest();
+    </script>
+</body>
+</html>
+
