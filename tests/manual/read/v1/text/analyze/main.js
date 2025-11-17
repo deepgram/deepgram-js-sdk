@@ -1,25 +1,26 @@
-const { DeepgramClient } = require('../../../../../../dist/cjs/index.js');
+// @ts-check
+/** @typedef {import("../../../../../../dist/cjs/index.js").DeepgramClient} */
+const { DeepgramClient } = require("../../../../../../dist/cjs/index.js");
 
-// Client uses DEEPGRAM_API_KEY from environment
-const client = new DeepgramClient({
-    apiKey: process.env.DEEPGRAM_API_KEY
-});
+/** @type {DeepgramClient} */
+const client = new DeepgramClient();
 
 (async () => {
     try {
-        console.log('Request sent');
+        console.log("Request sent");
         const response = await client.read.v1.text.analyze({
-            text: 'Hello, world!'
-        }, {
-            language: 'en',
+            language: "en",
             sentiment: true,
-            summarize: true,
+            summarize: "v2",
             topics: true,
-            intents: true
+            intents: true,
+            body: {
+                text: "Hello, world!",
+            },
         });
-        console.log('Response received');
+        console.log("Response received");
     } catch (e) {
-        console.log(`Caught: ${e.message || e}`);
+        console.error(`Error: ${e.message || e}`);
+        throw e;
     }
 })();
-
