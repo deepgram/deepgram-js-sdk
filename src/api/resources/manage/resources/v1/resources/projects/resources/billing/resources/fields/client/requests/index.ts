@@ -1,1 +1,1 @@
-export { type FieldsListRequest } from "./FieldsListRequest.js";
+export type { FieldsListRequest } from "./FieldsListRequest.js";

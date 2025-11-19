@@ -1,1 +1,1 @@
-export { type TextAnalyzeRequest } from "./TextAnalyzeRequest.js";
+export type { TextAnalyzeRequest } from "./TextAnalyzeRequest.js";

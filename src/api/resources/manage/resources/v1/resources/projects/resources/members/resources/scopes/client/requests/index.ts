@@ -1,1 +1,1 @@
-export { type UpdateProjectMemberScopesV1Request } from "./UpdateProjectMemberScopesV1Request.js";
+export type { UpdateProjectMemberScopesV1Request } from "./UpdateProjectMemberScopesV1Request.js";

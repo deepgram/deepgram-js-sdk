@@ -1,0 +1,20 @@
+{
+    "cliVersion": "1.10.2",
+    "generatorName": "fernapi/fern-typescript-node-sdk",
+    "generatorVersion": "3.32.0",
+    "generatorConfig": {
+        "allowCustomFetcher": true,
+        "enableInlineTypes": true,
+        "includeApiReference": true,
+        "namespaceExport": "Deepgram",
+        "noSerdeLayer": true,
+        "shouldGenerateWebsocketClients": true,
+        "skipResponseValidation": true,
+        "fileResponseType": "binary-response",
+        "generateWireTests": true,
+        "extraDevDependencies": {
+            "playwright": "^1.56.1",
+            "@playwright/test": "^1.56.1"
+        }
+    }
+}
