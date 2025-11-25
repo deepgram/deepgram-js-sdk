@@ -1,7 +1,7 @@
 import { AbstractLiveClient } from "./AbstractLiveClient";
 import { LiveTranscriptionEvents } from "../lib/enums";
-import type { LiveSchema, LiveConfigOptions, DeepgramClientOptions } from "../lib/types";
-import { DeepgramError } from "../lib/errors";
+import type { LiveSchema, LiveConfigOptions, DeepgramClientOptions, LiveTranscriptionEvent, LiveMetadataEvent, UtteranceEndEvent, SpeechStartedEvent } from "../lib/types";
+import { DeepgramApiError, DeepgramError } from "../lib/errors";
 
 /**
  * The `ListenLiveClient` class extends the `AbstractLiveClient` class and provides functionality for setting up and managing a WebSocket connection for live transcription.
@@ -18,7 +18,7 @@ import { DeepgramError } from "../lib/errors";
  *
  * The `finish` method is deprecated as of version 3.4 and will be removed in version 4.0. Use `requestClose` instead.
  */
-export class ListenLiveClient extends AbstractLiveClient {
+export class ListenLiveClient extends AbstractLiveClient { /* eslint-disable-line @typescript-eslint/no-unsafe-declaration-merging */
   public namespace: string = "listen";
 
   /**
@@ -145,6 +145,18 @@ export class ListenLiveClient extends AbstractLiveClient {
       })
     );
   }
+}
+
+/* eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging */
+export interface ListenLiveClient {
+  on(eventName: `${LiveTranscriptionEvents.Transcript}`, listener: (data: LiveTranscriptionEvent) => void): this
+  on(eventName: `${LiveTranscriptionEvents.Metadata}`, listener: (data: LiveMetadataEvent) => void): this
+  on(eventName: `${LiveTranscriptionEvents.UtteranceEnd}`, listener: (data: UtteranceEndEvent) => void): this
+  on(eventName: `${LiveTranscriptionEvents.SpeechStarted}`, listener: (data: SpeechStartedEvent) => void): this
+  on(eventName: `${LiveTranscriptionEvents.Error}`, listener: (data: DeepgramApiError) => void): this
+  on(eventName: `${LiveTranscriptionEvents.Close}`, listener: () => void): this
+  on(eventName: `${LiveTranscriptionEvents.Open}`, listener: (client: ListenLiveClient) => void): this
+  on(eventName: `${LiveTranscriptionEvents.Unhandled}`, listener: (data: unknown) => void): this
 }
 
 export { ListenLiveClient as LiveClient };
