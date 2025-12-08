@@ -1,6 +1,6 @@
 /**
  * Example: Live Transcription via WebSocket
- * 
+ *
  * Connect to Deepgram's websocket and transcribe live streaming audio.
  */
 
@@ -51,4 +51,3 @@ function liveTranscription() {
 
 // Uncomment to run:
 liveTranscription();
-

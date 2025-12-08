@@ -1,6 +1,6 @@
 /**
  * Example: On-Prem Credentials Management
- * 
+ *
  * Examples for managing on-premises distribution credentials.
  */
 
@@ -12,7 +12,8 @@ const projectId = "YOUR_PROJECT_ID";
 
 // List on-prem credentials
 async function listCredentials() {
-  const { result, error } = await deepgramClient.onprem.listCredentials(projectId);
+  const { result, error } =
+    await deepgramClient.onprem.listCredentials(projectId);
 
   if (error) {
     console.error("Error:", error);
@@ -24,7 +25,10 @@ async function listCredentials() {
 
 // Get specific credentials
 async function getCredentials(credentialId) {
-  const { result, error } = await deepgramClient.onprem.getCredentials(projectId, credentialId);
+  const { result, error } = await deepgramClient.onprem.getCredentials(
+    projectId,
+    credentialId,
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -36,9 +40,12 @@ async function getCredentials(credentialId) {
 
 // Create credentials
 async function createCredentials() {
-  const { result, error } = await deepgramClient.onprem.createCredentials(projectId, {
-    // Add credential creation options
-  });
+  const { result, error } = await deepgramClient.onprem.createCredentials(
+    projectId,
+    {
+      // Add credential creation options
+    },
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -50,7 +57,10 @@ async function createCredentials() {
 
 // Delete credentials
 async function deleteCredentials(credentialId) {
-  const { error } = await deepgramClient.onprem.deleteCredentials(projectId, credentialId);
+  const { error } = await deepgramClient.onprem.deleteCredentials(
+    projectId,
+    credentialId,
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -65,4 +75,3 @@ listCredentials();
 getCredentials("YOUR_CREDENTIAL_ID");
 createCredentials();
 deleteCredentials("YOUR_CREDENTIAL_ID");
-

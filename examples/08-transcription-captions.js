@@ -1,6 +1,6 @@
 /**
  * Example: Convert Transcription to Captions
- * 
+ *
  * Convert Deepgram transcriptions to WebVTT or SRT caption formats.
  */
 
@@ -9,14 +9,15 @@ const { createClient, webvtt, srt } = require("@deepgram/sdk");
 const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
 
 async function generateCaptions() {
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-    { url: "https://dpgr.am/spacewalk.wav" },
-    {
-      model: "nova-3",
-      punctuate: true,
-      utterances: true,
-    }
-  );
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeUrl(
+      { url: "https://dpgr.am/spacewalk.wav" },
+      {
+        model: "nova-3",
+        punctuate: true,
+        utterances: true,
+      },
+    );
 
   if (error) {
     console.error("Error:", error);
@@ -36,4 +37,3 @@ async function generateCaptions() {
 
 // Uncomment to run:
 generateCaptions();
-

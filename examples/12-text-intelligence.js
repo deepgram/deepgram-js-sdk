@@ -1,6 +1,6 @@
 /**
  * Example: Text Intelligence
- * 
+ *
  * Analyze text using Deepgram's intelligence AI features.
  */
 
@@ -18,7 +18,7 @@ This phrase is commonly used for typing practice and testing keyboards.`;
     {
       language: "en",
       // Add more text intelligence options as needed
-    }
+    },
   );
 
   if (error) {
@@ -31,4 +31,3 @@ This phrase is commonly used for typing practice and testing keyboards.`;
 
 // Uncomment to run:
 analyzeText();
-

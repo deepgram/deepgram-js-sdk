@@ -1,6 +1,6 @@
 /**
  * Example: Voice Agent
- * 
+ *
  * Configure and use a Voice Agent for conversational AI interactions.
  */
 
@@ -46,4 +46,3 @@ function voiceAgent() {
 
 // Uncomment to run:
 voiceAgent();
-

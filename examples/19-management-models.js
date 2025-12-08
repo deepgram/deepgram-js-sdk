@@ -1,6 +1,6 @@
 /**
  * Example: Model Management
- * 
+ *
  * Examples for retrieving available models.
  */
 
@@ -24,7 +24,10 @@ async function getAllModels() {
 
 // Get all project models
 async function getProjectModels() {
-  const { result, error } = await deepgramClient.manage.getAllModels(projectId, {});
+  const { result, error } = await deepgramClient.manage.getAllModels(
+    projectId,
+    {},
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -36,7 +39,10 @@ async function getProjectModels() {
 
 // Get a specific model
 async function getModel(modelId) {
-  const { result, error } = await deepgramClient.manage.getModel(projectId, modelId);
+  const { result, error } = await deepgramClient.manage.getModel(
+    projectId,
+    modelId,
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -50,4 +56,3 @@ async function getModel(modelId) {
 getAllModels();
 getProjectModels();
 getModel("YOUR_MODEL_ID");
-

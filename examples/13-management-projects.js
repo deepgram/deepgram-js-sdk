@@ -1,6 +1,6 @@
 /**
  * Example: Project Management
- * 
+ *
  * Examples for managing Deepgram projects: list, get, update, delete.
  */
 
@@ -34,10 +34,13 @@ async function getProject(projectId) {
 
 // Update a project
 async function updateProject(projectId) {
-  const { result, error } = await deepgramClient.manage.updateProject(projectId, {
-    name: "Updated Project Name",
-    // Add more update options as needed
-  });
+  const { result, error } = await deepgramClient.manage.updateProject(
+    projectId,
+    {
+      name: "Updated Project Name",
+      // Add more update options as needed
+    },
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -63,5 +66,4 @@ async function deleteProject(projectId) {
 getProjects();
 getProject("YOUR_PROJECT_ID");
 updateProject("YOUR_PROJECT_ID");
-deleteProject("YOUR_PROJECT_ID");
-
+// deleteProject("YOUR_PROJECT_ID");

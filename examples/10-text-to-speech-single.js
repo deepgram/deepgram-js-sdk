@@ -1,6 +1,6 @@
 /**
  * Example: Text-to-Speech Single Request
- * 
+ *
  * Convert text into speech using the REST API.
  */
 
@@ -18,7 +18,7 @@ async function textToSpeech() {
       encoding: "linear16",
       container: "wav",
       // Add more options as needed
-    }
+    },
   );
 
   if (error) {
@@ -33,4 +33,3 @@ async function textToSpeech() {
 
 // Uncomment to run:
 textToSpeech();
-

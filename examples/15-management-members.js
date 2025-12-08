@@ -1,6 +1,6 @@
 /**
  * Example: Project Member Management
- * 
+ *
  * Examples for managing project members: list, remove, get/update scopes.
  */
 
@@ -12,7 +12,8 @@ const projectId = "YOUR_PROJECT_ID";
 
 // Get all members
 async function getMembers() {
-  const { result, error } = await deepgramClient.manage.getProjectMembers(projectId);
+  const { result, error } =
+    await deepgramClient.manage.getProjectMembers(projectId);
 
   if (error) {
     console.error("Error:", error);
@@ -24,7 +25,10 @@ async function getMembers() {
 
 // Remove a member
 async function removeMember(memberId) {
-  const { error } = await deepgramClient.manage.removeProjectMember(projectId, memberId);
+  const { error } = await deepgramClient.manage.removeProjectMember(
+    projectId,
+    memberId,
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -38,7 +42,7 @@ async function removeMember(memberId) {
 async function getMemberScopes(memberId) {
   const { result, error } = await deepgramClient.manage.getProjectMemberScopes(
     projectId,
-    memberId
+    memberId,
   );
 
   if (error) {
@@ -51,13 +55,10 @@ async function getMemberScopes(memberId) {
 
 // Update member scope
 async function updateMemberScope(memberId) {
-  const { result, error } = await deepgramClient.manage.updateProjectMemberScope(
-    projectId,
-    memberId,
-    {
+  const { result, error } =
+    await deepgramClient.manage.updateProjectMemberScope(projectId, memberId, {
       // Add scope update options
-    }
-  );
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -69,7 +70,6 @@ async function updateMemberScope(memberId) {
 
 // Uncomment to run:
 getMembers();
-removeMember("YOUR_MEMBER_ID");
+// removeMember("YOUR_MEMBER_ID");
 getMemberScopes("YOUR_MEMBER_ID");
 updateMemberScope("YOUR_MEMBER_ID");
-

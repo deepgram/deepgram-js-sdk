@@ -1,6 +1,6 @@
 /**
  * Example: Request Options
- * 
+ *
  * Demonstrates advanced request options including headers, query params,
  * retries, timeouts, and abort signals.
  */
@@ -11,15 +11,16 @@ const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
 
 // Example 1: Additional headers
 async function withCustomHeaders() {
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-    { url: "https://dpgr.am/spacewalk.wav" },
-    {
-      model: "nova-3",
-      headers: {
-        "X-Custom-Header": "custom value",
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeUrl(
+      { url: "https://dpgr.am/spacewalk.wav" },
+      {
+        model: "nova-3",
+        headers: {
+          "X-Custom-Header": "custom value",
+        },
       },
-    }
-  );
+    );
 
   if (error) {
     console.error("Error:", error);
@@ -31,15 +32,16 @@ async function withCustomHeaders() {
 
 // Example 2: Additional query parameters
 async function withQueryParams() {
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-    { url: "https://dpgr.am/spacewalk.wav" },
-    {
-      model: "nova-3",
-      queryParams: {
-        customQueryParamKey: "custom query param value",
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeUrl(
+      { url: "https://dpgr.am/spacewalk.wav" },
+      {
+        model: "nova-3",
+        queryParams: {
+          customQueryParamKey: "custom query param value",
+        },
       },
-    }
-  );
+    );
 
   if (error) {
     console.error("Error:", error);
@@ -51,13 +53,14 @@ async function withQueryParams() {
 
 // Example 3: Custom retry configuration
 async function withRetries() {
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-    { url: "https://dpgr.am/spacewalk.wav" },
-    {
-      model: "nova-3",
-      maxRetries: 0, // Override maxRetries at the request level
-    }
-  );
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeUrl(
+      { url: "https://dpgr.am/spacewalk.wav" },
+      {
+        model: "nova-3",
+        maxRetries: 0, // Override maxRetries at the request level
+      },
+    );
 
   if (error) {
     console.error("Error:", error);
@@ -69,13 +72,14 @@ async function withRetries() {
 
 // Example 4: Custom timeout
 async function withTimeout() {
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-    { url: "https://dpgr.am/spacewalk.wav" },
-    {
-      model: "nova-3",
-      timeoutInSeconds: 30, // Override timeout to 30s
-    }
-  );
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeUrl(
+      { url: "https://dpgr.am/spacewalk.wav" },
+      {
+        model: "nova-3",
+        timeoutInSeconds: 30, // Override timeout to 30s
+      },
+    );
 
   if (error) {
     console.error("Error:", error);
@@ -94,7 +98,7 @@ async function withAbortSignal() {
     {
       model: "nova-3",
       abortSignal: controller.signal,
-    }
+    },
   );
 
   // Abort the request after 5 seconds
@@ -128,7 +132,7 @@ async function withRawResponse() {
       { url: "https://dpgr.am/spacewalk.wav" },
       {
         model: "nova-3",
-      }
+      },
     )
     .withRawResponse();
 
@@ -144,4 +148,3 @@ withRetries();
 withTimeout();
 withAbortSignal();
 withRawResponse();
-

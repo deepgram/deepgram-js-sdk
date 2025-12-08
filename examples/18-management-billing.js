@@ -1,6 +1,6 @@
 /**
  * Example: Billing Management
- * 
+ *
  * Examples for retrieving billing and balance information.
  */
 
@@ -12,7 +12,8 @@ const projectId = "YOUR_PROJECT_ID";
 
 // Get all balances
 async function getAllBalances() {
-  const { result, error } = await deepgramClient.manage.getProjectBalances(projectId);
+  const { result, error } =
+    await deepgramClient.manage.getProjectBalances(projectId);
 
   if (error) {
     console.error("Error:", error);
@@ -24,7 +25,10 @@ async function getAllBalances() {
 
 // Get a specific balance
 async function getBalance(balanceId) {
-  const { result, error } = await deepgramClient.manage.getProjectBalance(projectId, balanceId);
+  const { result, error } = await deepgramClient.manage.getProjectBalance(
+    projectId,
+    balanceId,
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -37,4 +41,3 @@ async function getBalance(balanceId) {
 // Uncomment to run:
 getAllBalances();
 getBalance("YOUR_BALANCE_ID");
-

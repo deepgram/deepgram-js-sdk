@@ -1,6 +1,6 @@
 /**
  * Example: File Upload Types
- * 
+ *
  * Demonstrates different file upload types supported by the SDK.
  */
 
@@ -11,12 +11,13 @@ const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
 
 // Example 1: Using fs.ReadStream
 async function transcribeWithReadStream() {
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(
-    createReadStream("./examples/spacewalk.wav"),
-    {
-      model: "nova-3",
-    }
-  );
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(
+      createReadStream("./examples/spacewalk.wav"),
+      {
+        model: "nova-3",
+      },
+    );
 
   if (error) {
     console.error("Error:", error);
@@ -31,9 +32,10 @@ async function transcribeWithBuffer() {
   const fs = require("fs");
   const buffer = fs.readFileSync("./examples/spacewalk.wav");
 
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(buffer, {
-    model: "nova-3",
-  });
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(buffer, {
+      model: "nova-3",
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -48,9 +50,10 @@ async function transcribeWithReadableStream() {
   const response = await fetch("https://dpgr.am/spacewalk.wav");
   const stream = response.body;
 
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(stream, {
-    model: "nova-3",
-  });
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(stream, {
+      model: "nova-3",
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -65,9 +68,10 @@ async function transcribeWithBlob() {
   const response = await fetch("https://dpgr.am/spacewalk.wav");
   const blob = await response.blob();
 
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(blob, {
-    model: "nova-3",
-  });
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(blob, {
+      model: "nova-3",
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -81,9 +85,10 @@ async function transcribeWithBlob() {
 async function transcribeWithFile(fileInput) {
   const file = fileInput.files[0];
 
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(file, {
-    model: "nova-3",
-  });
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(file, {
+      model: "nova-3",
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -98,9 +103,10 @@ async function transcribeWithArrayBuffer() {
   const response = await fetch("https://dpgr.am/spacewalk.wav");
   const arrayBuffer = await response.arrayBuffer();
 
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(arrayBuffer, {
-    model: "nova-3",
-  });
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(arrayBuffer, {
+      model: "nova-3",
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -116,9 +122,10 @@ async function transcribeWithUint8Array() {
   const arrayBuffer = await response.arrayBuffer();
   const uint8Array = new Uint8Array(arrayBuffer);
 
-  const { result, error } = await deepgramClient.listen.prerecorded.transcribeFile(uint8Array, {
-    model: "nova-3",
-  });
+  const { result, error } =
+    await deepgramClient.listen.prerecorded.transcribeFile(uint8Array, {
+      model: "nova-3",
+    });
 
   if (error) {
     console.error("Error:", error);
@@ -136,4 +143,3 @@ transcribeWithBlob();
 transcribeWithFile(document.getElementById("fileInput"));
 transcribeWithArrayBuffer();
 transcribeWithUint8Array();
-

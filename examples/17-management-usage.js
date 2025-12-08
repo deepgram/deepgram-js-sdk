@@ -1,6 +1,6 @@
 /**
  * Example: Usage Management
- * 
+ *
  * Examples for retrieving usage statistics and request information.
  */
 
@@ -12,11 +12,14 @@ const projectId = "YOUR_PROJECT_ID";
 
 // Get all requests
 async function getAllRequests() {
-  const { result, error } = await deepgramClient.manage.getProjectUsageRequests(projectId, {
-    // Add filter options as needed
-    // start: "2024-01-01T00:00:00Z",
-    // end: "2024-12-31T23:59:59Z",
-  });
+  const { result, error } = await deepgramClient.manage.getProjectUsageRequests(
+    projectId,
+    {
+      // Add filter options as needed
+      // start: "2024-01-01T00:00:00Z",
+      // end: "2024-12-31T23:59:59Z",
+    },
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -30,7 +33,7 @@ async function getAllRequests() {
 async function getRequest(requestId) {
   const { result, error } = await deepgramClient.manage.getProjectUsageRequest(
     projectId,
-    requestId
+    requestId,
   );
 
   if (error) {
@@ -43,11 +46,14 @@ async function getRequest(requestId) {
 
 // Get usage summary
 async function getUsageSummary() {
-  const { result, error } = await deepgramClient.manage.getProjectUsageSummary(projectId, {
-    // Add filter options as needed
-    // start: "2024-01-01T00:00:00Z",
-    // end: "2024-12-31T23:59:59Z",
-  });
+  const { result, error } = await deepgramClient.manage.getProjectUsageSummary(
+    projectId,
+    {
+      // Add filter options as needed
+      // start: "2024-01-01T00:00:00Z",
+      // end: "2024-12-31T23:59:59Z",
+    },
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -59,9 +65,12 @@ async function getUsageSummary() {
 
 // Get usage fields
 async function getUsageFields() {
-  const { result, error } = await deepgramClient.manage.getProjectUsageFields(projectId, {
-    // Add filter options as needed
-  });
+  const { result, error } = await deepgramClient.manage.getProjectUsageFields(
+    projectId,
+    {
+      // Add filter options as needed
+    },
+  );
 
   if (error) {
     console.error("Error:", error);
@@ -76,4 +85,3 @@ getAllRequests();
 getRequest("YOUR_REQUEST_ID");
 getUsageSummary();
 getUsageFields();
-

@@ -1,6 +1,6 @@
 /**
  * Example: Scoped Configuration
- * 
+ *
  * Examples demonstrating scoped configuration for different namespaces.
  */
 
@@ -37,7 +37,7 @@ const deepgramClient5 = createClient({
 
 // Example usage
 async function example() {
-  const { result, error } = await deepgramClient5.manage.getTokenDetails();
+  const { result, error } = await deepgramClient1.manage.getTokenDetails();
 
   if (error) {
     console.error("Error:", error);
@@ -45,7 +45,46 @@ async function example() {
   }
 
   console.log("Token details:", result);
+
+  const { result: tokenDetails2, error: tokenError2 } =
+    await deepgramClient2.manage.getTokenDetails();
+
+  if (tokenError2) {
+    console.error("Error:", tokenError2);
+    return;
+  }
+
+  console.log("Token details:", tokenDetails2);
+
+  const { result: tokenDetails3, error: tokenError3 } =
+    await deepgramClient3.manage.getTokenDetails();
+
+  if (tokenError3) {
+    console.error("Error:", tokenError3);
+    return;
+  }
+
+  console.log("Token details:", tokenDetails3);
+
+  const { result: tokenDetails4, error: tokenError4 } =
+    await deepgramClient4.manage.getTokenDetails();
+
+  if (tokenError4) {
+    console.error("Error:", tokenError4);
+    return;
+  }
+
+  console.log("Token details:", tokenDetails4);
+
+  const { result: tokenDetails5, error: tokenError5 } =
+    await deepgramClient5.manage.getTokenDetails();
+
+  if (tokenError5) {
+    console.error("Error:", tokenError5);
+    return;
+  }
+
+  console.log("Token details:", tokenDetails5);
 }
 
-example()
-
+example();

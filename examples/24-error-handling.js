@@ -1,6 +1,6 @@
 /**
  * Example: Error Handling
- * 
+ *
  * Demonstrates proper error handling with the SDK.
  */
 
@@ -10,12 +10,13 @@ const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
 
 async function exampleWithErrorHandling() {
   try {
-    const { result, error } = await deepgramClient.listen.prerecorded.transcribeUrl(
-      { url: "https://dpgr.am/spacewalk.wav" },
-      {
-        model: "nova-3",
-      }
-    );
+    const { result, error } =
+      await deepgramClient.listen.prerecorded.transcribeUrl(
+        { url: "https://dpgr.am/spacewalk.wav" },
+        {
+          model: "nova-3",
+        },
+      );
 
     if (error) {
       console.error("Error:", error);
@@ -53,4 +54,3 @@ async function exampleWithErrorCheck() {
 // Uncomment to run:
 exampleWithErrorHandling();
 exampleWithErrorCheck();
-

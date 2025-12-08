@@ -1,6 +1,6 @@
 /**
  * Example: Text-to-Speech Streaming (WebSocket)
- * 
+ *
  * Connect to Deepgram's websocket and send a continuous text stream to generate speech.
  */
 
@@ -19,7 +19,8 @@ function textToSpeechStreaming() {
   deepgramConnection.on(LiveTTSEvents.Open, () => {
     console.log("Connection opened");
 
-    const text = "Hello, this is a test of Deepgram's streaming text-to-speech API.";
+    const text =
+      "Hello, this is a test of Deepgram's streaming text-to-speech API.";
 
     // Send text data for TTS synthesis
     deepgramConnection.sendText(text);
@@ -44,4 +45,3 @@ function textToSpeechStreaming() {
 
 // Uncomment to run:
 textToSpeechStreaming();
-

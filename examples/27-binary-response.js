@@ -1,6 +1,6 @@
 /**
  * Example: Binary Response Handling
- * 
+ *
  * Demonstrates how to handle binary responses from the SDK (e.g., TTS audio).
  */
 
@@ -104,4 +104,3 @@ saveToFileWithBlob();
 saveToFileWithBytes();
 convertToText();
 checkBodyUsed();
-
