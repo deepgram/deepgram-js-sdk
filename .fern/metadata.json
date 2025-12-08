@@ -1,0 +1,13 @@
+{
+    "cliVersion": "3.1.0",
+    "generatorName": "fernapi/fern-typescript-node-sdk",
+    "generatorVersion": "3.35.9",
+    "generatorConfig": {
+        "enableInlineTypes": true,
+        "namespaceExport": "Deepgram",
+        "allowCustomFetcher": true,
+        "skipResponseValidation": true,
+        "includeApiReference": true,
+        "shouldGenerateWebsocketClients": true
+    }
+}
