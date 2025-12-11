@@ -4,26 +4,19 @@
  * Demonstrates proper error handling with the SDK.
  */
 
-const { createClient, DeepgramError } = require("@deepgram/sdk");
+const { DeepgramClient, DeepgramError } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 async function exampleWithErrorHandling() {
   try {
-    const { result, error } =
-      await deepgramClient.listen.prerecorded.transcribeUrl(
-        { url: "https://dpgr.am/spacewalk.wav" },
-        {
-          model: "nova-3",
-        },
-      );
-
-    if (error) {
-      console.error("Error:", error);
-      return;
-    }
-
-    console.log("Success:", result);
+    const { data } = await deepgramClient.listen.v1.media.transcribeUrl({
+      url: "https://dpgr.am/spacewalk.wav",
+      model: "nova-3",
+    });
+    console.log("Success:", data);
   } catch (err) {
     if (err instanceof DeepgramError) {
       console.error("Deepgram Error:");
@@ -39,16 +32,14 @@ async function exampleWithErrorHandling() {
 
 // Example with error checking pattern
 async function exampleWithErrorCheck() {
-  const { result, error } = await deepgramClient.manage.getTokenDetails();
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.list();
+    // Use result
+    console.log("Projects:", data);
+  } catch (error) {
     // Handle error
     console.error("Error occurred:", error);
-    return;
   }
-
-  // Use result
-  console.log("Token details:", result);
 }
 
 // Uncomment to run:

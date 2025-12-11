@@ -4,45 +4,51 @@
  * Configure and use a Voice Agent for conversational AI interactions.
  */
 
-const { createClient, AgentEvents } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
-function voiceAgent() {
+async function voiceAgent() {
   // Create an agent connection
-  const deepgramConnection = deepgramClient.agent();
+  const deepgramConnection = await deepgramClient.agent.v1.connect();
 
   // Set up event handlers
-  deepgramConnection.on(AgentEvents.Open, () => {
+  deepgramConnection.on("open", () => {
     console.log("Connection opened");
 
     // Set up event handlers
-    deepgramConnection.on(AgentEvents.ConversationText, (data) => {
-      console.log("Conversation text:", data);
+    deepgramConnection.on("message", (data) => {
+      // Check message type
+      if (data.type === "ConversationText") {
+        console.log("Conversation text:", data);
+      } else if (typeof data === "string") {
+        // Audio data comes as string
+        console.log("Audio received:", data);
+      }
     });
 
-    deepgramConnection.on(AgentEvents.Audio, (data) => {
-      console.log("Audio received:", data);
-    });
-
-    deepgramConnection.on(AgentEvents.Error, (error) => {
+    deepgramConnection.on("error", (error) => {
       console.error("Error:", error);
     });
 
-    deepgramConnection.on(AgentEvents.Close, () => {
+    deepgramConnection.on("close", () => {
       console.log("Connection closed");
     });
 
     // Configure the agent once connection is established
-    deepgramConnection.configure({
+    deepgramConnection.sendAgentV1Settings({
       // agent configuration options
       // See API reference for available options
     });
 
     // Send audio data
-    // deepgramConnection.send(audioData);
+    // deepgramConnection.sendAgentV1Media(audioData);
   });
+
+  deepgramConnection.connect();
 }
 
-// Uncomment to run:
+// Useless, need to update.
 voiceAgent();

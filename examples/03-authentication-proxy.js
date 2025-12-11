@@ -8,22 +8,22 @@
  * and forward requests to Deepgram's API.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient("proxy", {
+const deepgramClient = new DeepgramClient({
+  apiKey: "proxy",
   global: { fetch: { options: { proxy: { url: "http://localhost:8080" } } } },
 });
 
 // Example usage
 async function example() {
-  const { result, error } = await deepgramClient.manage.getTokenDetails();
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.list();
+    console.log("Authentication successful! Projects:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Token details:", result);
 }
 
-example();
+// Cannot run this right now, don't have a proxy.
+// example();

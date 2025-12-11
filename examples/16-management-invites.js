@@ -4,72 +4,73 @@
  * Examples for managing project invitations: list, send, delete, leave project.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "fdf4337c-a05a-4f3c-b157-fd560c58d802";
 
 // List all invites
 async function listInvites() {
-  const { result, error } =
-    await deepgramClient.manage.getProjectInvites(projectId);
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.members.invites.list(
+      projectId,
+    );
+    console.log("Invites:", JSON.stringify(data, null, 2));
+    return data;
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Invites:", result);
 }
 
 // Send an invite
-async function sendInvite() {
-  const { result, error } = await deepgramClient.manage.sendProjectInvite(
-    projectId,
-    {
-      email: "user@example.com",
-      // Add more invite options as needed
-    },
-  );
-
-  if (error) {
+async function sendInvite() { 
+  try {
+    const data = await deepgramClient.manage.v1.projects.members.invites.create(
+      projectId,
+      {
+        email: "user@example.com",
+        scope: "member", // Required: scope for the invite
+        // Add more invite options as needed
+      },
+    );
+    console.log("Invite sent:", JSON.stringify(data, null, 2));
+    return data;
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Invite sent:", result);
 }
 
 // Delete an invite
 async function deleteInvite(email) {
-  const { error } = await deepgramClient.manage.deleteProjectInvite(
-    projectId,
-    email,
-  );
-
-  if (error) {
+  try {
+    await deepgramClient.manage.v1.projects.members.invites.delete(
+      projectId,
+      email,
+    );
+    console.log("Invite deleted successfully");
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Invite deleted successfully");
 }
 
-// Leave a project
+// Note: Leave project functionality may not be available in the new SDK
+// Check the API documentation for the correct method
 async function leaveProject() {
-  const { result, error } = await deepgramClient.manage.leaveProject(projectId);
-
-  if (error) {
-    console.error("Error:", error);
-    return;
-  }
-
-  console.log("Left project:", result);
+  await deepgramClient.manage.v1.projects.leave(
+    projectId,
+  );
+  console.log("Project left successfully");
+  return data;
 }
 
 // Uncomment to run:
-listInvites();
-sendInvite();
-deleteInvite("user@example.com");
-leaveProject();
+(async () => {
+  await listInvites();
+  await sendInvite("noreply@example.com");
+  await deleteInvite("noreply@example.com");
+  // Accidentally removed myself from my own project. 💀💀💀
+  // await leaveProject();
+})();

@@ -4,19 +4,15 @@
  * Demonstrates how to configure logging for the SDK.
  */
 
-const {
-  createClient,
-  DeepgramClient,
-  LogLevel,
-  ConsoleLogger,
-} = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
+const logging = require("../dist/cjs/core/logging/exports.js");
 
 // Example 1: Basic logging configuration using DeepgramClient
 const deepgramClient1 = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
   logging: {
-    level: logging.LogLevel.Debug, // defaults to logging.LogLevel.Info
-    logger: new logging.ConsoleLogger(), // defaults to ConsoleLogger
+    level: logging.logging.LogLevel.Debug, // defaults to logging.logging.LogLevel.Info
+    logger: new logging.logging.ConsoleLogger(), // defaults to ConsoleLogger
     silent: false, // defaults to true, set to false to enable logging
   },
 });
@@ -40,7 +36,7 @@ const customLogger = {
 const deepgramClient2 = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
   logging: {
-    level: logging.LogLevel.Info,
+    level: logging.logging.LogLevel.Info,
     logger: customLogger,
     silent: false,
   },
@@ -63,7 +59,7 @@ const pinoCustomLogger = {
 const deepgramClient3 = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
   logging: {
-    level: logging.LogLevel.Debug,
+    level: logging.logging.LogLevel.Debug,
     logger: pinoCustomLogger,
     silent: false,
   },
@@ -71,50 +67,35 @@ const deepgramClient3 = new DeepgramClient({
 
 // Example usage
 async function example() {
-  const { result, error } =
-    await deepgramClient1.listen.prerecorded.transcribeUrl(
-      { url: "https://dpgr.am/spacewalk.wav" },
-      {
-        model: "nova-3",
-      },
-    );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient1.listen.v1.media.transcribeUrl({
+      url: "https://dpgr.am/spacewalk.wav",
+      model: "nova-3",
+    });
+    console.log("Result:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
 
-  console.log("Result:", result);
-
-  const { result: result2, error: error2 } =
-    await deepgramClient2.listen.prerecorded.transcribeUrl(
-      { url: "https://dpgr.am/spacewalk.wav" },
-      {
-        model: "nova-3",
-      },
-    );
-
-  if (error2) {
-    console.error("Error:", error2);
-    return;
+  try {
+    const { data: result2 } = await deepgramClient2.listen.v1.media.transcribeUrl({
+      url: "https://dpgr.am/spacewalk.wav",
+      model: "nova-3",
+    });
+    console.log("Result:", result2);
+  } catch (error) {
+    console.error("Error:", error);
   }
 
-  console.log("Result:", result2);
-
-  const { result: result3, error: error3 } =
-    await deepgramClient3.listen.prerecorded.transcribeUrl(
-      { url: "https://dpgr.am/spacewalk.wav" },
-      {
-        model: "nova-3",
-      },
-    );
-
-  if (error3) {
-    console.error("Error:", error3);
-    return;
+  try {
+    const { data: result3 } = await deepgramClient3.listen.v1.media.transcribeUrl({
+      url: "https://dpgr.am/spacewalk.wav",
+      model: "nova-3",
+    });
+    console.log("Result:", result3);
+  } catch (error) {
+    console.error("Error:", error);
   }
-
-  console.log("Result:", result3);
 }
 
 example();

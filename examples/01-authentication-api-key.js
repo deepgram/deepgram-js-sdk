@@ -7,47 +7,40 @@
  * 3. Use environment variable (DEEPGRAM_API_KEY)
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-// Method 1: Pass API key as first parameter
-const deepgramClient1 = createClient(process.env.DEEPGRAM_API_KEY);
+// Method 1: Pass API key in options object
+const deepgramClient1 = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
-// Method 2: Pass API key in options object
-const deepgramClient2 = createClient({ key: process.env.DEEPGRAM_API_KEY });
+// Method 2: Use environment variable (DEEPGRAM_API_KEY)
+const deepgramClient2 = new DeepgramClient();
 
-// Method 3: Use environment variable (DEEPGRAM_API_KEY)
-const deepgramClient3 = createClient();
-
-// Example usage: Get token details
+// Example usage: Verify authentication by listing projects
 async function example() {
-  const { result, error } = await deepgramClient1.manage.getTokenDetails();
-
-  if (error) {
+  try {
+    const data = await deepgramClient1.manage.v1.projects.list();
+    if (data) {
+      console.log("Authentication successful! Projects:", JSON.stringify(data, null, 2));
+    } else {
+      console.error("No data returned from the API");
+    }
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
 
-  console.log("Token details:", result);
-
-  const { result: tokenDetails2, error: tokenError2 } =
-    await deepgramClient2.manage.getTokenDetails();
-
-  if (tokenError2) {
-    console.error("Error:", tokenError2);
-    return;
+  try {
+    const data = await deepgramClient2.manage.v1.projects.list();
+    if (data) {
+      console.log("Authentication successful! Projects:", JSON.stringify(data, null, 2));
+    } else {
+      console.error("No data returned from the API");
+    }
+  } catch (error) {
+    console.error("Error:", error);
   }
-
-  console.log("Token details:", tokenDetails2);
-
-  const { result: tokenDetails3, error: tokenError3 } =
-    await deepgramClient3.manage.getTokenDetails();
-
-  if (tokenError3) {
-    console.error("Error:", tokenError3);
-    return;
-  }
-
-  console.log("Token details:", tokenDetails3);
 }
 
+// WORKS!
 example();

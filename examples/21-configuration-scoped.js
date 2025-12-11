@@ -4,21 +4,24 @@
  * Examples demonstrating scoped configuration for different namespaces.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
 // Change the API url used for all SDK methods
-const deepgramClient1 = createClient(process.env.DEEPGRAM_API_KEY, {
-  global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } },
+const deepgramClient1 = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+  baseUrl: "https://api.beta.deepgram.com",
 });
 
 // Change the API url used for the Voice Agent websocket
-const deepgramClient2 = createClient(process.env.DEEPGRAM_API_KEY, {
-  global: { websocket: { options: { url: "ws://localhost:8080" } } },
+const deepgramClient2 = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+  // Note: WebSocket URL configuration may need to be set per-connection
 });
 
 // Change the API url used for transcription only
-const deepgramClient3 = createClient(process.env.DEEPGRAM_API_KEY, {
-  listen: { fetch: { options: { url: "http://localhost:8080" } } },
+const deepgramClient3 = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+  baseUrl: "http://localhost:8080",
 });
 
 // Override fetch transmitter
@@ -26,65 +29,52 @@ const yourFetch = async () => {
   return new Response("...etc");
 };
 
-const deepgramClient4 = createClient(process.env.DEEPGRAM_API_KEY, {
-  global: { fetch: { client: yourFetch } },
+const deepgramClient4 = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+  fetch: yourFetch,
 });
 
 // Set custom headers for fetch
-const deepgramClient5 = createClient({
-  global: { fetch: { options: { headers: { "x-custom-header": "foo" } } } },
+const deepgramClient5 = new DeepgramClient({
+  headers: { "x-custom-header": "foo" },
 });
 
 // Example usage
 async function example() {
-  const { result, error } = await deepgramClient1.manage.getTokenDetails();
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient1.manage.v1.projects.list();
+    console.log("Projects:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
 
-  console.log("Token details:", result);
-
-  const { result: tokenDetails2, error: tokenError2 } =
-    await deepgramClient2.manage.getTokenDetails();
-
-  if (tokenError2) {
-    console.error("Error:", tokenError2);
-    return;
+  try {
+    const { data: projects2 } = await deepgramClient2.manage.v1.projects.list();
+    console.log("Projects:", projects2);
+  } catch (error) {
+    console.error("Error:", error);
   }
 
-  console.log("Token details:", tokenDetails2);
-
-  const { result: tokenDetails3, error: tokenError3 } =
-    await deepgramClient3.manage.getTokenDetails();
-
-  if (tokenError3) {
-    console.error("Error:", tokenError3);
-    return;
+  try {
+    const { data: projects3 } = await deepgramClient3.manage.v1.projects.list();
+    console.log("Projects:", projects3);
+  } catch (error) {
+    console.error("Error:", error);
   }
 
-  console.log("Token details:", tokenDetails3);
-
-  const { result: tokenDetails4, error: tokenError4 } =
-    await deepgramClient4.manage.getTokenDetails();
-
-  if (tokenError4) {
-    console.error("Error:", tokenError4);
-    return;
+  try {
+    const { data: projects4 } = await deepgramClient4.manage.v1.projects.list();
+    console.log("Projects:", projects4);
+  } catch (error) {
+    console.error("Error:", error);
   }
 
-  console.log("Token details:", tokenDetails4);
-
-  const { result: tokenDetails5, error: tokenError5 } =
-    await deepgramClient5.manage.getTokenDetails();
-
-  if (tokenError5) {
-    console.error("Error:", tokenError5);
-    return;
+  try {
+    const { data: projects5 } = await deepgramClient5.manage.v1.projects.list();
+    console.log("Projects:", projects5);
+  } catch (error) {
+    console.error("Error:", error);
   }
-
-  console.log("Token details:", tokenDetails5);
 }
 
 example();

@@ -4,70 +4,65 @@
  * Examples for managing on-premises distribution credentials.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 const projectId = "YOUR_PROJECT_ID";
 
 // List on-prem credentials
 async function listCredentials() {
-  const { result, error } =
-    await deepgramClient.onprem.listCredentials(projectId);
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.selfHosted.v1.distributionCredentials.list(
+      projectId,
+    );
+    console.log("Credentials:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Credentials:", result);
 }
 
 // Get specific credentials
 async function getCredentials(credentialId) {
-  const { result, error } = await deepgramClient.onprem.getCredentials(
-    projectId,
-    credentialId,
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.selfHosted.v1.distributionCredentials.get(
+      projectId,
+      credentialId,
+    );
+    console.log("Credentials:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Credentials:", result);
 }
 
 // Create credentials
 async function createCredentials() {
-  const { result, error } = await deepgramClient.onprem.createCredentials(
-    projectId,
-    {
-      // Add credential creation options
-    },
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.selfHosted.v1.distributionCredentials.create(
+      projectId,
+      {
+        // Add credential creation options
+      },
+    );
+    console.log("Created credentials:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Created credentials:", result);
 }
 
 // Delete credentials
 async function deleteCredentials(credentialId) {
-  const { error } = await deepgramClient.onprem.deleteCredentials(
-    projectId,
-    credentialId,
-  );
-
-  if (error) {
+  try {
+    await deepgramClient.selfHosted.v1.distributionCredentials.delete(
+      projectId,
+      credentialId,
+    );
+    console.log("Credentials deleted successfully");
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Credentials deleted successfully");
 }
 
 // Uncomment to run:

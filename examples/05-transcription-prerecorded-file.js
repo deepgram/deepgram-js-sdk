@@ -4,14 +4,16 @@
  * Transcribe audio from a local file using Deepgram's speech-to-text REST API.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 const { createReadStream } = require("fs");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 async function transcribeFile() {
-  const { result, error } =
-    await deepgramClient.listen.prerecorded.transcribeFile(
+  try {
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       createReadStream("./examples/spacewalk.wav"),
       {
         model: "nova-3",
@@ -21,20 +23,20 @@ async function transcribeFile() {
         utterances: true,
         smart_format: true,
         // Add more options as needed
-      },
+      }
     );
 
-  if (error) {
+    if (data) {
+      console.log(
+        "Transcription:",
+        data.results?.channels?.[0]?.alternatives?.[0]?.transcript,
+      );
+      console.log("Full result:", JSON.stringify(data, null, 2));
+    }
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log(
-    "Transcription:",
-    result.results?.channels?.[0]?.alternatives?.[0]?.transcript,
-  );
-  console.log("Full result:", JSON.stringify(result, null, 2));
 }
 
-// Uncomment to run:
+// WORKS!
 transcribeFile();

@@ -4,80 +4,74 @@
  * Examples for retrieving usage statistics and request information.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 const projectId = "YOUR_PROJECT_ID";
 
 // Get all requests
 async function getAllRequests() {
-  const { result, error } = await deepgramClient.manage.getProjectUsageRequests(
-    projectId,
-    {
-      // Add filter options as needed
-      // start: "2024-01-01T00:00:00Z",
-      // end: "2024-12-31T23:59:59Z",
-    },
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.requests.list(
+      projectId,
+      {
+        // Add filter options as needed
+        // start: "2024-01-01T00:00:00Z",
+        // end: "2024-12-31T23:59:59Z",
+      },
+    );
+    console.log("Requests:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Requests:", result);
 }
 
 // Get a specific request
 async function getRequest(requestId) {
-  const { result, error } = await deepgramClient.manage.getProjectUsageRequest(
-    projectId,
-    requestId,
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.requests.get(
+      projectId,
+      requestId,
+    );
+    console.log("Request:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Request:", result);
 }
 
 // Get usage summary
 async function getUsageSummary() {
-  const { result, error } = await deepgramClient.manage.getProjectUsageSummary(
-    projectId,
-    {
-      // Add filter options as needed
-      // start: "2024-01-01T00:00:00Z",
-      // end: "2024-12-31T23:59:59Z",
-    },
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.usage.get(
+      projectId,
+      {
+        // Add filter options as needed
+        // start: "2024-01-01T00:00:00Z",
+        // end: "2024-12-31T23:59:59Z",
+      },
+    );
+    console.log("Usage summary:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Usage summary:", result);
 }
 
 // Get usage fields
 async function getUsageFields() {
-  const { result, error } = await deepgramClient.manage.getProjectUsageFields(
-    projectId,
-    {
-      // Add filter options as needed
-    },
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.usage.fields.list(
+      projectId,
+      {
+        // Add filter options as needed
+      },
+    );
+    console.log("Usage fields:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Usage fields:", result);
 }
 
 // Uncomment to run:

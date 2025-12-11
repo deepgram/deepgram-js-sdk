@@ -4,72 +4,76 @@
  * Examples for managing project members: list, remove, get/update scopes.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "fdf4337c-a05a-4f3c-b157-fd560c58d802";
 
 // Get all members
 async function getMembers() {
-  const { result, error } =
-    await deepgramClient.manage.getProjectMembers(projectId);
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.members.list(
+      projectId,  
+    );
+    console.log("Members:", JSON.stringify(data, null, 2));
+    return data;
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Members:", result);
 }
 
 // Remove a member
 async function removeMember(memberId) {
-  const { error } = await deepgramClient.manage.removeProjectMember(
-    projectId,
-    memberId,
-  );
-
-  if (error) {
+  try {
+    await deepgramClient.manage.v1.projects.members.delete(
+      projectId,
+      memberId,
+    );
+    console.log("Member removed successfully");
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Member removed successfully");
 }
 
 // Get member scopes
 async function getMemberScopes(memberId) {
-  const { result, error } = await deepgramClient.manage.getProjectMemberScopes(
-    projectId,
-    memberId,
-  );
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.members.scopes.list(
+      projectId,
+      memberId,
+    );
+    console.log("Member scopes:", data);
+    return data;
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Member scopes:", result);
 }
 
 // Update member scope
 async function updateMemberScope(memberId) {
-  const { result, error } =
-    await deepgramClient.manage.updateProjectMemberScope(projectId, memberId, {
-      // Add scope update options
-    });
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.members.scopes.update(
+      projectId,
+      memberId,
+      {
+        scope: "admin", // Add scope update options
+      },
+    );
+    console.log("Updated member scope:", JSON.stringify(data, null, 2));
+    return data;
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Updated member scope:", result);
 }
 
-// Uncomment to run:
-getMembers();
+// WORKS!
+(async () => {
+  const members = await getMembers();
+  // Not testing this one, it's destructive.
 // removeMember("YOUR_MEMBER_ID");
-getMemberScopes("YOUR_MEMBER_ID");
-updateMemberScope("YOUR_MEMBER_ID");
+  await getMemberScopes(members.members[0].member_id);
+  await updateMemberScope(members.members[0].member_id);
+})();

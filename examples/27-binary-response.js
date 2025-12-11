@@ -4,12 +4,14 @@
  * Demonstrates how to handle binary responses from the SDK (e.g., TTS audio).
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 const { createWriteStream } = require("fs");
 const { Readable } = require("stream");
 const { pipeline } = require("stream/promises");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 // Example 1: Save binary response to file using ReadableStream (Node.js - most efficient)
 async function saveToFileWithStream() {

@@ -4,30 +4,30 @@
  * Analyze text using Deepgram's intelligence AI features.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 async function analyzeText() {
   const text = `The history of the phrase 'The quick brown fox jumps over the lazy dog'. 
-The earliest known appearance of the phrase was in The Boston Journal. 
+The earliest known apperance of the phrase was in The Boston Journal. 
 This phrase is commonly used for typing practice and testing keyboards.`;
 
-  const { result, error } = await deepgramClient.read.analyzeText(
-    { text },
-    {
+  try {
+    const data = await deepgramClient.read.v1.text.analyze({
+      text,
       language: "en",
+      summarize: true, // Enable at least one feature
       // Add more text intelligence options as needed
-    },
-  );
+    });
 
-  if (error) {
+    console.log("Analysis result:", JSON.stringify(data, null, 2));
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Analysis result:", JSON.stringify(result, null, 2));
 }
 
-// Uncomment to run:
+// WORKS!
 analyzeText();

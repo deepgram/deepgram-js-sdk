@@ -5,31 +5,30 @@
  * Deepgram will POST results to your callback URL when transcription is complete.
  */
 
-const { createClient, CallbackUrl } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 async function transcribeWithCallback() {
-  const { result, error } =
-    await deepgramClient.listen.prerecorded.transcribeUrlCallback(
-      { url: "https://dpgr.am/spacewalk.wav" },
-      new CallbackUrl("http://callback/endpoint"),
-      {
-        model: "nova-3",
-        language: "en",
-        punctuate: true,
-        // Add more options as needed
-      },
-    );
+  try {
+    const data = await deepgramClient.listen.v1.media.transcribeUrl({
+      url: "https://dpgr.am/spacewalk.wav",
+      callback: "dpgr.am/callback", // SDK handles encoding automatically
+      callback_method: "POST",
+      model: "nova-3",
+      language: "en",
+      punctuate: true,
+      // Add more options as needed
+    });
 
-  if (error) {
+    console.log("Callback request sent:", data);
+    // Deepgram will POST results to your callback URL when ready
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Callback request sent:", result);
-  // Deepgram will POST results to your callback URL when ready
 }
 
-// Uncomment to run:
-transcribeWithCallback();
+// Think this doesn't work because we don't have a legitimate callback URL.
+// transcribeWithCallback();

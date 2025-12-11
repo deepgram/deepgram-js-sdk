@@ -5,45 +5,31 @@
  * Uses Bearer scheme in Authorization header.
  */
 
-const { createClient } = require("@deepgram/sdk");
-
-// Must use accessToken property in options object
-const deepgramClient = createClient({
-  accessToken: process.env.DEEPGRAM_ACCESS_TOKEN,
-});
-
-// Or use environment variable (DEEPGRAM_ACCESS_TOKEN)
-const deepgramClientFromEnv = createClient();
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
 // Example: Generate an access token first, then use it
 async function example() {
   // First, create a client with API key to generate access token
-  const apiKeyClient = createClient(process.env.DEEPGRAM_API_KEY);
+  const apiKeyClient = new DeepgramClient({
+    apiKey: process.env.DEEPGRAM_API_KEY,
+  });
 
   // Generate temporary access token
-  const { result, error } = await apiKeyClient.auth.grantToken();
+  try {
+    const data = await apiKeyClient.auth.v1.tokens.grant();
+    console.log("Access token:", data.access_token);
+    console.log("Expires in:", data.expires_in, "seconds");
 
-  if (error) {
-    console.error("Error generating token:", error);
-    return;
+    // Use the access token in a new client instance
+    const tempClient = new DeepgramClient({ accessToken: data.access_token });
+
+    // Now use the temporary client to verify it works
+    const projects = await tempClient.manage.v1.projects.list();
+    console.log("Token verified! Projects:", projects);
+  } catch (error) {
+    console.error("Error:", error);
   }
-
-  console.log("Access token:", result.access_token);
-  console.log("Expires in:", result.expires_in, "seconds");
-
-  // Use the access token in a new client instance
-  const tempClient = createClient({ accessToken: result.access_token });
-
-  // Now use the temporary client
-  const { result: tokenDetails, error: tokenError } =
-    await tempClient.manage.getTokenDetails();
-
-  if (tokenError) {
-    console.error("Error:", tokenError);
-    return;
-  }
-
-  console.log("Token details:", tokenDetails);
 }
 
+// WORKS!
 example();

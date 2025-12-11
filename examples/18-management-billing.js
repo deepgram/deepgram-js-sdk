@@ -4,38 +4,37 @@
  * Examples for retrieving billing and balance information.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 const projectId = "YOUR_PROJECT_ID";
 
 // Get all balances
 async function getAllBalances() {
-  const { result, error } =
-    await deepgramClient.manage.getProjectBalances(projectId);
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.billing.balances.list(
+      projectId,
+    );
+    console.log("Balances:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Balances:", result);
 }
 
 // Get a specific balance
 async function getBalance(balanceId) {
-  const { result, error } = await deepgramClient.manage.getProjectBalance(
-    projectId,
-    balanceId,
-  );
-
-  if (error) {
+  try {
+    const { data } = await deepgramClient.manage.v1.projects.billing.balances.get(
+      projectId,
+      balanceId,
+    );
+    console.log("Balance:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Balance:", result);
 }
 
 // Uncomment to run:

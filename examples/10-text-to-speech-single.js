@@ -4,32 +4,31 @@
  * Convert text into speech using the REST API.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 async function textToSpeech() {
   const text = "Hello, this is a test of Deepgram's text-to-speech API.";
 
-  const { result, error } = await deepgramClient.speak.request(
-    { text },
-    {
+  try {
+    const data = await deepgramClient.speak.v1.audio.generate({
+      text,
       model: "aura-2-thalia-en",
       encoding: "linear16",
       container: "wav",
       // Add more options as needed
-    },
-  );
+    });
 
-  if (error) {
+    console.log("Audio generated successfully", data);
+    // data contains the audio data
+    // You can save it to a file or play it
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Audio generated successfully");
-  // result contains the audio data
-  // You can save it to a file or play it
 }
 
-// Uncomment to run:
+// WORKS!
 textToSpeech();

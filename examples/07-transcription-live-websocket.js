@@ -4,50 +4,113 @@
  * Connect to Deepgram's websocket and transcribe live streaming audio.
  */
 
-const { createClient, LiveTranscriptionEvents } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 const { createReadStream } = require("fs");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
-function liveTranscription() {
-  const deepgramConnection = deepgramClient.listen.live({
-    model: "nova-3",
-    language: "en",
-    punctuate: true,
-    interim_results: true,
-    // Add more options as needed
-  });
-
-  deepgramConnection.on(LiveTranscriptionEvents.Open, () => {
-    console.log("Connection opened");
-
-    deepgramConnection.on(LiveTranscriptionEvents.Transcript, (data) => {
-      console.log("Transcript:", data);
+async function liveTranscription() {
+  try {
+    const deepgramConnection = await deepgramClient.listen.v1.connect({
+      model: "nova-3",
+      language: "en",
+      punctuate: "true",
+      interim_results: "true",
+      // Add more options as needed
     });
 
-    deepgramConnection.on(LiveTranscriptionEvents.Metadata, (data) => {
-      console.log("Metadata:", data);
+    // Set up event handlers before connecting
+    deepgramConnection.on("open", () => {
+      console.log("Connection opened");
     });
 
-    deepgramConnection.on(LiveTranscriptionEvents.Error, (error) => {
+    deepgramConnection.on("message", (data) => {
+      // Check message type
+      if (data.type === "Results") {
+        console.log("Transcript:", data);
+      } else if (data.type === "Metadata") {
+        console.log("Metadata:", data);
+      }
+      else console.log("Unknown message type:", data);
+    });
+
+    deepgramConnection.on("error", (error) => {
       console.error("Error:", error);
     });
 
-    deepgramConnection.on(LiveTranscriptionEvents.Close, () => {
+    deepgramConnection.on("close", () => {
       console.log("Connection closed");
     });
 
-    // Example: Send audio data from a file stream
-    const audioStream = createReadStream("./examples/spacewalk.wav");
-    audioStream.on("data", (chunk) => {
-      deepgramConnection.send(chunk);
-    });
+    // Connect to the websocket
+    deepgramConnection.connect();
 
-    audioStream.on("end", () => {
-      deepgramConnection.finish();
-    });
-  });
+    // Wait for connection to open before sending data
+    try {
+      await deepgramConnection.waitForOpen();
+
+      // Example: Send audio data from a file stream
+      const audioStream = createReadStream("./examples/spacewalk.wav");
+      audioStream.on("data", (chunk) => {
+        // Send binary audio data directly to the socket
+        deepgramConnection.socket.send(chunk);
+      });
+
+      audioStream.on("end", () => {
+        deepgramConnection.sendListenV1Finalize({});
+        deepgramConnection.close();
+      });
+    } catch (error) {
+      console.error("Error waiting for connection:", error);
+      deepgramConnection.close();
+    }
+  } catch (error) {
+    console.error("Error setting up connection:", error);
+  }
 }
 
-// Uncomment to run:
-liveTranscription();
+
+// Websocket connection is failing. Maybe a local issue?
+// liveTranscription();
+
+/**
+ * ERROR WE SEE:
+Error: BadRequestError: BadRequestError
+Status code: 400
+Body: {
+  "err_code": "Bad Request",
+  "err_msg": "Invalid query string.",
+  "request_id": "69a209af-bf0a-449a-8dca-50772d4c834d"
+}
+    at MediaClient.<anonymous> (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/api/resources/listen/resources/v1/resources/media/client/Client.js:298:31)
+    at Generator.next (<anonymous>)
+    at fulfilled (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/api/resources/listen/resources/v1/resources/media/client/Client.js:39:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  statusCode: 400,
+  body: {
+    err_code: 'Bad Request',
+    err_msg: 'Invalid query string.',
+    request_id: '69a209af-bf0a-449a-8dca-50772d4c834d'
+  },
+  rawResponse: {
+    headers: Headers {
+      'content-type': 'application/json',
+      'dg-error': 'Invalid query string.',
+      vary: 'origin, access-control-request-method, access-control-request-headers, accept-encoding',
+      'access-control-allow-credentials': 'true',
+      'access-control-expose-headers': 'dg-model-name,dg-model-uuid,dg-char-count,dg-request-id,dg-project-id,dg-error',
+      'content-encoding': 'br',
+      'dg-request-id': '69a209af-bf0a-449a-8dca-50772d4c834d',
+      'transfer-encoding': 'chunked',
+      date: 'Wed, 10 Dec 2025 21:35:23 GMT'
+    },
+    redirected: false,
+    status: 400,
+    statusText: 'Bad Request',
+    type: 'basic',
+    url: 'https://api.deepgram.com/v1/listen?callback=dpgr.am%2Fcallback&callback_method=POST&language=en&model=nova-3&punctuate=true'
+  }
+}
+ */

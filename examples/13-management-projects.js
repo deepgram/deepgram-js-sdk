@@ -4,66 +4,64 @@
  * Examples for managing Deepgram projects: list, get, update, delete.
  */
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
-const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
 
 // Get all projects
 async function getProjects() {
-  const { result, error } = await deepgramClient.manage.getProjects();
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.list();
+    console.log("Projects:", JSON.stringify(data, null, 2));
+    return data;
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Projects:", result);
 }
 
 // Get a specific project
 async function getProject(projectId) {
-  const { result, error } = await deepgramClient.manage.getProject(projectId);
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.get(projectId);
+    console.log("Project:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Project:", result);
 }
 
 // Update a project
 async function updateProject(projectId) {
-  const { result, error } = await deepgramClient.manage.updateProject(
-    projectId,
-    {
-      name: "Updated Project Name",
-      // Add more update options as needed
-    },
-  );
-
-  if (error) {
+  try {
+    const data = await deepgramClient.manage.v1.projects.update(
+      projectId,
+      {
+        name: "Naomi's Sandbox",
+        // Add more update options as needed
+      },
+    );
+    console.log("Updated project:", data);
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Updated project:", result);
 }
 
 // Delete a project
 async function deleteProject(projectId) {
-  const { error } = await deepgramClient.manage.deleteProject(projectId);
-
-  if (error) {
+  try {
+    await deepgramClient.manage.v1.projects.delete(projectId);
+    console.log("Project deleted successfully");
+  } catch (error) {
     console.error("Error:", error);
-    return;
   }
-
-  console.log("Project deleted successfully");
 }
 
-// Uncomment to run:
-getProjects();
-getProject("YOUR_PROJECT_ID");
-updateProject("YOUR_PROJECT_ID");
-// deleteProject("YOUR_PROJECT_ID");
+// WORKS!
+(async () => {
+  const projects = await getProjects();
+  getProject(projects.projects[0].project_id);
+  updateProject(projects.projects[0].project_id);
+  // Not testing this one, it's destructive.
+  // deleteProject(projects[0].id);
+})();
