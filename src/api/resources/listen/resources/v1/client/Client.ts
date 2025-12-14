@@ -39,7 +39,6 @@ export declare namespace V1Client {
         utterance_end_ms?: string;
         vad_events?: string;
         version?: string;
-        Authorization: string;
         /** Arbitrary headers to send with the websocket connect request. */
         headers?: Record<string, string>;
         /** Enable debug mode on the websocket. Defaults to false. */
@@ -200,8 +199,9 @@ export class V1Client {
             _queryParams.version = version;
         }
 
+        const authRequest = await this._options.authProvider.getAuthRequest();
         const _headers: Record<string, unknown> = mergeHeaders(
-            mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
+            authRequest.headers,
             headers,
         );
         const socket = new core.ReconnectingWebSocket({
@@ -216,7 +216,12 @@ export class V1Client {
             protocols: [],
             queryParameters: _queryParams,
             headers: _headers,
-            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
+            options: { 
+                debug: debug ?? false, 
+                maxRetries: reconnectAttempts ?? 30,
+                startClosed: true,
+                connectionTimeout: 10000, // Increase timeout to 10 seconds
+            },
         });
         return new V1Socket({ socket });
     }

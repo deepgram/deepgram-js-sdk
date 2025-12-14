@@ -11,44 +11,82 @@ const deepgramClient = new DeepgramClient({
 });
 
 async function textToSpeechStreaming() {
-  const deepgramConnection = await deepgramClient.speak.v1.connect({
-    model: "aura-2-thalia-en",
-    encoding: "linear16",
-  });
+  try {
+    const deepgramConnection = await deepgramClient.speak.v1.connect({
+      model: "aura-2-thalia-en",
+      encoding: "linear16",
+    });
 
-  deepgramConnection.on("error", (error) => {
-    console.error("Error:", error);
-  });
+    // Set up event handlers before connecting
+    deepgramConnection.on("open", () => {
+      console.log("Connection opened");
+    });
 
-  deepgramConnection.on("close", () => {
-    console.log("Connection closed");
-  });
-
-  deepgramConnection.on("open", () => {
-    console.log("Connection opened");
-
-    const text =
-      "Hello, this is a test of Deepgram's streaming text-to-speech API.";
-
-    // Send text data for TTS synthesis
-    deepgramConnection.sendSpeakV1Text({ text });
-
-    // Send Flush message to the server after sending the text
-    deepgramConnection.sendSpeakV1Flush({});
-
+    let audioReceived = false;
+    let flushed = false;
+    
     deepgramConnection.on("message", (data) => {
       // Check message type
       if (typeof data === "string") {
-        // Audio data comes as string
-        console.log("Audio received:", data);
-        // Process audio data
+        // Audio data comes as string (base64 encoded)
+        audioReceived = true;
+        console.log("Audio received (length):", data.length);
+        // Process audio data - decode base64 if needed
       } else if (data.type === "Metadata") {
         console.log("Metadata:", data);
+      } else if (data.type === "Flushed") {
+        console.log("Flushed:", data);
+        flushed = true;
+        // Wait a moment for any remaining audio, then close
+        setTimeout(() => {
+          deepgramConnection.close();
+        }, 1000);
+      } else {
+        console.log("Unknown message type:", data);
       }
     });
-  });
 
-  deepgramConnection.connect();
+    deepgramConnection.on("error", (error) => {
+      console.error("Error:", error);
+    });
+
+    deepgramConnection.on("close", () => {
+      console.log("Connection closed");
+    });
+
+    // Connect to the websocket
+    deepgramConnection.connect();
+
+    // Wait for connection to open before sending data
+    try {
+      await deepgramConnection.waitForOpen();
+
+      const text =
+        "Hello, this is a test of Deepgram's streaming text-to-speech API.";
+
+      // Send text data for TTS synthesis
+      // Note: SpeakV1Text requires type: "Speak"
+      deepgramConnection.sendSpeakV1Text({ type: "Speak", text });
+
+      // Send Flush message to the server after sending the text
+      // Note: SpeakV1Flush requires type: "Flush"
+      deepgramConnection.sendSpeakV1Flush({ type: "Flush" });
+
+      // Connection will close automatically when Flushed message is received
+      // But set a timeout as fallback in case Flushed never comes
+      setTimeout(() => {
+        if (!flushed) {
+          console.log("Timeout waiting for Flushed message, closing connection");
+          deepgramConnection.close();
+        }
+      }, 10000);
+    } catch (error) {
+      console.error("Error waiting for connection:", error);
+      deepgramConnection.close();
+    }
+  } catch (error) {
+    console.error("Error setting up connection:", error);
+  }
 }
 
 // Uncomment to run:

@@ -26,14 +26,23 @@ async function liveTranscription() {
       console.log("Connection opened");
     });
 
+    let receivedFinal = false;
     deepgramConnection.on("message", (data) => {
       // Check message type
       if (data.type === "Results") {
         console.log("Transcript:", data);
+        // Close after receiving final results
+        if (data.is_final) {
+          receivedFinal = true;
+          setTimeout(() => {
+            deepgramConnection.close();
+          }, 1000); // Give a moment for any final messages
+        }
       } else if (data.type === "Metadata") {
         console.log("Metadata:", data);
+      } else {
+        console.log("Unknown message type:", data);
       }
-      else console.log("Unknown message type:", data);
     });
 
     deepgramConnection.on("error", (error) => {
@@ -52,15 +61,16 @@ async function liveTranscription() {
       await deepgramConnection.waitForOpen();
 
       // Example: Send audio data from a file stream
-      const audioStream = createReadStream("./spacewalk.wav");
+      const audioStream = createReadStream("./examples/spacewalk.wav");
       audioStream.on("data", (chunk) => {
         // Send binary audio data directly to the socket
         deepgramConnection.socket.send(chunk);
       });
 
       audioStream.on("end", () => {
-        deepgramConnection.sendListenV1Finalize({});
-        deepgramConnection.close();
+        deepgramConnection.sendListenV1Finalize({ type: "Finalize" });
+        // Don't close immediately - wait for final transcription results
+        // The connection will be closed in the message handler when is_final is true
       });
     } catch (error) {
       console.error("Error waiting for connection:", error);
@@ -72,7 +82,6 @@ async function liveTranscription() {
 }
 
 
-// Websocket connection is failing. Maybe a local issue?
 liveTranscription();
 
 /**

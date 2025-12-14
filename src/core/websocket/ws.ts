@@ -5,11 +5,12 @@ import { toQueryString } from "../url/qs.js";
 import * as Events from "./events.js";
 
 const getGlobalWebSocket = (): WebSocket | undefined => {
-    if (typeof WebSocket !== "undefined") {
+    // In Node.js, prefer the ws library over the built-in WebSocket for better header support
+    if (RUNTIME.type === "node") {
+        return NodeWebSocket as unknown as WebSocket;
+    } else if (typeof WebSocket !== "undefined") {
         // @ts-ignore
         return WebSocket;
-    } else if (RUNTIME.type === "node") {
-        return NodeWebSocket as unknown as WebSocket;
     }
     return undefined;
 };
@@ -85,6 +86,7 @@ export class ReconnectingWebSocket {
     private _binaryType: BinaryType = "blob";
     private _closeCalled = false;
     private _messageQueue: ReconnectingWebSocket.Message[] = [];
+    private _nodeMessageHandler?: (data: any, isBinary: boolean) => void;
 
     private readonly _url: ReconnectingWebSocket.UrlProvider;
     private readonly _protocols?: string | string[];
@@ -378,7 +380,17 @@ export class ReconnectingWebSocket {
                 }
                 const options: Record<string, unknown> = {};
                 if (this._headers) {
-                    options.headers = this._headers;
+                    // Ensure all header values are strings for ws library
+                    const stringHeaders: Record<string, string> = {};
+                    for (const [key, value] of Object.entries(this._headers)) {
+                        if (typeof value === "string") {
+                            stringHeaders[key] = value;
+                        } else if (value != null) {
+                            // Convert non-string values to strings
+                            stringHeaders[key] = String(value);
+                        }
+                    }
+                    options.headers = stringHeaders;
                 }
                 if (this._queryParameters && Object.keys(this._queryParameters).length > 0) {
                     const queryString = toQueryString(this._queryParameters, { arrayFormat: "repeat" });
@@ -462,14 +474,16 @@ export class ReconnectingWebSocket {
 
     private _handleError = (event: Events.ErrorEvent) => {
         this._debug("error event", event.message);
-        this._disconnect(undefined, event.message === "TIMEOUT" ? "timeout" : undefined);
+        // Use a non-1000 close code so _shouldReconnect remains true for retries
+        this._disconnect(1006, event.message === "TIMEOUT" ? "timeout" : undefined);
 
         if (this.onerror) {
             this.onerror(event);
         }
-        this._debug("exec error listeners");
         this._listeners.error.forEach((listener) => this._callEventListener(event, listener));
 
+        // Ensure we can retry by setting _shouldReconnect to true
+        this._shouldReconnect = true;
         this._connect();
     };
 
@@ -498,7 +512,13 @@ export class ReconnectingWebSocket {
         this._debug("removeListeners");
         this._ws.removeEventListener("open", this._handleOpen);
         this._ws.removeEventListener("close", this._handleClose);
-        this._ws.removeEventListener("message", this._handleMessage);
+        if (RUNTIME.type === "node" && this._nodeMessageHandler) {
+            // Remove the message listener we added with .on()
+            (this._ws as any).off("message", this._nodeMessageHandler);
+            this._nodeMessageHandler = undefined;
+        } else {
+            this._ws.removeEventListener("message", this._handleMessage);
+        }
         // @ts-ignore
         this._ws.removeEventListener("error", this._handleError);
     }
@@ -510,7 +530,23 @@ export class ReconnectingWebSocket {
         this._debug("addListeners");
         this._ws.addEventListener("open", this._handleOpen);
         this._ws.addEventListener("close", this._handleClose);
-        this._ws.addEventListener("message", this._handleMessage);
+        // For ws library, we need to wrap the message data in a MessageEvent-like object
+        if (RUNTIME.type === "node") {
+            // ws library emits data directly via .on(), not as MessageEvent
+            // Convert Buffer to string for text messages
+            this._nodeMessageHandler = (data: any, isBinary: boolean) => {
+                // Convert Buffer to string if it's a text message
+                let messageData: string | ArrayBuffer | Blob | Buffer = data;
+                if (!isBinary && Buffer.isBuffer(data)) {
+                    messageData = data.toString("utf8");
+                }
+                const event = { data: messageData, type: "message", target: this._ws } as unknown as MessageEvent;
+                this._handleMessage(event);
+            };
+            (this._ws as any).on("message", this._nodeMessageHandler);
+        } else {
+            this._ws.addEventListener("message", this._handleMessage);
+        }
         // @ts-ignore
         this._ws.addEventListener("error", this._handleError);
     }

@@ -69,7 +69,7 @@ async function deleteCredentials(credentialId) {
 // Listing credentials works, but cannot test the others as I don't have on-prem credentials.
 (async () => {
   const credentials = await listCredentials();
-  await getCredentials(credentials.credentials[0].credential_id);
-  await createCredentials();
+  // await getCredentials(credentials.credentials[0].credential_id);
+  // await createCredentials();
   // await deleteCredentials(credentials.credentials[0].credential_id);
 })();
