@@ -10,13 +10,14 @@ const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "fd061152-cd91-44df-99e5-dd0c9b5de14b";
 
 // Get all models (globally available)
 async function getAllModels() {
   try {
-    const { data } = await deepgramClient.manage.v1.models.list();
+    const data = await deepgramClient.manage.v1.models.list();
     console.log("All models:", data);
+    return data;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -25,7 +26,7 @@ async function getAllModels() {
 // Get all project models
 async function getProjectModels() {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.models.list(
+    const data = await deepgramClient.manage.v1.projects.models.list(
       projectId,
       {},
     );
@@ -38,7 +39,7 @@ async function getProjectModels() {
 // Get a specific model
 async function getModel(modelId) {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.models.get(
+    const data = await deepgramClient.manage.v1.projects.models.get(
       projectId,
       modelId,
     );
@@ -48,7 +49,9 @@ async function getModel(modelId) {
   }
 }
 
-// Uncomment to run:
-getAllModels();
-getProjectModels();
-getModel("YOUR_MODEL_ID");
+// WORKS!
+(async () => {
+  const models = await getAllModels();
+  await getProjectModels();
+  await getModel(models.tts[0].uuid);
+})();

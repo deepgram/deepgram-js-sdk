@@ -13,7 +13,7 @@ const deepgramClient = new DeepgramClient({
 
 async function transcribeWithAdvancedOptions() {
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeUrl({
+    const data = await deepgramClient.listen.v1.media.transcribeUrl({
       url: "https://dpgr.am/spacewalk.wav",
       model: "nova-3",
       language: "en",
@@ -70,5 +70,5 @@ async function transcribeWithAdvancedOptions() {
   }
 }
 
-// Uncomment to run:
+// WORKS!
 transcribeWithAdvancedOptions();

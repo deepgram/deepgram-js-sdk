@@ -10,15 +10,16 @@ const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "fd061152-cd91-44df-99e5-dd0c9b5de14b";
 
 // Get all balances
 async function getAllBalances() {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.billing.balances.list(
+    const data = await deepgramClient.manage.v1.projects.billing.balances.list(
       projectId,
     );
     console.log("Balances:", data);
+    return data;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -27,16 +28,19 @@ async function getAllBalances() {
 // Get a specific balance
 async function getBalance(balanceId) {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.billing.balances.get(
+    const data = await deepgramClient.manage.v1.projects.billing.balances.get(
       projectId,
       balanceId,
     );
     console.log("Balance:", data);
+    return data;
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-// Uncomment to run:
-getAllBalances();
-getBalance("YOUR_BALANCE_ID");
+// WORKS!
+(async () => {
+  const balances = await getAllBalances();
+  getBalance(balances.balances[0].balance_id);
+})();

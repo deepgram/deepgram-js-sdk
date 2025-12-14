@@ -42,39 +42,40 @@ const deepgramClient5 = new DeepgramClient({
 // Example usage
 async function example() {
   try {
-    const { data } = await deepgramClient1.manage.v1.projects.list();
+    const data = await deepgramClient1.manage.v1.projects.list();
     console.log("Projects:", data);
   } catch (error) {
     console.error("Error:", error);
   }
 
   try {
-    const { data: projects2 } = await deepgramClient2.manage.v1.projects.list();
-    console.log("Projects:", projects2);
+    const data = await deepgramClient2.manage.v1.projects.list();
+    console.log("Projects:", data);
   } catch (error) {
     console.error("Error:", error);
   }
 
   try {
-    const { data: projects3 } = await deepgramClient3.manage.v1.projects.list();
-    console.log("Projects:", projects3);
+    const data = await deepgramClient3.manage.v1.projects.list();
+    console.log("Projects:", data);
   } catch (error) {
     console.error("Error:", error);
   }
 
   try {
-    const { data: projects4 } = await deepgramClient4.manage.v1.projects.list();
-    console.log("Projects:", projects4);
+    const data = await deepgramClient4.manage.v1.projects.list();
+    console.log("Projects:", data);
   } catch (error) {
     console.error("Error:", error);
   }
 
   try {
-    const { data: projects5 } = await deepgramClient5.manage.v1.projects.list();
-    console.log("Projects:", projects5);
+    const data = await deepgramClient5.manage.v1.projects.list();
+    console.log("Projects:", data);
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
+// This theoretically works, some of the calls will error because URLs 
 example();

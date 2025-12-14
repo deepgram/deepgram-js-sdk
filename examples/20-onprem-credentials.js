@@ -10,15 +10,16 @@ const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "fd061152-cd91-44df-99e5-dd0c9b5de14b";
 
 // List on-prem credentials
 async function listCredentials() {
   try {
-    const { data } = await deepgramClient.selfHosted.v1.distributionCredentials.list(
+    const data = await deepgramClient.selfHosted.v1.distributionCredentials.list(
       projectId,
     );
     console.log("Credentials:", data);
+    return data;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -27,7 +28,7 @@ async function listCredentials() {
 // Get specific credentials
 async function getCredentials(credentialId) {
   try {
-    const { data } = await deepgramClient.selfHosted.v1.distributionCredentials.get(
+    const data = await deepgramClient.selfHosted.v1.distributionCredentials.get(
       projectId,
       credentialId,
     );
@@ -40,7 +41,7 @@ async function getCredentials(credentialId) {
 // Create credentials
 async function createCredentials() {
   try {
-    const { data } = await deepgramClient.selfHosted.v1.distributionCredentials.create(
+    const data = await deepgramClient.selfHosted.v1.distributionCredentials.create(
       projectId,
       {
         // Add credential creation options
@@ -65,8 +66,10 @@ async function deleteCredentials(credentialId) {
   }
 }
 
-// Uncomment to run:
-listCredentials();
-getCredentials("YOUR_CREDENTIAL_ID");
-createCredentials();
-deleteCredentials("YOUR_CREDENTIAL_ID");
+// Listing credentials works, but cannot test the others as I don't have on-prem credentials.
+(async () => {
+  const credentials = await listCredentials();
+  await getCredentials(credentials.credentials[0].credential_id);
+  await createCredentials();
+  // await deleteCredentials(credentials.credentials[0].credential_id);
+})();

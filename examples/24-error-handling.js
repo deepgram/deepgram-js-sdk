@@ -12,7 +12,7 @@ const deepgramClient = new DeepgramClient({
 
 async function exampleWithErrorHandling() {
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeUrl({
+    const data = await deepgramClient.listen.v1.media.transcribeUrl({
       url: "https://dpgr.am/spacewalk.wav",
       model: "nova-3",
     });
@@ -30,18 +30,5 @@ async function exampleWithErrorHandling() {
   }
 }
 
-// Example with error checking pattern
-async function exampleWithErrorCheck() {
-  try {
-    const { data } = await deepgramClient.manage.v1.projects.list();
-    // Use result
-    console.log("Projects:", data);
-  } catch (error) {
-    // Handle error
-    console.error("Error occurred:", error);
-  }
-}
-
-// Uncomment to run:
+// WORKS!
 exampleWithErrorHandling();
-exampleWithErrorCheck();

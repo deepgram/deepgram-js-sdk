@@ -14,7 +14,7 @@ const deepgramClient = new DeepgramClient({
 // Example 1: Using fs.ReadStream
 async function transcribeWithReadStream() {
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       createReadStream("./examples/spacewalk.wav"),
       {
         model: "nova-3",
@@ -32,7 +32,7 @@ async function transcribeWithBuffer() {
   const buffer = fs.readFileSync("./examples/spacewalk.wav");
 
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       buffer,
       {
         model: "nova-3",
@@ -50,7 +50,7 @@ async function transcribeWithReadableStream() {
   const stream = response.body;
 
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       stream,
       {
         model: "nova-3",
@@ -68,7 +68,7 @@ async function transcribeWithBlob() {
   const blob = await response.blob();
 
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       blob,
       {
         model: "nova-3",
@@ -85,7 +85,7 @@ async function transcribeWithFile(fileInput) {
   const file = fileInput.files[0];
 
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       file,
       {
         model: "nova-3",
@@ -103,7 +103,7 @@ async function transcribeWithArrayBuffer() {
   const arrayBuffer = await response.arrayBuffer();
 
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       arrayBuffer,
       {
         model: "nova-3",
@@ -122,7 +122,7 @@ async function transcribeWithUint8Array() {
   const uint8Array = new Uint8Array(arrayBuffer);
 
   try {
-    const { data } = await deepgramClient.listen.v1.media.transcribeFile(
+    const data = await deepgramClient.listen.v1.media.transcribeFile(
       uint8Array,
       {
         model: "nova-3",
@@ -134,7 +134,7 @@ async function transcribeWithUint8Array() {
   }
 }
 
-// Uncomment to run:
+// WORKS!
 transcribeWithReadStream();
 transcribeWithBuffer();
 transcribeWithReadableStream();

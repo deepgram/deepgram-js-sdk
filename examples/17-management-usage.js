@@ -10,12 +10,12 @@ const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "fd061152-cd91-44df-99e5-dd0c9b5de14b";
 
 // Get all requests
 async function getAllRequests() {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.requests.list(
+    const data = await deepgramClient.manage.v1.projects.requests.list(
       projectId,
       {
         // Add filter options as needed
@@ -24,6 +24,7 @@ async function getAllRequests() {
       },
     );
     console.log("Requests:", data);
+    return data;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -32,7 +33,7 @@ async function getAllRequests() {
 // Get a specific request
 async function getRequest(requestId) {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.requests.get(
+    const data = await deepgramClient.manage.v1.projects.requests.get(
       projectId,
       requestId,
     );
@@ -45,7 +46,7 @@ async function getRequest(requestId) {
 // Get usage summary
 async function getUsageSummary() {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.usage.get(
+    const data = await deepgramClient.manage.v1.projects.usage.get(
       projectId,
       {
         // Add filter options as needed
@@ -62,7 +63,7 @@ async function getUsageSummary() {
 // Get usage fields
 async function getUsageFields() {
   try {
-    const { data } = await deepgramClient.manage.v1.projects.usage.fields.list(
+    const data = await deepgramClient.manage.v1.projects.usage.fields.list(
       projectId,
       {
         // Add filter options as needed
@@ -74,8 +75,10 @@ async function getUsageFields() {
   }
 }
 
-// Uncomment to run:
-getAllRequests();
-getRequest("YOUR_REQUEST_ID");
-getUsageSummary();
-getUsageFields();
+// WORKS!
+(async () => {
+const requests = await getAllRequests();
+getRequest(requests.requests[0].request_id);
+  getUsageSummary();
+  getUsageFields();
+})();

@@ -38,7 +38,7 @@ async function saveToFileWithArrayBuffer() {
   });
 
   const arrayBuffer = await response.arrayBuffer();
-  await writeFile("output.wav", Buffer.from(arrayBuffer));
+  await writeFile("output1.wav", Buffer.from(arrayBuffer));
   console.log("File saved successfully");
 }
 
@@ -53,7 +53,7 @@ async function saveToFileWithBlob() {
 
   const blob = await response.blob();
   const arrayBuffer = await blob.arrayBuffer();
-  await writeFile("output.wav", Buffer.from(arrayBuffer));
+  await writeFile("output2.wav", Buffer.from(arrayBuffer));
   console.log("File saved successfully");
 }
 
@@ -67,7 +67,7 @@ async function saveToFileWithBytes() {
   });
 
   const bytes = await response.bytes();
-  await writeFile("output.wav", bytes);
+  await writeFile("output3.wav", bytes);
   console.log("File saved successfully");
 }
 
@@ -80,7 +80,7 @@ async function convertToText() {
 
   const stream = response.stream();
   const text = await new Response(stream).text();
-  console.log("Text:", text);
+  console.log("Text:", text.substring(0, 10));
 }
 
 // Example 6: Check if response body has been used
@@ -92,11 +92,11 @@ async function checkBodyUsed() {
 
   console.log("Body used:", response.bodyUsed); // false
 
-  const stream = response.stream();
-  console.log("Body used:", response.bodyUsed); // true
 
   // You can only use the response body once
-  // const arrayBuffer = await response.arrayBuffer(); // This would fail
+  const arrayBuffer = await response.arrayBuffer();
+  console.log("Array buffer:", arrayBuffer.slice(0, 10));
+  console.log("Body used:", response.bodyUsed); // true
 }
 
 // Uncomment to run:

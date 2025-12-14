@@ -1,5 +1,5 @@
 {
-    "name": "@deepgram/sdk-new",
+    "name": "@deepgram/sdk",
     "version": "4.11.3",
     "private": false,
     "repository": "github:deepgram/deepgram-js-sdk",
@@ -30,7 +30,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "examples": "pnpm run examples:1 && pnpm run examples:2 && pnpm run examples:3 && pnpm run examples:4 && pnpm run examples:5 && pnpm run examples:6 && pnpm run examples:7 && pnpm run examples:8 && pnpm run examples:9 && pnpm run examples:10 && pnpm run examples:11 && pnpm run examples:12 && pnpm run examples:13 && pnpm run examples:14 && pnpm run examples:15 && pnpm run examples:16 && pnpm run examples:17 && pnpm run examples:18 && pnpm run examples:19 && pnpm run examples:20 && pnpm run examples:21 && pnpm run examples:22 && pnpm run examples:23 && pnpm run examples:24 && pnpm run examples:25 && pnpm run examples:26 && pnpm run examples:27",
+        "examples": "pnpm run examples:1 && pnpm run examples:2 && pnpm run examples:3 && pnpm run examples:4 && pnpm run examples:5 && pnpm run examples:6 && pnpm run examples:7 && pnpm run examples:8 && pnpm run examples:9 && pnpm run examples:10 && pnpm run examples:11 && pnpm run examples:12 && pnpm run examples:13 && pnpm run examples:14 && pnpm run examples:15 && pnpm run examples:16 && pnpm run examples:17 && pnpm run examples:18 && pnpm run examples:19 && pnpm run examples:20 && pnpm run examples:21 && pnpm run examples:22 && pnpm run examples:23 && pnpm run examples:24 && pnpm run examples:25",
         "examples:1": "node examples/01-authentication-api-key.js",
         "examples:2": "node examples/02-authentication-access-token.js",
         "examples:3": "node examples/03-authentication-proxy.js",
@@ -55,9 +55,7 @@
         "examples:22": "node examples/22-transcription-advanced-options.js",
         "examples:23": "node examples/23-file-upload-types.js",
         "examples:24": "node examples/24-error-handling.js",
-        "examples:25": "node examples/25-request-options.js",
-        "examples:26": "node examples/26-logging.js",
-        "examples:27": "node examples/27-binary-response.js",
+        "examples:25": "node examples/25-binary-response.js",
         "format": "biome format --write --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "format:check": "biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "lint": "biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",

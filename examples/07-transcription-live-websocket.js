@@ -52,7 +52,7 @@ async function liveTranscription() {
       await deepgramConnection.waitForOpen();
 
       // Example: Send audio data from a file stream
-      const audioStream = createReadStream("./examples/spacewalk.wav");
+      const audioStream = createReadStream("./spacewalk.wav");
       audioStream.on("data", (chunk) => {
         // Send binary audio data directly to the socket
         deepgramConnection.socket.send(chunk);
@@ -73,7 +73,7 @@ async function liveTranscription() {
 
 
 // Websocket connection is failing. Maybe a local issue?
-// liveTranscription();
+liveTranscription();
 
 /**
  * ERROR WE SEE:

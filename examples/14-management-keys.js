@@ -10,7 +10,7 @@ const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
 
-const projectId = "fdf4337c-a05a-4f3c-b157-fd560c58d802";
+const projectId = "fd061152-cd91-44df-99e5-dd0c9b5de14b";
 
 // List all keys
 async function listKeys() {
