@@ -67,7 +67,7 @@ Uses `Bearer` scheme in Authorization header. Access tokens are temporary (30-se
 import { DeepgramClient } from "@deepgram/sdk";
 
 // Pass access token as apiKey property
-const deepgramClient = new DeepgramClient({ apiKey: "YOUR_ACCESS_TOKEN" });
+const deepgramClient = new DeepgramClient({ accessToken: "YOUR_ACCESS_TOKEN" });
 
 // Or use environment variable (DEEPGRAM_ACCESS_TOKEN)
 const deepgramClient = new DeepgramClient();
