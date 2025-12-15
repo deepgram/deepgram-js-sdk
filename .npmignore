@@ -1,0 +1,74 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Test files
+tests/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+vitest.config.*
+
+# Examples
+examples/
+
+# Build configuration
+tsconfig*.json
+biome.json
+
+# Scripts
+scripts/
+
+# Lock files
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package-lock.json
+yarn.lock
+
+# Output files
+*.wav
+output*.wav
+
+# Documentation (except README.md and reference.md which are included)
+CONTRIBUTING.md
+
+# Development dependencies
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git files
+.git/
+.gitignore
+.gitkeep
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Other development files
+.fernignore
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
