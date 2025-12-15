@@ -4,8 +4,6 @@ import * as core from "../../../../../../core/index.js";
 import { fromJson, toJson } from "../../../../../../core/json.js";
 import type * as Deepgram from "../../../../../index.js";
 
-type MessageEvent = { data: string | ArrayBuffer | Blob | Buffer };
-
 export declare namespace V1Socket {
     export interface Args {
         socket: core.ReconnectingWebSocket;
@@ -41,21 +39,10 @@ export class V1Socket {
     private handleOpen: () => void = () => {
         this.eventHandlers.open?.();
     };
-    private handleMessage: (event: MessageEvent) => void = (event) => {
-        // Handle both text (JSON) and binary messages
-        if (typeof event.data === "string") {
-            try {
-                const data = fromJson(event.data);
-                this.eventHandlers.message?.(data as V1Socket.Response);
-            } catch (error) {
-                // If JSON parsing fails, pass the raw string
-                this.eventHandlers.message?.(event.data as unknown as V1Socket.Response);
-            }
-        } else {
-            // Binary data - pass through as-is (though agent API typically sends JSON)
-            // This handles cases where binary might be sent
-            this.eventHandlers.message?.(event.data as unknown as V1Socket.Response);
-        }
+    private handleMessage: (event: { data: string }) => void = (event) => {
+        const data = fromJson(event.data);
+
+        this.eventHandlers.message?.(data as V1Socket.Response);
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
         this.eventHandlers.close?.(event);
@@ -67,8 +54,10 @@ export class V1Socket {
 
     constructor(args: V1Socket.Args) {
         this.socket = args.socket;
-        // Don't register handlers here - they'll be registered in connect()
-        // This prevents duplicate handlers when connect() is called
+        this.socket.addEventListener("open", this.handleOpen);
+        this.socket.addEventListener("message", this.handleMessage);
+        this.socket.addEventListener("close", this.handleClose);
+        this.socket.addEventListener("error", this.handleError);
     }
 
     /** The current state of the connection; this is one of the readyState constants. */
@@ -132,10 +121,7 @@ export class V1Socket {
 
     /** Connect to the websocket and register event handlers. */
     public connect(): V1Socket {
-        // Only reconnect if socket is closed, not if it's already connecting or open
-        if (this.socket.readyState === core.ReconnectingWebSocket.CLOSED) {
-            this.socket.reconnect();
-        }
+        this.socket.reconnect();
 
         this.socket.addEventListener("open", this.handleOpen);
         this.socket.addEventListener("message", this.handleMessage);
@@ -164,36 +150,13 @@ export class V1Socket {
         }
 
         return new Promise((resolve, reject) => {
-            const openHandler = () => {
-                this.socket.removeEventListener("open", openHandler);
-                this.socket.removeEventListener("error", errorHandler);
-                this.socket.removeEventListener("close", closeHandler);
+            this.socket.addEventListener("open", () => {
                 resolve(this.socket);
-            };
+            });
 
-            const errorHandler = (event: unknown) => {
-                this.socket.removeEventListener("open", openHandler);
-                this.socket.removeEventListener("error", errorHandler);
-                this.socket.removeEventListener("close", closeHandler);
+            this.socket.addEventListener("error", (event: unknown) => {
                 reject(event);
-            };
-
-            const closeHandler = (event: core.CloseEvent) => {
-                // Only reject if closed with code 1000 (normal closure) before opening
-                // This indicates a deliberate close, not a retry-able error
-                // Other close codes will trigger error events which we handle separately
-                if (event.code === 1000 && this.socket.readyState !== core.ReconnectingWebSocket.OPEN) {
-                    this.socket.removeEventListener("open", openHandler);
-                    this.socket.removeEventListener("error", errorHandler);
-                    this.socket.removeEventListener("close", closeHandler);
-                    reject(new Error(`Connection closed before opening: ${event.code} ${event.reason || ""}`));
-                }
-                // For other close codes, let the error handler or retry logic handle it
-            };
-
-            this.socket.addEventListener("open", openHandler);
-            this.socket.addEventListener("error", errorHandler);
-            this.socket.addEventListener("close", closeHandler);
+            });
         });
     }
 

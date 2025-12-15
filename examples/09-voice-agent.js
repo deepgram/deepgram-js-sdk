@@ -105,11 +105,11 @@ async function voiceAgent() {
         }
       }, 5000);
 
-      // kill websocket after 30 seconds, so we can run these in CI
+      // kill websocket after 1 minute, so we can run these in CI
       setTimeout(() => {
         deepgramConnection.close();
         process.exit(0);
-      }, 30000);
+      }, 60000);
 
       // Send audio data from a file stream
       const audioStream = createReadStream("./examples/spacewalk.wav");

@@ -80,6 +80,12 @@ async function textToSpeechStreaming() {
           deepgramConnection.close();
         }
       }, 10000);
+
+      // Kill websocket after 1 minute, so we can run these in CI
+      setTimeout(() => {
+        deepgramConnection.close();
+        process.exit(0);
+      }, 60000);
     } catch (error) {
       console.error("Error waiting for connection:", error);
       deepgramConnection.close();

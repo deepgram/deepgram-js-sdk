@@ -1,2 +1,7 @@
 # Specify files that shouldn't be modified by Fern
 examples/**
+
+## We override the WS library detection because native Node WS is disappointing.
+src/core/websocket/ws.ts
+src/CustomClient.ts
+src/index.ts

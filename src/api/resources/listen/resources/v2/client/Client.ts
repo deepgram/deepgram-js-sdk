@@ -20,6 +20,7 @@ export declare namespace V2Client {
         keyterm?: string;
         mip_opt_out?: string;
         tag?: string;
+        Authorization: string;
         /** Arbitrary headers to send with the websocket connect request. */
         headers?: Record<string, string>;
         /** Enable debug mode on the websocket. Defaults to false. */
@@ -85,9 +86,8 @@ export class V2Client {
             _queryParams.tag = tag;
         }
 
-        const authRequest = await this._options.authProvider?.getAuthRequest();
         const _headers: Record<string, unknown> = mergeHeaders(
-            authRequest?.headers ?? {},
+            mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
         const socket = new core.ReconnectingWebSocket({
@@ -102,12 +102,7 @@ export class V2Client {
             protocols: [],
             queryParameters: _queryParams,
             headers: _headers,
-            options: { 
-                debug: debug ?? false, 
-                maxRetries: reconnectAttempts ?? 30,
-                startClosed: true,
-                connectionTimeout: 10000, // Increase timeout to 10 seconds
-            },
+            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
         });
         return new V2Socket({ socket });
     }

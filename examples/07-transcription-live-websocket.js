@@ -72,6 +72,12 @@ async function liveTranscription() {
         // Don't close immediately - wait for final transcription results
         // The connection will be closed in the message handler when is_final is true
       });
+
+      // Kill websocket after 1 minute, so we can run these in CI
+      setTimeout(() => {
+        deepgramConnection.close();
+        process.exit(0);
+      }, 60000);
     } catch (error) {
       console.error("Error waiting for connection:", error);
       deepgramConnection.close();

@@ -12,6 +12,7 @@ export declare namespace V1Client {
     export interface Options extends BaseClientOptions {}
 
     export interface ConnectArgs {
+        Authorization: string;
         /** Arbitrary headers to send with the websocket connect request. */
         headers?: Record<string, string>;
         /** Enable debug mode on the websocket. Defaults to false. */
@@ -33,11 +34,10 @@ export class V1Client {
         return (this._settings ??= new SettingsClient(this._options));
     }
 
-    public async connect(args: V1Client.ConnectArgs = {}): Promise<V1Socket> {
+    public async connect(args: V1Client.ConnectArgs): Promise<V1Socket> {
         const { headers, debug, reconnectAttempts } = args;
-        const authRequest = await this._options.authProvider?.getAuthRequest();
         const _headers: Record<string, unknown> = mergeHeaders(
-            authRequest?.headers ?? {},
+            mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
         const socket = new core.ReconnectingWebSocket({
@@ -52,12 +52,7 @@ export class V1Client {
             protocols: [],
             queryParameters: {},
             headers: _headers,
-            options: { 
-                debug: debug ?? false, 
-                maxRetries: reconnectAttempts ?? 30,
-                startClosed: true,
-                connectionTimeout: 10000, // Increase timeout to 10 seconds
-            },
+            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
         });
         return new V1Socket({ socket });
     }
