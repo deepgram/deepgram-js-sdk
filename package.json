@@ -56,6 +56,7 @@
         "examples:23": "node examples/23-file-upload-types.js",
         "examples:24": "node examples/24-error-handling.js",
         "examples:25": "node examples/25-binary-response.js",
+        "examples:26": "node examples/26-transcription-live-websocket-v2.js",
         "format": "biome format --write --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "format:check": "biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
         "lint": "biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
