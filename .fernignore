@@ -2,6 +2,11 @@
 examples
 
 ## We override the WS library detection because native Node WS is disappointing.
-src/core/websocket/ws.ts
+# src/core/websocket/ws.ts
 src/CustomClient.ts
 src/index.ts
+
+# Other Stuff
+Makefile
+MIGRATION_GUIDE_V4_TO_V5.md
+CHANGELOG_5.0.0_alpha.1.md
