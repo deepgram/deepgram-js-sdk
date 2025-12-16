@@ -20,7 +20,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Compile
-        run: pnpm build
+        run: make build
 
   examples:
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: make build
 
       - name: Run examples
         run: make examples
@@ -60,8 +60,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Prepare wire tests
-        run: pnpm prep-wire-tests
-
       - name: Test
-        run: pnpm test
+        run: make test

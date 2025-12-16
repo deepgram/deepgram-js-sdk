@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 test lint build
 
 # Default target
 help:
@@ -120,3 +120,14 @@ example-25:
 example-26:
 	node examples/26-transcription-live-websocket-v2.js
 
+lint:
+	biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
+	biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
+
+build:
+	tsc --project ./tsconfig.cjs.json
+	tsc --project ./tsconfig.esm.json
+	node scripts/rename-to-esm-files.js dist/esm
+
+test:
+	node scripts/fix-wire-test-imports.js && pnpm test
