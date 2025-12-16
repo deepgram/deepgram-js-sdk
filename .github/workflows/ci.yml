@@ -42,7 +42,7 @@ jobs:
         run: pnpm build
 
       - name: Run examples
-        run: pnpm run examples
+        run: make examples
 
   test:
     runs-on: ubuntu-latest
