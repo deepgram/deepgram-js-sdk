@@ -18,6 +18,19 @@ import { mergeHeaders, mergeOnlyDefinedHeaders } from "./core/headers.js";
 import { fromJson } from "./core/json.js";
 import * as core from "./core/index.js";
 import * as environments from "./environments.js";
+import { RUNTIME } from "./core/runtime/index.js";
+
+// Import ws library for Node.js (will be undefined in browser)
+let NodeWebSocket: any;
+try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    NodeWebSocket = require("ws");
+    // Handle both default export and named export
+    NodeWebSocket = NodeWebSocket.WebSocket || NodeWebSocket.default || NodeWebSocket;
+} catch {
+    // ws not available (e.g., in browser)
+    NodeWebSocket = undefined;
+}
 
 /**
  * Custom wrapper around DeepgramClient that ensures the custom websocket implementation
@@ -101,6 +114,28 @@ class WrappedSpeakClient extends SpeakClientImpl {
 }
 
 /**
+ * Helper function to get WebSocket class and handle headers based on runtime.
+ * In Node.js, use the 'ws' library which supports headers.
+ * In browser, use native WebSocket (headers will be ignored but that's okay).
+ */
+function getWebSocketOptions(headers: Record<string, unknown>): { WebSocket?: any; headers?: Record<string, unknown> } {
+    const options: { WebSocket?: any; headers?: Record<string, unknown> } = {};
+    
+    // In Node.js, ensure we use the 'ws' library which supports headers
+    if (RUNTIME.type === "node" && NodeWebSocket) {
+        options.WebSocket = NodeWebSocket;
+        options.headers = headers;
+    } else {
+        // In browser or if ws is not available, native WebSocket doesn't support headers in constructor
+        // But we still pass them - they'll be ignored, which is fine
+        // The ws.ts implementation will handle this gracefully
+        options.headers = headers;
+    }
+    
+    return options;
+}
+
+/**
  * Wrapper for Agent V1Client that overrides connect to use custom websocket.
  */
 class WrappedAgentV1Client extends AgentV1Client {
@@ -114,6 +149,9 @@ class WrappedAgentV1Client extends AgentV1Client {
             headers,
         );
         
+        // Get WebSocket options with proper header handling
+        const wsOptions = getWebSocketOptions(_headers);
+        
         // Explicitly use the custom ReconnectingWebSocket from ws.ts
         const socket = new ReconnectingWebSocket({
             url: core.url.join(
@@ -126,8 +164,9 @@ class WrappedAgentV1Client extends AgentV1Client {
             ),
             protocols: [],
             queryParameters: {},
-            headers: _headers,
+            headers: wsOptions.headers,
             options: { 
+                ...wsOptions,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -185,6 +224,13 @@ class WrappedAgentV1Socket extends AgentV1Socket {
     }
 
     public connect(): WrappedAgentV1Socket {
+        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
+        // by closing and reconnecting
+        if (this.socket.readyState === this.socket.CLOSED) {
+            // Force a fresh reconnect to ensure _connectLock is reset
+            (this.socket as any)._connectLock = false;
+            (this.socket as any)._shouldReconnect = true;
+        }
         // Call parent connect, but then ensure our binary handler is still active
         super.connect();
         // Re-setup binary handling in case connect() re-registered handlers
@@ -269,6 +315,9 @@ class WrappedListenV1Client extends ListenV1Client {
             headers,
         );
         
+        // Get WebSocket options with proper header handling
+        const wsOptions = getWebSocketOptions(_headers);
+        
         // Explicitly use the custom ReconnectingWebSocket from ws.ts
         const socket = new ReconnectingWebSocket({
             url: core.url.join(
@@ -281,8 +330,9 @@ class WrappedListenV1Client extends ListenV1Client {
             ),
             protocols: [],
             queryParameters: _queryParams,
-            headers: _headers,
+            headers: wsOptions.headers,
             options: { 
+                ...wsOptions,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -336,6 +386,12 @@ class WrappedListenV1Socket extends ListenV1Socket {
     }
 
     public connect(): WrappedListenV1Socket {
+        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
+        if (this.socket.readyState === this.socket.CLOSED) {
+            // Force a fresh reconnect to ensure _connectLock is reset
+            (this.socket as any)._connectLock = false;
+            (this.socket as any)._shouldReconnect = true;
+        }
         super.connect();
         this.setupBinaryHandling();
         return this;
@@ -380,6 +436,9 @@ class WrappedListenV2Client extends ListenV2Client {
             headers,
         );
         
+        // Get WebSocket options with proper header handling
+        const wsOptions = getWebSocketOptions(_headers);
+        
         // Explicitly use the custom ReconnectingWebSocket from ws.ts
         const socket = new ReconnectingWebSocket({
             url: core.url.join(
@@ -392,8 +451,9 @@ class WrappedListenV2Client extends ListenV2Client {
             ),
             protocols: [],
             queryParameters: _queryParams,
-            headers: _headers,
+            headers: wsOptions.headers,
             options: { 
+                ...wsOptions,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -447,6 +507,12 @@ class WrappedListenV2Socket extends ListenV2Socket {
     }
 
     public connect(): WrappedListenV2Socket {
+        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
+        if (this.socket.readyState === this.socket.CLOSED) {
+            // Force a fresh reconnect to ensure _connectLock is reset
+            (this.socket as any)._connectLock = false;
+            (this.socket as any)._shouldReconnect = true;
+        }
         super.connect();
         this.setupBinaryHandling();
         return this;
@@ -481,6 +547,9 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             headers,
         );
         
+        // Get WebSocket options with proper header handling
+        const wsOptions = getWebSocketOptions(_headers);
+        
         // Explicitly use the custom ReconnectingWebSocket from ws.ts
         const socket = new ReconnectingWebSocket({
             url: core.url.join(
@@ -493,8 +562,9 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             ),
             protocols: [],
             queryParameters: _queryParams,
-            headers: _headers,
+            headers: wsOptions.headers,
             options: { 
+                ...wsOptions,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -548,6 +618,12 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
     }
 
     public connect(): WrappedSpeakV1Socket {
+        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
+        if (this.socket.readyState === this.socket.CLOSED) {
+            // Force a fresh reconnect to ensure _connectLock is reset
+            (this.socket as any)._connectLock = false;
+            (this.socket as any)._shouldReconnect = true;
+        }
         super.connect();
         this.setupBinaryHandling();
         return this;
