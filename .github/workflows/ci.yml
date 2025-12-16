@@ -60,5 +60,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Prepare wire tests
+        run: pnpm prep-wire-tests
+
       - name: Test
         run: pnpm test

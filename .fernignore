@@ -5,6 +5,9 @@ examples
 src/CustomClient.ts
 src/index.ts
 
+# Custom Scripts
+scripts/fix-wire-test-imports.js
+
 # Other Stuff
 Makefile
 MIGRATION_GUIDE_V4_TO_V5.md
