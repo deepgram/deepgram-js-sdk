@@ -8,6 +8,9 @@
         "allowCustomFetcher": true,
         "skipResponseValidation": true,
         "includeApiReference": true,
-        "shouldGenerateWebsocketClients": true
+        "shouldGenerateWebsocketClients": true,
+        "packageJson": {
+            "name": "@deepgram/sdk"
+        }
     }
 }
