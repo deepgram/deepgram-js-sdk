@@ -1,7 +1,6 @@
 import { AbstractLiveClient } from "./AbstractLiveClient";
 import { LiveTranscriptionEvents } from "../lib/enums";
 import type { LiveSchema, LiveConfigOptions, DeepgramClientOptions } from "../lib/types";
-import { DeepgramError } from "../lib/errors";
 
 /**
  * The `ListenLiveClient` class extends the `AbstractLiveClient` class and provides functionality for setting up and managing a WebSocket connection for live transcription.
