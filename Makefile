@@ -126,12 +126,12 @@ example-26:
 	node examples/26-transcription-live-websocket-v2.js
 
 lint:
-	biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
-	biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
+	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
+	pnpm exec biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
 
 build:
-	tsc --project ./tsconfig.cjs.json
-	tsc --project ./tsconfig.esm.json
+	pnpm exec tsc --project ./tsconfig.cjs.json
+	pnpm exec tsc --project ./tsconfig.esm.json
 	node scripts/rename-to-esm-files.js dist/esm
 
 test:
