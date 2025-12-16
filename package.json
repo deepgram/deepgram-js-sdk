@@ -1,6 +1,6 @@
 {
-    "name": "",
-    "version": "0.0.214",
+    "name": "@deepgram/sdk",
+    "version": "5.0.0-alpha.1",
     "private": false,
     "repository": "github:deepgram/deepgram-js-sdk",
     "license": "MIT",
@@ -47,14 +47,14 @@
         "ws": "^8.16.0"
     },
     "devDependencies": {
-        "webpack": "^5.97.1",
-        "ts-loader": "^9.5.1",
-        "@types/ws": "^8.5.10",
-        "vitest": "^3.2.4",
-        "msw": "2.11.2",
+        "@biomejs/biome": "2.3.1",
         "@types/node": "^18.19.70",
+        "@types/ws": "^8.5.10",
+        "msw": "2.11.2",
+        "ts-loader": "^9.5.1",
         "typescript": "~5.7.2",
-        "@biomejs/biome": "2.3.1"
+        "vitest": "^3.2.4",
+        "webpack": "^5.97.1"
     },
     "browser": {
         "fs": false,
