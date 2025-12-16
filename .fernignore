@@ -12,3 +12,6 @@ CHANGELOG_5.0.0_alpha.1.md
 .npmignore
 .gitignore
 .github/workflows/ci.yml
+
+# Because the generator tries to roll the examples back to the old signature?
+README.md
