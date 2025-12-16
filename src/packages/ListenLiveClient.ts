@@ -35,10 +35,6 @@ export class ListenLiveClient extends AbstractLiveClient {
   ) {
     super(options);
 
-    if (transcriptionOptions.keyterm?.length && !transcriptionOptions.model?.startsWith("nova-3") && !transcriptionOptions.model?.startsWith("flux")) {
-      throw new DeepgramError("Keyterms are only supported with the Nova 3 and Flux models.");
-    }
-
     this.connect(transcriptionOptions, endpoint);
   }
 
