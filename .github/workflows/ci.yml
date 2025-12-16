@@ -44,6 +44,9 @@ jobs:
 
       - name: Run examples
         run: make examples
+        env:
+          DEEPGRAM_API_KEY: ${{ secrets.DG_TOKEN }}
+          DEEPGRAM_PROJECT_ID: ${{ secrets.DG_PROJECT_ID }}
 
   test:
     runs-on: ubuntu-latest
