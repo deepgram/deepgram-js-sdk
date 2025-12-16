@@ -39,84 +39,84 @@ help:
 # Run all examples
 examples:
 	@echo "Running all examples..."
-	pnpm run examples
+	node examples/01-authentication-api-key.js && node examples/02-authentication-access-token.js && node examples/03-authentication-proxy.js && node examples/04-transcription-prerecorded-url.js && node examples/05-transcription-prerecorded-file.js && node examples/06-transcription-prerecorded-callback.js && node examples/07-transcription-live-websocket.js && node examples/08-transcription-captions.js && node examples/09-voice-agent.js && node examples/10-text-to-speech-single.js && node examples/11-text-to-speech-streaming.js && node examples/12-text-intelligence.js && node examples/13-management-projects.js && node examples/14-management-keys.js && node examples/15-management-members.js && node examples/16-management-invites.js && node examples/17-management-usage.js && node examples/18-management-billing.js && node examples/19-management-models.js && node examples/20-onprem-credentials.js && node examples/21-configuration-scoped.js && node examples/22-transcription-advanced-options.js && node examples/23-file-upload-types.js && node examples/24-error-handling.js && node examples/25-binary-response.js && node examples/26-transcription-live-websocket-v2.js
 
 # Individual example targets
 example-1:
-	pnpm run examples:1
+	node examples/01-authentication-api-key.js
 
 example-2:
-	pnpm run examples:2
+	node examples/02-authentication-access-token.js
 
 example-3:
-	pnpm run examples:3
+	node examples/03-authentication-proxy.js
 
 example-4:
-	pnpm run examples:4
+	node examples/04-transcription-prerecorded-url.js
 
 example-5:
-	pnpm run examples:5
+	node examples/05-transcription-prerecorded-file.js
 
 example-6:
-	pnpm run examples:6
+	node examples/06-transcription-prerecorded-callback.js
 
 example-7:
-	pnpm run examples:7
+	node examples/07-transcription-live-websocket.js
 
 example-8:
-	pnpm run examples:8
+	node examples/08-transcription-captions.js
 
 example-9:
-	pnpm run examples:9
+	node examples/09-voice-agent.js
 
 example-10:
-	pnpm run examples:10
+	node examples/10-text-to-speech-single.js
 
 example-11:
-	pnpm run examples:11
+	node examples/11-text-to-speech-streaming.js
 
 example-12:
-	pnpm run examples:12
+	node examples/12-text-intelligence.js
 
 example-13:
-	pnpm run examples:13
+	node examples/13-management-projects.js
 
 example-14:
-	pnpm run examples:14
+	node examples/14-management-keys.js
 
 example-15:
-	pnpm run examples:15
+	node examples/15-management-members.js
 
 example-16:
-	pnpm run examples:16
+	node examples/16-management-invites.js
 
 example-17:
-	pnpm run examples:17
+	node examples/17-management-usage.js
 
 example-18:
-	pnpm run examples:18
+	node examples/18-management-billing.js
 
 example-19:
-	pnpm run examples:19
+	node examples/19-management-models.js
 
 example-20:
-	pnpm run examples:20
+	node examples/20-onprem-credentials.js
 
 example-21:
-	pnpm run examples:21
+	node examples/21-configuration-scoped.js
 
 example-22:
-	pnpm run examples:22
+	node examples/22-transcription-advanced-options.js
 
 example-23:
-	pnpm run examples:23
+	node examples/23-file-upload-types.js
 
 example-24:
-	pnpm run examples:24
+	node examples/24-error-handling.js
 
 example-25:
-	pnpm run examples:25
+	node examples/25-binary-response.js
 
 example-26:
-	pnpm run examples:26
+	node examples/26-transcription-live-websocket-v2.js
 
