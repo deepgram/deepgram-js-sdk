@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 test lint build
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 test lint build browser
 
 # Default target
 help:
@@ -12,6 +12,8 @@ help:
 	@printf "\033[1;33mExample Commands:\033[0m\n"
 	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-26) sequentially\n"
 	@printf "  \033[1;32mmake example-N\033[0m         - Run a specific example by number (e.g., make example-1)\n"
+	@printf "  \033[1;32mmake browser\033[0m           - Run browser tests\n"
+	@printf "  \033[1;32mmake browser-serve\033[0m     - Serve the browser examples for manual testing\n"
 	@echo ""
 	@printf "\033[1;33mAvailable Examples:\033[0m\n"
 	@printf "  \033[36m1\033[0m  - Authentication API Key\n"
@@ -135,4 +137,24 @@ build:
 	node scripts/rename-to-esm-files.js dist/esm
 
 test:
-	node scripts/fix-wire-test-imports.js && pnpm test
+	node scripts/fix-wire-test-imports.js
+	pnpm exec vitest --project unit --run
+	pnpm exec vitest --project wire --run
+
+browser:
+	pnpm install --save-exact --save-dev playwright
+	@if [ -n "$$CI" ]; then \
+		echo "CI detected: Installing Playwright browsers without system dependencies"; \
+		pnpm exec playwright install chromium; \
+	else \
+		echo "Local environment: Attempting to install with system dependencies (may prompt for sudo)"; \
+		pnpm exec playwright install chromium --with-deps || (echo "Failed with --with-deps, trying without..." && pnpm exec playwright install chromium); \
+	fi
+	pnpm exec vitest --project browser --run; \
+	TEST_EXIT_CODE=$$?; \
+	pnpm uninstall playwright; \
+	exit $$TEST_EXIT_CODE
+
+browser-serve:
+	pnpm exec http-server -p 8000 examples/browser
+	open http://localhost:8000/examples/browser

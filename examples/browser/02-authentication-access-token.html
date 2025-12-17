@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication with Access Token - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Authentication with Access Token</h1>
+  <p>Access tokens are temporary (30-second TTL) and must be obtained using an API key. Uses Bearer scheme in Authorization header.</p>
+
+  <div class="container">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    <button id="runExample">Run Example</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script type="module">
+    import { DeepgramClient } from '../../dist/esm/index.mjs';
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const runButton = document.getElementById('runExample');
+    const output = document.getElementById('output');
+
+    // Try to load API key from localStorage
+    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
+    if (savedApiKey) {
+      apiKeyInput.value = savedApiKey;
+    }
+
+    function log(message, type = 'info') {
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      output.innerHTML += `<div class="${className}">${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    runButton.addEventListener('click', async () => {
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return;
+      }
+
+      // Save to localStorage for convenience
+      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
+
+      output.innerHTML = '';
+      runButton.disabled = true;
+      log('Running example...\n');
+
+      try {
+        // First, create a client with API key to generate access token
+        const apiKeyClient = new DeepgramClient({
+          apiKey: apiKey,
+        });
+
+        log('Generating access token...');
+        const tokenData = await apiKeyClient.auth.v1.tokens.grant();
+        log(`✓ Access token: ${tokenData.access_token}`, 'success');
+        log(`✓ Expires in: ${tokenData.expires_in} seconds`, 'success');
+
+        // Use the access token in a new client instance
+        log('\nCreating client with access token...');
+        const tempClient = new DeepgramClient({ accessToken: tokenData.access_token });
+
+        // Now use the temporary client to verify it works
+        log('Verifying token by listing projects...');
+        const projects = await tempClient.manage.v1.projects.list();
+        log(`✓ Token verified! Projects: ${JSON.stringify(projects, null, 2)}`, 'success');
+
+        log('\n✓ Example completed successfully!', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

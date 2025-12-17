@@ -41,20 +41,22 @@
         "build:esm": "tsc --project ./tsconfig.esm.json && node scripts/rename-to-esm-files.js dist/esm",
         "test": "vitest",
         "test:unit": "vitest --project unit",
-        "test:wire": "vitest --project wire"
+        "test:wire": "vitest --project wire",
+        "test:browser": "vitest --project browser",
+        "test:browser:ui": "vitest --project browser --ui"
     },
     "dependencies": {
         "ws": "^8.16.0"
     },
     "devDependencies": {
-        "webpack": "^5.97.1",
-        "ts-loader": "^9.5.1",
-        "@types/ws": "^8.5.10",
-        "vitest": "^3.2.4",
-        "msw": "2.11.2",
+        "@biomejs/biome": "2.3.1",
         "@types/node": "^18.19.70",
+        "@types/ws": "^8.5.10",
+        "msw": "2.11.2",
+        "ts-loader": "^9.5.1",
         "typescript": "~5.7.2",
-        "@biomejs/biome": "2.3.1"
+        "vitest": "^3.2.4",
+        "webpack": "^5.97.1"
     },
     "browser": {
         "fs": false,

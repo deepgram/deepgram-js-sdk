@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Response Handling - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 100px;
+      font-family: inherit;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    audio {
+      margin-top: 10px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Binary Response Handling</h1>
+  <p>Demonstrates how to handle binary responses from the SDK (e.g., TTS audio).</p>
+
+  <div class="container">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    <label for="text">Text to Convert:</label>
+    <textarea id="text" placeholder="Enter text to convert to speech">Hello, this is a test.</textarea>
+    <div>
+      <button id="streamButton">Get as Stream</button>
+      <button id="arrayBufferButton">Get as ArrayBuffer</button>
+      <button id="blobButton">Get as Blob</button>
+      <button id="bytesButton">Get as Bytes</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+  <div id="audioContainer"></div>
+
+  <script type="module">
+    import { DeepgramClient } from '../../dist/esm/index.mjs';
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const textInput = document.getElementById('text');
+    const streamButton = document.getElementById('streamButton');
+    const arrayBufferButton = document.getElementById('arrayBufferButton');
+    const blobButton = document.getElementById('blobButton');
+    const bytesButton = document.getElementById('bytesButton');
+    const output = document.getElementById('output');
+    const audioContainer = document.getElementById('audioContainer');
+
+    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
+    if (savedApiKey) apiKeyInput.value = savedApiKey;
+
+    function log(message, type = 'info') {
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      output.innerHTML += `<div class="${className}">${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function createAudioElement(blob) {
+      audioContainer.innerHTML = '';
+      const audioUrl = URL.createObjectURL(blob);
+      const audio = document.createElement('audio');
+      audio.controls = true;
+      audio.src = audioUrl;
+      audioContainer.appendChild(audio);
+    }
+
+    function getClient() {
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return null;
+      }
+      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
+      return new DeepgramClient({ apiKey });
+    }
+
+    streamButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const text = textInput.value.trim();
+      if (!text) {
+        log('Please enter text', 'error');
+        return;
+      }
+      output.innerHTML = '';
+      streamButton.disabled = true;
+      try {
+        const response = await client.speak.v1.audio.generate({
+          text,
+          model: "aura-2-thalia-en",
+        });
+        log(`Body used: ${response.bodyUsed}`, 'info');
+        const stream = response.stream();
+        const blob = await new Response(stream).blob();
+        log(`✓ Stream received, size: ${blob.size} bytes`, 'success');
+        createAudioElement(blob);
+        log(`Body used after: ${response.bodyUsed}`, 'info');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+      } finally {
+        streamButton.disabled = false;
+      }
+    });
+
+    arrayBufferButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const text = textInput.value.trim();
+      if (!text) {
+        log('Please enter text', 'error');
+        return;
+      }
+      output.innerHTML = '';
+      arrayBufferButton.disabled = true;
+      try {
+        const response = await client.speak.v1.audio.generate({
+          text,
+          model: "aura-2-thalia-en",
+        });
+        log(`Body used: ${response.bodyUsed}`, 'info');
+        const arrayBuffer = await response.arrayBuffer();
+        log(`✓ ArrayBuffer received, size: ${arrayBuffer.byteLength} bytes`, 'success');
+        log(`First 10 bytes: ${Array.from(new Uint8Array(arrayBuffer.slice(0, 10)))}`, 'info');
+        const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
+        createAudioElement(blob);
+        log(`Body used after: ${response.bodyUsed}`, 'info');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+      } finally {
+        arrayBufferButton.disabled = false;
+      }
+    });
+
+    blobButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const text = textInput.value.trim();
+      if (!text) {
+        log('Please enter text', 'error');
+        return;
+      }
+      output.innerHTML = '';
+      blobButton.disabled = true;
+      try {
+        const response = await client.speak.v1.audio.generate({
+          text,
+          model: "aura-2-thalia-en",
+        });
+        log(`Body used: ${response.bodyUsed}`, 'info');
+        const blob = await response.blob();
+        log(`✓ Blob received, size: ${blob.size} bytes, type: ${blob.type}`, 'success');
+        createAudioElement(blob);
+        log(`Body used after: ${response.bodyUsed}`, 'info');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+      } finally {
+        blobButton.disabled = false;
+      }
+    });
+
+    bytesButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const text = textInput.value.trim();
+      if (!text) {
+        log('Please enter text', 'error');
+        return;
+      }
+      output.innerHTML = '';
+      bytesButton.disabled = true;
+      try {
+        const response = await client.speak.v1.audio.generate({
+          text,
+          model: "aura-2-thalia-en",
+        });
+        log(`Body used: ${response.bodyUsed}`, 'info');
+        const bytes = await response.bytes();
+        log(`✓ Bytes received, length: ${bytes.length}`, 'success');
+        log(`First 10 bytes: ${Array.from(bytes.slice(0, 10))}`, 'info');
+        const blob = new Blob([bytes], { type: 'audio/wav' });
+        createAudioElement(blob);
+        log(`Body used after: ${response.bodyUsed}`, 'info');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+      } finally {
+        bytesButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+
