@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Key Management - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.danger {
+      background: #d32f2f;
+    }
+    button.danger:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>API Key Management</h1>
+  <p>Examples for managing API keys: list, get, create, delete.</p>
+
+  <div class="container">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    <label for="projectId">Project ID:</label>
+    <input type="text" id="projectId" placeholder="Enter project ID">
+    <div>
+      <button id="listButton">List Keys</button>
+      <button id="getButton">Get Key</button>
+      <button id="createButton">Create Key</button>
+      <button id="deleteButton" class="danger">Delete Key</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <script type="module">
+    import { DeepgramClient } from '../../dist/esm/index.mjs';
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const projectIdInput = document.getElementById('projectId');
+    const listButton = document.getElementById('listButton');
+    const getButton = document.getElementById('getButton');
+    const createButton = document.getElementById('createButton');
+    const deleteButton = document.getElementById('deleteButton');
+    const output = document.getElementById('output');
+
+    // Try to load from localStorage
+    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
+    const savedProjectId = localStorage.getItem('DEEPGRAM_PROJECT_ID');
+    if (savedApiKey) {
+      apiKeyInput.value = savedApiKey;
+    }
+    if (savedProjectId) {
+      projectIdInput.value = savedProjectId;
+    }
+
+    function log(message, type = 'info') {
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      output.innerHTML += `<div class="${className}">${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function getClient() {
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return null;
+      }
+      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
+      return new DeepgramClient({ apiKey });
+    }
+
+    listButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+
+      output.innerHTML = '';
+      listButton.disabled = true;
+
+      try {
+        const data = await client.manage.v1.projects.keys.list(projectId);
+        log(`✓ Keys:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        listButton.disabled = false;
+      }
+    });
+
+    getButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+
+      const keyId = prompt('Enter key ID:');
+      if (!keyId) return;
+
+      output.innerHTML = '';
+      getButton.disabled = true;
+
+      try {
+        const data = await client.manage.v1.projects.keys.get(projectId, keyId);
+        log(`✓ Key:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        getButton.disabled = false;
+      }
+    });
+
+    createButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+
+      output.innerHTML = '';
+      createButton.disabled = true;
+
+      try {
+        const data = await client.manage.v1.projects.keys.create(projectId, {
+          comment: "My API key",
+          scopes: ["usage:write"],
+          tags: ["production"],
+          time_to_live_in_seconds: 86400,
+        });
+        log(`✓ Created key:\n${JSON.stringify(data, null, 2)}`, 'success');
+        if (data.key) {
+          log(`\n⚠️ IMPORTANT: Key value: ${data.key}\nSave this immediately - it won't be shown again!`, 'error');
+        }
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        createButton.disabled = false;
+      }
+    });
+
+    deleteButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+
+      const keyId = prompt('Enter key ID to delete:');
+      if (!keyId) return;
+
+      if (!confirm(`Are you sure you want to delete key ${keyId}?`)) {
+        return;
+      }
+
+      output.innerHTML = '';
+      deleteButton.disabled = true;
+
+      try {
+        await client.manage.v1.projects.keys.delete(projectId, keyId);
+        log('✓ Key deleted successfully', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        deleteButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

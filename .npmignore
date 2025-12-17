@@ -1,27 +1,74 @@
-*.log
-npm-debug.log*
+# Source files
+src/
+*.ts
+!*.d.ts
 
-# Coverage directory used by tools like istanbul
-coverage
-.nyc_output
+# Test files
+tests/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+vitest.config.*
 
-# Dependency directories
-node_modules
+# Examples
+examples/
 
-# npm package lock
+# Build configuration
+tsconfig*.json
+biome.json
+
+# Scripts
+scripts/
+
+# Lock files
+pnpm-lock.yaml
+pnpm-workspace.yaml
 package-lock.json
 yarn.lock
 
-# project files
-src
-test
-examples
-example-next-js
-umd_temp
-CHANGELOG.md
-.travis.yml
-.editorconfig
-.eslintignore
-.eslintrc
-.babelrc
+# Output files
+*.wav
+output*.wav
+
+# Documentation (except README.md and reference.md which are included)
+CONTRIBUTING.md
+
+# Development dependencies
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git files
+.git/
 .gitignore
+.gitkeep
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Other development files
+.fernignore
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+

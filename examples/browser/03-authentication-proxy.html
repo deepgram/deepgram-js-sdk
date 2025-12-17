@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy Authentication - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .warning {
+      color: #f57c00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Proxy Authentication</h1>
+  <p>For browser environments or custom proxy setups. Pass "proxy" as the API key.</p>
+  <p class="warning"><strong>Important:</strong> Your proxy must set the Authorization: token DEEPGRAM_API_KEY header and forward requests to Deepgram's API.</p>
+
+  <div class="container">
+    <label for="proxyUrl">Proxy URL:</label>
+    <input type="text" id="proxyUrl" placeholder="http://localhost:8080" value="http://localhost:8080">
+    <button id="runExample">Run Example</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script type="module">
+    import { DeepgramClient } from '../../dist/esm/index.mjs';
+
+    const proxyUrlInput = document.getElementById('proxyUrl');
+    const runButton = document.getElementById('runExample');
+    const output = document.getElementById('output');
+
+    function log(message, type = 'info') {
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+      output.innerHTML += `<div class="${className}">${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    runButton.addEventListener('click', async () => {
+      const proxyUrl = proxyUrlInput.value.trim();
+      if (!proxyUrl) {
+        log('Please enter a proxy URL', 'error');
+        return;
+      }
+
+      output.innerHTML = '';
+      runButton.disabled = true;
+      log('Running example...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: "proxy",
+          global: { fetch: { options: { proxy: { url: proxyUrl } } } },
+        });
+
+        log('Attempting to authenticate through proxy...');
+        const data = await deepgramClient.manage.v1.projects.list();
+        log(`✓ Authentication successful! Projects: ${JSON.stringify(data, null, 2)}`, 'success');
+        log('\n✓ Example completed successfully!', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+        log('\nNote: This example requires a proxy server to be running. Make sure your proxy is configured correctly.', 'warning');
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

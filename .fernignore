@@ -1,0 +1,21 @@
+# Specify files that shouldn't be modified by Fern
+examples
+
+# Custom wrapper
+src/CustomClient.ts
+src/index.ts
+
+# Custom Scripts
+scripts/fix-wire-test-imports.js
+
+# Other Stuff
+Makefile
+MIGRATION_GUIDE_V4_TO_V5.md
+CHANGELOG_5.0.0_alpha.1.md
+.npmignore
+.gitignore
+.github/workflows/ci.yml
+.npmrc
+
+# Because the generator tries to roll the examples back to the old signature?
+README.md
