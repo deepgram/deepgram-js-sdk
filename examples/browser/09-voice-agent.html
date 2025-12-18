@@ -158,12 +158,28 @@
         });
 
         deepgramConnection.on("message", (data) => {
-          if (data.type === "ConversationText") {
-            log(`Conversation text: ${JSON.stringify(data, null, 2)}`, 'info');
-          } else if (typeof data === "string") {
+          if (typeof data === "string") {
+            // Audio data comes as string
             log(`Audio received (length): ${data.length}`, 'info');
+          } else if (data && typeof data === "object") {
+            // Handle different message types
+            if (data.type === "Welcome") {
+              log(`✓ Welcome: ${JSON.stringify(data, null, 2)}`, 'success');
+            } else if (data.type === "SettingsApplied") {
+              log(`✓ Settings Applied: ${JSON.stringify(data, null, 2)}`, 'success');
+            } else if (data.type === "ConversationText") {
+              log(`Conversation text: ${JSON.stringify(data, null, 2)}`, 'info');
+            } else if (data.type === "AgentAudioDone") {
+              log(`✓ Agent audio done: ${JSON.stringify(data, null, 2)}`, 'success');
+            } else if (data.type === "Warning") {
+              log(`⚠ Warning: ${JSON.stringify(data, null, 2)}`, 'error');
+            } else if (data.type === "Error") {
+              log(`✗ Error: ${JSON.stringify(data, null, 2)}`, 'error');
+            } else {
+              log(`Message (${data.type || 'unknown'}): ${JSON.stringify(data, null, 2)}`, 'info');
+            }
           } else {
-            log(`Message: ${JSON.stringify(data, null, 2)}`, 'info');
+            log(`Unknown message: ${JSON.stringify(data, null, 2)}`, 'info');
           }
         });
 

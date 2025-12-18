@@ -132,10 +132,10 @@ lint:
 	pnpm exec biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
 
 build:
+	pnpm --package=typescript --package=tsup dlx tsup src/index.ts --out-dir dist/browser --format iife --global-name Deepgram --clean --platform browser
 	pnpm exec tsc --project ./tsconfig.cjs.json
 	pnpm exec tsc --project ./tsconfig.esm.json
 	node scripts/rename-to-esm-files.js dist/esm
-	pnpm --package=typescript --package=tsup dlx tsup src/index.ts --out-dir dist --format iife --global-name Deepgram --clean --platform browser
 
 test:
 	node scripts/fix-wire-test-imports.js
@@ -158,7 +158,7 @@ browser:
 
 browser-serve:
 	@rm -f examples/browser/deepgram.js || true
-	@cp dist/index.global.js examples/browser/deepgram.js
+	@cp dist/browser/index.global.js examples/browser/deepgram.js
 	@echo "" >> examples/browser/deepgram.js
 	@echo "// Expose Deepgram as global for browser compatibility" >> examples/browser/deepgram.js
 	@echo "if (typeof window !== 'undefined') {" >> examples/browser/deepgram.js
