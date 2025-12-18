@@ -161,10 +161,9 @@
 
         let flushed = false;
         deepgramConnection.on("message", (data) => {
-          if (typeof data === "string") {
-            // Audio data comes as string (base64 encoded)
-            audioChunks.push(data);
-            log(`Audio received (length): ${data.length}`, 'info');
+          if (typeof data === "string" || data instanceof ArrayBuffer || data instanceof Blob) {
+            // Audio data comes as string
+            log(`Audio received (length): ${data instanceof ArrayBuffer ? data.byteLength : data instanceof Blob ? data.size : data.length}`, 'info');
           } else if (data && typeof data === "object") {
             // Handle different message types
             if (data.type === "Metadata") {
