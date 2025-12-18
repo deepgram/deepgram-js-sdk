@@ -9,6 +9,9 @@ src/index.ts
 scripts/fix-wire-test-imports.js
 webpack.config.js
 
+# Tests
+tests/browser
+
 # Other Stuff
 Makefile
 MIGRATION_GUIDE_V4_TO_V5.md

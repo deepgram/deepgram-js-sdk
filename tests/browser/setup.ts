@@ -1,11 +1,5 @@
-import { beforeAll } from "vitest";
-import { chromium } from "playwright";
-
-// Set up browser environment before tests
-beforeAll(async () => {
-  // Ensure Playwright browsers are installed
-  // This will be handled automatically by vitest browser provider
-});
+const PORT = 8000;
+const BASE_URL = `http://localhost:${PORT}`;
 
 // Helper to get API key from environment
 export function getApiKey(): string {
@@ -20,4 +14,7 @@ export function getApiKey(): string {
 export function getProjectId(): string | undefined {
   return process.env.DEEPGRAM_PROJECT_ID;
 }
+
+// Export base URL for tests
+export const TEST_BASE_URL = BASE_URL;
 

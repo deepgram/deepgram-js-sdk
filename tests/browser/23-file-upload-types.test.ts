@@ -5,11 +5,13 @@ import {
   getExampleUrl,
   fillApiKey,
   clickButton,
+  uploadFile,
   hasCorsError,
   waitForElement,
+  getSpacewalkAudioPath,
 } from "./helpers";
 
-describe("Browser Example: 04-transcription-prerecorded-url", () => {
+describe("Browser Example: 23-file-upload-types", () => {
   let browser: Browser;
   let page: Page;
 
@@ -22,10 +24,10 @@ describe("Browser Example: 04-transcription-prerecorded-url", () => {
     await browser.close();
   });
 
-  it("should attempt transcription (expecting CORS error)", async () => {
+  it("should attempt transcription with file (expecting CORS error)", async () => {
     const apiKey = getApiKey();
+    const spacewalkPath = getSpacewalkAudioPath();
 
-    // Set up console message collection for CORS detection
     const consoleMessages: string[] = [];
     const pageErrors: string[] = [];
     
@@ -37,28 +39,21 @@ describe("Browser Example: 04-transcription-prerecorded-url", () => {
       pageErrors.push(error.message);
     });
 
-    // Load the HTML example
-    const url = getExampleUrl("04-transcription-prerecorded-url.html");
+    const url = getExampleUrl("23-file-upload-types.html");
     await page.goto(url);
-
-    // Wait for page to load
     await page.waitForLoadState("domcontentloaded");
 
-    // Fill in API key
     await fillApiKey(page, apiKey);
+    await uploadFile(page, "#audioFile", spacewalkPath);
+    await clickButton(page, "fileButton");
 
-    // Click the run button
-    await clickButton(page, "runExample");
-
-    // Wait for output to appear
     try {
       await waitForElement(page, "#output", 10000);
       await page.waitForTimeout(2000);
     } catch (error) {
-      // Output might not appear, but that's okay
+      // Output might not appear
     }
 
-    // Check for CORS error (REST examples should get CORS errors)
     const allMessages = [...consoleMessages, ...pageErrors];
     const hasCors = await hasCorsError(page, allMessages);
     expect(hasCors).toBe(true);

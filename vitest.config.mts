@@ -32,6 +32,7 @@ export default defineConfig({
                     root: "./tests/browser",
                     include: ["**/*.test.{js,ts,jsx,tsx}"],
                     setupFiles: ["./setup.ts"],
+                    globalSetup: ["./global-setup.ts"],
                 },
             },
         ],
