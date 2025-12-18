@@ -157,6 +157,7 @@ browser:
 	exit $$TEST_EXIT_CODE
 
 browser-serve:
+	@rm -f examples/browser/deepgram.js || true
 	@cp dist/index.global.js examples/browser/deepgram.js
 	@echo "" >> examples/browser/deepgram.js
 	@echo "// Expose Deepgram as global for browser compatibility" >> examples/browser/deepgram.js
@@ -164,5 +165,5 @@ browser-serve:
 	@echo "  window.Deepgram = Deepgram;" >> examples/browser/deepgram.js
 	@echo "  window.deepgram = Deepgram;" >> examples/browser/deepgram.js
 	@echo "}" >> examples/browser/deepgram.js
-	pnpx http-server -p 8000 examples/browser
-	open http://localhost:8000/examples/browser
+	@pnpx http-server -p 8000 examples/browser
+	@open http://localhost:8000/examples/browser

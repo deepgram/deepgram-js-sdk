@@ -114,21 +114,57 @@ class WrappedSpeakClient extends SpeakClientImpl {
 }
 
 /**
- * Helper function to get WebSocket class and handle headers based on runtime.
+ * Helper function to get WebSocket class and handle headers/protocols based on runtime.
  * In Node.js, use the 'ws' library which supports headers.
- * In browser, use native WebSocket (headers will be ignored but that's okay).
+ * In browser, use Sec-WebSocket-Protocol for authentication since headers aren't supported.
  */
-function getWebSocketOptions(headers: Record<string, unknown>): { WebSocket?: any; headers?: Record<string, unknown> } {
-    const options: { WebSocket?: any; headers?: Record<string, unknown> } = {};
+function getWebSocketOptions(headers: Record<string, unknown>): { 
+    WebSocket?: any; 
+    headers?: Record<string, unknown>; 
+    protocols?: string[];
+} {
+    const options: { WebSocket?: any; headers?: Record<string, unknown>; protocols?: string[] } = {};
+    
+    // Check if we're in a browser environment (browser or web-worker)
+    const isBrowser = RUNTIME.type === "browser" || RUNTIME.type === "web-worker";
     
     // In Node.js, ensure we use the 'ws' library which supports headers
     if (RUNTIME.type === "node" && NodeWebSocket) {
         options.WebSocket = NodeWebSocket;
         options.headers = headers;
+    } else if (isBrowser) {
+        // In browser, native WebSocket doesn't support custom headers
+        // Extract Authorization header and use Sec-WebSocket-Protocol instead
+        const authHeader = headers.Authorization || headers.authorization;
+        const browserHeaders: Record<string, unknown> = { ...headers };
+        
+        // Remove Authorization from headers since it won't work in browser
+        delete browserHeaders.Authorization;
+        delete browserHeaders.authorization;
+        
+        options.headers = browserHeaders;
+        
+        // If we have an Authorization header, extract the token and format as protocols
+        // Deepgram expects:
+        // - For API keys: Sec-WebSocket-Protocol: token,API_KEY_GOES_HERE
+        // - For Bearer tokens: Sec-WebSocket-Protocol: bearer,TOKEN_GOES_HERE
+        // The comma separates multiple protocols, so we pass them as an array
+        if (authHeader && typeof authHeader === "string") {
+            if (authHeader.startsWith("Token ")) {
+                // API key: "Token API_KEY" -> ["token", "API_KEY"]
+                const apiKey = authHeader.substring(6); // Remove "Token " prefix
+                options.protocols = ["token", apiKey];
+            } else if (authHeader.startsWith("Bearer ")) {
+                // Access token: "Bearer TOKEN" -> ["bearer", "TOKEN"]
+                const token = authHeader.substring(7); // Remove "Bearer " prefix
+                options.protocols = ["bearer", token];
+            } else {
+                // Fallback: use the entire header value if it doesn't match expected format
+                options.protocols = [authHeader];
+            }
+        }
     } else {
-        // In browser or if ws is not available, native WebSocket doesn't support headers in constructor
-        // But we still pass them - they'll be ignored, which is fine
-        // The ws.ts implementation will handle this gracefully
+        // Fallback for other environments
         options.headers = headers;
     }
     
@@ -162,11 +198,11 @@ class WrappedAgentV1Client extends AgentV1Client {
                     ).agent,
                 "/v1/agent/converse",
             ),
-            protocols: [],
+            protocols: wsOptions.protocols ?? [],
             queryParameters: {},
             headers: wsOptions.headers,
             options: { 
-                ...wsOptions,
+                WebSocket: wsOptions.WebSocket,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -328,11 +364,11 @@ class WrappedListenV1Client extends ListenV1Client {
                     ).production,
                 "/v1/listen",
             ),
-            protocols: [],
+            protocols: wsOptions.protocols ?? [],
             queryParameters: _queryParams,
             headers: wsOptions.headers,
             options: { 
-                ...wsOptions,
+                WebSocket: wsOptions.WebSocket,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -449,11 +485,11 @@ class WrappedListenV2Client extends ListenV2Client {
                     ).production,
                 "/v2/listen",
             ),
-            protocols: [],
+            protocols: wsOptions.protocols ?? [],
             queryParameters: _queryParams,
             headers: wsOptions.headers,
             options: { 
-                ...wsOptions,
+                WebSocket: wsOptions.WebSocket,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
@@ -560,11 +596,11 @@ class WrappedSpeakV1Client extends SpeakV1Client {
                     ).production,
                 "/v1/speak",
             ),
-            protocols: [],
+            protocols: wsOptions.protocols ?? [],
             queryParameters: _queryParams,
             headers: wsOptions.headers,
             options: { 
-                ...wsOptions,
+                WebSocket: wsOptions.WebSocket,
                 debug: debug ?? false, 
                 maxRetries: reconnectAttempts ?? 30,
                 startClosed: true,
