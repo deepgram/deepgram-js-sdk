@@ -135,6 +135,7 @@ build:
 	pnpm exec tsc --project ./tsconfig.cjs.json
 	pnpm exec tsc --project ./tsconfig.esm.json
 	node scripts/rename-to-esm-files.js dist/esm
+	pnpm --package=typescript --package=tsup dlx tsup src/index.ts --out-dir dist --format iife --global-name Deepgram --clean --platform browser
 
 test:
 	node scripts/fix-wire-test-imports.js
@@ -156,5 +157,12 @@ browser:
 	exit $$TEST_EXIT_CODE
 
 browser-serve:
-	pnpm exec http-server -p 8000 examples/browser
+	@cp dist/index.global.js examples/browser/deepgram.js
+	@echo "" >> examples/browser/deepgram.js
+	@echo "// Expose Deepgram as global for browser compatibility" >> examples/browser/deepgram.js
+	@echo "if (typeof window !== 'undefined') {" >> examples/browser/deepgram.js
+	@echo "  window.Deepgram = Deepgram;" >> examples/browser/deepgram.js
+	@echo "  window.deepgram = Deepgram;" >> examples/browser/deepgram.js
+	@echo "}" >> examples/browser/deepgram.js
+	pnpx http-server -p 8000 examples/browser
 	open http://localhost:8000/examples/browser

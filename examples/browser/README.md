@@ -95,8 +95,10 @@ These examples use ES modules and modern browser APIs. They should work in:
 
 ## Notes
 
-- All examples use ES modules (`import` statements)
-- Examples import from `../../dist/esm/index.mjs` (the ESM build of the SDK)
+- All examples use the browser build (`deepgram.js`) loaded via `<script>` tag
+- The browser build is automatically copied to `examples/browser` when running `make browser-serve`
+- Examples access the SDK via the global `deepgram` object (e.g., `const { DeepgramClient } = deepgram;`)
+- The SDK is also available as `Deepgram` (uppercase) for consistency with the build output
 - File uploads use the browser File API instead of Node.js `fs` module
 - WebSocket examples stream audio data in chunks
 - API keys are stored in localStorage for convenience but are only accessible locally
@@ -106,7 +108,7 @@ These examples use ES modules and modern browser APIs. They should work in:
 
 The browser examples differ from the Node.js examples in several ways:
 
-1. **Import Syntax**: Uses ES modules (`import`) instead of CommonJS (`require`)
+1. **Import Syntax**: Uses browser build (`<script src="deepgram.js">`) instead of CommonJS (`require`) or ES modules (`import`)
 2. **File Handling**: Uses File API and FileReader instead of `fs` module
 3. **Environment Variables**: Uses input fields and localStorage instead of `process.env`
 4. **Output**: Displays results in the DOM instead of `console.log`

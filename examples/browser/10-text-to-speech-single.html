@@ -84,8 +84,9 @@
   <div id="output"></div>
   <div id="audioContainer"></div>
 
-  <script type="module">
-    import { DeepgramClient } from '../../dist/esm/index.mjs';
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
 
     const apiKeyInput = document.getElementById('apiKey');
     const textInput = document.getElementById('text');
