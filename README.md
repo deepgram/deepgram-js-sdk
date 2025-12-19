@@ -283,7 +283,50 @@ The SDK works in modern browsers with some considerations:
 </script>
 ```
 
-#### Option 3: Proxy for REST APIs
+#### Option 3: NPM Package (Browser Bundle)
+
+After installing via `npm install @deepgram/sdk`, you can use the browser bundle:
+
+**Method A: Copy the bundle to your public directory**
+
+```bash
+# Copy the browser bundle to your static assets folder
+cp node_modules/@deepgram/sdk/dist/browser/index.global.js public/deepgram.js
+```
+
+Then include it in your HTML:
+
+```html
+<script src="/deepgram.js"></script>
+<script>
+  const { DeepgramClient } = Deepgram;
+  const deepgramClient = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
+</script>
+```
+
+**Method B: Reference directly from node_modules (development only)**
+
+If your dev server serves files from `node_modules`, you can reference it directly:
+
+```html
+<script src="/node_modules/@deepgram/sdk/dist/browser/index.global.js"></script>
+<script>
+  const { DeepgramClient } = Deepgram;
+  const deepgramClient = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
+</script>
+```
+
+**Method C: Use a bundler (Webpack, Vite, etc.)**
+
+Import the SDK in your JavaScript/TypeScript code and let your bundler handle it:
+
+```js
+import { DeepgramClient } from "@deepgram/sdk";
+
+const deepgramClient = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
+```
+
+#### Option 4: Proxy for REST APIs
 
 See [proxy requests in the browser](#proxy-requests-in-the-browser) for REST API access.
 
