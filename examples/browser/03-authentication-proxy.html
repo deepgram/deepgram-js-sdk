@@ -85,8 +85,13 @@
     const output = document.getElementById('output');
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
@@ -97,7 +102,7 @@
         return;
       }
 
-      output.innerHTML = '';
+      output.textContent = '';
       runButton.disabled = true;
       log('Running example...\n');
 

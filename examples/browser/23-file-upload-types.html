@@ -100,12 +100,18 @@
     if (savedApiKey) apiKeyInput.value = savedApiKey;
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
     function getClient() {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
       const apiKey = apiKeyInput.value.trim();
       if (!apiKey) {
         log('Please enter an API key', 'error');
@@ -122,7 +128,7 @@
         log('Please select an audio file', 'error');
         return;
       }
-      output.innerHTML = '';
+      output.textContent = '';
       try {
         const data = await client.listen.v1.media.transcribeFile(file, {
           model: "nova-3",

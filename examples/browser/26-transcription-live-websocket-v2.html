@@ -112,8 +112,13 @@
     }
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'info' ? 'info' : type === 'warning' ? 'warning' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
@@ -127,6 +132,7 @@
     }
 
     startButton.addEventListener('click', async () => {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
       const apiKey = apiKeyInput.value.trim();
       const audioFile = audioFileInput.files[0];
 
@@ -142,7 +148,7 @@
       // Save to localStorage for convenience
       localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
 
-      output.innerHTML = '';
+      output.textContent = '';
       startButton.disabled = true;
       stopButton.disabled = false;
       isStreaming = true;

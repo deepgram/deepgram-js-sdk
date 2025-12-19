@@ -89,12 +89,18 @@
     if (savedApiKey) apiKeyInput.value = savedApiKey;
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
     runButton.addEventListener('click', async () => {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
       const apiKey = apiKeyInput.value.trim();
       const baseUrl = baseUrlInput.value.trim();
 
@@ -104,7 +110,7 @@
       }
 
       localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
-      output.innerHTML = '';
+      output.textContent = '';
       runButton.disabled = true;
       log('Testing different configurations...\n');
 

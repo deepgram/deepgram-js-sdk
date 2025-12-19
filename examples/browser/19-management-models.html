@@ -97,12 +97,18 @@
     if (savedProjectId) projectIdInput.value = savedProjectId;
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
     function getClient() {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
       const apiKey = apiKeyInput.value.trim();
       if (!apiKey) {
         log('Please enter an API key', 'error');
@@ -115,7 +121,7 @@
     allModelsButton.addEventListener('click', async () => {
       const client = getClient();
       if (!client) return;
-      output.innerHTML = '';
+      output.textContent = '';
       allModelsButton.disabled = true;
       try {
         const data = await client.manage.v1.models.list();
@@ -136,7 +142,7 @@
         log('Please enter a project ID', 'error');
         return;
       }
-      output.innerHTML = '';
+      output.textContent = '';
       projectModelsButton.disabled = true;
       try {
         const data = await client.manage.v1.projects.models.list(projectId, {});
@@ -159,7 +165,7 @@
       }
       const modelId = prompt('Enter model ID:');
       if (!modelId) return;
-      output.innerHTML = '';
+      output.textContent = '';
       getModelButton.disabled = true;
       try {
         const data = await client.manage.v1.projects.models.get(projectId, modelId);

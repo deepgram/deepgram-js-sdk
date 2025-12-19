@@ -107,13 +107,18 @@
     if (savedApiKey) apiKeyInput.value = savedApiKey;
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
     function createAudioElement(blob) {
-      audioContainer.innerHTML = '';
+      audioContainer.textContent = '';
       const audioUrl = URL.createObjectURL(blob);
       const audio = document.createElement('audio');
       audio.controls = true;
@@ -122,6 +127,7 @@
     }
 
     function getClient() {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
       const apiKey = apiKeyInput.value.trim();
       if (!apiKey) {
         log('Please enter an API key', 'error');
@@ -139,7 +145,7 @@
         log('Please enter text', 'error');
         return;
       }
-      output.innerHTML = '';
+      output.textContent = '';
       streamButton.disabled = true;
       try {
         const response = await client.speak.v1.audio.generate({
@@ -167,7 +173,7 @@
         log('Please enter text', 'error');
         return;
       }
-      output.innerHTML = '';
+      output.textContent = '';
       arrayBufferButton.disabled = true;
       try {
         const response = await client.speak.v1.audio.generate({
@@ -196,7 +202,7 @@
         log('Please enter text', 'error');
         return;
       }
-      output.innerHTML = '';
+      output.textContent = '';
       blobButton.disabled = true;
       try {
         const response = await client.speak.v1.audio.generate({
@@ -223,7 +229,7 @@
         log('Please enter text', 'error');
         return;
       }
-      output.innerHTML = '';
+      output.textContent = '';
       bytesButton.disabled = true;
       try {
         const response = await client.speak.v1.audio.generate({

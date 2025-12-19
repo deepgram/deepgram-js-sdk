@@ -110,12 +110,18 @@
     }
 
     function log(message, type = 'info') {
+      const div = document.createElement('div');
       const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
-      output.innerHTML += `<div class="${className}">${message}</div>`;
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
       output.scrollTop = output.scrollHeight;
     }
 
     function getClient() {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
       const apiKey = apiKeyInput.value.trim();
       if (!apiKey) {
         log('Please enter an API key', 'error');
@@ -129,7 +135,7 @@
       const client = getClient();
       if (!client) return;
 
-      output.innerHTML = '';
+      output.textContent = '';
       listButton.disabled = true;
 
       try {
@@ -159,7 +165,7 @@
         return;
       }
 
-      output.innerHTML = '';
+      output.textContent = '';
       getButton.disabled = true;
 
       try {
@@ -185,7 +191,7 @@
         return;
       }
 
-      output.innerHTML = '';
+      output.textContent = '';
       updateButton.disabled = true;
 
       try {
@@ -217,7 +223,7 @@
         return;
       }
 
-      output.innerHTML = '';
+      output.textContent = '';
       deleteButton.disabled = true;
 
       try {
