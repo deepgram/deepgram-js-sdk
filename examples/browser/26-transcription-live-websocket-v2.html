@@ -105,11 +105,8 @@
     let deepgramConnection = null;
     let isStreaming = false;
 
-    // Try to load API key from localStorage
-    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
-    if (savedApiKey) {
-      apiKeyInput.value = savedApiKey;
-    }
+    // API key is only used in-memory for the current session and is not persisted in localStorage.
+    // This avoids storing sensitive credentials in clear-text on the client.
 
     function log(message, type = 'info') {
       const div = document.createElement('div');
@@ -145,8 +142,7 @@
         return;
       }
 
-      // Save to localStorage for convenience
-      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
+      // Do not persist the API key to localStorage to avoid storing sensitive data in clear text.
 
       output.textContent = '';
       startButton.disabled = true;

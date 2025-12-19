@@ -93,9 +93,8 @@
     const fieldsButton = document.getElementById('fieldsButton');
     const output = document.getElementById('output');
 
-    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
+    // Try to load project ID from localStorage (non-sensitive)
     const savedProjectId = localStorage.getItem('DEEPGRAM_PROJECT_ID');
-    if (savedApiKey) apiKeyInput.value = savedApiKey;
     if (savedProjectId) projectIdInput.value = savedProjectId;
 
     function log(message, type = 'info') {
@@ -116,7 +115,6 @@
         log('Please enter an API key', 'error');
         return null;
       }
-      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
       return new DeepgramClient({ apiKey });
     }
 

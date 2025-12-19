@@ -83,8 +83,9 @@
     const runButton = document.getElementById('runExample');
     const output = document.getElementById('output');
 
-    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
-    if (savedApiKey) apiKeyInput.value = savedApiKey;
+    // For security reasons, do not persist the API key in localStorage.
+    // Clear any previously stored API key from older versions of this example.
+    localStorage.removeItem('DEEPGRAM_API_KEY');
 
     function log(message, type = 'info') {
       const div = document.createElement('div');
@@ -111,7 +112,7 @@
         return;
       }
 
-      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
+      // Do not store the API key in localStorage to avoid clear-text persistence of sensitive data.
       output.textContent = '';
       runButton.disabled = true;
       log('Testing error handling...\n');

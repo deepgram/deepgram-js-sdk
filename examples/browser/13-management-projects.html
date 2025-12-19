@@ -99,12 +99,8 @@
     const deleteButton = document.getElementById('deleteButton');
     const output = document.getElementById('output');
 
-    // Try to load from localStorage
-    const savedApiKey = localStorage.getItem('DEEPGRAM_API_KEY');
+    // Try to load project ID from localStorage (non-sensitive)
     const savedProjectId = localStorage.getItem('DEEPGRAM_PROJECT_ID');
-    if (savedApiKey) {
-      apiKeyInput.value = savedApiKey;
-    }
     if (savedProjectId) {
       projectIdInput.value = savedProjectId;
     }
@@ -127,7 +123,6 @@
         log('Please enter an API key', 'error');
         return null;
       }
-      localStorage.setItem('DEEPGRAM_API_KEY', apiKey);
       return new DeepgramClient({ apiKey });
     }
 
