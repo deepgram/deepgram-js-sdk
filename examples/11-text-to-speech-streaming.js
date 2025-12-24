@@ -27,10 +27,10 @@ async function textToSpeechStreaming() {
     
     deepgramConnection.on("message", (data) => {
       // Check message type
-      if (typeof data === "string") {
+      if (typeof data === "string" || data instanceof ArrayBuffer || data instanceof Blob) {
         // Audio data comes as string (base64 encoded)
         audioReceived = true;
-        console.log("Audio received (length):", data.length);
+        console.log("Audio received (length):", data instanceof ArrayBuffer ? data.byteLength : data instanceof Blob ? data.size : data.length);
         // Process audio data - decode base64 if needed
       } else if (data.type === "Metadata") {
         console.log("Metadata:", data);

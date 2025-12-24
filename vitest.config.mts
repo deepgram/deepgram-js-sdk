@@ -1,4 +1,6 @@
 import { defineConfig } from "vitest/config";
+import { resolve } from "path";
+
 export default defineConfig({
     test: {
         projects: [
@@ -9,7 +11,7 @@ export default defineConfig({
                     environment: "node",
                     root: "./tests",
                     include: ["**/*.test.{js,ts,jsx,tsx}"],
-                    exclude: ["wire/**"],
+                    exclude: ["wire/**", "browser/**"],
                     setupFiles: ["./setup.ts"],
                 },
             },
@@ -22,7 +24,23 @@ export default defineConfig({
                     setupFiles: ["../setup.ts", "../mock-server/setup.ts"],
                 },
             },
+            {
+                test: {
+                    globals: true,
+                    name: "browser",
+                    environment: "node",
+                    root: "./tests/browser",
+                    include: ["**/*.test.{js,ts,jsx,tsx}"],
+                    setupFiles: ["./setup.ts"],
+                    globalSetup: ["./global-setup.ts"],
+                },
+            },
         ],
         passWithNoTests: true,
+    },
+    resolve: {
+        alias: {
+            "@": resolve(__dirname, "./src"),
+        },
     },
 });
