@@ -141,6 +141,7 @@ test:
 	node scripts/fix-wire-test-imports.js
 	pnpm exec vitest --project unit --run
 	pnpm exec vitest --project wire --run
+	node scripts/revert-wire-test-imports.js
 
 browser:
 	pnpm install --save-exact --save-dev playwright
