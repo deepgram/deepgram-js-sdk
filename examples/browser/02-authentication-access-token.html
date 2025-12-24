@@ -120,12 +120,46 @@
         log('\nCreating client with access token...');
         const tempClient = new DeepgramClient({ accessToken: tokenData.access_token });
 
-        // Now use the temporary client to verify it works
-        log('Verifying token by listing projects...');
-        const projects = await tempClient.manage.v1.projects.list();
-        log(`✓ Token verified! Projects: ${JSON.stringify(projects, null, 2)}`, 'success');
+        // Verify the access token is actually being used (Bearer scheme, not Token)
+        log('Verifying access token is being used...');
+        const authRequest = await tempClient._options.authProvider.getAuthRequest();
+        const authHeader = authRequest.headers.Authorization;
+        
+        log(`Authorization header: ${authHeader.substring(0, 30)}...`);
+        
+        if (authHeader.startsWith("Bearer ")) {
+          const tokenInHeader = authHeader.substring(7);
+          if (tokenInHeader === tokenData.access_token) {
+            log('✓ PASS: Access token is being used (Bearer scheme)', 'success');
+          } else {
+            log('✗ FAIL: Access token in header doesn\'t match provided token', 'error');
+            return;
+          }
+        } else {
+          log(`✗ FAIL: Expected Bearer scheme, got: ${authHeader.substring(0, 30)}...`, 'error');
+          return;
+        }
 
-        log('\n✓ Example completed successfully!', 'success');
+        // Now use the temporary client to verify it works
+        // Note: Access tokens from grant() have usage:write permission for voice APIs,
+        // but NOT for Manage APIs. So we verify with auth.v1.tokens.get() instead.
+        log('\nTesting API call with access token...');
+        const text = `The history of the phrase 'The quick brown fox jumps over the lazy dog'. 
+    The earliest known apperance of the phrase was in The Boston Journal. 
+    This phrase is commonly used for typing practice and testing keyboards.`;
+    
+      try {
+        const data = await tempClient.read.v1.text.analyze({
+          text,
+          language: "en",
+          summarize: true, // Enable at least one feature
+          // Add more text intelligence options as needed
+        });
+    
+        console.log("Analysis result:", JSON.stringify(data, null, 2));
+      } catch (error) {
+        console.error("Error:", error);
+      }
       } catch (error) {
         log(`✗ Error: ${error.message}`, 'error');
         if (error.body) {

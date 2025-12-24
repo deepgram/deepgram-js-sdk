@@ -60,6 +60,34 @@ function generateUUID(): string {
 }
 
 /**
+ * Wrapper auth provider that checks for accessToken first (Bearer scheme)
+ * before falling back to the original auth provider (Token scheme for API keys).
+ */
+class AccessTokenAuthProviderWrapper implements core.AuthProvider {
+    private readonly originalProvider: core.AuthProvider;
+    private readonly accessToken?: core.Supplier<string | undefined>;
+
+    constructor(originalProvider: core.AuthProvider, accessToken?: core.Supplier<string | undefined>) {
+        this.originalProvider = originalProvider;
+        this.accessToken = accessToken;
+    }
+
+    public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
+        // Check for access token first (highest priority)
+        // Access tokens use Bearer scheme, API keys use Token scheme
+        const accessToken = (await core.Supplier.get(this.accessToken)) ?? process.env?.DEEPGRAM_ACCESS_TOKEN;
+        if (accessToken != null) {
+            return {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            };
+        }
+
+        // Fall back to original provider (which handles API keys)
+        return this.originalProvider.getAuthRequest(arg);
+    }
+}
+
+/**
  * Custom wrapper around DeepgramClient that ensures the custom websocket implementation
  * from ws.ts is always used, even if the auto-generated code changes.
  */
@@ -69,7 +97,7 @@ export class CustomDeepgramClient extends DeepgramClient {
     private _customSpeak: SpeakClient | undefined;
     private readonly _sessionId: string;
 
-    constructor(options: DeepgramClient.Options = {}) {
+    constructor(options: DeepgramClient.Options & { accessToken?: core.Supplier<string | undefined> } = {}) {
         // Generate a UUID for the session ID
         const sessionId = generateUUID();
         
@@ -84,6 +112,15 @@ export class CustomDeepgramClient extends DeepgramClient {
         
         super(optionsWithSessionId);
         this._sessionId = sessionId;
+
+        // Wrap the auth provider to handle accessToken if provided
+        // This ensures accessToken takes priority over apiKey/env var
+        if (options.accessToken != null) {
+            (this._options as any).authProvider = new AccessTokenAuthProviderWrapper(
+                this._options.authProvider,
+                options.accessToken
+            );
+        }
     }
 
     /**
