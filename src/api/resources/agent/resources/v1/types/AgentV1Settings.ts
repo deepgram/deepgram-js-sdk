@@ -83,7 +83,7 @@ export namespace AgentV1Settings {
     }
 
     export interface Agent {
-        /** Agent language */
+        /** Deprecated. Use `listen.provider.language` and `speak.provider.language` fields instead. */
         language?: string;
         /** Conversation context including the history of messages and function calls */
         context?: Agent.Context;
@@ -134,24 +134,11 @@ export namespace AgentV1Settings {
         }
 
         export interface Listen {
-            provider?: Listen.Provider;
-        }
-
-        export namespace Listen {
-            export interface Provider {
-                /** Provider type for speech-to-text */
-                type: "deepgram";
-                /** Model to use for speech to text */
-                model?: string;
-                /** Prompt key-term recognition (nova-3 'en' only) */
-                keyterms?: string[];
-                /** Applies smart formatting to improve transcript readability (Deepgram providers only) */
-                smart_format?: boolean;
-            }
+            provider?: Deepgram.agent.AgentV1SettingsAgentListenProvider;
         }
 
         export interface Think {
-            provider: Think.Provider;
+            provider: Deepgram.agent.AgentV1SettingsAgentThinkProvider;
             /** Optional for non-Deepgram LLM providers. When present, must include url field and headers object */
             endpoint?: Think.Endpoint;
             functions?: Think.Functions.Item[];
@@ -161,55 +148,6 @@ export namespace AgentV1Settings {
         }
 
         export namespace Think {
-            export type Provider =
-                | {
-                      type?: "open_ai" | undefined;
-                      model?:
-                          | (
-                                | "gpt-5"
-                                | "gpt-5-mini"
-                                | "gpt-5-nano"
-                                | "gpt-4.1"
-                                | "gpt-4.1-mini"
-                                | "gpt-4.1-nano"
-                                | "gpt-4o"
-                                | "gpt-4o-mini"
-                            )
-                          | undefined;
-                      temperature?: number | undefined;
-                  }
-                | {
-                      type?: "aws_bedrock" | undefined;
-                      model?:
-                          | ("anthropic/claude-3-5-sonnet-20240620-v1:0" | "anthropic/claude-3-5-haiku-20240307-v1:0")
-                          | undefined;
-                      temperature?: number | undefined;
-                      credentials?:
-                          | {
-                                type?: ("sts" | "iam") | undefined;
-                                region?: string | undefined;
-                                access_key_id?: string | undefined;
-                                secret_access_key?: string | undefined;
-                                session_token?: string | undefined;
-                            }
-                          | undefined;
-                  }
-                | {
-                      type?: "anthropic" | undefined;
-                      model?: ("claude-3-5-haiku-latest" | "claude-sonnet-4-20250514") | undefined;
-                      temperature?: number | undefined;
-                  }
-                | {
-                      type?: "google" | undefined;
-                      model?: ("gemini-2.0-flash" | "gemini-2.0-flash-lite" | "gemini-2.5-flash") | undefined;
-                      temperature?: number | undefined;
-                  }
-                | {
-                      type?: "groq" | undefined;
-                      model?: "openai/gpt-oss-20b" | undefined;
-                      temperature?: number | undefined;
-                  };
-
             /**
              * Optional for non-Deepgram LLM providers. When present, must include url field and headers object
              */

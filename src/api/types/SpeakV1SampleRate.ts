@@ -5,7 +5,7 @@ export const SpeakV1SampleRate = {
     EightThousand: "8000",
     SixteenThousand: "16000",
     TwentyFourThousand: "24000",
-    FortyFourThousandOneHundred: "44100",
+    ThirtyTwoThousand: "32000",
     FortyEightThousand: "48000",
 } as const;
 export type SpeakV1SampleRate = (typeof SpeakV1SampleRate)[keyof typeof SpeakV1SampleRate];

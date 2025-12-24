@@ -12,11 +12,13 @@ export type AgentV1SettingsAgentSpeakEndpointProvider =
 export namespace AgentV1SettingsAgentSpeakEndpointProvider {
     export interface Deepgram {
         type: "deepgram";
+        /** The REST API version for the Deepgram text-to-speech API */
+        version?: "v1";
         /** Deepgram TTS model */
-        model: AgentV1SettingsAgentSpeakEndpointProviderDeepgram.Model;
+        model: Deepgram.Model;
     }
 
-    export namespace AgentV1SettingsAgentSpeakEndpointProviderDeepgram {
+    export namespace Deepgram {
         /** Deepgram TTS model */
         export const Model = {
             AuraAsteriaEn: "aura-asteria-en",
@@ -88,13 +90,17 @@ export namespace AgentV1SettingsAgentSpeakEndpointProvider {
 
     export interface ElevenLabs {
         type: "eleven_labs";
+        /** The REST API version for the Deepgram text-to-speech API */
+        version?: "v1";
         /** Eleven Labs model ID */
-        model_id: AgentV1SettingsAgentSpeakEndpointProviderElevenLabs.ModelId;
-        /** Eleven Labs optional language code */
+        model_id: ElevenLabs.ModelId;
+        /** Optional language to use, e.g. 'en-US'.   Corresponds to the `language_code` parameter in the ElevenLabs API */
+        language?: string;
+        /** Use the `language` field instead. */
         language_code?: string;
     }
 
-    export namespace AgentV1SettingsAgentSpeakEndpointProviderElevenLabs {
+    export namespace ElevenLabs {
         /** Eleven Labs model ID */
         export const ModelId = {
             ElevenTurboV25: "eleven_turbo_v2_5",
@@ -106,14 +112,19 @@ export namespace AgentV1SettingsAgentSpeakEndpointProvider {
 
     export interface Cartesia {
         type: "cartesia";
+        /** The API version header for the Cartesia text-to-speech API */
+        version?: Cartesia.Version;
         /** Cartesia model ID */
-        model_id: AgentV1SettingsAgentSpeakEndpointProviderCartesia.ModelId;
-        voice: AgentV1SettingsAgentSpeakEndpointProviderCartesia.Voice;
+        model_id: Cartesia.ModelId;
+        voice: Cartesia.Voice;
         /** Cartesia language code */
         language?: string;
     }
 
-    export namespace AgentV1SettingsAgentSpeakEndpointProviderCartesia {
+    export namespace Cartesia {
+        /** The API version header for the Cartesia text-to-speech API */
+        export const Version = {} as const;
+        export type Version = (typeof Version)[keyof typeof Version];
         /** Cartesia model ID */
         export const ModelId = {
             Sonic2: "sonic-2",
@@ -131,13 +142,15 @@ export namespace AgentV1SettingsAgentSpeakEndpointProvider {
 
     export interface OpenAi {
         type: "open_ai";
+        /** The REST API version for the OpenAI text-to-speech API */
+        version?: "v1";
         /** OpenAI TTS model */
-        model: AgentV1SettingsAgentSpeakEndpointProviderOpenAi.Model;
+        model: OpenAi.Model;
         /** OpenAI voice */
-        voice: AgentV1SettingsAgentSpeakEndpointProviderOpenAi.Voice;
+        voice: OpenAi.Voice;
     }
 
-    export namespace AgentV1SettingsAgentSpeakEndpointProviderOpenAi {
+    export namespace OpenAi {
         /** OpenAI TTS model */
         export const Model = {
             Tts1: "tts-1",
@@ -160,8 +173,10 @@ export namespace AgentV1SettingsAgentSpeakEndpointProvider {
         type: "aws_polly";
         /** AWS Polly voice name */
         voice: AgentV1SettingsAgentSpeakEndpointProviderAwsPolly.Voice;
-        /** Language code (e.g., "en-US") */
-        language_code: string;
+        /** Language to use, e.g. 'en-US'.   Corresponds to the `language_code` parameter in the AWS Polly API */
+        language: string;
+        /** Use the `language` field instead. */
+        language_code?: string;
         engine: AgentV1SettingsAgentSpeakEndpointProviderAwsPolly.Engine;
         credentials: AgentV1SettingsAgentSpeakEndpointProviderAwsPolly.Credentials;
     }

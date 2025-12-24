@@ -33,7 +33,7 @@ export namespace ListenV1Results {
                 transcript: string;
                 /** The confidence of the transcription */
                 confidence: number;
-                languages: string[];
+                languages?: string[];
                 words: Item.Words.Item[];
             }
 
@@ -51,9 +51,9 @@ export namespace ListenV1Results {
                         /** The confidence of the word */
                         confidence: number;
                         /** The language of the word */
-                        language: string;
+                        language?: string;
                         /** The punctuated word of the word */
-                        punctuated_word: string;
+                        punctuated_word?: string;
                         /** The speaker of the word */
                         speaker?: number;
                     }

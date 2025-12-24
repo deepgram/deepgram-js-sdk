@@ -12,6 +12,8 @@ export type AgentV1UpdateSpeakSpeakProvider =
 export namespace AgentV1UpdateSpeakSpeakProvider {
     export interface Deepgram {
         type: "deepgram";
+        /** The REST API version for the Deepgram text-to-speech API */
+        version?: "v1";
         /** Deepgram TTS model */
         model: AgentV1UpdateSpeakSpeakProviderDeepgram.Model;
     }
@@ -88,9 +90,13 @@ export namespace AgentV1UpdateSpeakSpeakProvider {
 
     export interface ElevenLabs {
         type: "eleven_labs";
+        /** The REST API version for the ElevenLabs text-to-speech API */
+        version?: "v1";
         /** Eleven Labs model ID */
         model_id: AgentV1UpdateSpeakSpeakProviderElevenLabs.ModelId;
-        /** Eleven Labs optional language code */
+        /** Language code to use, e.g. 'en-US'.   Corresponds to the `language_code` parameter in the ElevenLabs API */
+        language?: string;
+        /** Use the `language` field instead. */
         language_code?: string;
     }
 
@@ -106,6 +112,8 @@ export namespace AgentV1UpdateSpeakSpeakProvider {
 
     export interface Cartesia {
         type: "cartesia";
+        /** The API version header for the Cartesia text-to-speech API */
+        version?: AgentV1UpdateSpeakSpeakProviderCartesia.Version;
         /** Cartesia model ID */
         model_id: AgentV1UpdateSpeakSpeakProviderCartesia.ModelId;
         voice: AgentV1UpdateSpeakSpeakProviderCartesia.Voice;
@@ -114,6 +122,9 @@ export namespace AgentV1UpdateSpeakSpeakProvider {
     }
 
     export namespace AgentV1UpdateSpeakSpeakProviderCartesia {
+        /** The API version header for the Cartesia text-to-speech API */
+        export const Version = {} as const;
+        export type Version = (typeof Version)[keyof typeof Version];
         /** Cartesia model ID */
         export const ModelId = {
             Sonic2: "sonic-2",
@@ -131,6 +142,8 @@ export namespace AgentV1UpdateSpeakSpeakProvider {
 
     export interface OpenAi {
         type: "open_ai";
+        /** The REST API version for the OpenAI text-to-speech API */
+        version?: "v1";
         /** OpenAI TTS model */
         model: AgentV1UpdateSpeakSpeakProviderOpenAi.Model;
         /** OpenAI voice */
@@ -160,8 +173,10 @@ export namespace AgentV1UpdateSpeakSpeakProvider {
         type: "aws_polly";
         /** AWS Polly voice name */
         voice: AgentV1UpdateSpeakSpeakProviderAwsPolly.Voice;
-        /** Language code (e.g., "en-US") */
-        language_code: string;
+        /** Language code to use, e.g. 'en-US'.   Corresponds to the `language_code` parameter in the AWS Polly API */
+        language: string;
+        /** Use the `language` field instead. */
+        language_code?: string;
         engine: AgentV1UpdateSpeakSpeakProviderAwsPolly.Engine;
         credentials: AgentV1UpdateSpeakSpeakProviderAwsPolly.Credentials;
     }
