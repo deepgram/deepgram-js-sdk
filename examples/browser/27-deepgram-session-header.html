@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deepgram Session Header - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="file"] {
+      padding: 5px;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.stop {
+      background: #d32f2f;
+    }
+    button.stop:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .info {
+      color: #1976d2;
+    }
+    .session-id {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <h1>Deepgram Session Header</h1>
+  <p>This example demonstrates that the x-deepgram-session-id header is automatically generated and sent with all REST requests and WebSocket connections.</p>
+
+  <div class="container">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    
+    <div id="sessionIdDisplay" class="session-id" style="display: none;">
+      <strong>Generated Session ID:</strong> <span id="sessionId"></span>
+    </div>
+    
+    <button id="testRestButton">Test REST Request</button>
+    <button id="testWebSocketButton">Test WebSocket Connection</button>
+    <button id="stopButton" class="stop" disabled>Stop WebSocket</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const sessionIdDisplay = document.getElementById('sessionIdDisplay');
+    const sessionIdSpan = document.getElementById('sessionId');
+    const testRestButton = document.getElementById('testRestButton');
+    const testWebSocketButton = document.getElementById('testWebSocketButton');
+    const stopButton = document.getElementById('stopButton');
+    const output = document.getElementById('output');
+
+    let deepgramClient = null;
+    let deepgramConnection = null;
+    let isStreaming = false;
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'info' ? 'info' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function initializeClient() {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return null;
+      }
+
+      if (!deepgramClient) {
+        deepgramClient = new DeepgramClient({
+          apiKey: apiKey,
+        });
+        
+        // Display the session ID
+        sessionIdSpan.textContent = deepgramClient.sessionId;
+        sessionIdDisplay.style.display = 'block';
+        log(`Generated Session ID: ${deepgramClient.sessionId}`, 'info');
+      }
+      
+      return deepgramClient;
+    }
+
+    testRestButton.addEventListener('click', async () => {
+      output.textContent = '';
+      testRestButton.disabled = true;
+      
+      const client = initializeClient();
+      if (!client) {
+        testRestButton.disabled = false;
+        return;
+      }
+
+      log('=== Testing REST Request ===', 'info');
+      
+      try {
+        // Make a REST request - the session ID should be included in headers
+        const data = await client.manage.v1.projects.list();
+        log('✓ REST request successful!', 'success');
+        log('  Session ID was sent in x-deepgram-session-id header');
+        log(`  Found ${data.projects?.length || 0} projects`);
+        log('');
+        log('Note: Check the Network tab in DevTools to verify the header was sent', 'info');
+      } catch (error) {
+        log(`✗ REST request failed: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        testRestButton.disabled = false;
+      }
+    });
+
+    testWebSocketButton.addEventListener('click', async () => {
+      output.textContent = '';
+      testWebSocketButton.disabled = true;
+      stopButton.disabled = false;
+      
+      const client = initializeClient();
+      if (!client) {
+        testWebSocketButton.disabled = false;
+        stopButton.disabled = true;
+        return;
+      }
+
+      log('=== Testing WebSocket Connection ===', 'info');
+      log(`Session ID: ${client.sessionId}`, 'info');
+      log('Note: In browser, session ID is sent as x-deepgram-session-id protocol', 'info');
+      log('  Check the Network tab in DevTools → WS → Headers → Sec-WebSocket-Protocol', 'info');
+      log('');
+
+      try {
+        deepgramConnection = await client.listen.v1.connect({
+          model: "nova-3",
+          language: "en",
+          punctuate: "true",
+          interim_results: "true",
+        });
+
+        let connectionOpened = false;
+        let receivedMessage = false;
+
+        deepgramConnection.on("open", () => {
+          connectionOpened = true;
+          log('✓ WebSocket connection opened!', 'success');
+          log('  Session ID was sent as x-deepgram-session-id protocol (browser)');
+          log('  Check DevTools Network tab → WS connection → Headers → Sec-WebSocket-Protocol', 'info');
+        });
+
+        deepgramConnection.on("message", (data) => {
+          if (!receivedMessage && data.type === "Metadata") {
+            receivedMessage = true;
+            log('✓ Received metadata from WebSocket', 'success');
+            log(`  Metadata: ${JSON.stringify(data, null, 2)}`, 'info');
+          } else if (data.type === "Results") {
+            log(`Transcript: ${JSON.stringify(data, null, 2)}`);
+            if (data.is_final) {
+              setTimeout(() => {
+                if (deepgramConnection) {
+                  deepgramConnection.close();
+                }
+              }, 1000);
+            }
+          }
+        });
+
+        deepgramConnection.on("error", (error) => {
+          log(`✗ WebSocket error: ${error.message}`, 'error');
+        });
+
+        deepgramConnection.on("close", () => {
+          log('✓ WebSocket connection closed', 'info');
+          log('');
+          isStreaming = false;
+          testWebSocketButton.disabled = false;
+          stopButton.disabled = true;
+          deepgramConnection = null;
+        });
+
+        // Connect to the websocket
+        deepgramConnection.connect();
+        isStreaming = true;
+
+        // Wait for connection to open
+        await deepgramConnection.waitForOpen();
+
+        // Send a test message (empty audio chunk to trigger metadata)
+        deepgramConnection.socket.send(new ArrayBuffer(0));
+
+        // Send finalize after a short delay
+        setTimeout(() => {
+          if (deepgramConnection && isStreaming) {
+            deepgramConnection.sendListenV1Finalize({ type: "Finalize" });
+          }
+        }, 2000);
+
+        // Auto-close after 10 seconds
+        setTimeout(() => {
+          if (deepgramConnection && isStreaming) {
+            deepgramConnection.close();
+          }
+        }, 10000);
+
+      } catch (error) {
+        log(`✗ WebSocket connection failed: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+        isStreaming = false;
+        testWebSocketButton.disabled = false;
+        stopButton.disabled = true;
+      }
+    });
+
+    stopButton.addEventListener('click', () => {
+      if (deepgramConnection) {
+        isStreaming = false;
+        deepgramConnection.close();
+      }
+    });
+  </script>
+</body>
+</html>
+

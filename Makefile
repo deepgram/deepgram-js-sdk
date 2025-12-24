@@ -42,11 +42,12 @@ help:
 	@printf "  \033[36m24\033[0m - Error Handling\n"
 	@printf "  \033[36m25\033[0m - Binary Response\n"
 	@printf "  \033[36m26\033[0m - Transcription Live WebSocket V2\n"
+	@printf "  \033[36m27\033[0m - Deepgram Session Header\n"
 
 # Run all examples
 examples:
 	@echo "Running all examples..."
-	node examples/01-authentication-api-key.js && node examples/02-authentication-access-token.js && node examples/03-authentication-proxy.js && node examples/04-transcription-prerecorded-url.js && node examples/05-transcription-prerecorded-file.js && node examples/06-transcription-prerecorded-callback.js && node examples/07-transcription-live-websocket.js && node examples/08-transcription-captions.js && node examples/09-voice-agent.js && node examples/10-text-to-speech-single.js && node examples/11-text-to-speech-streaming.js && node examples/12-text-intelligence.js && node examples/13-management-projects.js && node examples/14-management-keys.js && node examples/15-management-members.js && node examples/16-management-invites.js && node examples/17-management-usage.js && node examples/18-management-billing.js && node examples/19-management-models.js && node examples/20-onprem-credentials.js && node examples/21-configuration-scoped.js && node examples/22-transcription-advanced-options.js && node examples/23-file-upload-types.js && node examples/24-error-handling.js && node examples/25-binary-response.js && node examples/26-transcription-live-websocket-v2.js
+	node examples/01-authentication-api-key.js && node examples/02-authentication-access-token.js && node examples/03-authentication-proxy.js && node examples/04-transcription-prerecorded-url.js && node examples/05-transcription-prerecorded-file.js && node examples/06-transcription-prerecorded-callback.js && node examples/07-transcription-live-websocket.js && node examples/08-transcription-captions.js && node examples/09-voice-agent.js && node examples/10-text-to-speech-single.js && node examples/11-text-to-speech-streaming.js && node examples/12-text-intelligence.js && node examples/13-management-projects.js && node examples/14-management-keys.js && node examples/15-management-members.js && node examples/16-management-invites.js && node examples/17-management-usage.js && node examples/18-management-billing.js && node examples/19-management-models.js && node examples/20-onprem-credentials.js && node examples/21-configuration-scoped.js && node examples/22-transcription-advanced-options.js && node examples/23-file-upload-types.js && node examples/24-error-handling.js && node examples/25-binary-response.js && node examples/26-transcription-live-websocket-v2.js && node examples/27-deepgram-session-header.js
 
 # Individual example targets
 example-1:
@@ -126,6 +127,9 @@ example-25:
 
 example-26:
 	node examples/26-transcription-live-websocket-v2.js
+
+example-27:
+	node examples/27-deepgram-session-header.js
 
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none

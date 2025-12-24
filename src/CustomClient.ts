@@ -32,6 +32,33 @@ try {
     NodeWebSocket = undefined;
 }
 
+// Helper function to generate UUID that works in both Node.js and browser
+function generateUUID(): string {
+    // In Node.js, use the crypto module
+    if (RUNTIME.type === "node") {
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const crypto = require("crypto");
+            return crypto.randomUUID();
+        } catch {
+            // Fallback if crypto module is not available
+        }
+    }
+    
+    // In browser or as fallback, use global crypto if available
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+    
+    // Fallback UUID generation (RFC4122 version 4)
+    // This is a simple fallback that should work everywhere
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+
 /**
  * Custom wrapper around DeepgramClient that ensures the custom websocket implementation
  * from ws.ts is always used, even if the auto-generated code changes.
@@ -40,9 +67,30 @@ export class CustomDeepgramClient extends DeepgramClient {
     private _customAgent: AgentClient | undefined;
     private _customListen: ListenClient | undefined;
     private _customSpeak: SpeakClient | undefined;
+    private readonly _sessionId: string;
 
     constructor(options: DeepgramClient.Options = {}) {
-        super(options);
+        // Generate a UUID for the session ID
+        const sessionId = generateUUID();
+        
+        // Add the session ID to headers so it's included in all REST requests
+        const optionsWithSessionId: DeepgramClient.Options = {
+            ...options,
+            headers: {
+                ...options.headers,
+                "x-deepgram-session-id": sessionId,
+            },
+        };
+        
+        super(optionsWithSessionId);
+        this._sessionId = sessionId;
+    }
+
+    /**
+     * Get the session ID that was generated for this client instance.
+     */
+    public get sessionId(): string {
+        return this._sessionId;
     }
 
     /**
@@ -114,6 +162,24 @@ class WrappedSpeakClient extends SpeakClientImpl {
 }
 
 /**
+ * Helper function to resolve Suppliers in headers to their actual values.
+ */
+async function resolveHeaders(headers: Record<string, unknown>): Promise<Record<string, unknown>> {
+    const resolved: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(headers)) {
+        if (value == null) {
+            continue;
+        }
+        // Resolve Supplier if it's a Supplier, otherwise use the value directly
+        const resolvedValue = await core.Supplier.get(value as any);
+        if (resolvedValue != null) {
+            resolved[key] = resolvedValue;
+        }
+    }
+    return resolved;
+}
+
+/**
  * Helper function to get WebSocket class and handle headers/protocols based on runtime.
  * In Node.js, use the 'ws' library which supports headers.
  * In browser, use Sec-WebSocket-Protocol for authentication since headers aren't supported.
@@ -128,6 +194,9 @@ function getWebSocketOptions(headers: Record<string, unknown>): {
     // Check if we're in a browser environment (browser or web-worker)
     const isBrowser = RUNTIME.type === "browser" || RUNTIME.type === "web-worker";
     
+    // Extract session ID header
+    const sessionIdHeader = headers["x-deepgram-session-id"] || headers["X-Deepgram-Session-Id"];
+    
     // In Node.js, ensure we use the 'ws' library which supports headers
     if (RUNTIME.type === "node" && NodeWebSocket) {
         options.WebSocket = NodeWebSocket;
@@ -138,11 +207,16 @@ function getWebSocketOptions(headers: Record<string, unknown>): {
         const authHeader = headers.Authorization || headers.authorization;
         const browserHeaders: Record<string, unknown> = { ...headers };
         
-        // Remove Authorization from headers since it won't work in browser
+        // Remove Authorization and session ID from headers since they won't work in browser
         delete browserHeaders.Authorization;
         delete browserHeaders.authorization;
+        delete browserHeaders["x-deepgram-session-id"];
+        delete browserHeaders["X-Deepgram-Session-Id"];
         
         options.headers = browserHeaders;
+        
+        // Build protocols array for browser WebSocket
+        const protocols: string[] = [];
         
         // If we have an Authorization header, extract the token and format as protocols
         // Deepgram expects:
@@ -153,15 +227,24 @@ function getWebSocketOptions(headers: Record<string, unknown>): {
             if (authHeader.startsWith("Token ")) {
                 // API key: "Token API_KEY" -> ["token", "API_KEY"]
                 const apiKey = authHeader.substring(6); // Remove "Token " prefix
-                options.protocols = ["token", apiKey];
+                protocols.push("token", apiKey);
             } else if (authHeader.startsWith("Bearer ")) {
                 // Access token: "Bearer TOKEN" -> ["bearer", "TOKEN"]
                 const token = authHeader.substring(7); // Remove "Bearer " prefix
-                options.protocols = ["bearer", token];
+                protocols.push("bearer", token);
             } else {
                 // Fallback: use the entire header value if it doesn't match expected format
-                options.protocols = [authHeader];
+                protocols.push(authHeader);
             }
+        }
+        
+        // Add session ID as a protocol for browser WebSocket
+        if (sessionIdHeader && typeof sessionIdHeader === "string") {
+            protocols.push("x-deepgram-session-id", sessionIdHeader);
+        }
+        
+        if (protocols.length > 0) {
+            options.protocols = protocols;
         }
     } else {
         // Fallback for other environments
@@ -180,10 +263,14 @@ class WrappedAgentV1Client extends AgentV1Client {
         
         // Get Authorization from authProvider (matching the working version)
         const authRequest = await this._options.authProvider?.getAuthRequest();
-        const _headers: Record<string, unknown> = mergeHeaders(
+        // Merge headers from options (which includes session ID), auth headers, and request headers
+        const mergedHeaders = mergeHeaders(
+            this._options.headers ?? {},
             authRequest?.headers ?? {},
             headers,
         );
+        // Resolve any Suppliers in headers to actual values
+        const _headers = await resolveHeaders(mergedHeaders);
         
         // Get WebSocket options with proper header handling
         const wsOptions = getWebSocketOptions(_headers);
@@ -346,10 +433,14 @@ class WrappedListenV1Client extends ListenV1Client {
 
         // Get Authorization from authProvider (matching the working version)
         const authRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: Record<string, unknown> = mergeHeaders(
+        // Merge headers from options (which includes session ID), auth headers, and request headers
+        const mergedHeaders = mergeHeaders(
+            this._options.headers ?? {},
             authRequest.headers,
             headers,
         );
+        // Resolve any Suppliers in headers to actual values
+        const _headers = await resolveHeaders(mergedHeaders);
         
         // Get WebSocket options with proper header handling
         const wsOptions = getWebSocketOptions(_headers);
@@ -467,10 +558,14 @@ class WrappedListenV2Client extends ListenV2Client {
 
         // Get Authorization from authProvider (matching the working version)
         const authRequest = await this._options.authProvider?.getAuthRequest();
-        const _headers: Record<string, unknown> = mergeHeaders(
+        // Merge headers from options (which includes session ID), auth headers, and request headers
+        const mergedHeaders = mergeHeaders(
+            this._options.headers ?? {},
             authRequest?.headers ?? {},
             headers,
         );
+        // Resolve any Suppliers in headers to actual values
+        const _headers = await resolveHeaders(mergedHeaders);
         
         // Get WebSocket options with proper header handling
         const wsOptions = getWebSocketOptions(_headers);
@@ -578,10 +673,14 @@ class WrappedSpeakV1Client extends SpeakV1Client {
 
         // Get Authorization from authProvider (matching the working version)
         const authRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: Record<string, unknown> = mergeHeaders(
+        // Merge headers from options (which includes session ID), auth headers, and request headers
+        const mergedHeaders = mergeHeaders(
+            this._options.headers ?? {},
             authRequest.headers,
             headers,
         );
+        // Resolve any Suppliers in headers to actual values
+        const _headers = await resolveHeaders(mergedHeaders);
         
         // Get WebSocket options with proper header handling
         const wsOptions = getWebSocketOptions(_headers);
