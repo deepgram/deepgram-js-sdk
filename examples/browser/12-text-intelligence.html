@@ -66,11 +66,9 @@
 </head>
 <body>
   <h1>Text Intelligence</h1>
-  <p>Analyze text using Deepgram's intelligence AI features.</p>
+  <p>Analyze text using Deepgram's intelligence AI features. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <label for="text">Text to Analyze:</label>
     <textarea id="text" placeholder="Enter text to analyze">The history of the phrase 'The quick brown fox jumps over the lazy dog'. 
 The earliest known apperance of the phrase was in The Boston Journal. 
@@ -84,12 +82,9 @@ This phrase is commonly used for typing practice and testing keyboards.</textare
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const textInput = document.getElementById('text');
     const runButton = document.getElementById('runExample');
     const output = document.getElementById('output');
-
-    // For security, do not persist the API key in localStorage or other client-side storage.
 
     function log(message, type = 'info') {
       const div = document.createElement('div');
@@ -103,20 +98,12 @@ This phrase is commonly used for typing practice and testing keyboards.</textare
     }
 
     runButton.addEventListener('click', async () => {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
       const text = textInput.value.trim();
 
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return;
-      }
       if (!text) {
         log('Please enter text to analyze', 'error');
         return;
       }
-
-      // Do not persist the API key to localStorage to avoid storing it in clear text.
 
       output.textContent = '';
       runButton.disabled = true;
@@ -124,7 +111,8 @@ This phrase is commonly used for typing practice and testing keyboards.</textare
 
       try {
         const deepgramClient = new DeepgramClient({
-          apiKey: apiKey,
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
         });
 
         const data = await deepgramClient.read.v1.text.analyze({

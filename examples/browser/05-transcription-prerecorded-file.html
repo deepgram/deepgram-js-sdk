@@ -65,11 +65,9 @@
 </head>
 <body>
   <h1>Transcribe Audio from Local File</h1>
-  <p>Transcribe audio from a local file using Deepgram's speech-to-text REST API.</p>
+  <p>Transcribe audio from a local file using Deepgram's speech-to-text REST API. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <label for="audioFile">Audio File:</label>
     <input type="file" id="audioFile" accept="audio/*">
     <button id="runExample">Transcribe</button>
@@ -81,7 +79,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const audioFileInput = document.getElementById('audioFile');
     const runButton = document.getElementById('runExample');
     const output = document.getElementById('output');
@@ -99,14 +96,8 @@
     }
 
     runButton.addEventListener('click', async () => {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
       const audioFile = audioFileInput.files[0];
 
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return;
-      }
       if (!audioFile) {
         log('Please select an audio file', 'error');
         return;
@@ -119,7 +110,8 @@
 
       try {
         const deepgramClient = new DeepgramClient({
-          apiKey: apiKey,
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
         });
 
         const data = await deepgramClient.listen.v1.media.transcribeFile(

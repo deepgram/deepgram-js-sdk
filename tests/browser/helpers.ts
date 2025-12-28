@@ -51,11 +51,32 @@ export async function uploadFile(
 
 /**
  * Wait for output to appear (indicating the example ran)
+ * Waits for the output element AND for it to have actual content
  */
 export async function waitForOutput(page: any, timeout = 30000): Promise<void> {
   await waitForElement(page, "#output", timeout);
-  // Wait a bit more for content to appear
-  await page.waitForTimeout(500);
+  
+  // Wait for actual content to appear (not just empty element)
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeout) {
+    try {
+      const output = await page.$("#output");
+      if (output) {
+        const content = await output.textContent();
+        if (content && content.trim().length > 0) {
+          // Content appeared, wait a bit more for it to be fully rendered
+          await page.waitForTimeout(500);
+          return;
+        }
+      }
+    } catch (error) {
+      // Element might not exist yet, continue waiting
+    }
+    await page.waitForTimeout(200); // Check every 200ms
+  }
+  
+  // Fallback: just wait a bit if we timed out
+  await page.waitForTimeout(1000);
 }
 
 /**
@@ -69,10 +90,72 @@ export async function getOutputContent(page: any): Promise<string> {
 
 /**
  * Check if output contains success message
+ * Looks for checkmarks (✓), "success" text, or successful API responses (JSON data)
  */
 export async function hasSuccessOutput(page: any): Promise<boolean> {
   const content = await getOutputContent(page);
-  return content.includes("✓") || content.includes("success");
+  if (!content || content.trim().length === 0) {
+    return false;
+  }
+  
+  const contentLower = content.toLowerCase();
+  
+  // Check for explicit success indicators
+  if (content.includes("✓") || contentLower.includes("success")) {
+    return true;
+  }
+  
+  // Check for error indicators first - if we see clear errors, it's not a success
+  const hasErrorIndicators = contentLower.includes("✗") || 
+                             (contentLower.includes("error:") && !contentLower.includes("success")) ||
+                             (contentLower.includes("failed") && !contentLower.includes("successfully")) ||
+                             contentLower.includes("socket hang up") ||
+                             contentLower.includes("deepgram error:");
+  
+  // Check for successful API responses - JSON data with success indicators
+  const hasJsonData = (content.includes("{") && content.includes("}")) || 
+                      (content.includes("[") && content.includes("]"));
+  
+  // If we have JSON data and no error indicators, check for success patterns
+  if (hasJsonData && !hasErrorIndicators) {
+    // Look for common success patterns in JSON responses
+    const jsonSuccessPatterns = [
+      '"results"',
+      '"channels"',
+      '"alternatives"',
+      '"transcript"',
+      '"summary"',
+      '"data"',
+      '"projects"',
+      '"keys"',
+      '"members"',
+      '"models"',
+      '"access_token"',
+      '"expires_in"',
+    ];
+    
+    if (jsonSuccessPatterns.some(pattern => content.includes(pattern))) {
+      return true;
+    }
+  }
+  
+  // Check for specific success patterns from examples (case-insensitive)
+  const successPatterns = [
+    "transcription:",
+    "transcription result:",
+    "audio generated",
+    "analysis result:",
+    "projects:",
+    "keys:",
+    "members:",
+    "models:",
+    "access token:",
+    "authentication successful",
+    "success:",
+    "completed successfully",
+  ];
+  
+  return successPatterns.some(pattern => contentLower.includes(pattern));
 }
 
 /**

@@ -170,5 +170,13 @@ browser-serve:
 	@echo "  window.Deepgram = Deepgram;" >> examples/browser/deepgram.js
 	@echo "  window.deepgram = Deepgram;" >> examples/browser/deepgram.js
 	@echo "}" >> examples/browser/deepgram.js
-	@pnpx http-server -p 8000 examples/browser
-	@open http://localhost:8000/examples/browser
+	@echo "Starting proxy server on port 8001..."
+	@node scripts/proxy-server.js & \
+	PROXY_PID=$$!; \
+	echo "Starting http-server on port 8000..."; \
+	pnpx http-server -p 8000 examples/browser & \
+	HTTP_SERVER_PID=$$!; \
+	trap "kill $$PROXY_PID $$HTTP_SERVER_PID 2>/dev/null; exit" EXIT INT TERM; \
+	echo "Servers started. Proxy: http://localhost:8001, Examples: http://localhost:8000"; \
+	echo "Press CTRL-C to stop both servers"; \
+	wait $$PROXY_PID $$HTTP_SERVER_PID

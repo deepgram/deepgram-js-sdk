@@ -1,12 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { chromium, Browser, Page } from "playwright";
-import { getApiKey } from "./setup";
 import {
   getExampleUrl,
-  fillApiKey,
   clickButton,
-  hasCorsError,
-  waitForElement,
+  waitForOutput,
+  hasSuccessOutput,
 } from "./helpers";
 
 describe("Browser Example: 24-error-handling", () => {
@@ -22,37 +20,23 @@ describe("Browser Example: 24-error-handling", () => {
     await browser.close();
   });
 
-  it("should attempt API call (expecting CORS error)", async () => {
-    const apiKey = getApiKey();
-
-    const consoleMessages: string[] = [];
-    const pageErrors: string[] = [];
-    
-    page.on("console", (msg: any) => {
-      consoleMessages.push(msg.text());
-    });
-    
-    page.on("pageerror", (error: any) => {
-      pageErrors.push(error.message);
-    });
-
+  it("should successfully demonstrate error handling", async () => {
     const url = getExampleUrl("24-error-handling.html");
     await page.goto(url);
     await page.waitForLoadState("domcontentloaded");
 
-    await fillApiKey(page, apiKey);
+    // No API key input needed - proxy handles auth
     await clickButton(page, "runExample");
 
-    try {
-      await waitForElement(page, "#output", 10000);
-      await page.waitForTimeout(2000);
-    } catch (error) {
-      // Output might not appear
-    }
+    // Wait for output to appear (API call can take time)
+    await waitForOutput(page, 30000);
+    
+    // Wait a bit more for response
+    await page.waitForTimeout(2000);
 
-    const allMessages = [...consoleMessages, ...pageErrors];
-    const hasCors = await hasCorsError(page, allMessages);
-    expect(hasCors).toBe(true);
-  }, 10000);
+    // Check for success output (error handling example shows proper error handling)
+    const hasSuccess = await hasSuccessOutput(page);
+    expect(hasSuccess).toBe(true);
+  }, 30000);
 });
 

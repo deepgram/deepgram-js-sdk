@@ -1,12 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { chromium, Browser, Page } from "playwright";
-import { getApiKey } from "./setup";
 import {
   getExampleUrl,
-  fillApiKey,
   clickButton,
-  hasCorsError,
-  waitForElement,
+  waitForOutput,
+  hasSuccessOutput,
 } from "./helpers";
 
 describe("Browser Example: 04-transcription-prerecorded-url", () => {
@@ -22,21 +20,7 @@ describe("Browser Example: 04-transcription-prerecorded-url", () => {
     await browser.close();
   });
 
-  it("should attempt transcription (expecting CORS error)", async () => {
-    const apiKey = getApiKey();
-
-    // Set up console message collection for CORS detection
-    const consoleMessages: string[] = [];
-    const pageErrors: string[] = [];
-    
-    page.on("console", (msg: any) => {
-      consoleMessages.push(msg.text());
-    });
-    
-    page.on("pageerror", (error: any) => {
-      pageErrors.push(error.message);
-    });
-
+  it("should successfully transcribe audio from URL", async () => {
     // Load the HTML example
     const url = getExampleUrl("04-transcription-prerecorded-url.html");
     await page.goto(url);
@@ -44,24 +28,18 @@ describe("Browser Example: 04-transcription-prerecorded-url", () => {
     // Wait for page to load
     await page.waitForLoadState("domcontentloaded");
 
-    // Fill in API key
-    await fillApiKey(page, apiKey);
-
-    // Click the run button
+    // Click the run button (no API key input needed - proxy handles auth)
     await clickButton(page, "runExample");
 
-    // Wait for output to appear
-    try {
-      await waitForElement(page, "#output", 10000);
-      await page.waitForTimeout(2000);
-    } catch (error) {
-      // Output might not appear, but that's okay
-    }
+    // Wait for output to appear (transcription can take time)
+    await waitForOutput(page, 30000);
+    
+    // Wait a bit more for transcription to complete
+    await page.waitForTimeout(2000);
 
-    // Check for CORS error (REST examples should get CORS errors)
-    const allMessages = [...consoleMessages, ...pageErrors];
-    const hasCors = await hasCorsError(page, allMessages);
-    expect(hasCors).toBe(true);
-  }, 10000);
+    // Check for success output
+    const hasSuccess = await hasSuccessOutput(page);
+    expect(hasSuccess).toBe(true);
+  }, 30000);
 });
 

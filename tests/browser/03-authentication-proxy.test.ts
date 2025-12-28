@@ -4,9 +4,8 @@ import { getApiKey } from "./setup";
 import {
   getExampleUrl,
   clickButton,
-  hasCorsError,
-  waitForElement,
-  getOutputContent,
+  waitForOutput,
+  hasSuccessOutput,
 } from "./helpers";
 
 describe("Browser Example: 03-authentication-proxy", () => {
@@ -22,25 +21,7 @@ describe("Browser Example: 03-authentication-proxy", () => {
     await browser.close();
   });
 
-  it("should attempt authentication (expecting CORS error)", async () => {
-    const consoleMessages: string[] = [];
-    const pageErrors: string[] = [];
-    const networkResponses: string[] = [];
-    
-    page.on("console", (msg: any) => {
-      consoleMessages.push(msg.text());
-    });
-    
-    page.on("pageerror", (error: any) => {
-      pageErrors.push(error.message);
-    });
-
-    page.on("response", (response: any) => {
-      if (!response.ok() && response.status() >= 400) {
-        networkResponses.push(`HTTP Error ${response.status()}: ${response.url()}`);
-      }
-    });
-
+  it("should successfully authenticate through proxy", async () => {
     const url = getExampleUrl("03-authentication-proxy.html");
     await page.goto(url);
     await page.waitForLoadState("domcontentloaded");
@@ -49,17 +30,12 @@ describe("Browser Example: 03-authentication-proxy", () => {
     // Just click the run button directly
     await clickButton(page, "runExample");
 
-    try {
-      await waitForElement(page, "#output", 10000);
-      await page.waitForTimeout(2000);
-    } catch (error) {
-      // Output might not appear
-    }
+    // Wait for output to appear
+    await waitForOutput(page, 30000);
 
-    const outputContent = await getOutputContent(page);
-    const allMessages = [...consoleMessages, ...pageErrors, ...networkResponses, outputContent];
-    const hasCors = await hasCorsError(page, allMessages);
-    expect(hasCors).toBe(true);
-  }, 10000);
+    // Check for success output
+    const hasSuccess = await hasSuccessOutput(page);
+    expect(hasSuccess).toBe(true);
+  }, 30000);
 });
 

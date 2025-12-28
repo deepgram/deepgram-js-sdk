@@ -65,12 +65,10 @@
 </head>
 <body>
   <h1>Proxy Authentication</h1>
-  <p>For browser environments or custom proxy setups. Pass "proxy" as the API key.</p>
-  <p class="warning"><strong>Important:</strong> Your proxy must set the Authorization: token DEEPGRAM_API_KEY header and forward requests to Deepgram's API.</p>
+  <p>For browser environments or custom proxy setups. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
+  <p class="warning"><strong>Important:</strong> The proxy server sets the Authorization header and forwards requests to Deepgram's API.</p>
 
   <div class="container">
-    <label for="proxyUrl">Proxy URL:</label>
-    <input type="text" id="proxyUrl" placeholder="http://localhost:8080" value="http://localhost:8080">
     <button id="runExample">Run Example</button>
   </div>
 
@@ -80,7 +78,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const proxyUrlInput = document.getElementById('proxyUrl');
     const runButton = document.getElementById('runExample');
     const output = document.getElementById('output');
 
@@ -96,12 +93,6 @@
     }
 
     runButton.addEventListener('click', async () => {
-      const proxyUrl = proxyUrlInput.value.trim();
-      if (!proxyUrl) {
-        log('Please enter a proxy URL', 'error');
-        return;
-      }
-
       output.textContent = '';
       runButton.disabled = true;
       log('Running example...\n');
@@ -109,7 +100,7 @@
       try {
         const deepgramClient = new DeepgramClient({
           apiKey: "proxy",
-          global: { fetch: { options: { proxy: { url: proxyUrl } } } },
+          baseUrl: 'http://localhost:8001',
         });
 
         log('Attempting to authenticate through proxy...');

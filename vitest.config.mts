@@ -33,6 +33,7 @@ export default defineConfig({
                     include: ["**/*.test.{js,ts,jsx,tsx}"],
                     setupFiles: ["./setup.ts"],
                     globalSetup: ["./global-setup.ts"],
+                    testTimeout: 60000, // 60 second timeout per test
                 },
             },
         ],

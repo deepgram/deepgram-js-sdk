@@ -64,11 +64,9 @@
 </head>
 <body>
   <h1>Model Management</h1>
-  <p>Examples for retrieving available models.</p>
+  <p>Examples for retrieving available models. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <label for="projectId">Project ID (for project models):</label>
     <input type="text" id="projectId" placeholder="Enter project ID">
     <div>
@@ -84,7 +82,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const projectIdInput = document.getElementById('projectId');
     const allModelsButton = document.getElementById('allModelsButton');
     const projectModelsButton = document.getElementById('projectModelsButton');
@@ -107,13 +104,10 @@
     }
 
     function getClient() {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return null;
-      }
-      return new DeepgramClient({ apiKey });
+      return new DeepgramClient({ 
+        apiKey: 'proxy',
+        baseUrl: 'http://localhost:8001',
+      });
     }
 
     allModelsButton.addEventListener('click', async () => {

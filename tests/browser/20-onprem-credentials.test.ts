@@ -1,14 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { chromium, Browser, Page } from "playwright";
-import { getApiKey, getProjectId } from "./setup";
+import { getProjectId } from "./setup";
 import {
   getExampleUrl,
-  fillApiKey,
   clickButton,
-  hasCorsError,
-  waitForElement,
+  waitForOutput,
+  hasSuccessOutput,
   findRunButton,
-  getOutputContent,
 } from "./helpers";
 
 describe("Browser Example: 20-onprem-credentials", () => {
@@ -24,34 +22,14 @@ describe("Browser Example: 20-onprem-credentials", () => {
     await browser.close();
   });
 
-  it("should attempt API call (expecting CORS error)", async () => {
-    const apiKey = getApiKey();
+  it("should successfully call management API", async () => {
     const projectId = getProjectId();
-
-    const consoleMessages: string[] = [];
-    const pageErrors: string[] = [];
-    const networkResponses: string[] = [];
-    
-    page.on("console", (msg: any) => {
-      consoleMessages.push(msg.text());
-    });
-    
-    page.on("pageerror", (error: any) => {
-      pageErrors.push(error.message);
-    });
-
-    page.on("response", (response: any) => {
-      if (!response.ok() && response.status() >= 400) {
-        networkResponses.push(`HTTP Error ${response.status()}: ${response.url()}`);
-      }
-    });
 
     const url = getExampleUrl("20-onprem-credentials.html");
     await page.goto(url);
     await page.waitForLoadState("domcontentloaded");
 
-    await fillApiKey(page, apiKey);
-    
+    // No API key input needed - proxy handles auth
     // Fill project ID if available
     if (projectId) {
       const projectIdInput = await page.$("#projectId");
@@ -66,17 +44,12 @@ describe("Browser Example: 20-onprem-credentials", () => {
       await clickButton(page, runButtonId);
     }
 
-    try {
-      await waitForElement(page, "#output", 10000);
-      await page.waitForTimeout(2000);
-    } catch (error) {
-      // Output might not appear
-    }
+    // Wait for output to appear
+    await waitForOutput(page, 30000);
 
-    const outputContent = await getOutputContent(page);
-    const allMessages = [...consoleMessages, ...pageErrors, ...networkResponses, outputContent];
-    const hasCors = await hasCorsError(page, allMessages);
-    expect(hasCors).toBe(true);
-  }, 10000);
+    // Check for success output
+    const hasSuccess = await hasSuccessOutput(page);
+    expect(hasSuccess).toBe(true);
+  }, 30000);
 });
 

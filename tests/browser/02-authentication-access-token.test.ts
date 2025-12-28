@@ -1,12 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { chromium, Browser, Page } from "playwright";
-import { getApiKey } from "./setup";
 import {
   getExampleUrl,
-  fillApiKey,
   clickButton,
-  hasCorsError,
-  waitForElement,
+  waitForOutput,
+  hasSuccessOutput,
 } from "./helpers";
 
 describe("Browser Example: 02-authentication-access-token", () => {
@@ -22,37 +20,20 @@ describe("Browser Example: 02-authentication-access-token", () => {
     await browser.close();
   });
 
-  it("should attempt authentication (expecting CORS error)", async () => {
-    const apiKey = getApiKey();
-
-    const consoleMessages: string[] = [];
-    const pageErrors: string[] = [];
-    
-    page.on("console", (msg: any) => {
-      consoleMessages.push(msg.text());
-    });
-    
-    page.on("pageerror", (error: any) => {
-      pageErrors.push(error.message);
-    });
-
+  it("should successfully authenticate with access token", async () => {
     const url = getExampleUrl("02-authentication-access-token.html");
     await page.goto(url);
     await page.waitForLoadState("domcontentloaded");
 
-    await fillApiKey(page, apiKey);
+    // No API key input needed - proxy handles auth
     await clickButton(page, "runExample");
 
-    try {
-      await waitForElement(page, "#output", 10000);
-      await page.waitForTimeout(2000);
-    } catch (error) {
-      // Output might not appear
-    }
+    // Wait for output to appear
+    await waitForOutput(page, 30000);
 
-    const allMessages = [...consoleMessages, ...pageErrors];
-    const hasCors = await hasCorsError(page, allMessages);
-    expect(hasCors).toBe(true);
-  }, 10000);
+    // Check for success output
+    const hasSuccess = await hasSuccessOutput(page);
+    expect(hasSuccess).toBe(true);
+  }, 30000);
 });
 

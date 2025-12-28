@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { chromium, Browser, Page } from "playwright";
-import { getApiKey, getProjectId } from "./setup";
+import { getProjectId } from "./setup";
 import {
   getExampleUrl,
-  fillApiKey,
   clickButton,
-  hasCorsError,
-  waitForElement,
+  waitForOutput,
+  hasSuccessOutput,
   findRunButton,
 } from "./helpers";
 
@@ -23,26 +22,12 @@ describe("Browser Example: 15-management-members", () => {
     await browser.close();
   });
 
-  it("should attempt API call (expecting CORS error)", async () => {
-    const apiKey = getApiKey();
-
-    const consoleMessages: string[] = [];
-    const pageErrors: string[] = [];
-    
-    page.on("console", (msg: any) => {
-      consoleMessages.push(msg.text());
-    });
-    
-    page.on("pageerror", (error: any) => {
-      pageErrors.push(error.message);
-    });
-
+  it("should successfully call management API", async () => {
     const url = getExampleUrl("15-management-members.html");
     await page.goto(url);
     await page.waitForLoadState("domcontentloaded");
 
-    await fillApiKey(page, apiKey);
-    
+    // No API key input needed - proxy handles auth
     const projectIdInput = await page.$("#projectId");
     if (projectIdInput) {
       const projectId = getProjectId();
@@ -56,16 +41,12 @@ describe("Browser Example: 15-management-members", () => {
       await clickButton(page, runButtonId);
     }
 
-    try {
-      await waitForElement(page, "#output", 10000);
-      await page.waitForTimeout(2000);
-    } catch (error) {
-      // Output might not appear
-    }
+    // Wait for output to appear
+    await waitForOutput(page, 30000);
 
-    const allMessages = [...consoleMessages, ...pageErrors];
-    const hasCors = await hasCorsError(page, allMessages);
-    expect(hasCors).toBe(true);
-  }, 10000);
+    // Check for success output
+    const hasSuccess = await hasSuccessOutput(page);
+    expect(hasSuccess).toBe(true);
+  }, 30000);
 });
 

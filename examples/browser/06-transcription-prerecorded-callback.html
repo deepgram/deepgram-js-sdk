@@ -65,15 +65,13 @@
 </head>
 <body>
   <h1>Transcribe with Callback (Async)</h1>
-  <p>Use the Callback version of transcribeUrl/transcribeFile for async processing. Deepgram will POST results to your callback URL when transcription is complete.</p>
+  <p>Use the Callback version of transcribeUrl/transcribeFile for async processing. Deepgram will POST results to your callback URL when transcription is complete. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <label for="audioUrl">Audio URL:</label>
     <input type="text" id="audioUrl" placeholder="https://dpgr.am/spacewalk.wav" value="https://dpgr.am/spacewalk.wav">
     <label for="callbackUrl">Callback URL:</label>
-    <input type="text" id="callbackUrl" placeholder="https://your-server.com/callback" value="dpgr.am/callback">
+    <input type="text" id="callbackUrl" placeholder="https://your-server.com/callback" value="https://dpgr.am/callback">
     <button id="runExample">Send Callback Request</button>
   </div>
 
@@ -83,7 +81,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const audioUrlInput = document.getElementById('audioUrl');
     const callbackUrlInput = document.getElementById('callbackUrl');
     const runButton = document.getElementById('runExample');
@@ -102,15 +99,9 @@
     }
 
     runButton.addEventListener('click', async () => {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
       const audioUrl = audioUrlInput.value.trim();
       const callbackUrl = callbackUrlInput.value.trim();
 
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return;
-      }
       if (!audioUrl) {
         log('Please enter an audio URL', 'error');
         return;
@@ -127,13 +118,14 @@
 
       try {
         const deepgramClient = new DeepgramClient({
-          apiKey: apiKey,
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
         });
 
         const data = await deepgramClient.listen.v1.media.transcribeUrl({
           url: audioUrl,
           callback: callbackUrl,
-          callback_method: "POST",
+          callback_method: "post",
           model: "nova-3",
           language: "en",
           punctuate: true,

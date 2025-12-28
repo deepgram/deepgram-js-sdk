@@ -1,9 +1,108 @@
 import { existsSync, copyFileSync, writeFileSync, readFileSync } from "fs";
 import { resolve } from "path";
 import http from "http";
+import { spawn, ChildProcess } from "child_process";
 
 let server: http.Server | null = null;
+let proxyProcess: ChildProcess | null = null;
 const PORT = 8000;
+const PROXY_PORT = 8001;
+
+// Teardown function that can be called from signal handlers
+async function cleanup() {
+  console.log("Starting teardown...");
+  const promises: Promise<void>[] = [];
+  
+  if (server) {
+    promises.push(
+      new Promise<void>((resolve) => {
+        server!.close(() => {
+          console.log("Test server stopped");
+          resolve();
+        });
+        // Force close after timeout
+        setTimeout(() => {
+          console.log("Test server force closed");
+          resolve();
+        }, 2000);
+      })
+    );
+  }
+  
+  if (proxyProcess && !proxyProcess.killed) {
+    promises.push(
+      new Promise<void>((resolve) => {
+        let resolved = false;
+        
+        // Set up exit listener before killing
+        const exitHandler = () => {
+          if (!resolved) {
+            resolved = true;
+            console.log("Proxy server stopped");
+            resolve();
+          }
+        };
+        
+        proxyProcess!.on("exit", exitHandler);
+        
+        // Try graceful shutdown first
+        try {
+          proxyProcess!.kill("SIGTERM");
+        } catch (error) {
+          console.log("Error sending SIGTERM, trying SIGKILL");
+          try {
+            proxyProcess!.kill("SIGKILL");
+          } catch (killError) {
+            // Process might already be dead
+          }
+        }
+        
+        // Force kill after timeout
+        setTimeout(() => {
+          if (!resolved && proxyProcess && !proxyProcess.killed) {
+            try {
+              proxyProcess.kill("SIGKILL");
+              console.log("Proxy server force killed");
+            } catch (error) {
+              // Ignore errors - process might already be dead
+            }
+            if (!resolved) {
+              resolved = true;
+              resolve();
+            }
+          } else if (!resolved) {
+            resolved = true;
+            resolve();
+          }
+        }, 3000);
+      })
+    );
+  }
+  
+  // Wait for all shutdowns with a maximum timeout
+  await Promise.race([
+    Promise.all(promises),
+    new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log("Teardown timeout reached, forcing exit");
+        resolve();
+      }, 5000);
+    }),
+  ]);
+  
+  console.log("Teardown complete");
+}
+
+// Set up signal handlers to ensure cleanup on process termination
+process.on("SIGINT", async () => {
+  await cleanup();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  await cleanup();
+  process.exit(0);
+});
 
 export default async function setup() {
   // Copy deepgram.js to examples/browser
@@ -26,6 +125,39 @@ if (typeof window !== 'undefined') {
 }`;
   
   writeFileSync(deepgramJsPath, readFileSync(deepgramJsPath, "utf-8") + globalExposure);
+  
+  // Start proxy server
+  const proxyScriptPath = resolve(__dirname, "../../scripts/proxy-server.js");
+  if (!existsSync(proxyScriptPath)) {
+    throw new Error("Proxy server script not found");
+  }
+  
+  // Check if API key is set
+  if (!process.env.DEEPGRAM_API_KEY) {
+    throw new Error("DEEPGRAM_API_KEY environment variable is required for browser tests");
+  }
+  
+  await new Promise<void>((resolvePromise, reject) => {
+    proxyProcess = spawn("node", [proxyScriptPath], {
+      stdio: "inherit",
+      env: { ...process.env },
+    });
+    
+    proxyProcess.on("error", (error) => {
+      reject(new Error(`Failed to start proxy server: ${error.message}`));
+    });
+    
+    // Wait a bit for proxy to start
+    setTimeout(() => {
+      // Check if process is still running
+      if (proxyProcess && proxyProcess.killed) {
+        reject(new Error("Proxy server process died immediately after starting"));
+      } else {
+        console.log(`Proxy server started on http://localhost:${PROXY_PORT}`);
+        resolvePromise();
+      }
+    }, 1000);
+  });
   
   // Start HTTP server
   const examplesDir = resolve(__dirname, "../../examples/browser");
@@ -94,16 +226,7 @@ if (typeof window !== 'undefined') {
     });
   });
 
-  // Return teardown function
-  return async () => {
-    if (server) {
-      return new Promise<void>((resolve) => {
-        server!.close(() => {
-          console.log("Test server stopped");
-          resolve();
-        });
-      });
-    }
-  };
+  // Return teardown function (Vitest will call this automatically)
+  return cleanup;
 }
 

@@ -84,12 +84,9 @@
 </head>
 <body>
   <h1>Deepgram Session Header</h1>
-  <p>This example demonstrates that the x-deepgram-session-id header is automatically generated and sent with all REST requests and WebSocket connections.</p>
+  <p>This example demonstrates that the x-deepgram-session-id header is automatically generated and sent with all REST requests and WebSocket connections. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
-    
     <div id="sessionIdDisplay" class="session-id" style="display: none;">
       <strong>Generated Session ID:</strong> <span id="sessionId"></span>
     </div>
@@ -105,7 +102,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const sessionIdDisplay = document.getElementById('sessionIdDisplay');
     const sessionIdSpan = document.getElementById('sessionId');
     const testRestButton = document.getElementById('testRestButton');
@@ -129,16 +125,10 @@
     }
 
     function initializeClient() {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return null;
-      }
-
       if (!deepgramClient) {
         deepgramClient = new DeepgramClient({
-          apiKey: apiKey,
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
         });
         
         // Display the session ID

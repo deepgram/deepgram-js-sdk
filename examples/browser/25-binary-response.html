@@ -72,11 +72,9 @@
 </head>
 <body>
   <h1>Binary Response Handling</h1>
-  <p>Demonstrates how to handle binary responses from the SDK (e.g., TTS audio).</p>
+  <p>Demonstrates how to handle binary responses from the SDK (e.g., TTS audio). The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <label for="text">Text to Convert:</label>
     <textarea id="text" placeholder="Enter text to convert to speech">Hello, this is a test.</textarea>
     <div>
@@ -94,7 +92,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const textInput = document.getElementById('text');
     const streamButton = document.getElementById('streamButton');
     const arrayBufferButton = document.getElementById('arrayBufferButton');
@@ -125,13 +122,10 @@
     }
 
     function getClient() {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return null;
-      }
-      return new DeepgramClient({ apiKey });
+      return new DeepgramClient({ 
+        apiKey: 'proxy',
+        baseUrl: 'http://localhost:8001',
+      });
     }
 
     streamButton.addEventListener('click', async () => {

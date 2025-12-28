@@ -62,11 +62,9 @@
 </head>
 <body>
   <h1>Authentication with Access Token</h1>
-  <p>Access tokens are temporary (30-second TTL) and must be obtained using an API key. Uses Bearer scheme in Authorization header.</p>
+  <p>Access tokens are temporary (30-second TTL) and must be obtained using an API key. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server. Uses Bearer scheme in Authorization header.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <button id="runExample">Run Example</button>
   </div>
 
@@ -76,7 +74,6 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const runButton = document.getElementById('runExample');
     const output = document.getElementById('output');
 
@@ -93,22 +90,15 @@
     }
 
     runButton.addEventListener('click', async () => {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return;
-      }
-
-
       output.textContent = '';
       runButton.disabled = true;
       log('Running example...\n');
 
       try {
-        // First, create a client with API key to generate access token
+        // First, create a client to generate access token (API key handled by proxy)
         const apiKeyClient = new DeepgramClient({
-          apiKey: apiKey,
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
         });
 
         log('Generating access token...');
@@ -118,7 +108,10 @@
 
         // Use the access token in a new client instance
         log('\nCreating client with access token...');
-        const tempClient = new DeepgramClient({ accessToken: tokenData.access_token });
+        const tempClient = new DeepgramClient({ 
+          accessToken: tokenData.access_token,
+          baseUrl: 'http://localhost:8001',
+        });
 
         // Verify the access token is actually being used (Bearer scheme, not Token)
         log('Verifying access token is being used...');

@@ -62,16 +62,9 @@
 </head>
 <body>
   <h1>Authentication with API Key</h1>
-  <p>This example demonstrates the three ways to authenticate using an API key:</p>
-  <ol>
-    <li>Pass API key as first parameter</li>
-    <li>Pass API key in options object</li>
-    <li>Use environment variable (DEEPGRAM_API_KEY)</li>
-  </ol>
+  <p>This example demonstrates authentication through the proxy server. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
 
   <div class="container">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
     <button id="runExample">Run Example</button>
   </div>
 
@@ -81,11 +74,8 @@
   <script>
     const { DeepgramClient } = deepgram;
 
-    const apiKeyInput = document.getElementById('apiKey');
     const runButton = document.getElementById('runExample');
     const output = document.getElementById('output');
-
-    // For security, do not persist or preload the API key from localStorage.
 
     function log(message, type = 'info') {
       const div = document.createElement('div');
@@ -99,41 +89,21 @@
     }
 
     runButton.addEventListener('click', async () => {
-      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
-      const apiKey = apiKeyInput.value.trim();
-      if (!apiKey) {
-        log('Please enter an API key', 'error');
-        return;
-      }
-
-      // Note: For security reasons, we do not persist the API key in localStorage.
-
       output.textContent = '';
       runButton.disabled = true;
       log('Running example...\n');
 
       try {
-        // Method 1: Pass API key in options object
-        const deepgramClient1 = new DeepgramClient({
-          apiKey: apiKey,
+        // Create client - API key is handled by the proxy server
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
         });
 
-        log('Method 1: Using API key from options object...');
-        const data1 = await deepgramClient1.manage.v1.projects.list();
-        if (data1) {
-          log(`✓ Authentication successful! Projects: ${JSON.stringify(data1, null, 2)}`, 'success');
-        } else {
-          log('✗ No data returned from the API', 'error');
-        }
-
-        log('\nMethod 2: Using API key from options object (same as method 1)...');
-        const deepgramClient2 = new DeepgramClient({
-          apiKey: apiKey,
-        });
-
-        const data2 = await deepgramClient2.manage.v1.projects.list();
-        if (data2) {
-          log(`✓ Authentication successful! Projects: ${JSON.stringify(data2, null, 2)}`, 'success');
+        log('Making request through proxy server...');
+        const data = await deepgramClient.manage.v1.projects.list();
+        if (data) {
+          log(`✓ Authentication successful! Projects: ${JSON.stringify(data, null, 2)}`, 'success');
         } else {
           log('✗ No data returned from the API', 'error');
         }
