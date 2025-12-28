@@ -182,4 +182,3 @@ For questions or issues, please visit:
 - [GitHub Issues](https://github.com/deepgram/deepgram-js-sdk/issues)
 - [Deepgram Documentation](https://developers.deepgram.com)
 - [API Reference](https://developers.deepgram.com/reference/deepgram-api-overview)
-

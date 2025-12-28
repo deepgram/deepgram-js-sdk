@@ -16,7 +16,7 @@ vitest.config.mts
 # Other Stuff
 Makefile
 MIGRATION_GUIDE_V4_TO_V5.md
-CHANGELOG_5.0.0_alpha.1.md
+docs
 .npmignore
 .gitignore
 .github/workflows/ci.yml
