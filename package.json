@@ -1,6 +1,6 @@
 {
     "name": "@deepgram/sdk",
-    "version": "0.0.228",
+    "version": "5.0.0-alpha.3",
     "private": false,
     "repository": "github:deepgram/deepgram-js-sdk",
     "license": "MIT",
