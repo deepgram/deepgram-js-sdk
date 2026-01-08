@@ -6,7 +6,7 @@ import { V1Client } from "../resources/v1/client/Client.js";
 import { V2Client } from "../resources/v2/client/Client.js";
 
 export declare namespace ListenClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class ListenClient {

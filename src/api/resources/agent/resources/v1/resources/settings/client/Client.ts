@@ -5,7 +5,7 @@ import { type NormalizedClientOptions, normalizeClientOptions } from "../../../.
 import { ThinkClient } from "../resources/think/client/Client.js";
 
 export declare namespace SettingsClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class SettingsClient {

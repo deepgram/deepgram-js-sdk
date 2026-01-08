@@ -13,7 +13,7 @@ import * as errors from "../../../../../../../../errors/index.js";
 import * as Deepgram from "../../../../../../../index.js";
 
 export declare namespace AudioClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 
     export interface RequestOptions extends BaseRequestOptions {}
 }
@@ -52,47 +52,17 @@ export class AudioClient {
             sample_rate: sampleRate,
             ..._body
         } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (callback != null) {
-            _queryParams.callback = callback;
-        }
-
-        if (callbackMethod != null) {
-            _queryParams.callback_method = callbackMethod;
-        }
-
-        if (mipOptOut != null) {
-            _queryParams.mip_opt_out = mipOptOut.toString();
-        }
-
-        if (tag != null) {
-            if (Array.isArray(tag)) {
-                _queryParams.tag = tag.map((item) => item);
-            } else {
-                _queryParams.tag = tag;
-            }
-        }
-
-        if (bitRate != null) {
-            _queryParams.bit_rate = bitRate.toString();
-        }
-
-        if (container != null) {
-            _queryParams.container = container;
-        }
-
-        if (encoding != null) {
-            _queryParams.encoding = encoding;
-        }
-
-        if (model != null) {
-            _queryParams.model = model;
-        }
-
-        if (sampleRate != null) {
-            _queryParams.sample_rate = sampleRate.toString();
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            callback,
+            callback_method: callbackMethod != null ? callbackMethod : undefined,
+            mip_opt_out: mipOptOut,
+            tag,
+            bit_rate: bitRate,
+            container: container != null ? container : undefined,
+            encoding: encoding != null ? encoding : undefined,
+            model: model != null ? model : undefined,
+            sample_rate: sampleRate,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

@@ -5,7 +5,7 @@ import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } 
 import { TextClient } from "../resources/text/client/Client.js";
 
 export declare namespace V1Client {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class V1Client {

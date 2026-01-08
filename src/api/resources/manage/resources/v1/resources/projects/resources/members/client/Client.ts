@@ -15,7 +15,7 @@ import { InvitesClient } from "../resources/invites/client/Client.js";
 import { ScopesClient } from "../resources/scopes/client/Client.js";
 
 export declare namespace MembersClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 
     export interface RequestOptions extends BaseRequestOptions {}
 }

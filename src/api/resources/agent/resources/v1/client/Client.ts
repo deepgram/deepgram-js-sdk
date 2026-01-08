@@ -9,7 +9,7 @@ import { SettingsClient } from "../resources/settings/client/Client.js";
 import { V1Socket } from "./Socket.js";
 
 export declare namespace V1Client {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 
     export interface ConnectArgs {
         Authorization: string;

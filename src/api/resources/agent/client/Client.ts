@@ -5,7 +5,7 @@ import { type NormalizedClientOptions, normalizeClientOptions } from "../../../.
 import { V1Client } from "../resources/v1/client/Client.js";
 
 export declare namespace AgentClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class AgentClient {

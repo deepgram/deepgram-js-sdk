@@ -13,7 +13,7 @@ import * as errors from "../../../../../../../../../../errors/index.js";
 import * as Deepgram from "../../../../../../../../../index.js";
 
 export declare namespace RequestsClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 
     export interface RequestOptions extends BaseRequestOptions {}
 }
@@ -73,47 +73,18 @@ export class RequestsClient {
             method,
             status,
         } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (start != null) {
-            _queryParams.start = start;
-        }
-
-        if (end != null) {
-            _queryParams.end = end;
-        }
-
-        if (limit != null) {
-            _queryParams.limit = limit.toString();
-        }
-
-        if (page != null) {
-            _queryParams.page = page.toString();
-        }
-
-        if (accessor != null) {
-            _queryParams.accessor = accessor;
-        }
-
-        if (requestId != null) {
-            _queryParams.request_id = requestId;
-        }
-
-        if (deployment != null) {
-            _queryParams.deployment = deployment;
-        }
-
-        if (endpoint != null) {
-            _queryParams.endpoint = endpoint;
-        }
-
-        if (method != null) {
-            _queryParams.method = method;
-        }
-
-        if (status != null) {
-            _queryParams.status = status;
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            start,
+            end,
+            limit,
+            page,
+            accessor,
+            request_id: requestId,
+            deployment: deployment != null ? deployment : undefined,
+            endpoint: endpoint != null ? endpoint : undefined,
+            method: method != null ? method : undefined,
+            status: status != null ? status : undefined,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

@@ -6,7 +6,7 @@ import { ModelsClient } from "../resources/models/client/Client.js";
 import { ProjectsClient } from "../resources/projects/client/Client.js";
 
 export declare namespace V1Client {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class V1Client {

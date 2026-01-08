@@ -11,7 +11,7 @@ import { FieldsClient } from "../resources/fields/client/Client.js";
 import { PurchasesClient } from "../resources/purchases/client/Client.js";
 
 export declare namespace BillingClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class BillingClient {

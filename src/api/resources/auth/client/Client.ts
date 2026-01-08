@@ -5,7 +5,7 @@ import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } 
 import { V1Client } from "../resources/v1/client/Client.js";
 
 export declare namespace AuthClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class AuthClient {

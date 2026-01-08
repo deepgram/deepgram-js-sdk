@@ -13,7 +13,7 @@ import * as errors from "../../../../../../../../../../../../errors/index.js";
 import * as Deepgram from "../../../../../../../../../../../index.js";
 
 export declare namespace FieldsClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 
     export interface RequestOptions extends BaseRequestOptions {}
 }
@@ -54,15 +54,10 @@ export class FieldsClient {
         requestOptions?: FieldsClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.ListBillingFieldsV1Response>> {
         const { start, end } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (start != null) {
-            _queryParams.start = start;
-        }
-
-        if (end != null) {
-            _queryParams.end = end;
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            start,
+            end,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

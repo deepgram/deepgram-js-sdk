@@ -5,7 +5,7 @@ import { type NormalizedClientOptions, normalizeClientOptions } from "../../../.
 import { ModelsClient } from "../resources/models/client/Client.js";
 
 export declare namespace ThinkClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 }
 
 export class ThinkClient {

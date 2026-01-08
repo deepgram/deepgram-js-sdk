@@ -13,7 +13,7 @@ import * as errors from "../../../../../../../../errors/index.js";
 import * as Deepgram from "../../../../../../../index.js";
 
 export declare namespace MediaClient {
-    export interface Options extends BaseClientOptions {}
+    export type Options = BaseClientOptions;
 
     export interface RequestOptions extends BaseRequestOptions {}
 }
@@ -123,183 +123,44 @@ export class MediaClient {
             mip_opt_out: mipOptOut,
             ..._body
         } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (callback != null) {
-            _queryParams.callback = callback;
-        }
-
-        if (callbackMethod != null) {
-            _queryParams.callback_method = callbackMethod;
-        }
-
-        if (extra != null) {
-            if (Array.isArray(extra)) {
-                _queryParams.extra = extra.map((item) => item);
-            } else {
-                _queryParams.extra = extra;
-            }
-        }
-
-        if (sentiment != null) {
-            _queryParams.sentiment = sentiment.toString();
-        }
-
-        if (summarize != null) {
-            _queryParams.summarize = summarize;
-        }
-
-        if (tag != null) {
-            if (Array.isArray(tag)) {
-                _queryParams.tag = tag.map((item) => item);
-            } else {
-                _queryParams.tag = tag;
-            }
-        }
-
-        if (topics != null) {
-            _queryParams.topics = topics.toString();
-        }
-
-        if (customTopic != null) {
-            if (Array.isArray(customTopic)) {
-                _queryParams.custom_topic = customTopic.map((item) => item);
-            } else {
-                _queryParams.custom_topic = customTopic;
-            }
-        }
-
-        if (customTopicMode != null) {
-            _queryParams.custom_topic_mode = customTopicMode;
-        }
-
-        if (intents != null) {
-            _queryParams.intents = intents.toString();
-        }
-
-        if (customIntent != null) {
-            if (Array.isArray(customIntent)) {
-                _queryParams.custom_intent = customIntent.map((item) => item);
-            } else {
-                _queryParams.custom_intent = customIntent;
-            }
-        }
-
-        if (customIntentMode != null) {
-            _queryParams.custom_intent_mode = customIntentMode;
-        }
-
-        if (detectEntities != null) {
-            _queryParams.detect_entities = detectEntities.toString();
-        }
-
-        if (detectLanguage != null) {
-            _queryParams.detect_language = detectLanguage.toString();
-        }
-
-        if (diarize != null) {
-            _queryParams.diarize = diarize.toString();
-        }
-
-        if (dictation != null) {
-            _queryParams.dictation = dictation.toString();
-        }
-
-        if (encoding != null) {
-            _queryParams.encoding = encoding;
-        }
-
-        if (fillerWords != null) {
-            _queryParams.filler_words = fillerWords.toString();
-        }
-
-        if (keyterm != null) {
-            if (Array.isArray(keyterm)) {
-                _queryParams.keyterm = keyterm.map((item) => item);
-            } else {
-                _queryParams.keyterm = keyterm;
-            }
-        }
-
-        if (keywords != null) {
-            if (Array.isArray(keywords)) {
-                _queryParams.keywords = keywords.map((item) => item);
-            } else {
-                _queryParams.keywords = keywords;
-            }
-        }
-
-        if (language != null) {
-            _queryParams.language = language;
-        }
-
-        if (measurements != null) {
-            _queryParams.measurements = measurements.toString();
-        }
-
-        if (model != null) {
-            _queryParams.model = model;
-        }
-
-        if (multichannel != null) {
-            _queryParams.multichannel = multichannel.toString();
-        }
-
-        if (numerals != null) {
-            _queryParams.numerals = numerals.toString();
-        }
-
-        if (paragraphs != null) {
-            _queryParams.paragraphs = paragraphs.toString();
-        }
-
-        if (profanityFilter != null) {
-            _queryParams.profanity_filter = profanityFilter.toString();
-        }
-
-        if (punctuate != null) {
-            _queryParams.punctuate = punctuate.toString();
-        }
-
-        if (redact != null) {
-            _queryParams.redact = redact;
-        }
-
-        if (replace != null) {
-            if (Array.isArray(replace)) {
-                _queryParams.replace = replace.map((item) => item);
-            } else {
-                _queryParams.replace = replace;
-            }
-        }
-
-        if (search != null) {
-            if (Array.isArray(search)) {
-                _queryParams.search = search.map((item) => item);
-            } else {
-                _queryParams.search = search;
-            }
-        }
-
-        if (smartFormat != null) {
-            _queryParams.smart_format = smartFormat.toString();
-        }
-
-        if (utterances != null) {
-            _queryParams.utterances = utterances.toString();
-        }
-
-        if (uttSplit != null) {
-            _queryParams.utt_split = uttSplit.toString();
-        }
-
-        if (version != null) {
-            _queryParams.version = version;
-        }
-
-        if (mipOptOut != null) {
-            _queryParams.mip_opt_out = mipOptOut.toString();
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            callback,
+            callback_method: callbackMethod != null ? callbackMethod : undefined,
+            extra,
+            sentiment,
+            summarize: summarize != null ? summarize : undefined,
+            tag,
+            topics,
+            custom_topic: customTopic,
+            custom_topic_mode: customTopicMode != null ? customTopicMode : undefined,
+            intents,
+            custom_intent: customIntent,
+            custom_intent_mode: customIntentMode != null ? customIntentMode : undefined,
+            detect_entities: detectEntities,
+            detect_language: detectLanguage,
+            diarize,
+            dictation,
+            encoding: encoding != null ? encoding : undefined,
+            filler_words: fillerWords,
+            keyterm,
+            keywords,
+            language,
+            measurements,
+            model: model != null ? model : undefined,
+            multichannel,
+            numerals,
+            paragraphs,
+            profanity_filter: profanityFilter,
+            punctuate,
+            redact,
+            replace,
+            search,
+            smart_format: smartFormat,
+            utterances,
+            utt_split: uttSplit,
+            version: version != null ? version : undefined,
+            mip_opt_out: mipOptOut,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,
@@ -376,183 +237,44 @@ export class MediaClient {
         request: Deepgram.listen.v1.MediaTranscribeRequestOctetStream,
         requestOptions?: MediaClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.listen.v1.MediaTranscribeResponse>> {
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (request.callback != null) {
-            _queryParams.callback = request.callback;
-        }
-
-        if (request.callback_method != null) {
-            _queryParams.callback_method = request.callback_method;
-        }
-
-        if (request.extra != null) {
-            if (Array.isArray(request.extra)) {
-                _queryParams.extra = request.extra.map((item) => item);
-            } else {
-                _queryParams.extra = request.extra;
-            }
-        }
-
-        if (request.sentiment != null) {
-            _queryParams.sentiment = request.sentiment.toString();
-        }
-
-        if (request.summarize != null) {
-            _queryParams.summarize = request.summarize;
-        }
-
-        if (request.tag != null) {
-            if (Array.isArray(request.tag)) {
-                _queryParams.tag = request.tag.map((item) => item);
-            } else {
-                _queryParams.tag = request.tag;
-            }
-        }
-
-        if (request.topics != null) {
-            _queryParams.topics = request.topics.toString();
-        }
-
-        if (request.custom_topic != null) {
-            if (Array.isArray(request.custom_topic)) {
-                _queryParams.custom_topic = request.custom_topic.map((item) => item);
-            } else {
-                _queryParams.custom_topic = request.custom_topic;
-            }
-        }
-
-        if (request.custom_topic_mode != null) {
-            _queryParams.custom_topic_mode = request.custom_topic_mode;
-        }
-
-        if (request.intents != null) {
-            _queryParams.intents = request.intents.toString();
-        }
-
-        if (request.custom_intent != null) {
-            if (Array.isArray(request.custom_intent)) {
-                _queryParams.custom_intent = request.custom_intent.map((item) => item);
-            } else {
-                _queryParams.custom_intent = request.custom_intent;
-            }
-        }
-
-        if (request.custom_intent_mode != null) {
-            _queryParams.custom_intent_mode = request.custom_intent_mode;
-        }
-
-        if (request.detect_entities != null) {
-            _queryParams.detect_entities = request.detect_entities.toString();
-        }
-
-        if (request.detect_language != null) {
-            _queryParams.detect_language = request.detect_language.toString();
-        }
-
-        if (request.diarize != null) {
-            _queryParams.diarize = request.diarize.toString();
-        }
-
-        if (request.dictation != null) {
-            _queryParams.dictation = request.dictation.toString();
-        }
-
-        if (request.encoding != null) {
-            _queryParams.encoding = request.encoding;
-        }
-
-        if (request.filler_words != null) {
-            _queryParams.filler_words = request.filler_words.toString();
-        }
-
-        if (request.keyterm != null) {
-            if (Array.isArray(request.keyterm)) {
-                _queryParams.keyterm = request.keyterm.map((item) => item);
-            } else {
-                _queryParams.keyterm = request.keyterm;
-            }
-        }
-
-        if (request.keywords != null) {
-            if (Array.isArray(request.keywords)) {
-                _queryParams.keywords = request.keywords.map((item) => item);
-            } else {
-                _queryParams.keywords = request.keywords;
-            }
-        }
-
-        if (request.language != null) {
-            _queryParams.language = request.language;
-        }
-
-        if (request.measurements != null) {
-            _queryParams.measurements = request.measurements.toString();
-        }
-
-        if (request.model != null) {
-            _queryParams.model = request.model;
-        }
-
-        if (request.multichannel != null) {
-            _queryParams.multichannel = request.multichannel.toString();
-        }
-
-        if (request.numerals != null) {
-            _queryParams.numerals = request.numerals.toString();
-        }
-
-        if (request.paragraphs != null) {
-            _queryParams.paragraphs = request.paragraphs.toString();
-        }
-
-        if (request.profanity_filter != null) {
-            _queryParams.profanity_filter = request.profanity_filter.toString();
-        }
-
-        if (request.punctuate != null) {
-            _queryParams.punctuate = request.punctuate.toString();
-        }
-
-        if (request.redact != null) {
-            _queryParams.redact = request.redact;
-        }
-
-        if (request.replace != null) {
-            if (Array.isArray(request.replace)) {
-                _queryParams.replace = request.replace.map((item) => item);
-            } else {
-                _queryParams.replace = request.replace;
-            }
-        }
-
-        if (request.search != null) {
-            if (Array.isArray(request.search)) {
-                _queryParams.search = request.search.map((item) => item);
-            } else {
-                _queryParams.search = request.search;
-            }
-        }
-
-        if (request.smart_format != null) {
-            _queryParams.smart_format = request.smart_format.toString();
-        }
-
-        if (request.utterances != null) {
-            _queryParams.utterances = request.utterances.toString();
-        }
-
-        if (request.utt_split != null) {
-            _queryParams.utt_split = request.utt_split.toString();
-        }
-
-        if (request.version != null) {
-            _queryParams.version = request.version;
-        }
-
-        if (request.mip_opt_out != null) {
-            _queryParams.mip_opt_out = request.mip_opt_out.toString();
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            callback: request.callback,
+            callback_method: request.callback_method != null ? request.callback_method : undefined,
+            extra: request.extra,
+            sentiment: request.sentiment,
+            summarize: request.summarize != null ? request.summarize : undefined,
+            tag: request.tag,
+            topics: request.topics,
+            custom_topic: request.custom_topic,
+            custom_topic_mode: request.custom_topic_mode != null ? request.custom_topic_mode : undefined,
+            intents: request.intents,
+            custom_intent: request.custom_intent,
+            custom_intent_mode: request.custom_intent_mode != null ? request.custom_intent_mode : undefined,
+            detect_entities: request.detect_entities,
+            detect_language: request.detect_language,
+            diarize: request.diarize,
+            dictation: request.dictation,
+            encoding: request.encoding != null ? request.encoding : undefined,
+            filler_words: request.filler_words,
+            keyterm: request.keyterm,
+            keywords: request.keywords,
+            language: request.language,
+            measurements: request.measurements,
+            model: request.model != null ? request.model : undefined,
+            multichannel: request.multichannel,
+            numerals: request.numerals,
+            paragraphs: request.paragraphs,
+            profanity_filter: request.profanity_filter,
+            punctuate: request.punctuate,
+            redact: request.redact,
+            replace: request.replace,
+            search: request.search,
+            smart_format: request.smart_format,
+            utterances: request.utterances,
+            utt_split: request.utt_split,
+            version: request.version != null ? request.version : undefined,
+            mip_opt_out: request.mip_opt_out,
+        };
         const _binaryUploadRequest = await core.file.toBinaryUploadRequest(uploadable);
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
