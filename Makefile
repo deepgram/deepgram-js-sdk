@@ -239,10 +239,62 @@ browser:
 		pnpm exec playwright install chromium; \
 	else \
 		echo "Local environment: Attempting to install with system dependencies (may prompt for sudo)"; \
-		pnpm exec playwright install chromium --with-deps || (echo "Failed with --with-deps, trying without..." && pnpm exec playwright install chromium); \
+		pnpm exec playwright install chromium --with-deps 2>/dev/null || \
+		{ echo "Failed with --with-deps, trying without..."; pnpm exec playwright install chromium; }; \
 	fi
-	pnpm exec vitest --project browser --run; \
+	@printf "\033[1;36mRunning browser tests...\033[0m\n\n"; \
+	pnpm exec vitest --project browser --run --reporter=json --reporter=verbose --outputFile=/tmp/browser-test-results.json > /tmp/browser-test-output.txt 2>&1; \
 	TEST_EXIT_CODE=$$?; \
+	printf "\n\033[1;36m=========================================\033[0m\n"; \
+	printf "\033[1;36mSummary Report\033[0m\n"; \
+	printf "\033[1;36m=========================================\033[0m\n\n"; \
+	if [ -f /tmp/browser-test-results.json ] && command -v node >/dev/null 2>&1; then \
+		printf 'const fs = require("fs");\n' > /tmp/browser-summary.js; \
+		printf 'try {\n' >> /tmp/browser-summary.js; \
+		printf '  const rawData = fs.readFileSync("/tmp/browser-test-results.json", "utf8");\n' >> /tmp/browser-summary.js; \
+		printf '  const data = JSON.parse(rawData);\n' >> /tmp/browser-summary.js; \
+		printf '  const testResults = data.testResults || [];\n' >> /tmp/browser-summary.js; \
+		printf '  let passCount = 0;\n' >> /tmp/browser-summary.js; \
+		printf '  let failCount = 0;\n' >> /tmp/browser-summary.js; \
+		printf '  const passed = [];\n' >> /tmp/browser-summary.js; \
+		printf '  const failed = [];\n' >> /tmp/browser-summary.js; \
+		printf '  testResults.forEach((result, idx) => {\n' >> /tmp/browser-summary.js; \
+		printf '    const num = idx + 1;\n' >> /tmp/browser-summary.js; \
+		printf '    const filePath = result.name || "";\n' >> /tmp/browser-summary.js; \
+		printf '    let fileName = filePath.split("/").pop();\n' >> /tmp/browser-summary.js; \
+		printf '    if (fileName.endsWith(".test.ts")) {\n' >> /tmp/browser-summary.js; \
+		printf '      fileName = fileName.slice(0, -8);\n' >> /tmp/browser-summary.js; \
+		printf '    }\n' >> /tmp/browser-summary.js; \
+		printf '    const match = fileName.match(/^(\\d+)-(.+)/);\n' >> /tmp/browser-summary.js; \
+		printf '    const name = match ? match[2].replace(/-/g, " ") : fileName;\n' >> /tmp/browser-summary.js; \
+		printf '    const hasFailures = result.status === "failed";\n' >> /tmp/browser-summary.js; \
+		printf '    if (hasFailures) {\n' >> /tmp/browser-summary.js; \
+		printf '      failCount++;\n' >> /tmp/browser-summary.js; \
+		printf '      failed.push(num + " - " + name);\n' >> /tmp/browser-summary.js; \
+		printf '    } else {\n' >> /tmp/browser-summary.js; \
+		printf '      passCount++;\n' >> /tmp/browser-summary.js; \
+		printf '      passed.push(num + " - " + name);\n' >> /tmp/browser-summary.js; \
+		printf '    }\n' >> /tmp/browser-summary.js; \
+		printf '  });\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;32mPassed: " + passCount + "/" + testResults.length + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  if (passed.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("\\033[1;32m  ✓ Passed tests:\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '    passed.forEach(p => console.log("    \\033[32m" + p + "\\033[0m"));\n' >> /tmp/browser-summary.js; \
+		printf '  }\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;31mFailed: " + failCount + "/" + testResults.length + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  if (failed.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("\\033[1;31m  ✗ Failed tests:\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '    failed.forEach(f => console.log("    \\033[31m" + f + "\\033[0m"));\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '  } else {\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("\\033[1;32m  All tests passed! 🎉\\033[0m\\n");\n' >> /tmp/browser-summary.js; \
+		printf '  }\n' >> /tmp/browser-summary.js; \
+		printf '} catch (e) {\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;33mCould not parse test results\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '}\n' >> /tmp/browser-summary.js; \
+		node /tmp/browser-summary.js; \
+	fi; \
 	pnpm uninstall playwright; \
 	exit $$TEST_EXIT_CODE
 
