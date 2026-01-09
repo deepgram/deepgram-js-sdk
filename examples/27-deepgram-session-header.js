@@ -79,7 +79,7 @@ async function testWebSocketConnection() {
     // Send a small amount of audio data
     const audioStream = createReadStream("./examples/spacewalk.wav");
     audioStream.on("data", (chunk) => {
-      deepgramConnection.socket.send(chunk);
+      deepgramConnection.sendListenV1Media(chunk);
     });
 
     audioStream.on("end", () => {

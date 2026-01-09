@@ -66,7 +66,7 @@ async function liveTranscriptionV2() {
       const audioStream = createReadStream("./examples/spacewalk.wav");
       audioStream.on("data", (chunk) => {
         // Send binary audio data directly to the socket
-        deepgramConnection.socket.send(chunk);
+        deepgramConnection.sendListenV2Media(chunk);
       });
 
       audioStream.on("end", () => {

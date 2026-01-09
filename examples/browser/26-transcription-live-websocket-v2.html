@@ -202,7 +202,7 @@
 
         for (let offset = 0; offset < arrayBuffer.byteLength && isStreaming; offset += chunkSize) {
           const chunk = arrayBuffer.slice(offset, offset + chunkSize);
-          deepgramConnection.socket.send(chunk);
+          deepgramConnection.sendListenV2Media(chunk);
           // Small delay to simulate streaming
           await new Promise(resolve => setTimeout(resolve, 10));
         }

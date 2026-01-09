@@ -51,19 +51,23 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 
 1. Install dependencies:
 ```bash
-npm install @deepgram/sdk
+pnpm install
 ```
 
-2. Set your API key as an environment variable:
+2. Set your API key and Project ID as an environment variable:
 ```bash
-export DEEPGRAM_API_KEY="your-api-key-here"
+export 
+export 
 ```
 
-3. Or replace `"YOUR_DEEPGRAM_API_KEY"` in the examples with your actual API key.
-
-4. Run an example:
+3. Run an example:
 ```bash
-node examples/01-authentication-api-key.js
+DEEPGRAM_API_KEY="your-api-key-here" DEEPGRAM_PROJECT_ID="your-id-here" make example-1
+```
+
+4. OR run all:
+```bash
+DEEPGRAM_API_KEY="your-api-key-here" DEEPGRAM_PROJECT_ID="your-id-here" make examples
 ```
 
 ## Getting an API Key

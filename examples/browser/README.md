@@ -50,25 +50,17 @@ This directory contains browser-compatible examples demonstrating how to use the
 
 1. **Build the SDK** (if not already built):
 ```bash
-npm run build
+make build
 ```
 
-2. **Open an example** in your browser:
-   - Simply open any HTML file directly in your browser
-   - Or use a local web server:
-     ```bash
-     # Using Python
-     python -m http.server 8000
-     
-     # Using Node.js (http-server)
-     npx http-server -p 8000
-     ```
-   - Then navigate to `http://localhost:8000/examples/browser/01-authentication-api-key.html`
+2. **Run the examples** in your browser:
 
-3. **Enter your API key**:
-   - Each example has an input field for your Deepgram API key
-   - The API key is saved to localStorage for convenience (only stored locally in your browser)
-   - **Note**: These examples are intended for local development or CI use. Do not expose API keys in production frontend applications.
+```bash
+DEEPGRAM_API_KEY=your_key DEEPGRAM_PROJECT_ID=your_id make browser-serve
+```
+
+3. **Navigate to the desired example**:
+   - The root view should list all examples as clickable links.
 
 4. **Run the example**:
    - Click the "Run" or action button in each example
