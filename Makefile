@@ -46,8 +46,93 @@ help:
 
 # Run all examples
 examples:
-	@echo "Running all examples..."
-	node examples/01-authentication-api-key.js && node examples/02-authentication-access-token.js && node examples/03-authentication-proxy.js && node examples/04-transcription-prerecorded-url.js && node examples/05-transcription-prerecorded-file.js && node examples/06-transcription-prerecorded-callback.js && node examples/07-transcription-live-websocket.js && node examples/08-transcription-captions.js && node examples/09-voice-agent.js && node examples/10-text-to-speech-single.js && node examples/11-text-to-speech-streaming.js && node examples/12-text-intelligence.js && node examples/13-management-projects.js && node examples/14-management-keys.js && node examples/15-management-members.js && node examples/16-management-invites.js && node examples/17-management-usage.js && node examples/18-management-billing.js && node examples/19-management-models.js && node examples/20-onprem-credentials.js && node examples/21-configuration-scoped.js && node examples/22-transcription-advanced-options.js && node examples/23-file-upload-types.js && node examples/24-error-handling.js && node examples/25-binary-response.js && node examples/26-transcription-live-websocket-v2.js && node examples/27-deepgram-session-header.js
+	@printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
+	TOTAL=27; \
+	PASS_COUNT=0; \
+	FAIL_COUNT=0; \
+	PASSED_LIST=""; \
+	FAILED_LIST=""; \
+	\
+	run_example() { \
+		NUM=$$1; \
+		FILE=$$2; \
+		NAME=$$3; \
+		PERCENT=$$((NUM * 100 / TOTAL)); \
+		BAR_LEN=25; \
+		FILLED=$$((NUM * BAR_LEN / TOTAL)); \
+		EMPTY=$$((BAR_LEN - FILLED)); \
+		printf "\r\033[1;33m[%2d/%2d]\033[0m [" "$$NUM" "$$TOTAL"; \
+		printf "\033[32m"; \
+		for i in $$(seq 1 $$FILLED); do printf "█"; done; \
+		printf "\033[90m"; \
+		for i in $$(seq 1 $$EMPTY); do printf "░"; done; \
+		printf "\033[0m] %3d%% \033[36m%s\033[0m ... " "$$PERCENT" "$$NAME"; \
+		if node "$$FILE" >/dev/null 2>&1; then \
+			printf "\033[1;32m✓ PASS\033[0m\n"; \
+			PASS_COUNT=$$((PASS_COUNT + 1)); \
+			if [ -z "$$PASSED_LIST" ]; then \
+				PASSED_LIST="$$NUM - $$NAME"; \
+			else \
+				PASSED_LIST="$$PASSED_LIST"$$'\n'"$$NUM - $$NAME"; \
+			fi; \
+		else \
+			printf "\033[1;31m✗ FAIL\033[0m\n"; \
+			FAIL_COUNT=$$((FAIL_COUNT + 1)); \
+			if [ -z "$$FAILED_LIST" ]; then \
+				FAILED_LIST="$$NUM - $$NAME"; \
+			else \
+				FAILED_LIST="$$FAILED_LIST"$$'\n'"$$NUM - $$NAME"; \
+			fi; \
+		fi; \
+	}; \
+	\
+	run_example 1 "examples/01-authentication-api-key.js" "Authentication API Key"; \
+	run_example 2 "examples/02-authentication-access-token.js" "Authentication Access Token"; \
+	run_example 3 "examples/03-authentication-proxy.js" "Authentication Proxy"; \
+	run_example 4 "examples/04-transcription-prerecorded-url.js" "Transcription Prerecorded URL"; \
+	run_example 5 "examples/05-transcription-prerecorded-file.js" "Transcription Prerecorded File"; \
+	run_example 6 "examples/06-transcription-prerecorded-callback.js" "Transcription Prerecorded Callback"; \
+	run_example 7 "examples/07-transcription-live-websocket.js" "Transcription Live WebSocket"; \
+	run_example 8 "examples/08-transcription-captions.js" "Transcription Captions"; \
+	run_example 9 "examples/09-voice-agent.js" "Voice Agent"; \
+	run_example 10 "examples/10-text-to-speech-single.js" "Text-to-Speech Single"; \
+	run_example 11 "examples/11-text-to-speech-streaming.js" "Text-to-Speech Streaming"; \
+	run_example 12 "examples/12-text-intelligence.js" "Text Intelligence"; \
+	run_example 13 "examples/13-management-projects.js" "Management Projects"; \
+	run_example 14 "examples/14-management-keys.js" "Management Keys"; \
+	run_example 15 "examples/15-management-members.js" "Management Members"; \
+	run_example 16 "examples/16-management-invites.js" "Management Invites"; \
+	run_example 17 "examples/17-management-usage.js" "Management Usage"; \
+	run_example 18 "examples/18-management-billing.js" "Management Billing"; \
+	run_example 19 "examples/19-management-models.js" "Management Models"; \
+	run_example 20 "examples/20-onprem-credentials.js" "On-Premises Credentials"; \
+	run_example 21 "examples/21-configuration-scoped.js" "Configuration Scoped"; \
+	run_example 22 "examples/22-transcription-advanced-options.js" "Transcription Advanced Options"; \
+	run_example 23 "examples/23-file-upload-types.js" "File Upload Types"; \
+	run_example 24 "examples/24-error-handling.js" "Error Handling"; \
+	run_example 25 "examples/25-binary-response.js" "Binary Response"; \
+	run_example 26 "examples/26-transcription-live-websocket-v2.js" "Transcription Live WebSocket V2"; \
+	run_example 27 "examples/27-deepgram-session-header.js" "Deepgram Session Header"; \
+	\
+	printf "\n\033[1;36m=========================================\033[0m\n"; \
+	printf "\033[1;36mSummary Report\033[0m\n"; \
+	printf "\033[1;36m=========================================\033[0m\n\n"; \
+	printf "\033[1;32mPassed: %d/%d\033[0m\n" "$$PASS_COUNT" "$$TOTAL"; \
+	if [ "$$PASS_COUNT" -gt 0 ] && [ -n "$$PASSED_LIST" ]; then \
+		printf "\033[1;32m  ✓ Passed examples:\033[0m\n"; \
+		echo "$$PASSED_LIST" | awk '{printf "    \033[32m%s\033[0m\n", $$0}'; \
+	fi; \
+	printf "\n"; \
+	printf "\033[1;31mFailed: %d/%d\033[0m\n" "$$FAIL_COUNT" "$$TOTAL"; \
+	if [ "$$FAIL_COUNT" -gt 0 ] && [ -n "$$FAILED_LIST" ]; then \
+		printf "\033[1;31m  ✗ Failed examples:\033[0m\n"; \
+		echo "$$FAILED_LIST" | awk '{printf "    \033[31m%s\033[0m\n", $$0}'; \
+		printf "\n"; \
+		exit 1; \
+	else \
+		printf "\033[1;32m  All examples passed! 🎉\033[0m\n\n"; \
+		exit 0; \
+	fi
 
 # Individual example targets
 example-1:
