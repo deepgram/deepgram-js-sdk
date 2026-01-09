@@ -53,9 +53,11 @@ export class ModelsClient {
         requestOptions?: ModelsClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.ListModelsV1Response>> {
         const { include_outdated: includeOutdated } = request;
-        const _queryParams: Record<string, unknown> = {
-            include_outdated: includeOutdated,
-        };
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (includeOutdated != null) {
+            _queryParams.include_outdated = includeOutdated.toString();
+        }
+
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

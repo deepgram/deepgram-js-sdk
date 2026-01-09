@@ -94,35 +94,112 @@ export class V1Client {
             debug,
             reconnectAttempts,
         } = args;
-        const _queryParams: Record<string, unknown> = {
-            callback,
-            callback_method: callbackMethod,
-            channels,
-            diarize,
-            dictation,
-            encoding,
-            endpointing,
-            extra,
-            interim_results: interimResults,
-            keyterm,
-            keywords,
-            language,
-            mip_opt_out: mipOptOut,
-            model,
-            multichannel,
-            numerals,
-            profanity_filter: profanityFilter,
-            punctuate,
-            redact,
-            replace,
-            sample_rate: sampleRate,
-            search,
-            smart_format: smartFormat,
-            tag,
-            utterance_end_ms: utteranceEndMs,
-            vad_events: vadEvents,
-            version,
-        };
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (callback != null) {
+            _queryParams.callback = callback;
+        }
+
+        if (callbackMethod != null) {
+            _queryParams.callback_method = callbackMethod;
+        }
+
+        if (channels != null) {
+            _queryParams.channels = channels;
+        }
+
+        if (diarize != null) {
+            _queryParams.diarize = diarize;
+        }
+
+        if (dictation != null) {
+            _queryParams.dictation = dictation;
+        }
+
+        if (encoding != null) {
+            _queryParams.encoding = encoding;
+        }
+
+        if (endpointing != null) {
+            _queryParams.endpointing = endpointing;
+        }
+
+        if (extra != null) {
+            _queryParams.extra = extra;
+        }
+
+        if (interimResults != null) {
+            _queryParams.interim_results = interimResults;
+        }
+
+        if (keyterm != null) {
+            _queryParams.keyterm = keyterm;
+        }
+
+        if (keywords != null) {
+            _queryParams.keywords = keywords;
+        }
+
+        if (language != null) {
+            _queryParams.language = language;
+        }
+
+        if (mipOptOut != null) {
+            _queryParams.mip_opt_out = mipOptOut;
+        }
+
+        _queryParams.model = model;
+        if (multichannel != null) {
+            _queryParams.multichannel = multichannel;
+        }
+
+        if (numerals != null) {
+            _queryParams.numerals = numerals;
+        }
+
+        if (profanityFilter != null) {
+            _queryParams.profanity_filter = profanityFilter;
+        }
+
+        if (punctuate != null) {
+            _queryParams.punctuate = punctuate;
+        }
+
+        if (redact != null) {
+            _queryParams.redact = redact;
+        }
+
+        if (replace != null) {
+            _queryParams.replace = replace;
+        }
+
+        if (sampleRate != null) {
+            _queryParams.sample_rate = sampleRate;
+        }
+
+        if (search != null) {
+            _queryParams.search = search;
+        }
+
+        if (smartFormat != null) {
+            _queryParams.smart_format = smartFormat;
+        }
+
+        if (tag != null) {
+            _queryParams.tag = tag;
+        }
+
+        if (utteranceEndMs != null) {
+            _queryParams.utterance_end_ms = utteranceEndMs;
+        }
+
+        if (vadEvents != null) {
+            _queryParams.vad_events = vadEvents;
+        }
+
+        if (version != null) {
+            _queryParams.version = version;
+        }
+
         const _headers: Record<string, unknown> = mergeHeaders(
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,

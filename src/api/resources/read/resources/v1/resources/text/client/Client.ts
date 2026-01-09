@@ -78,20 +78,67 @@ export class TextClient {
             language,
             body: _body,
         } = request;
-        const _queryParams: Record<string, unknown> = {
-            callback,
-            callback_method: callbackMethod != null ? callbackMethod : undefined,
-            sentiment,
-            summarize: summarize != null ? summarize : undefined,
-            tag,
-            topics,
-            custom_topic: customTopic,
-            custom_topic_mode: customTopicMode != null ? customTopicMode : undefined,
-            intents,
-            custom_intent: customIntent,
-            custom_intent_mode: customIntentMode != null ? customIntentMode : undefined,
-            language,
-        };
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (callback != null) {
+            _queryParams.callback = callback;
+        }
+
+        if (callbackMethod != null) {
+            _queryParams.callback_method = callbackMethod;
+        }
+
+        if (sentiment != null) {
+            _queryParams.sentiment = sentiment.toString();
+        }
+
+        if (summarize != null) {
+            _queryParams.summarize = summarize;
+        }
+
+        if (tag != null) {
+            if (Array.isArray(tag)) {
+                _queryParams.tag = tag.map((item) => item);
+            } else {
+                _queryParams.tag = tag;
+            }
+        }
+
+        if (topics != null) {
+            _queryParams.topics = topics.toString();
+        }
+
+        if (customTopic != null) {
+            if (Array.isArray(customTopic)) {
+                _queryParams.custom_topic = customTopic.map((item) => item);
+            } else {
+                _queryParams.custom_topic = customTopic;
+            }
+        }
+
+        if (customTopicMode != null) {
+            _queryParams.custom_topic_mode = customTopicMode;
+        }
+
+        if (intents != null) {
+            _queryParams.intents = intents.toString();
+        }
+
+        if (customIntent != null) {
+            if (Array.isArray(customIntent)) {
+                _queryParams.custom_intent = customIntent.map((item) => item);
+            } else {
+                _queryParams.custom_intent = customIntent;
+            }
+        }
+
+        if (customIntentMode != null) {
+            _queryParams.custom_intent_mode = customIntentMode;
+        }
+
+        if (language != null) {
+            _queryParams.language = language;
+        }
+
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

@@ -58,15 +58,39 @@ export class BreakdownClient {
         requestOptions?: BreakdownClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.BillingBreakdownV1Response>> {
         const { start, end, accessor, deployment, tag, line_item: lineItem, grouping } = request;
-        const _queryParams: Record<string, unknown> = {
-            start,
-            end,
-            accessor,
-            deployment: deployment != null ? deployment : undefined,
-            tag,
-            line_item: lineItem,
-            grouping: Array.isArray(grouping) ? grouping.map((item) => item) : grouping != null ? grouping : undefined,
-        };
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (start != null) {
+            _queryParams.start = start;
+        }
+
+        if (end != null) {
+            _queryParams.end = end;
+        }
+
+        if (accessor != null) {
+            _queryParams.accessor = accessor;
+        }
+
+        if (deployment != null) {
+            _queryParams.deployment = deployment;
+        }
+
+        if (tag != null) {
+            _queryParams.tag = tag;
+        }
+
+        if (lineItem != null) {
+            _queryParams.line_item = lineItem;
+        }
+
+        if (grouping != null) {
+            if (Array.isArray(grouping)) {
+                _queryParams.grouping = grouping.map((item) => item);
+            } else {
+                _queryParams.grouping = grouping;
+            }
+        }
+
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

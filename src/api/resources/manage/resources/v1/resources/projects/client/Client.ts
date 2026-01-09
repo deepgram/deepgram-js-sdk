@@ -153,10 +153,15 @@ export class ProjectsClient {
         requestOptions?: ProjectsClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.GetProjectV1Response>> {
         const { limit, page } = request;
-        const _queryParams: Record<string, unknown> = {
-            limit,
-            page,
-        };
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (limit != null) {
+            _queryParams.limit = limit.toString();
+        }
+
+        if (page != null) {
+            _queryParams.page = page.toString();
+        }
+
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

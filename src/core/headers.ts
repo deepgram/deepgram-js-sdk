@@ -1,5 +1,7 @@
-export function mergeHeaders(...headersArray: (Record<string, unknown> | null | undefined)[]): Record<string, unknown> {
-    const result: Record<string, unknown> = {};
+export function mergeHeaders<THeaderValue>(
+    ...headersArray: (Record<string, THeaderValue> | null | undefined)[]
+): Record<string, string | THeaderValue> {
+    const result: Record<string, THeaderValue> = {};
 
     for (const [key, value] of headersArray
         .filter((headers) => headers != null)
@@ -15,10 +17,10 @@ export function mergeHeaders(...headersArray: (Record<string, unknown> | null | 
     return result;
 }
 
-export function mergeOnlyDefinedHeaders(
-    ...headersArray: (Record<string, unknown> | null | undefined)[]
-): Record<string, unknown> {
-    const result: Record<string, unknown> = {};
+export function mergeOnlyDefinedHeaders<THeaderValue>(
+    ...headersArray: (Record<string, THeaderValue> | null | undefined)[]
+): Record<string, THeaderValue> {
+    const result: Record<string, THeaderValue> = {};
 
     for (const [key, value] of headersArray
         .filter((headers) => headers != null)

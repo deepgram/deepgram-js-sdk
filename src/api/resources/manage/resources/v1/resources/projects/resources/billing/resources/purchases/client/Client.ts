@@ -53,9 +53,11 @@ export class PurchasesClient {
         requestOptions?: PurchasesClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.ListProjectPurchasesV1Response>> {
         const { limit } = request;
-        const _queryParams: Record<string, unknown> = {
-            limit,
-        };
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (limit != null) {
+            _queryParams.limit = limit.toString();
+        }
+
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,
