@@ -115,7 +115,7 @@ async function voiceAgent() {
       const audioStream = createReadStream("./examples/spacewalk.wav");
       audioStream.on("data", (chunk) => {
         // Send binary audio data directly to the socket
-        deepgramConnection.sendAgentV1Media(chunk);
+        deepgramConnection.socket.sendBinary(chunk);
       });
 
       audioStream.on("end", () => {

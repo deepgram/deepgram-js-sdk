@@ -244,7 +244,7 @@
         await deepgramConnection.waitForOpen();
 
         // Send a test message (empty audio chunk to trigger metadata)
-        deepgramConnection.sendListenV1Media(new ArrayBuffer(0));
+        deepgramConnection.socket.sendBinary(new ArrayBuffer(0));
 
         // Send finalize after a short delay
         setTimeout(() => {
