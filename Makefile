@@ -52,6 +52,8 @@ examples:
 	FAIL_COUNT=0; \
 	PASSED_LIST=""; \
 	FAILED_LIST=""; \
+	ERROR_DIR=/tmp/example-errors; \
+	mkdir -p $$ERROR_DIR; \
 	\
 	run_example() { \
 		NUM=$$1; \
@@ -67,7 +69,9 @@ examples:
 		printf "\033[90m"; \
 		for i in $$(seq 1 $$EMPTY); do printf "░"; done; \
 		printf "\033[0m] %3d%% \033[36m%s\033[0m ... " "$$PERCENT" "$$NAME"; \
-		if node "$$FILE" >/dev/null 2>&1; then \
+		ERROR_FILE=$$ERROR_DIR/example-$$NUM.err; \
+		if node "$$FILE" >$$ERROR_FILE 2>&1; then \
+			rm -f $$ERROR_FILE; \
 			printf "\033[1;32m✓ PASS\033[0m\n"; \
 			PASS_COUNT=$$((PASS_COUNT + 1)); \
 			if [ -z "$$PASSED_LIST" ]; then \
@@ -127,10 +131,24 @@ examples:
 	if [ "$$FAIL_COUNT" -gt 0 ] && [ -n "$$FAILED_LIST" ]; then \
 		printf "\033[1;31m  ✗ Failed examples:\033[0m\n"; \
 		echo "$$FAILED_LIST" | awk '{printf "    \033[31m%s\033[0m\n", $$0}'; \
+		printf "\n\033[1;33mError Details:\033[0m\n"; \
+		for err_file in $$ERROR_DIR/example-*.err; do \
+			if [ -f "$$err_file" ]; then \
+				NUM=$$(basename "$$err_file" | sed 's/example-\([0-9]*\)\.err/\1/'); \
+				printf "\n\033[1;31m  Example %d Error:\033[0m\n" "$$NUM"; \
+				printf "\033[90m  ────────────────────────────────────────\033[0m\n"; \
+				sed 's/^/    /' "$$err_file" | head -20; \
+				if [ $$(wc -l < "$$err_file") -gt 20 ]; then \
+					printf "    \033[90m... (truncated, see %s for full output)\033[0m\n" "$$err_file"; \
+				fi; \
+			fi; \
+		done; \
 		printf "\n"; \
+		rm -rf $$ERROR_DIR; \
 		exit 1; \
 	else \
 		printf "\033[1;32m  All examples passed! 🎉\033[0m\n\n"; \
+		rm -rf $$ERROR_DIR; \
 		exit 0; \
 	fi
 
@@ -258,6 +276,7 @@ browser:
 		printf '  let failCount = 0;\n' >> /tmp/browser-summary.js; \
 		printf '  const passed = [];\n' >> /tmp/browser-summary.js; \
 		printf '  const failed = [];\n' >> /tmp/browser-summary.js; \
+		printf '  const errors = [];\n' >> /tmp/browser-summary.js; \
 		printf '  testResults.forEach((result, idx) => {\n' >> /tmp/browser-summary.js; \
 		printf '    const num = idx + 1;\n' >> /tmp/browser-summary.js; \
 		printf '    const filePath = result.name || "";\n' >> /tmp/browser-summary.js; \
@@ -271,6 +290,19 @@ browser:
 		printf '    if (hasFailures) {\n' >> /tmp/browser-summary.js; \
 		printf '      failCount++;\n' >> /tmp/browser-summary.js; \
 		printf '      failed.push(num + " - " + name);\n' >> /tmp/browser-summary.js; \
+		printf '      const testCases = result.assertionResults || [];\n' >> /tmp/browser-summary.js; \
+		printf '      const failedTests = testCases.filter(t => t.status === "failed");\n' >> /tmp/browser-summary.js; \
+		printf '      if (failedTests.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '        const errorMessages = failedTests.map(t => {\n' >> /tmp/browser-summary.js; \
+		printf '          const title = t.title || "Unknown test";\n' >> /tmp/browser-summary.js; \
+		printf '          const failureMessages = t.failureMessages || [];\n' >> /tmp/browser-summary.js; \
+		printf '          const errorText = failureMessages.length > 0 ? failureMessages[0] : "No error message available";\n' >> /tmp/browser-summary.js; \
+		printf '          return { num, name, title, error: errorText };\n' >> /tmp/browser-summary.js; \
+		printf '        });\n' >> /tmp/browser-summary.js; \
+		printf '        errors.push(...errorMessages);\n' >> /tmp/browser-summary.js; \
+		printf '      } else if (result.failureMessage) {\n' >> /tmp/browser-summary.js; \
+		printf '        errors.push({ num, name, title: "Test suite", error: result.failureMessage });\n' >> /tmp/browser-summary.js; \
+		printf '      }\n' >> /tmp/browser-summary.js; \
 		printf '    } else {\n' >> /tmp/browser-summary.js; \
 		printf '      passCount++;\n' >> /tmp/browser-summary.js; \
 		printf '      passed.push(num + " - " + name);\n' >> /tmp/browser-summary.js; \
@@ -287,11 +319,27 @@ browser:
 		printf '    console.log("\\033[1;31m  ✗ Failed tests:\\033[0m");\n' >> /tmp/browser-summary.js; \
 		printf '    failed.forEach(f => console.log("    \\033[31m" + f + "\\033[0m"));\n' >> /tmp/browser-summary.js; \
 		printf '    console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '    if (errors.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '      console.log("\\033[1;33mError Details:\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '      errors.forEach(err => {\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("\\033[1;31m  Test " + err.num + " - " + err.name + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("\\033[1;33m    " + err.title + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("\\033[90m    ────────────────────────────────────────\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        const errorLines = err.error.split("\\n").slice(0, 15);\n' >> /tmp/browser-summary.js; \
+		printf '        errorLines.forEach(line => console.log("    " + line));\n' >> /tmp/browser-summary.js; \
+		printf '        if (err.error.split("\\n").length > 15) {\n' >> /tmp/browser-summary.js; \
+		printf '          console.log("    \\033[90m... (truncated, see /tmp/browser-test-output.txt for full output)\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        }\n' >> /tmp/browser-summary.js; \
+		printf '      });\n' >> /tmp/browser-summary.js; \
+		printf '      console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '    }\n' >> /tmp/browser-summary.js; \
 		printf '  } else {\n' >> /tmp/browser-summary.js; \
 		printf '    console.log("\\033[1;32m  All tests passed! 🎉\\033[0m\\n");\n' >> /tmp/browser-summary.js; \
 		printf '  }\n' >> /tmp/browser-summary.js; \
 		printf '} catch (e) {\n' >> /tmp/browser-summary.js; \
-		printf '  console.log("\\033[1;33mCould not parse test results\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;33mCould not parse test results: " + e.message + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[90mFull test output available at /tmp/browser-test-output.txt\\033[0m");\n' >> /tmp/browser-summary.js; \
 		printf '}\n' >> /tmp/browser-summary.js; \
 		node /tmp/browser-summary.js; \
 	fi; \
