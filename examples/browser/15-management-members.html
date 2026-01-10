@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Member Management - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.danger {
+      background: #d32f2f;
+    }
+    button.danger:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Project Member Management</h1>
+  <p>Examples for managing project members: list, remove, get/update scopes. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
+
+  <div class="container">
+    <label for="projectId">Project ID:</label>
+    <input type="text" id="projectId" placeholder="Enter project ID">
+    <div>
+      <button id="listButton">List Members</button>
+      <button id="scopesButton">Get Member Scopes</button>
+      <button id="updateScopesButton">Update Member Scopes</button>
+      <button id="removeButton" class="danger">Remove Member</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const projectIdInput = document.getElementById('projectId');
+    const listButton = document.getElementById('listButton');
+    const scopesButton = document.getElementById('scopesButton');
+    const updateScopesButton = document.getElementById('updateScopesButton');
+    const removeButton = document.getElementById('removeButton');
+    const output = document.getElementById('output');
+
+    // Try to load project ID from localStorage (non-sensitive)
+    const savedProjectId = localStorage.getItem('DEEPGRAM_PROJECT_ID');
+    if (savedProjectId) projectIdInput.value = savedProjectId;
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function getClient() {
+      return new DeepgramClient({ 
+        apiKey: 'proxy',
+        baseUrl: 'http://localhost:8001',
+      });
+    }
+
+    listButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      output.textContent = '';
+      listButton.disabled = true;
+      try {
+        const data = await client.manage.v1.projects.members.list(projectId);
+        log(`✓ Members:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        listButton.disabled = false;
+      }
+    });
+
+    scopesButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      const memberId = prompt('Enter member ID:');
+      if (!memberId) return;
+      output.textContent = '';
+      scopesButton.disabled = true;
+      try {
+        const data = await client.manage.v1.projects.members.scopes.list(projectId, memberId);
+        log(`✓ Member scopes:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        scopesButton.disabled = false;
+      }
+    });
+
+    updateScopesButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      const memberId = prompt('Enter member ID:');
+      if (!memberId) return;
+      output.textContent = '';
+      updateScopesButton.disabled = true;
+      try {
+        const data = await client.manage.v1.projects.members.scopes.update(projectId, memberId, {
+          scope: "admin",
+        });
+        log(`✓ Updated member scope:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        updateScopesButton.disabled = false;
+      }
+    });
+
+    removeButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      const memberId = prompt('Enter member ID to remove:');
+      if (!memberId) return;
+      if (!confirm(`Are you sure you want to remove member ${memberId}?`)) return;
+      output.textContent = '';
+      removeButton.disabled = true;
+      try {
+        await client.manage.v1.projects.members.delete(projectId, memberId);
+        log('✓ Member removed successfully', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        removeButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+
