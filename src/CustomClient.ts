@@ -60,6 +60,38 @@ function generateUUID(): string {
 }
 
 /**
+ * Wrapper auth provider that adds "Token " prefix to API keys.
+ * The auto-generated HeaderAuthProvider doesn't add the prefix, so we wrap it here.
+ */
+class ApiKeyAuthProviderWrapper implements core.AuthProvider {
+    private readonly originalProvider: core.AuthProvider;
+
+    constructor(originalProvider: core.AuthProvider) {
+        this.originalProvider = originalProvider;
+    }
+
+    public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
+        const authRequest = await this.originalProvider.getAuthRequest(arg);
+        const authHeader = authRequest.headers?.Authorization || authRequest.headers?.authorization;
+        
+        // If the header doesn't already have a scheme prefix, add "Token " prefix for API keys
+        if (authHeader && typeof authHeader === "string") {
+            // Only add prefix if it doesn't already have Bearer or Token prefix
+            if (!authHeader.startsWith("Bearer ") && !authHeader.startsWith("Token ") && !authHeader.startsWith("token ")) {
+                return {
+                    headers: {
+                        ...authRequest.headers,
+                        Authorization: `Token ${authHeader}`,
+                    },
+                };
+            }
+        }
+        
+        return authRequest;
+    }
+}
+
+/**
  * Wrapper auth provider that checks for accessToken first (Bearer scheme)
  * before falling back to the original auth provider (Token scheme for API keys).
  */
@@ -113,7 +145,11 @@ export class CustomDeepgramClient extends DeepgramClient {
         super(optionsWithSessionId);
         this._sessionId = sessionId;
 
-        // Wrap the auth provider to handle accessToken if provided
+        // Always wrap the auth provider to add "Token " prefix to API keys
+        // The auto-generated HeaderAuthProvider doesn't add the prefix
+        (this._options as any).authProvider = new ApiKeyAuthProviderWrapper(this._options.authProvider);
+
+        // Wrap again to handle accessToken if provided
         // This ensures accessToken takes priority over apiKey/env var
         if (options.accessToken != null) {
             (this._options as any).authProvider = new AccessTokenAuthProviderWrapper(
