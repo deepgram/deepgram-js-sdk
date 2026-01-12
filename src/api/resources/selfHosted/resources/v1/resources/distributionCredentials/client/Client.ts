@@ -127,19 +127,10 @@ export class DistributionCredentialsClient {
         requestOptions?: DistributionCredentialsClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.CreateProjectDistributionCredentialsV1Response>> {
         const { scopes, provider, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (scopes != null) {
-            if (Array.isArray(scopes)) {
-                _queryParams.scopes = scopes.map((item) => item);
-            } else {
-                _queryParams.scopes = scopes;
-            }
-        }
-
-        if (provider != null) {
-            _queryParams.provider = provider;
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            scopes: Array.isArray(scopes) ? scopes.map((item) => item) : scopes != null ? scopes : undefined,
+            provider: provider != null ? provider : undefined,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

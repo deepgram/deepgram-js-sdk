@@ -69,22 +69,22 @@ export class V1Socket {
         this.eventHandlers[event] = callback;
     }
 
-    public sendSpeakV1Text(message: Deepgram.speak.SpeakV1Text): void {
+    public sendText(message: Deepgram.speak.SpeakV1Text): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendSpeakV1Flush(message: Deepgram.speak.SpeakV1Flush): void {
+    public sendFlush(message: Deepgram.speak.SpeakV1Flush): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendSpeakV1Clear(message: Deepgram.speak.SpeakV1Clear): void {
+    public sendClear(message: Deepgram.speak.SpeakV1Clear): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendSpeakV1Close(message: Deepgram.speak.SpeakV1Close): void {
+    public sendClose(message: Deepgram.speak.SpeakV1Close): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }

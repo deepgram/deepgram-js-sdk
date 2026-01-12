@@ -48,23 +48,12 @@ export class V1Client {
             debug,
             reconnectAttempts,
         } = args;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (encoding != null) {
-            _queryParams.encoding = encoding;
-        }
-
-        if (mipOptOut != null) {
-            _queryParams.mip_opt_out = mipOptOut;
-        }
-
-        if (model != null) {
-            _queryParams.model = model;
-        }
-
-        if (sampleRate != null) {
-            _queryParams.sample_rate = sampleRate;
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            encoding,
+            mip_opt_out: mipOptOut,
+            model,
+            sample_rate: sampleRate,
+        };
         const _headers: Record<string, unknown> = mergeHeaders(
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,

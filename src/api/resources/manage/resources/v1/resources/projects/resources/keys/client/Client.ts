@@ -53,11 +53,9 @@ export class KeysClient {
         requestOptions?: KeysClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.ListProjectKeysV1Response>> {
         const { status } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (status != null) {
-            _queryParams.status = status;
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            status: status != null ? status : undefined,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

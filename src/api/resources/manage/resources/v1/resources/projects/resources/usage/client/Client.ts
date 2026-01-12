@@ -153,183 +153,52 @@ export class UsageClient {
             utterances,
             version,
         } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (start != null) {
-            _queryParams.start = start;
-        }
-
-        if (end != null) {
-            _queryParams.end = end;
-        }
-
-        if (accessor != null) {
-            _queryParams.accessor = accessor;
-        }
-
-        if (alternatives != null) {
-            _queryParams.alternatives = alternatives.toString();
-        }
-
-        if (callbackMethod != null) {
-            _queryParams.callback_method = callbackMethod.toString();
-        }
-
-        if (callback != null) {
-            _queryParams.callback = callback.toString();
-        }
-
-        if (channels != null) {
-            _queryParams.channels = channels.toString();
-        }
-
-        if (customIntentMode != null) {
-            _queryParams.custom_intent_mode = customIntentMode.toString();
-        }
-
-        if (customIntent != null) {
-            _queryParams.custom_intent = customIntent.toString();
-        }
-
-        if (customTopicMode != null) {
-            _queryParams.custom_topic_mode = customTopicMode.toString();
-        }
-
-        if (customTopic != null) {
-            _queryParams.custom_topic = customTopic.toString();
-        }
-
-        if (deployment != null) {
-            _queryParams.deployment = deployment;
-        }
-
-        if (detectEntities != null) {
-            _queryParams.detect_entities = detectEntities.toString();
-        }
-
-        if (detectLanguage != null) {
-            _queryParams.detect_language = detectLanguage.toString();
-        }
-
-        if (diarize != null) {
-            _queryParams.diarize = diarize.toString();
-        }
-
-        if (dictation != null) {
-            _queryParams.dictation = dictation.toString();
-        }
-
-        if (encoding != null) {
-            _queryParams.encoding = encoding.toString();
-        }
-
-        if (endpoint != null) {
-            _queryParams.endpoint = endpoint;
-        }
-
-        if (extra != null) {
-            _queryParams.extra = extra.toString();
-        }
-
-        if (fillerWords != null) {
-            _queryParams.filler_words = fillerWords.toString();
-        }
-
-        if (intents != null) {
-            _queryParams.intents = intents.toString();
-        }
-
-        if (keyterm != null) {
-            _queryParams.keyterm = keyterm.toString();
-        }
-
-        if (keywords != null) {
-            _queryParams.keywords = keywords.toString();
-        }
-
-        if (language != null) {
-            _queryParams.language = language.toString();
-        }
-
-        if (measurements != null) {
-            _queryParams.measurements = measurements.toString();
-        }
-
-        if (method != null) {
-            _queryParams.method = method;
-        }
-
-        if (model != null) {
-            _queryParams.model = model;
-        }
-
-        if (multichannel != null) {
-            _queryParams.multichannel = multichannel.toString();
-        }
-
-        if (numerals != null) {
-            _queryParams.numerals = numerals.toString();
-        }
-
-        if (paragraphs != null) {
-            _queryParams.paragraphs = paragraphs.toString();
-        }
-
-        if (profanityFilter != null) {
-            _queryParams.profanity_filter = profanityFilter.toString();
-        }
-
-        if (punctuate != null) {
-            _queryParams.punctuate = punctuate.toString();
-        }
-
-        if (redact != null) {
-            _queryParams.redact = redact.toString();
-        }
-
-        if (replace != null) {
-            _queryParams.replace = replace.toString();
-        }
-
-        if (sampleRate != null) {
-            _queryParams.sample_rate = sampleRate.toString();
-        }
-
-        if (search != null) {
-            _queryParams.search = search.toString();
-        }
-
-        if (sentiment != null) {
-            _queryParams.sentiment = sentiment.toString();
-        }
-
-        if (smartFormat != null) {
-            _queryParams.smart_format = smartFormat.toString();
-        }
-
-        if (summarize != null) {
-            _queryParams.summarize = summarize.toString();
-        }
-
-        if (tag != null) {
-            _queryParams.tag = tag;
-        }
-
-        if (topics != null) {
-            _queryParams.topics = topics.toString();
-        }
-
-        if (uttSplit != null) {
-            _queryParams.utt_split = uttSplit.toString();
-        }
-
-        if (utterances != null) {
-            _queryParams.utterances = utterances.toString();
-        }
-
-        if (version != null) {
-            _queryParams.version = version.toString();
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            start,
+            end,
+            accessor,
+            alternatives,
+            callback_method: callbackMethod,
+            callback,
+            channels,
+            custom_intent_mode: customIntentMode,
+            custom_intent: customIntent,
+            custom_topic_mode: customTopicMode,
+            custom_topic: customTopic,
+            deployment: deployment != null ? deployment : undefined,
+            detect_entities: detectEntities,
+            detect_language: detectLanguage,
+            diarize,
+            dictation,
+            encoding,
+            endpoint: endpoint != null ? endpoint : undefined,
+            extra,
+            filler_words: fillerWords,
+            intents,
+            keyterm,
+            keywords,
+            language,
+            measurements,
+            method: method != null ? method : undefined,
+            model,
+            multichannel,
+            numerals,
+            paragraphs,
+            profanity_filter: profanityFilter,
+            punctuate,
+            redact,
+            replace,
+            sample_rate: sampleRate,
+            search,
+            sentiment,
+            smart_format: smartFormat,
+            summarize,
+            tag,
+            topics,
+            utt_split: uttSplit,
+            utterances,
+            version,
+        };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,

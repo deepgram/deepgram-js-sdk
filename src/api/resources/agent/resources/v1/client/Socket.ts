@@ -79,44 +79,44 @@ export class V1Socket {
         this.eventHandlers[event] = callback;
     }
 
-    public sendAgentV1Settings(message: Deepgram.agent.AgentV1Settings): void {
+    public sendSettings(message: Deepgram.agent.AgentV1Settings): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1UpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
+    public sendUpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1InjectUserMessage(message: Deepgram.agent.AgentV1InjectUserMessage): void {
+    public sendInjectUserMessage(message: Deepgram.agent.AgentV1InjectUserMessage): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1InjectAgentMessage(message: Deepgram.agent.AgentV1InjectAgentMessage): void {
+    public sendInjectAgentMessage(message: Deepgram.agent.AgentV1InjectAgentMessage): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1SendFunctionCallResponse(message: Deepgram.agent.AgentV1SendFunctionCallResponse): void {
+    public sendFunctionCallResponse(message: Deepgram.agent.AgentV1SendFunctionCallResponse): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1KeepAlive(message: Deepgram.agent.AgentV1KeepAlive): void {
+    public sendKeepAlive(message: Deepgram.agent.AgentV1KeepAlive): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1UpdatePrompt(message: Deepgram.agent.AgentV1UpdatePrompt): void {
+    public sendUpdatePrompt(message: Deepgram.agent.AgentV1UpdatePrompt): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendAgentV1Media(message: string): void {
+    public sendMedia(message: ArrayBufferLike | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
-        this.sendJson(message);
+        this.sendBinary(message);
     }
 
     /** Connect to the websocket and register event handlers. */

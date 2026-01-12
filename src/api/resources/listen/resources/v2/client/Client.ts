@@ -52,40 +52,17 @@ export class V2Client {
             debug,
             reconnectAttempts,
         } = args;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams.model = model;
-        if (encoding != null) {
-            _queryParams.encoding = encoding;
-        }
-
-        if (sampleRate != null) {
-            _queryParams.sample_rate = sampleRate;
-        }
-
-        if (eagerEotThreshold != null) {
-            _queryParams.eager_eot_threshold = eagerEotThreshold;
-        }
-
-        if (eotThreshold != null) {
-            _queryParams.eot_threshold = eotThreshold;
-        }
-
-        if (eotTimeoutMs != null) {
-            _queryParams.eot_timeout_ms = eotTimeoutMs;
-        }
-
-        if (keyterm != null) {
-            _queryParams.keyterm = keyterm;
-        }
-
-        if (mipOptOut != null) {
-            _queryParams.mip_opt_out = mipOptOut;
-        }
-
-        if (tag != null) {
-            _queryParams.tag = tag;
-        }
-
+        const _queryParams: Record<string, unknown> = {
+            model,
+            encoding,
+            sample_rate: sampleRate,
+            eager_eot_threshold: eagerEotThreshold,
+            eot_threshold: eotThreshold,
+            eot_timeout_ms: eotTimeoutMs,
+            keyterm,
+            mip_opt_out: mipOptOut,
+            tag,
+        };
         const _headers: Record<string, unknown> = mergeHeaders(
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,

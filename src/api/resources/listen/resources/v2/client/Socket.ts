@@ -67,12 +67,12 @@ export class V2Socket {
         this.eventHandlers[event] = callback;
     }
 
-    public sendListenV2Media(message: string): void {
+    public sendMedia(message: ArrayBufferLike | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
-        this.sendJson(message);
+        this.sendBinary(message);
     }
 
-    public sendListenV2CloseStream(message: Deepgram.listen.ListenV2CloseStream): void {
+    public sendCloseStream(message: Deepgram.listen.ListenV2CloseStream): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }

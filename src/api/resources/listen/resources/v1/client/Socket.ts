@@ -68,22 +68,22 @@ export class V1Socket {
         this.eventHandlers[event] = callback;
     }
 
-    public sendListenV1Media(message: string): void {
+    public sendMedia(message: ArrayBufferLike | Blob | ArrayBufferView): void {
+        this.assertSocketIsOpen();
+        this.sendBinary(message);
+    }
+
+    public sendFinalize(message: Deepgram.listen.ListenV1Finalize): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendListenV1Finalize(message: Deepgram.listen.ListenV1Finalize): void {
+    public sendCloseStream(message: Deepgram.listen.ListenV1CloseStream): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendListenV1CloseStream(message: Deepgram.listen.ListenV1CloseStream): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendListenV1KeepAlive(message: Deepgram.listen.ListenV1KeepAlive): void {
+    public sendKeepAlive(message: Deepgram.listen.ListenV1KeepAlive): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
