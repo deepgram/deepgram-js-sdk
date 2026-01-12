@@ -202,13 +202,13 @@
 
         for (let offset = 0; offset < arrayBuffer.byteLength && isStreaming; offset += chunkSize) {
           const chunk = arrayBuffer.slice(offset, offset + chunkSize);
-          deepgramConnection.socket.sendBinary(chunk);
+          deepgramConnection.sendMedia(chunk);
           // Small delay to simulate streaming
           await new Promise(resolve => setTimeout(resolve, 10));
         }
 
         if (isStreaming) {
-          deepgramConnection.sendListenV2CloseStream({ type: "CloseStream" });
+          deepgramConnection.sendCloseStream({ type: "CloseStream" });
         }
 
         // Auto-close after 1 minute

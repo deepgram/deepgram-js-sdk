@@ -79,11 +79,11 @@ async function testWebSocketConnection() {
     // Send a small amount of audio data
     const audioStream = createReadStream("./examples/spacewalk.wav");
     audioStream.on("data", (chunk) => {
-      deepgramConnection.socket.sendBinary(chunk);
+      deepgramConnection.sendMedia(chunk);
     });
 
     audioStream.on("end", () => {
-      deepgramConnection.sendListenV1Finalize({ type: "Finalize" });
+      deepgramConnection.sendFinalize({ type: "Finalize" });
       // Close after a short delay
       setTimeout(() => {
         deepgramConnection.close();

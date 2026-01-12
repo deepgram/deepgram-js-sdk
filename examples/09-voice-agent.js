@@ -53,8 +53,8 @@ async function voiceAgent() {
       await deepgramConnection.waitForOpen();
 
       // Configure the agent once connection is established
-      // Note: AgentV1Settings requires type: "Settings"
-      deepgramConnection.sendAgentV1Settings({
+      // Note: Settings requires type: "Settings"
+      deepgramConnection.sendSettings({
         type: "Settings",
         audio: {
           input: {
@@ -99,7 +99,7 @@ async function voiceAgent() {
       // Send keepalive every 5 seconds
       keepAliveInterval = setInterval(() => {
         if (deepgramConnection.socket.readyState === 1) { // OPEN
-          deepgramConnection.sendAgentV1KeepAlive({ type: "KeepAlive" });
+          deepgramConnection.sendKeepAlive({ type: "KeepAlive" });
         } else {
           clearInterval(keepAliveInterval);
         }
@@ -114,8 +114,8 @@ async function voiceAgent() {
       // Send audio data from a file stream
       const audioStream = createReadStream("./examples/spacewalk.wav");
       audioStream.on("data", (chunk) => {
-        // Send binary audio data directly to the socket
-        deepgramConnection.socket.sendBinary(chunk);
+        // Send binary audio data using sendMedia
+        deepgramConnection.sendMedia(chunk);
       });
 
       audioStream.on("end", () => {

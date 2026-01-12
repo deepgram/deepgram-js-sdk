@@ -244,12 +244,12 @@
         await deepgramConnection.waitForOpen();
 
         // Send a test message (empty audio chunk to trigger metadata)
-        deepgramConnection.socket.sendBinary(new ArrayBuffer(0));
+        deepgramConnection.sendMedia(new ArrayBuffer(0));
 
         // Send finalize after a short delay
         setTimeout(() => {
           if (deepgramConnection && isStreaming) {
-            deepgramConnection.sendListenV1Finalize({ type: "Finalize" });
+            deepgramConnection.sendFinalize({ type: "Finalize" });
           }
         }, 2000);
 

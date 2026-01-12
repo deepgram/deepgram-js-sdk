@@ -65,12 +65,12 @@ async function textToSpeechStreaming() {
         "Hello, this is a test of Deepgram's streaming text-to-speech API.";
 
       // Send text data for TTS synthesis
-      // Note: SpeakV1Text requires type: "Speak"
-      deepgramConnection.sendSpeakV1Text({ type: "Speak", text });
+      // Note: Text requires type: "Speak"
+      deepgramConnection.sendText({ type: "Speak", text });
 
       // Send Flush message to the server after sending the text
-      // Note: SpeakV1Flush requires type: "Flush"
-      deepgramConnection.sendSpeakV1Flush({ type: "Flush" });
+      // Note: Flush requires type: "Flush"
+      deepgramConnection.sendFlush({ type: "Flush" });
 
       // Connection will close automatically when Flushed message is received
       // But set a timeout as fallback in case Flushed never comes

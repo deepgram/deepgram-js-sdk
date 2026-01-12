@@ -230,10 +230,10 @@
         await deepgramConnection.waitForOpen();
 
         // Send text data for TTS synthesis
-        deepgramConnection.sendSpeakV1Text({ type: "Speak", text });
+        deepgramConnection.sendText({ type: "Speak", text });
 
         // Send Flush message to the server after sending the text
-        deepgramConnection.sendSpeakV1Flush({ type: "Flush" });
+        deepgramConnection.sendFlush({ type: "Flush" });
 
         // Timeout fallback
         setTimeout(() => {

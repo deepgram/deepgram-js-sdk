@@ -63,12 +63,12 @@ async function liveTranscription() {
       // Example: Send audio data from a file stream
       const audioStream = createReadStream("./examples/spacewalk.wav");
       audioStream.on("data", (chunk) => {
-        // Send binary audio data directly to the socket
-        deepgramConnection.socket.sendBinary(chunk);
+        // Send binary audio data using sendMedia
+        deepgramConnection.sendMedia(chunk);
       });
 
       audioStream.on("end", () => {
-        deepgramConnection.sendListenV1Finalize({ type: "Finalize" });
+        deepgramConnection.sendFinalize({ type: "Finalize" });
         // Don't close immediately - wait for final transcription results
         // The connection will be closed in the message handler when is_final is true
       });
