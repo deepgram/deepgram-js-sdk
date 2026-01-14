@@ -647,7 +647,7 @@ class WrappedListenV2Client extends ListenV2Client {
 }
 
 /**
- * Wrapper for Listen V2Socket that handles binary messages correctly.
+ * Wrapper for Listen V2Socket that handles binary messages correctly and adds ping support.
  */
 class WrappedListenV2Socket extends ListenV2Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
@@ -666,6 +666,41 @@ class WrappedListenV2Socket extends ListenV2Socket {
         super.connect();
         this.setupBinaryHandling();
         return this;
+    }
+
+    /**
+     * Send a WebSocket ping frame to keep the connection alive.
+     *
+     * In Node.js, this uses the native WebSocket ping() method from the 'ws' library.
+     * In browsers, WebSocket ping/pong is handled automatically by the browser and
+     * cannot be manually triggered, so this method will throw an error.
+     *
+     * @param data Optional data to send with the ping (Node.js only)
+     * @throws Error if not in Node.js environment or WebSocket is not connected
+     */
+    public ping(data?: string | Buffer): void {
+        const ws = (this.socket as any)._ws;
+
+        if (!ws) {
+            throw new Error("WebSocket is not connected. Call connect() and waitForOpen() first.");
+        }
+
+        if (ws.readyState !== ws.OPEN) {
+            throw new Error("WebSocket is not in OPEN state.");
+        }
+
+        // Check if we're in Node.js and the WebSocket has a ping method (from 'ws' library)
+        if (RUNTIME.type === "node" && typeof ws.ping === "function") {
+            // Call the native ping method from the 'ws' library
+            ws.ping(data);
+        } else {
+            // In browsers, WebSocket ping/pong is automatic and not exposed to JavaScript
+            throw new Error(
+                "WebSocket ping is not supported in browser environments. " +
+                "Browser WebSocket connections handle ping/pong automatically. " +
+                "If you need keepalive in the browser, consider sending periodic audio data or using a timer."
+            );
+        }
     }
 }
 
