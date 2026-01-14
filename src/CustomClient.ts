@@ -14,7 +14,7 @@ import { V1Socket as AgentV1Socket } from "./api/resources/agent/resources/v1/cl
 import { V1Socket as ListenV1Socket } from "./api/resources/listen/resources/v1/client/Socket.js";
 import { V2Socket as ListenV2Socket } from "./api/resources/listen/resources/v2/client/Socket.js";
 import { V1Socket as SpeakV1Socket } from "./api/resources/speak/resources/v1/client/Socket.js";
-import { mergeHeaders, mergeOnlyDefinedHeaders } from "./core/headers.js";
+import { mergeHeaders } from "./core/headers.js";
 import { fromJson } from "./core/json.js";
 import * as core from "./core/index.js";
 import * as environments from "./environments.js";
@@ -34,24 +34,24 @@ try {
 
 // Helper function to generate UUID that works in both Node.js and browser
 function generateUUID(): string {
-    // In Node.js, use the crypto module
+    // Try global crypto.randomUUID first (works in both Node.js 14.18+ and modern browsers)
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+    
+    // Fallback for Node.js: use the crypto module
     if (RUNTIME.type === "node") {
         try {
             // eslint-disable-next-line @typescript-eslint/no-require-imports
-            const crypto = require("crypto");
-            return crypto.randomUUID();
+            const nodeCrypto = require("crypto");
+            return nodeCrypto.randomUUID();
         } catch {
             // Fallback if crypto module is not available
         }
     }
     
-    // In browser or as fallback, use global crypto if available
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        return crypto.randomUUID();
-    }
-    
-    // Fallback UUID generation (RFC4122 version 4)
-    // This is a simple fallback that should work everywhere
+    // Final fallback: manual UUID generation (RFC4122 version 4)
+    // This should work everywhere but is less secure than crypto.randomUUID()
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
         const r = (Math.random() * 16) | 0;
         const v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -328,6 +328,54 @@ function getWebSocketOptions(headers: Record<string, unknown>): {
 }
 
 /**
+ * Helper function to setup binary-aware message handling for WebSocket sockets.
+ * Handles both text (JSON) and binary messages correctly.
+ */
+function setupBinaryHandling(socket: ReconnectingWebSocket, eventHandlers: { message?: (data: any) => void }): (event: MessageEvent) => void {
+    const binaryAwareHandler = (event: MessageEvent) => {
+        // Handle both text (JSON) and binary messages
+        if (typeof event.data === "string") {
+            try {
+                const data = fromJson(event.data);
+                eventHandlers.message?.(data);
+            } catch (error) {
+                // If JSON parsing fails, pass the raw string
+                eventHandlers.message?.(event.data);
+            }
+        } else {
+            // Binary data - pass through as-is
+            eventHandlers.message?.(event.data);
+        }
+    };
+
+    // Remove the original handler and add our binary-aware one
+    const socketAny = socket as any;
+    if (socketAny._listeners?.message) {
+        // Remove all message listeners
+        socketAny._listeners.message.forEach((listener: any) => {
+            socket.removeEventListener("message", listener);
+        });
+    }
+    
+    // Add our binary-aware handler
+    socket.addEventListener("message", binaryAwareHandler);
+    
+    return binaryAwareHandler;
+}
+
+/**
+ * Helper function to reset socket connection state before connecting.
+ * Ensures _connectLock is reset if the socket is in CLOSED state.
+ */
+function resetSocketConnectionState(socket: ReconnectingWebSocket): void {
+    if (socket.readyState === socket.CLOSED) {
+        // Force a fresh reconnect to ensure _connectLock is reset
+        (socket as any)._connectLock = false;
+        (socket as any)._shouldReconnect = true;
+    }
+}
+
+/**
  * Wrapper for Agent V1Client that overrides connect to use custom websocket.
  */
 class WrappedAgentV1Client extends AgentV1Client {
@@ -385,49 +433,11 @@ class WrappedAgentV1Socket extends AgentV1Socket {
     }
 
     private setupBinaryHandling() {
-        // Create a binary-aware message handler
-        this.binaryAwareHandler = (event: MessageEvent) => {
-            // Handle both text (JSON) and binary messages
-            if (typeof event.data === "string") {
-                try {
-                    const data = fromJson(event.data);
-                    (this as any).eventHandlers.message?.(data);
-                } catch (error) {
-                    // If JSON parsing fails, pass the raw string
-                    (this as any).eventHandlers.message?.(event.data);
-                }
-            } else {
-                // Binary data - pass through as-is
-                (this as any).eventHandlers.message?.(event.data);
-            }
-        };
-
-        // Remove the original handler and add our binary-aware one
-        // The original handler was added in super() constructor
-        // We need to replace it
-        const socketAny = this.socket as any;
-        if (socketAny._listeners?.message) {
-            // Remove all message listeners
-            socketAny._listeners.message.forEach((listener: any) => {
-                this.socket.removeEventListener("message", listener);
-            });
-        }
-        
-        // Add our binary-aware handler
-        if (this.binaryAwareHandler) {
-            this.socket.addEventListener("message", this.binaryAwareHandler);
-        }
+        this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
     public connect(): WrappedAgentV1Socket {
-        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
-        // by closing and reconnecting
-        if (this.socket.readyState === this.socket.CLOSED) {
-            // Force a fresh reconnect to ensure _connectLock is reset
-            (this.socket as any)._connectLock = false;
-            (this.socket as any)._shouldReconnect = true;
-        }
-        // Call parent connect, but then ensure our binary handler is still active
+        resetSocketConnectionState(this.socket);
         super.connect();
         // Re-setup binary handling in case connect() re-registered handlers
         this.setupBinaryHandling();
@@ -555,43 +565,11 @@ class WrappedListenV1Socket extends ListenV1Socket {
     }
 
     private setupBinaryHandling() {
-        // Create a binary-aware message handler
-        this.binaryAwareHandler = (event: MessageEvent) => {
-            // Handle both text (JSON) and binary messages
-            if (typeof event.data === "string") {
-                try {
-                    const data = fromJson(event.data);
-                    (this as any).eventHandlers.message?.(data);
-                } catch (error) {
-                    // If JSON parsing fails, pass the raw string
-                    (this as any).eventHandlers.message?.(event.data);
-                }
-            } else {
-                // Binary data - pass through as-is
-                (this as any).eventHandlers.message?.(event.data);
-            }
-        };
-
-        // Remove the original handler and add our binary-aware one
-        const socketAny = this.socket as any;
-        if (socketAny._listeners?.message) {
-            socketAny._listeners.message.forEach((listener: any) => {
-                this.socket.removeEventListener("message", listener);
-            });
-        }
-        
-        if (this.binaryAwareHandler) {
-            this.socket.addEventListener("message", this.binaryAwareHandler);
-        }
+        this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
     public connect(): WrappedListenV1Socket {
-        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
-        if (this.socket.readyState === this.socket.CLOSED) {
-            // Force a fresh reconnect to ensure _connectLock is reset
-            (this.socket as any)._connectLock = false;
-            (this.socket as any)._shouldReconnect = true;
-        }
+        resetSocketConnectionState(this.socket);
         super.connect();
         this.setupBinaryHandling();
         return this;
@@ -680,43 +658,11 @@ class WrappedListenV2Socket extends ListenV2Socket {
     }
 
     private setupBinaryHandling() {
-        // Create a binary-aware message handler
-        this.binaryAwareHandler = (event: MessageEvent) => {
-            // Handle both text (JSON) and binary messages
-            if (typeof event.data === "string") {
-                try {
-                    const data = fromJson(event.data);
-                    (this as any).eventHandlers.message?.(data);
-                } catch (error) {
-                    // If JSON parsing fails, pass the raw string
-                    (this as any).eventHandlers.message?.(event.data);
-                }
-            } else {
-                // Binary data - pass through as-is
-                (this as any).eventHandlers.message?.(event.data);
-            }
-        };
-
-        // Remove the original handler and add our binary-aware one
-        const socketAny = this.socket as any;
-        if (socketAny._listeners?.message) {
-            socketAny._listeners.message.forEach((listener: any) => {
-                this.socket.removeEventListener("message", listener);
-            });
-        }
-        
-        if (this.binaryAwareHandler) {
-            this.socket.addEventListener("message", this.binaryAwareHandler);
-        }
+        this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
     public connect(): WrappedListenV2Socket {
-        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
-        if (this.socket.readyState === this.socket.CLOSED) {
-            // Force a fresh reconnect to ensure _connectLock is reset
-            (this.socket as any)._connectLock = false;
-            (this.socket as any)._shouldReconnect = true;
-        }
+        resetSocketConnectionState(this.socket);
         super.connect();
         this.setupBinaryHandling();
         return this;
@@ -795,43 +741,11 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
     }
 
     private setupBinaryHandling() {
-        // Create a binary-aware message handler
-        this.binaryAwareHandler = (event: MessageEvent) => {
-            // Handle both text (JSON) and binary messages
-            if (typeof event.data === "string") {
-                try {
-                    const data = fromJson(event.data);
-                    (this as any).eventHandlers.message?.(data);
-                } catch (error) {
-                    // If JSON parsing fails, pass the raw string
-                    (this as any).eventHandlers.message?.(event.data);
-                }
-            } else {
-                // Binary data - pass through as-is
-                (this as any).eventHandlers.message?.(event.data);
-            }
-        };
-
-        // Remove the original handler and add our binary-aware one
-        const socketAny = this.socket as any;
-        if (socketAny._listeners?.message) {
-            socketAny._listeners.message.forEach((listener: any) => {
-                this.socket.removeEventListener("message", listener);
-            });
-        }
-        
-        if (this.binaryAwareHandler) {
-            this.socket.addEventListener("message", this.binaryAwareHandler);
-        }
+        this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
     public connect(): WrappedSpeakV1Socket {
-        // Ensure socket is ready to connect - if _connectLock is stuck, force reconnect
-        if (this.socket.readyState === this.socket.CLOSED) {
-            // Force a fresh reconnect to ensure _connectLock is reset
-            (this.socket as any)._connectLock = false;
-            (this.socket as any)._shouldReconnect = true;
-        }
+        resetSocketConnectionState(this.socket);
         super.connect();
         this.setupBinaryHandling();
         return this;

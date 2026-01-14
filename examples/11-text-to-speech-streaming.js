@@ -95,33 +95,4 @@ async function textToSpeechStreaming() {
   }
 }
 
-// Uncomment to run:
 textToSpeechStreaming();
-
-/**
- * > @deepgram/sdk-new@4.11.3 examples:11 /home/naomi/code/deepgram/deepgram-js-sdk
-> node examples/11-text-to-speech-streaming.js
-
-Connection closed
-Connection closed
-Error: Error: TIMEOUT
-    at V1Socket.handleError (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/api/resources/speak/resources/v1/client/Socket.js:68:101)
-    at ReconnectingWebSocket._callEventListener (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:410:13)
-    at /home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:129:62
-    at Array.forEach (<anonymous>)
-    at ReconnectingWebSocket._handleError (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:129:35)
-    at ReconnectingWebSocket._handleTimeout (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:383:14)
-    at Timeout.<anonymous> (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:378:58)
-    at listOnTimeout (node:internal/timers:605:17)
-    at process.processTimers (node:internal/timers:541:7)
-Error: Error: TIMEOUT
-    at V1Socket.handleError (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/api/resources/speak/resources/v1/client/Socket.js:68:101)
-    at ReconnectingWebSocket._callEventListener (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:410:13)
-    at /home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:129:62
-    at Array.forEach (<anonymous>)
-    at ReconnectingWebSocket._handleError (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:129:35)
-    at ReconnectingWebSocket._handleTimeout (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:383:14)
-    at Timeout.<anonymous> (/home/naomi/code/deepgram/deepgram-js-sdk/dist/cjs/core/websocket/ws.js:378:58)
-    at listOnTimeout (node:internal/timers:605:17)
-    at process.processTimers (node:internal/timers:541:7)
- */

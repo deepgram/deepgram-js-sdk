@@ -132,5 +132,4 @@ async function voiceAgent() {
   }
 }
 
-// Useless, need to update.
 voiceAgent();

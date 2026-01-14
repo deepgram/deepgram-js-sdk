@@ -42,5 +42,4 @@ async function example() {
   }
 }
 
-// WORKS!
 example();
