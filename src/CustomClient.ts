@@ -20,6 +20,9 @@ import * as core from "./core/index.js";
 import * as environments from "./environments.js";
 import { RUNTIME } from "./core/runtime/index.js";
 
+// Default WebSocket connection timeout in milliseconds
+const DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
+
 // Import ws library for Node.js (will be undefined in browser)
 let NodeWebSocket: any;
 try {
@@ -205,6 +208,11 @@ export class CustomDeepgramClient extends DeepgramClient {
 
 /**
  * Wrapper for AgentClient that ensures custom websocket implementation is used.
+ *
+ * This wrapper exists to guarantee that our custom WebSocket implementation
+ * (from ws.ts) continues to be used even after the SDK code is auto-generated
+ * by Fern. Without this wrapper, Fern regeneration could overwrite the client
+ * with a different WebSocket implementation.
  */
 class WrappedAgentClient extends AgentClientImpl {
     public get v1() {
@@ -214,6 +222,11 @@ class WrappedAgentClient extends AgentClientImpl {
 
 /**
  * Wrapper for ListenClient that ensures custom websocket implementation is used.
+ *
+ * This wrapper exists to guarantee that our custom WebSocket implementation
+ * (from ws.ts) continues to be used even after the SDK code is auto-generated
+ * by Fern. Without this wrapper, Fern regeneration could overwrite the client
+ * with a different WebSocket implementation.
  */
 class WrappedListenClient extends ListenClientImpl {
     public get v1() {
@@ -227,6 +240,11 @@ class WrappedListenClient extends ListenClientImpl {
 
 /**
  * Wrapper for SpeakClient that ensures custom websocket implementation is used.
+ *
+ * This wrapper exists to guarantee that our custom WebSocket implementation
+ * (from ws.ts) continues to be used even after the SDK code is auto-generated
+ * by Fern. Without this wrapper, Fern regeneration could overwrite the client
+ * with a different WebSocket implementation.
  */
 class WrappedSpeakClient extends SpeakClientImpl {
     public get v1() {
@@ -376,53 +394,100 @@ function resetSocketConnectionState(socket: ReconnectingWebSocket): void {
 }
 
 /**
+ * Helper function to create a WebSocket connection with common setup logic.
+ * Handles authentication, header merging, and WebSocket configuration.
+ * This reduces duplication across all Wrapped*Client classes.
+ */
+async function createWebSocketConnection({
+    options,
+    urlPath,
+    environmentKey,
+    queryParams,
+    headers,
+    debug,
+    reconnectAttempts,
+}: {
+    options: DeepgramClient.Options;
+    urlPath: string;
+    environmentKey: 'agent' | 'production';
+    queryParams: Record<string, string | string[] | object | object[] | null>;
+    headers?: Record<string, unknown>;
+    debug?: boolean;
+    reconnectAttempts?: number;
+}): Promise<ReconnectingWebSocket> {
+    // Get Authorization from authProvider (cast to any to access internal property)
+    const authRequest = await (options as any).authProvider?.getAuthRequest();
+
+    // Merge headers from options (which includes session ID), auth headers, and request headers
+    const mergedHeaders = mergeHeaders(
+        options.headers ?? {},
+        authRequest?.headers ?? {},
+        headers,
+    );
+
+    // Resolve any Suppliers in headers to actual values
+    const _headers = await resolveHeaders(mergedHeaders);
+
+    // Get WebSocket options with proper header handling
+    const wsOptions = getWebSocketOptions(_headers);
+
+    // Get the appropriate base URL for the environment
+    const baseUrl = (await core.Supplier.get(options.baseUrl)) ??
+        (
+            (await core.Supplier.get(options.environment)) ??
+            environments.DeepgramEnvironment.Production
+        )[environmentKey];
+
+    // Create and return the ReconnectingWebSocket
+    return new ReconnectingWebSocket({
+        url: core.url.join(baseUrl, urlPath),
+        protocols: wsOptions.protocols ?? [],
+        queryParameters: queryParams,
+        headers: wsOptions.headers,
+        options: {
+            WebSocket: wsOptions.WebSocket,
+            debug: debug ?? false,
+            maxRetries: reconnectAttempts ?? 30,
+            startClosed: true,
+            connectionTimeout: DEFAULT_CONNECTION_TIMEOUT_MS,
+        },
+    });
+}
+
+/**
  * Wrapper for Agent V1Client that overrides connect to use custom websocket.
+ *
+ * This wrapper ensures that the connect() method uses our custom ReconnectingWebSocket
+ * implementation instead of any auto-generated WebSocket handling. This guarantees
+ * consistent behavior across Fern regenerations and allows us to customize
+ * connection setup, authentication, and header handling.
  */
 class WrappedAgentV1Client extends AgentV1Client {
     public async connect(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
         const { headers, debug, reconnectAttempts } = args;
-        
-        // Get Authorization from authProvider (matching the working version)
-        const authRequest = await this._options.authProvider?.getAuthRequest();
-        // Merge headers from options (which includes session ID), auth headers, and request headers
-        const mergedHeaders = mergeHeaders(
-            this._options.headers ?? {},
-            authRequest?.headers ?? {},
+
+        // Use shared connection helper
+        const socket = await createWebSocketConnection({
+            options: this._options,
+            urlPath: "/v1/agent/converse",
+            environmentKey: 'agent',
+            queryParams: {},
             headers,
-        );
-        // Resolve any Suppliers in headers to actual values
-        const _headers = await resolveHeaders(mergedHeaders);
-        
-        // Get WebSocket options with proper header handling
-        const wsOptions = getWebSocketOptions(_headers);
-        
-        // Explicitly use the custom ReconnectingWebSocket from ws.ts
-        const socket = new ReconnectingWebSocket({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).agent,
-                "/v1/agent/converse",
-            ),
-            protocols: wsOptions.protocols ?? [],
-            queryParameters: {},
-            headers: wsOptions.headers,
-            options: { 
-                WebSocket: wsOptions.WebSocket,
-                debug: debug ?? false, 
-                maxRetries: reconnectAttempts ?? 30,
-                startClosed: true,
-                connectionTimeout: 10000, // Increase timeout to 10 seconds
-            },
+            debug,
+            reconnectAttempts,
         });
+
         return new WrappedAgentV1Socket({ socket });
     }
 }
 
 /**
  * Wrapper for Agent V1Socket that handles binary messages correctly.
+ *
+ * This wrapper ensures that both text (JSON) and binary WebSocket messages are
+ * handled properly. The auto-generated socket class may not handle binary data
+ * correctly, so we override the message handling to support both formats.
+ * This is critical for audio and other binary data streaming.
  */
 class WrappedAgentV1Socket extends AgentV1Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
@@ -447,6 +512,11 @@ class WrappedAgentV1Socket extends AgentV1Socket {
 
 /**
  * Wrapper for Listen V1Client that overrides connect to use custom websocket.
+ *
+ * This wrapper ensures that the connect() method uses our custom ReconnectingWebSocket
+ * implementation instead of any auto-generated WebSocket handling. This guarantees
+ * consistent behavior across Fern regenerations and allows us to customize
+ * connection setup, authentication, and header handling.
  */
 class WrappedListenV1Client extends ListenV1Client {
     public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
@@ -483,7 +553,7 @@ class WrappedListenV1Client extends ListenV1Client {
             debug,
             reconnectAttempts,
         } = args;
-        
+
         // Build query params (same as original)
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         if (callback != null) _queryParams.callback = callback;
@@ -514,47 +584,28 @@ class WrappedListenV1Client extends ListenV1Client {
         if (vadEvents != null) _queryParams.vad_events = vadEvents;
         if (version != null) _queryParams.version = version;
 
-        // Get Authorization from authProvider (matching the working version)
-        const authRequest = await this._options.authProvider.getAuthRequest();
-        // Merge headers from options (which includes session ID), auth headers, and request headers
-        const mergedHeaders = mergeHeaders(
-            this._options.headers ?? {},
-            authRequest.headers,
+        // Use shared connection helper
+        const socket = await createWebSocketConnection({
+            options: this._options,
+            urlPath: "/v1/listen",
+            environmentKey: 'production',
+            queryParams: _queryParams,
             headers,
-        );
-        // Resolve any Suppliers in headers to actual values
-        const _headers = await resolveHeaders(mergedHeaders);
-        
-        // Get WebSocket options with proper header handling
-        const wsOptions = getWebSocketOptions(_headers);
-        
-        // Explicitly use the custom ReconnectingWebSocket from ws.ts
-        const socket = new ReconnectingWebSocket({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).production,
-                "/v1/listen",
-            ),
-            protocols: wsOptions.protocols ?? [],
-            queryParameters: _queryParams,
-            headers: wsOptions.headers,
-            options: { 
-                WebSocket: wsOptions.WebSocket,
-                debug: debug ?? false, 
-                maxRetries: reconnectAttempts ?? 30,
-                startClosed: true,
-                connectionTimeout: 10000, // Increase timeout to 10 seconds
-            },
+            debug,
+            reconnectAttempts,
         });
+
         return new WrappedListenV1Socket({ socket });
     }
 }
 
 /**
  * Wrapper for Listen V1Socket that handles binary messages correctly.
+ *
+ * This wrapper ensures that both text (JSON) and binary WebSocket messages are
+ * handled properly. The auto-generated socket class may not handle binary data
+ * correctly, so we override the message handling to support both formats.
+ * This is critical for audio and other binary data streaming.
  */
 class WrappedListenV1Socket extends ListenV1Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
@@ -578,6 +629,11 @@ class WrappedListenV1Socket extends ListenV1Socket {
 
 /**
  * Wrapper for Listen V2Client that overrides connect to use custom websocket.
+ *
+ * This wrapper ensures that the connect() method uses our custom ReconnectingWebSocket
+ * implementation instead of any auto-generated WebSocket handling. This guarantees
+ * consistent behavior across Fern regenerations and allows us to customize
+ * connection setup, authentication, and header handling.
  */
 class WrappedListenV2Client extends ListenV2Client {
     public async connect(args: Omit<ListenV2Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV2Socket> {
@@ -595,7 +651,7 @@ class WrappedListenV2Client extends ListenV2Client {
             debug,
             reconnectAttempts,
         } = args;
-        
+
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams.model = model;
         if (encoding != null) _queryParams.encoding = encoding;
@@ -607,47 +663,29 @@ class WrappedListenV2Client extends ListenV2Client {
         if (mipOptOut != null) _queryParams.mip_opt_out = mipOptOut;
         if (tag != null) _queryParams.tag = tag;
 
-        // Get Authorization from authProvider (matching the working version)
-        const authRequest = await this._options.authProvider?.getAuthRequest();
-        // Merge headers from options (which includes session ID), auth headers, and request headers
-        const mergedHeaders = mergeHeaders(
-            this._options.headers ?? {},
-            authRequest?.headers ?? {},
+        // Use shared connection helper
+        const socket = await createWebSocketConnection({
+            options: this._options,
+            urlPath: "/v2/listen",
+            environmentKey: 'production',
+            queryParams: _queryParams,
             headers,
-        );
-        // Resolve any Suppliers in headers to actual values
-        const _headers = await resolveHeaders(mergedHeaders);
-        
-        // Get WebSocket options with proper header handling
-        const wsOptions = getWebSocketOptions(_headers);
-        
-        // Explicitly use the custom ReconnectingWebSocket from ws.ts
-        const socket = new ReconnectingWebSocket({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).production,
-                "/v2/listen",
-            ),
-            protocols: wsOptions.protocols ?? [],
-            queryParameters: _queryParams,
-            headers: wsOptions.headers,
-            options: { 
-                WebSocket: wsOptions.WebSocket,
-                debug: debug ?? false, 
-                maxRetries: reconnectAttempts ?? 30,
-                startClosed: true,
-                connectionTimeout: 10000, // Increase timeout to 10 seconds
-            },
+            debug,
+            reconnectAttempts,
         });
+
         return new WrappedListenV2Socket({ socket });
     }
 }
 
 /**
  * Wrapper for Listen V2Socket that handles binary messages correctly and adds ping support.
+ *
+ * This wrapper ensures that both text (JSON) and binary WebSocket messages are
+ * handled properly. The auto-generated socket class may not handle binary data
+ * correctly, so we override the message handling to support both formats.
+ * Additionally, this wrapper adds a ping() method for sending WebSocket ping
+ * frames to keep connections alive (Node.js only).
  */
 class WrappedListenV2Socket extends ListenV2Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
@@ -706,6 +744,11 @@ class WrappedListenV2Socket extends ListenV2Socket {
 
 /**
  * Wrapper for Speak V1Client that overrides connect to use custom websocket.
+ *
+ * This wrapper ensures that the connect() method uses our custom ReconnectingWebSocket
+ * implementation instead of any auto-generated WebSocket handling. This guarantees
+ * consistent behavior across Fern regenerations and allows us to customize
+ * connection setup, authentication, and header handling.
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
     public async connect(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
@@ -718,54 +761,35 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             debug,
             reconnectAttempts,
         } = args;
-        
+
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         if (encoding != null) _queryParams.encoding = encoding;
         if (mipOptOut != null) _queryParams.mip_opt_out = mipOptOut;
         if (model != null) _queryParams.model = model;
         if (sampleRate != null) _queryParams.sample_rate = sampleRate;
 
-        // Get Authorization from authProvider (matching the working version)
-        const authRequest = await this._options.authProvider.getAuthRequest();
-        // Merge headers from options (which includes session ID), auth headers, and request headers
-        const mergedHeaders = mergeHeaders(
-            this._options.headers ?? {},
-            authRequest.headers,
+        // Use shared connection helper
+        const socket = await createWebSocketConnection({
+            options: this._options,
+            urlPath: "/v1/speak",
+            environmentKey: 'production',
+            queryParams: _queryParams,
             headers,
-        );
-        // Resolve any Suppliers in headers to actual values
-        const _headers = await resolveHeaders(mergedHeaders);
-        
-        // Get WebSocket options with proper header handling
-        const wsOptions = getWebSocketOptions(_headers);
-        
-        // Explicitly use the custom ReconnectingWebSocket from ws.ts
-        const socket = new ReconnectingWebSocket({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).production,
-                "/v1/speak",
-            ),
-            protocols: wsOptions.protocols ?? [],
-            queryParameters: _queryParams,
-            headers: wsOptions.headers,
-            options: { 
-                WebSocket: wsOptions.WebSocket,
-                debug: debug ?? false, 
-                maxRetries: reconnectAttempts ?? 30,
-                startClosed: true,
-                connectionTimeout: 10000, // Increase timeout to 10 seconds
-            },
+            debug,
+            reconnectAttempts,
         });
+
         return new WrappedSpeakV1Socket({ socket });
     }
 }
 
 /**
  * Wrapper for Speak V1Socket that handles binary messages correctly.
+ *
+ * This wrapper ensures that both text (JSON) and binary WebSocket messages are
+ * handled properly. The auto-generated socket class may not handle binary data
+ * correctly, so we override the message handling to support both formats.
+ * This is critical for audio and other binary data streaming.
  */
 class WrappedSpeakV1Socket extends SpeakV1Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;

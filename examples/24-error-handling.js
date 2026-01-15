@@ -30,5 +30,4 @@ async function exampleWithErrorHandling() {
   }
 }
 
-// WORKS!
 exampleWithErrorHandling();
