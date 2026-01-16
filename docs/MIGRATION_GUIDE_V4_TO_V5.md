@@ -1,116 +1,88 @@
 # Migration Guide: Deepgram JavaScript SDK v4 to v5
 
-This guide will help you migrate your code from Deepgram JavaScript SDK v4 to v5. The v5 SDK introduces significant changes including a new auto-generated API structure, updated client initialization, and improved TypeScript support.
+This guide will help you migrate your code from Deepgram JavaScript SDK v4 to v5.
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Breaking Changes](#breaking-changes)
+- [Notable Changes](#notable-changes)
+- [Installation](#installation)
 - [Client Initialization](#client-initialization)
-- [API Structure Changes](#api-structure-changes)
-- [Transcription](#transcription)
-- [Live Transcription (WebSocket)](#live-transcription-websocket)
+- [Transcription Methods (Prerecorded)](#transcription-methods-prerecorded)
+- [Transcription Methods (Live)](#transcription-methods-live)
 - [Voice Agent](#voice-agent)
 - [Text-to-Speech](#text-to-speech)
 - [Management API](#management-api)
-- [Authentication](#authentication)
+- [Text Intelligence API](#text-intelligence-api)
+- [Models API](#models-api)
+- [Authentication API](#authentication-api)
+- [Self-Hosted APIs](#self-hosted-apis)
 - [Error Handling](#error-handling)
-- [Configuration](#configuration)
-- [Additional Notes](#additional-notes)
+- [TypeScript Support](#typescript-support)
+- [API Structure Reference](#api-structure-reference)
+- [Migration Checklist](#migration-checklist)
+- [Getting Help](#getting-help)
 
-## Overview
+## Notable Changes
 
-The v5 SDK is built using [Fern](https://buildwithfern.com), which auto-generates the SDK from our API definition. This provides:
+- **Auto-generated SDK**: Built using [Fern](https://buildwithfern.com) for better type safety and API consistency
+- **Versioned API namespaces**: All methods now include version prefixes (`v1`, `v2`)
+- **New client initialization**: `createClient()` → `new DeepgramClient()`
+- **Simplified error handling**: Use try/catch instead of `{ result, error }` destructuring
+- **Improved WebSocket API**: Async `connect()` with explicit `waitForOpen()`
+- **Access token support**: Native support for short-lived access tokens
+- **Session ID tracking**: Automatic session ID generation for request tracking
+- **V2 Live Transcription API**: New streaming transcription endpoint with improved features
 
-- **Better TypeScript support**: Full type safety across all API methods
-- **Consistent API structure**: Versioned endpoints (v1, v2) with clear namespaces
-- **Improved maintainability**: Auto-generated code stays in sync with API changes
-- **Enhanced developer experience**: Better IntelliSense and documentation
+## Installation
 
-## Breaking Changes
-
-### 1. Client Initialization
-
-**v4 (Old):**
-```javascript
-import { createClient } from "@deepgram/sdk";
-
-// Method 1: API key as first parameter
-const deepgram = createClient("YOUR_API_KEY");
-
-// Method 2: Options object
-const deepgram = createClient({ key: "YOUR_API_KEY" });
-
-// Method 3: Environment variable
-const deepgram = createClient();
+```bash
+npm install @deepgram/sdk
+# or
+pnpm add @deepgram/sdk
+# or
+yarn add @deepgram/sdk
 ```
-
-**v5 (New):**
-```javascript
-import { DeepgramClient } from "@deepgram/sdk";
-
-// Method 1: Options object with apiKey property
-const deepgram = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
-
-// Method 2: Environment variable (DEEPGRAM_API_KEY)
-const deepgram = new DeepgramClient();
-```
-
-**Key Changes:**
-- `createClient()` function → `new DeepgramClient()` constructor
-- `key` property → `apiKey` property
-- No longer supports passing API key as first parameter
-
-### 2. API Structure
-
-**v4 (Old):**
-```javascript
-// Direct method calls
-deepgram.listen.transcribeUrl(...);
-deepgram.manage.projects.list();
-deepgram.speak.generate(...);
-```
-
-**v5 (New):**
-```javascript
-// Versioned namespaces
-deepgram.listen.v1.media.transcribeUrl(...);
-deepgram.manage.v1.projects.list();
-deepgram.speak.v1.audio.generate(...);
-```
-
-**Key Changes:**
-- All API methods are now under versioned namespaces (`v1`, `v2`)
-- Additional resource namespaces (e.g., `media`, `audio`, `projects`)
-- More explicit API structure
 
 ## Client Initialization
 
-### Basic Initialization
+The client initialization has changed from a function to a class constructor.
 
-**v4:**
-```javascript
+**v4 (Before):**
+```typescript
 import { createClient } from "@deepgram/sdk";
+
+// API key as first parameter
 const deepgram = createClient("YOUR_API_KEY");
+
+// Or with options object
+const deepgram = createClient({ key: "YOUR_API_KEY" });
+
+// Or using environment variable
+const deepgram = createClient();
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 import { DeepgramClient } from "@deepgram/sdk";
+
+// Options object with apiKey property
 const deepgram = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
+
+// Or using environment variable (DEEPGRAM_API_KEY)
+const deepgram = new DeepgramClient();
 ```
 
-### With Options
+### Configuration Options
 
-**v4:**
-```javascript
+**v4 (Before):**
+```typescript
 const deepgram = createClient("YOUR_API_KEY", {
   global: { fetch: { options: { url: "https://api.beta.deepgram.com" } } }
 });
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const deepgram = new DeepgramClient({
   apiKey: "YOUR_API_KEY",
   baseUrl: "https://api.beta.deepgram.com"
@@ -119,56 +91,26 @@ const deepgram = new DeepgramClient({
 
 ### Access Token Authentication
 
-**v4:**
-```javascript
+**v4 (Before):**
+```typescript
 const deepgram = createClient({ accessToken: "YOUR_ACCESS_TOKEN" });
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const deepgram = new DeepgramClient({
-  apiKey: "YOUR_ACCESS_TOKEN" // Access tokens work the same way
+  accessToken: "YOUR_ACCESS_TOKEN"
 });
 ```
 
-## API Structure Changes
+## Transcription Methods (Prerecorded)
 
-### Namespace Organization
+### URL Transcription
 
-The v5 SDK organizes APIs into clear hierarchies:
-
-```
-DeepgramClient
-├── listen
-│   ├── v1
-│   │   └── media (transcribeUrl, transcribeFile)
-│   └── v2
-│       └── (connect for WebSocket)
-├── speak
-│   └── v1
-│       └── audio (generate)
-├── manage
-│   └── v1
-│       ├── projects
-│       ├── keys
-│       ├── members
-│       └── ...
-├── agent
-│   └── v1
-│       └── (connect for Voice Agent)
-└── auth
-    └── v1
-        └── tokens (grant)
-```
-
-## Transcription
-
-### Prerecorded Transcription from URL
-
-**v4:**
-```javascript
-const { result, error } = await deepgram.listen.transcribeUrl(
-  "https://dpgr.am/spacewalk.wav",
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+  { url: "https://dpgr.am/spacewalk.wav" },
   {
     model: "nova-3",
     language: "en",
@@ -177,8 +119,8 @@ const { result, error } = await deepgram.listen.transcribeUrl(
 );
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const data = await deepgram.listen.v1.media.transcribeUrl({
   url: "https://dpgr.am/spacewalk.wav",
   model: "nova-3",
@@ -187,19 +129,14 @@ const data = await deepgram.listen.v1.media.transcribeUrl({
 });
 ```
 
-**Key Changes:**
-- URL is now part of the options object
-- Method path: `listen.transcribeUrl()` → `listen.v1.media.transcribeUrl()`
-- Returns data directly (no `result`/`error` wrapper)
+### File Transcription
 
-### Prerecorded Transcription from File
+**v4 (Before):**
+```typescript
+import fs from "fs";
 
-**v4:**
-```javascript
-import { createReadStream } from "fs";
-
-const { result, error } = await deepgram.listen.transcribeFile(
-  createReadStream("./audio.wav"),
+const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
+  fs.createReadStream("./audio.wav"),
   {
     model: "nova-3",
     language: "en"
@@ -207,12 +144,12 @@ const { result, error } = await deepgram.listen.transcribeFile(
 );
 ```
 
-**v5:**
-```javascript
-import { createReadStream } from "fs";
+**v5 (After):**
+```typescript
+import fs from "fs";
 
 const data = await deepgram.listen.v1.media.transcribeFile(
-  createReadStream("./audio.wav"),
+  fs.createReadStream("./audio.wav"),
   {
     model: "nova-3",
     language: "en"
@@ -220,16 +157,12 @@ const data = await deepgram.listen.v1.media.transcribeFile(
 );
 ```
 
-**Key Changes:**
-- Method path: `listen.transcribeFile()` → `listen.v1.media.transcribeFile()`
-- Returns data directly
+### Callback Transcription
 
-### Async Transcription with Callback
-
-**v4:**
-```javascript
-const { result, error } = await deepgram.listen.transcribeUrl(
-  "https://dpgr.am/spacewalk.wav",
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+  { url: "https://dpgr.am/spacewalk.wav" },
   {
     callback: "https://your-server.com/callback",
     callback_method: "POST",
@@ -238,8 +171,8 @@ const { result, error } = await deepgram.listen.transcribeUrl(
 );
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const data = await deepgram.listen.v1.media.transcribeUrl({
   url: "https://dpgr.am/spacewalk.wav",
   callback: "https://your-server.com/callback",
@@ -248,36 +181,34 @@ const data = await deepgram.listen.v1.media.transcribeUrl({
 });
 ```
 
-## Live Transcription (WebSocket)
+## Transcription Methods (Live)
 
 ### V1 WebSocket API
 
-**v4:**
-```javascript
-const connection = deepgram.listen.transcription.live({
+**v4 (Before):**
+```typescript
+const connection = deepgram.listen.live({
   model: "nova-3",
   language: "en",
   punctuate: true,
   interim_results: true
 });
 
-connection.on("open", () => {
+connection.on(LiveTranscriptionEvents.Open, () => {
   console.log("Connected");
 });
 
-connection.on("transcript", (data) => {
+connection.on(LiveTranscriptionEvents.Transcript, (data) => {
   console.log(data);
 });
 
-connection.on("error", (error) => {
+connection.on(LiveTranscriptionEvents.Error, (error) => {
   console.error(error);
 });
-
-connection.start();
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const connection = await deepgram.listen.v1.connect({
   model: "nova-3",
   language: "en",
@@ -303,19 +234,16 @@ connection.connect();
 await connection.waitForOpen();
 ```
 
-**Key Changes:**
-- Method: `listen.transcription.live()` → `listen.v1.connect()`
-- `connect()` is now async and returns a promise
-- Event: `transcript` → `message` (with type checking)
-- Must call `connect()` and `waitForOpen()` explicitly
-- String parameters for boolean-like options (`"true"` instead of `true`)
+> **Note:** In v5, WebSocket options that accept boolean values must be passed as strings (`"true"` instead of `true`).
 
-### V2 WebSocket API (New in v5)
+### V2 WebSocket API (New)
 
-**v5:**
-```javascript
+V5 introduces a new V2 live transcription API with improved features.
+
+**v5 (After):**
+```typescript
 const connection = await deepgram.listen.v2.connect({
-  model: "flux-general-en"
+  model: "nova-3"
 });
 
 connection.on("open", () => {
@@ -334,16 +262,16 @@ connection.connect();
 await connection.waitForOpen();
 
 // Send audio data
-connection.socket.send(audioChunk);
+connection.sendMedia(audioChunk);
 
 // Close stream when done
-connection.sendListenV2CloseStream({ type: "CloseStream" });
+connection.sendCloseStream({ type: "CloseStream" });
 ```
 
 ## Voice Agent
 
-**v4:**
-```javascript
+**v4 (Before):**
+```typescript
 const agent = deepgram.agent("/v1/agent/converse");
 
 agent.on("open", () => {
@@ -357,8 +285,8 @@ agent.on("conversation", (data) => {
 agent.start();
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const connection = await deepgram.agent.v1.connect();
 
 connection.on("open", () => {
@@ -368,9 +296,6 @@ connection.on("open", () => {
 connection.on("message", (data) => {
   if (data.type === "ConversationText") {
     console.log("Conversation:", data);
-  } else if (typeof data === "string") {
-    // Audio data
-    console.log("Audio received");
   }
 });
 
@@ -394,51 +319,38 @@ connection.sendAgentV1Settings({
   agent: {
     language: "en",
     listen: {
-      provider: {
-        type: "deepgram",
-        model: "nova-3"
-      }
+      provider: { type: "deepgram", model: "nova-3" }
     },
     think: {
-      provider: {
-        type: "open_ai",
-        model: "gpt-4o-mini"
-      },
+      provider: { type: "open_ai", model: "gpt-4o-mini" },
       prompt: "You are a friendly AI assistant."
     },
     speak: {
-      provider: {
-        type: "deepgram",
-        model: "aura-2-thalia-en"
-      }
+      provider: { type: "deepgram", model: "aura-2-thalia-en" }
     },
     greeting: "Hello! How can I help you today?"
   }
 });
 ```
 
-**Key Changes:**
-- Method: `agent()` → `agent.v1.connect()`
-- `connect()` is async
-- Settings are sent via `sendAgentV1Settings()` method
-- Message handling uses type checking
-
 ## Text-to-Speech
 
 ### Single Request
 
-**v4:**
-```javascript
-const { result, error } = await deepgram.speak.generate({
-  text: "Hello, world!",
-  model: "aura-2-thalia-en",
-  encoding: "linear16",
-  container: "wav"
-});
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.speak.request(
+  { text: "Hello, world!" },
+  {
+    model: "aura-2-thalia-en",
+    encoding: "linear16",
+    container: "wav"
+  }
+);
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const data = await deepgram.speak.v1.audio.generate({
   text: "Hello, world!",
   model: "aura-2-thalia-en",
@@ -447,15 +359,11 @@ const data = await deepgram.speak.v1.audio.generate({
 });
 ```
 
-**Key Changes:**
-- Method path: `speak.generate()` → `speak.v1.audio.generate()`
-- Returns data directly
-
 ### Streaming TTS
 
-**v4:**
-```javascript
-const connection = deepgram.speak.stream({
+**v4 (Before):**
+```typescript
+const connection = deepgram.speak.live({
   model: "aura-2-thalia-en",
   encoding: "linear16",
   container: "wav"
@@ -468,8 +376,8 @@ connection.on("audio", (audio) => {
 connection.start();
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const connection = await deepgram.speak.v1.connect({
   model: "aura-2-thalia-en",
   encoding: "linear16",
@@ -482,7 +390,6 @@ connection.on("open", () => {
 
 connection.on("message", (data) => {
   if (typeof data === "string") {
-    // Audio data as base64 string
     const audioBuffer = Buffer.from(data, "base64");
     // Handle audio
   }
@@ -497,27 +404,27 @@ connection.sendSpeakV1Text({ type: "Text", text: "Hello, world!" });
 
 ## Management API
 
+All management API methods now include a `v1` namespace prefix.
+
 ### Projects
 
-**v4:**
-```javascript
+**v4 (Before):**
+```typescript
 // List projects
-const { result } = await deepgram.manage.projects.list();
+const { result, error } = await deepgram.manage.getProjects();
 
 // Get project
-const { result } = await deepgram.manage.projects.get(projectId);
+const { result, error } = await deepgram.manage.getProject(projectId);
 
 // Update project
-const { result } = await deepgram.manage.projects.update(projectId, {
-  name: "New Name"
-});
+const { result, error } = await deepgram.manage.updateProject(projectId, options);
 
 // Delete project
-await deepgram.manage.projects.delete(projectId);
+const { error } = await deepgram.manage.deleteProject(projectId);
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 // List projects
 const data = await deepgram.manage.v1.projects.list();
 
@@ -525,40 +432,31 @@ const data = await deepgram.manage.v1.projects.list();
 const data = await deepgram.manage.v1.projects.get(projectId);
 
 // Update project
-const data = await deepgram.manage.v1.projects.update(projectId, {
-  name: "New Name"
-});
+const data = await deepgram.manage.v1.projects.update(projectId, options);
 
 // Delete project
 await deepgram.manage.v1.projects.delete(projectId);
 ```
 
-**Key Changes:**
-- Method path: `manage.projects.*` → `manage.v1.projects.*`
-- Returns data directly
-
 ### API Keys
 
-**v4:**
-```javascript
+**v4 (Before):**
+```typescript
 // List keys
-const { result } = await deepgram.manage.keys.list(projectId);
+const { result, error } = await deepgram.manage.getProjectKeys(projectId);
 
 // Get key
-const { result } = await deepgram.manage.keys.get(projectId, keyId);
+const { result, error } = await deepgram.manage.getProjectKey(projectId, keyId);
 
 // Create key
-const { result } = await deepgram.manage.keys.create(projectId, {
-  comment: "My API key",
-  scopes: ["usage:write"]
-});
+const { result, error } = await deepgram.manage.createProjectKey(projectId, options);
 
 // Delete key
-await deepgram.manage.keys.delete(projectId, keyId);
+const { error } = await deepgram.manage.deleteProjectKey(projectId, keyId);
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 // List keys
 const data = await deepgram.manage.v1.keys.list(projectId);
 
@@ -566,56 +464,205 @@ const data = await deepgram.manage.v1.keys.list(projectId);
 const data = await deepgram.manage.v1.keys.get(projectId, keyId);
 
 // Create key
-const data = await deepgram.manage.v1.keys.create(projectId, {
-  comment: "My API key",
-  scopes: ["usage:write"]
-});
+const data = await deepgram.manage.v1.keys.create(projectId, options);
 
 // Delete key
 await deepgram.manage.v1.keys.delete(projectId, keyId);
 ```
 
-### Members, Invites, Usage, Billing
+### Members
 
-All management APIs follow the same pattern:
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.manage.getProjectMembers(projectId);
+const { error } = await deepgram.manage.removeProjectMember(projectId, memberId);
+```
 
-**v4:** `deepgram.manage.members.*`  
-**v5:** `deepgram.manage.v1.members.*`
+**v5 (After):**
+```typescript
+const data = await deepgram.manage.v1.members.list(projectId);
+await deepgram.manage.v1.members.delete(projectId, memberId);
+```
 
-**v4:** `deepgram.manage.invites.*`  
-**v5:** `deepgram.manage.v1.invites.*`
+### Invites
 
-**v4:** `deepgram.manage.usage.*`  
-**v5:** `deepgram.manage.v1.usage.*`
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.manage.getProjectInvites(projectId);
+const { result, error } = await deepgram.manage.sendProjectInvite(projectId, options);
+const { error } = await deepgram.manage.deleteProjectInvite(projectId, email);
+```
 
-**v4:** `deepgram.manage.billing.*`  
-**v5:** `deepgram.manage.v1.billing.*`
+**v5 (After):**
+```typescript
+const data = await deepgram.manage.v1.invites.list(projectId);
+const data = await deepgram.manage.v1.invites.create(projectId, options);
+await deepgram.manage.v1.invites.delete(projectId, email);
+```
 
-## Authentication
+### Usage
+
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.manage.getProjectUsageRequests(projectId, options);
+const { result, error } = await deepgram.manage.getProjectUsageSummary(projectId, options);
+const { result, error } = await deepgram.manage.getProjectUsageFields(projectId, options);
+```
+
+**v5 (After):**
+```typescript
+const data = await deepgram.manage.v1.usage.listRequests(projectId, options);
+const data = await deepgram.manage.v1.usage.getSummary(projectId, options);
+const data = await deepgram.manage.v1.usage.getFields(projectId, options);
+```
+
+### Billing
+
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.manage.getProjectBalances(projectId);
+const { result, error } = await deepgram.manage.getProjectBalance(projectId, balanceId);
+```
+
+**v5 (After):**
+```typescript
+const data = await deepgram.manage.v1.billing.listBalances(projectId);
+const data = await deepgram.manage.v1.billing.getBalance(projectId, balanceId);
+```
+
+## Text Intelligence API
+
+The Text Intelligence API (`read`) analyzes text for topics, intents, sentiment, and more.
+
+**v4 (Before):**
+```typescript
+// Analyze text
+const { result, error } = await deepgram.read.analyzeText(
+  { text: "Your text content here" },
+  {
+    language: "en",
+    topics: true,
+    intents: true,
+    sentiment: true,
+    summarize: true
+  }
+);
+
+// Analyze URL
+const { result, error } = await deepgram.read.analyzeUrl(
+  { url: "https://example.com/article" },
+  {
+    language: "en",
+    topics: true,
+    sentiment: true
+  }
+);
+
+// With callback
+const { result, error } = await deepgram.read.analyzeTextCallback(
+  { text: "Your text content here" },
+  "https://your-server.com/callback",
+  { topics: true }
+);
+```
+
+**v5 (After):**
+```typescript
+// Analyze text
+const data = await deepgram.read.v1.text.analyze({
+  text: "Your text content here",
+  language: "en",
+  topics: true,
+  intents: true,
+  sentiment: true,
+  summarize: true
+});
+
+// Analyze URL
+const data = await deepgram.read.v1.text.analyze({
+  url: "https://example.com/article",
+  language: "en",
+  topics: true,
+  sentiment: true
+});
+
+// With callback
+const data = await deepgram.read.v1.text.analyze({
+  text: "Your text content here",
+  callback: "https://your-server.com/callback",
+  topics: true
+});
+```
+
+> **Note:** In v5, both text and URL analysis use the same `analyze()` method. The SDK determines the analysis type based on whether you provide a `text` or `url` property.
+
+## Models API
+
+The Models API has moved from a top-level namespace to under `manage`.
+
+**v4 (Before):**
+```typescript
+// List all models
+const { result, error } = await deepgram.models.getAll();
+
+// Get a specific model
+const { result, error } = await deepgram.models.getModel(modelId);
+```
+
+**v5 (After):**
+```typescript
+// List all models
+const data = await deepgram.manage.v1.models.list();
+
+// List models for a project
+const data = await deepgram.manage.v1.projects.models.list(projectId);
+
+// Get a specific model for a project
+const data = await deepgram.manage.v1.projects.models.get(projectId, modelId);
+```
+
+## Authentication API
 
 ### Access Token Generation
 
-**v4:**
-```javascript
-const { result } = await deepgram.auth.grantToken();
-// Returns: { access_token: string, expires_in: 30 }
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.auth.grantToken();
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 const data = await deepgram.auth.v1.tokens.grant();
-// Returns: { access_token: string, expires_in: 30 }
 ```
 
-**Key Changes:**
-- Method path: `auth.grantToken()` → `auth.v1.tokens.grant()`
-- Returns data directly
+## Self-Hosted APIs
+
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.onprem.listCredentials(projectId);
+const { result, error } = await deepgram.onprem.getCredentials(projectId, credentialId);
+const { result, error } = await deepgram.onprem.createCredentials(projectId, options);
+const { error } = await deepgram.onprem.deleteCredentials(projectId, credentialId);
+```
+
+**v5 (After):**
+```typescript
+const data = await deepgram.selfHosted.v1.distributionCredentials.list(projectId);
+const data = await deepgram.selfHosted.v1.distributionCredentials.get(projectId, credentialId);
+const data = await deepgram.selfHosted.v1.distributionCredentials.create(projectId, options);
+await deepgram.selfHosted.v1.distributionCredentials.delete(projectId, credentialId);
+```
 
 ## Error Handling
 
-**v4:**
-```javascript
-const { result, error } = await deepgram.listen.transcribeUrl(...);
+V5 uses standard try/catch error handling instead of the `{ result, error }` pattern.
+
+**v4 (Before):**
+```typescript
+const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
+  { url: "https://dpgr.am/spacewalk.wav" },
+  { model: "nova-3" }
+);
 
 if (error) {
   console.error("Error:", error);
@@ -625,69 +672,23 @@ if (error) {
 console.log("Result:", result);
 ```
 
-**v5:**
-```javascript
+**v5 (After):**
+```typescript
 try {
-  const data = await deepgram.listen.v1.media.transcribeUrl(...);
+  const data = await deepgram.listen.v1.media.transcribeUrl({
+    url: "https://dpgr.am/spacewalk.wav",
+    model: "nova-3"
+  });
   console.log("Result:", data);
 } catch (error) {
   console.error("Error:", error);
-  // Error objects have: statusCode, body, rawResponse
+  // Error objects include: statusCode, body, rawResponse
 }
 ```
 
-**Key Changes:**
-- No `result`/`error` wrapper - use try/catch
-- Errors are thrown as exceptions
-- Error objects include `statusCode`, `body`, and `rawResponse` properties
+## TypeScript Support
 
-## Configuration
-
-### Scoped Configuration
-
-**v4:**
-```javascript
-const deepgram = createClient("YOUR_API_KEY", {
-  global: {
-    fetch: { options: { url: "https://api.beta.deepgram.com" } }
-  },
-  listen: {
-    fetch: { options: { url: "http://localhost:8080" } }
-  }
-});
-```
-
-**v5:**
-```javascript
-const deepgram = new DeepgramClient({
-  apiKey: "YOUR_API_KEY",
-  baseUrl: "https://api.beta.deepgram.com", // Global base URL
-  // For namespace-specific URLs, use environment or baseUrl per request
-});
-```
-
-**Key Changes:**
-- Simplified configuration structure
-- `baseUrl` replaces scoped URL configuration
-- Environment-specific URLs can be set via `environment` option
-
-### Environment Configuration
-
-**v5:**
-```javascript
-import { DeepgramClient, DeepgramEnvironment } from "@deepgram/sdk";
-
-const deepgram = new DeepgramClient({
-  apiKey: "YOUR_API_KEY",
-  environment: DeepgramEnvironment.Production // or .Staging, .Beta
-});
-```
-
-## Additional Notes
-
-### TypeScript Support
-
-v5 provides full TypeScript support with auto-generated types:
+V5 provides enhanced TypeScript support with auto-generated types.
 
 ```typescript
 import { DeepgramClient } from "@deepgram/sdk";
@@ -695,42 +696,70 @@ import type { Deepgram } from "@deepgram/sdk";
 
 const deepgram = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
 
-// All types are available
-const data: Deepgram.listen.v1.MediaTranscribeResponse = 
-  await deepgram.listen.v1.media.transcribeUrl({...});
+// All response types are available
+const data: Deepgram.listen.v1.MediaTranscribeResponse =
+  await deepgram.listen.v1.media.transcribeUrl({
+    url: "https://dpgr.am/spacewalk.wav",
+    model: "nova-3"
+  });
 ```
 
-### Binary Data Handling
+## API Structure Reference
 
-v5 improves binary data handling in WebSocket connections. Binary messages are automatically detected and passed through correctly.
+The v5 SDK organizes APIs into versioned namespaces:
 
-### WebSocket Reconnection
-
-v5 includes improved WebSocket reconnection logic with configurable retry attempts:
-
-```javascript
-const connection = await deepgram.listen.v1.connect({
-  model: "nova-3",
-  reconnectAttempts: 30 // Default is 30
-});
 ```
-
-### Response Types
-
-All API methods return typed responses. Check the TypeScript definitions or `reference.md` for full response types.
+DeepgramClient
+├── listen
+│   ├── v1
+│   │   └── media (transcribeUrl, transcribeFile)
+│   └── v2
+│       └── (connect for WebSocket)
+├── speak
+│   └── v1
+│       └── audio (generate)
+│       └── (connect for streaming)
+├── read
+│   └── v1
+│       └── text (analyze)
+├── manage
+│   └── v1
+│       ├── projects
+│       │   └── models (list, get)
+│       ├── models (list)
+│       ├── keys
+│       ├── members
+│       ├── invites
+│       ├── usage
+│       └── billing
+├── agent
+│   └── v1
+│       └── (connect for Voice Agent)
+├── auth
+│   └── v1
+│       └── tokens (grant)
+└── selfHosted
+    └── v1
+        └── distributionCredentials
+```
 
 ## Migration Checklist
+
+Use this checklist to ensure you've updated all parts of your application:
 
 - [ ] Update client initialization from `createClient()` to `new DeepgramClient()`
 - [ ] Change `key` property to `apiKey` in options
 - [ ] Update all API method calls to include version namespace (`v1`, `v2`)
-- [ ] Update transcription methods: `listen.*` → `listen.v1.media.*`
+- [ ] Update transcription methods: `listen.prerecorded.*` → `listen.v1.media.*`
 - [ ] Update WebSocket connections to use async `connect()` and `waitForOpen()`
-- [ ] Update event handlers: `transcript` → `message` with type checking
+- [ ] Update event handlers from named events to `message` with type checking
 - [ ] Update error handling from `{ result, error }` to try/catch
 - [ ] Update management API calls: `manage.*` → `manage.v1.*`
+- [ ] Update models API: `models.*` → `manage.v1.models.*` or `manage.v1.projects.models.*`
+- [ ] Update text intelligence: `read.analyzeText()` / `read.analyzeUrl()` → `read.v1.text.analyze()`
 - [ ] Update authentication: `auth.grantToken()` → `auth.v1.tokens.grant()`
 - [ ] Update text-to-speech: `speak.*` → `speak.v1.audio.*`
+- [ ] Update self-hosted: `onprem.*` → `selfHosted.v1.distributionCredentials.*`
 - [ ] Test all WebSocket connections and event handlers
 - [ ] Review and update configuration options
 
@@ -739,19 +768,6 @@ All API methods return typed responses. Check the TypeScript definitions or `ref
 If you encounter issues during migration:
 
 1. Check the [API Reference](https://developers.deepgram.com/reference/deepgram-api-overview)
-2. Review the examples in the `examples/` directory
-3. Check `reference.md` for detailed API documentation
+2. Review the examples in the [SDK repository](https://github.com/deepgram/deepgram-js-sdk/tree/main/examples)
+3. Check the SDK's `reference.md` for detailed API documentation
 4. Open an issue on [GitHub](https://github.com/deepgram/deepgram-js-sdk/issues)
-
-## Summary
-
-The v5 SDK provides a more structured, type-safe API that better aligns with Deepgram's API architecture. While there are breaking changes, the migration is straightforward:
-
-1. **Client**: `createClient()` → `new DeepgramClient()`
-2. **Options**: `key` → `apiKey`
-3. **Methods**: Add version namespaces (`v1`, `v2`)
-4. **Errors**: Use try/catch instead of `{ result, error }`
-5. **WebSockets**: Use async `connect()` and explicit event handling
-
-The new structure provides better IntelliSense, type safety, and maintainability for your applications.
-
