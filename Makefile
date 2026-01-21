@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 test lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 test test-esm lint build browser browser-serve
 
 # Default target
 help:
@@ -8,6 +8,7 @@ help:
 	@printf "  \033[1;32mmake lint\033[0m              - Run Biome linter and formatter to check code quality\n"
 	@printf "  \033[1;32mmake build\033[0m             - Compile TypeScript to both CommonJS and ESM formats\n"
 	@printf "  \033[1;32mmake test\033[0m              - Fix wire test imports and run the test suite\n"
+	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
 	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-26) sequentially\n"
@@ -243,12 +244,17 @@ build:
 	pnpm exec tsc --project ./tsconfig.cjs.json
 	pnpm exec tsc --project ./tsconfig.esm.json
 	node scripts/rename-to-esm-files.js dist/esm
+	node scripts/validate-esm-build.mjs
 
 test:
 	node scripts/fix-wire-test-imports.js
 	pnpm exec vitest --project unit --run
 	pnpm exec vitest --project wire --run
 	node scripts/revert-wire-test-imports.js
+
+test-esm:
+	@printf "\033[1;36mRunning ESM build tests...\033[0m\n"
+	pnpm exec vitest run tests/esm-build.test.ts
 
 browser:
 	pnpm install --save-exact --save-dev playwright

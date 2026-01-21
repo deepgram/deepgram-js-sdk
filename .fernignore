@@ -9,10 +9,12 @@ src/index.ts
 scripts/fix-wire-test-imports.js
 scripts/proxy-server.js
 scripts/revert-wire-test-imports.js
+scripts/validate-esm-build.mjs
 webpack.config.js
 
 # Tests
 tests/browser
+tests/esm-build.test.ts
 vitest.config.mts
 
 # Other Stuff
