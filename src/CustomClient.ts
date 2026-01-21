@@ -1,4 +1,4 @@
-import { DeepgramClient } from "./Client";
+import { DeepgramClient } from "./Client.js";
 import { ReconnectingWebSocket } from "./core/websocket/ws.js";
 import type { AgentClient } from "./api/resources/agent/client/Client.js";
 import type { ListenClient } from "./api/resources/listen/client/Client.js";
