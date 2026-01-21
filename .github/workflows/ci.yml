@@ -23,6 +23,13 @@ jobs:
       - name: Compile
         run: make build
 
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
   examples:
     runs-on: ubuntu-latest
     needs: compile
@@ -32,15 +39,18 @@ jobs:
 
       - name: Set up node
         uses: actions/setup-node@v6
-                
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: make build
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: dist
+          path: dist/
 
       - name: Run examples
         run: make examples
@@ -50,19 +60,25 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-
+    needs: compile
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
 
       - name: Set up node
         uses: actions/setup-node@v6
-                
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: dist
+          path: dist/
 
       - name: Test
         run: make test
@@ -79,15 +95,18 @@ jobs:
 
       - name: Set up node
         uses: actions/setup-node@v6
-                
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: make build
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: dist
+          path: dist/
 
       - name: Run browser tests
         run: make browser
