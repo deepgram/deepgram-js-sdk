@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { execSync } from "child_process";
+import { execSync, execFileSync } from "child_process";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 
@@ -54,7 +54,7 @@ console.log('ESM import successful');
 
         try {
             // Try to run the module with Node.js
-            execSync(`node ${testModulePath}`, { stdio: "pipe" });
+            execFileSync("node", [testModulePath], { stdio: "pipe" });
 
             // If we get here, the import worked
             expect(true).toBe(true);
