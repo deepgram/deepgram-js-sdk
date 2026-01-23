@@ -7,7 +7,11 @@ import { mockServerPool } from "../../../../../mock-server/MockServerPool";
 describe("InvitesClient", () => {
     test("list (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { invites: [{ email: "email", scope: "scope" }] };
         server
@@ -31,7 +35,11 @@ describe("InvitesClient", () => {
 
     test("list (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server
@@ -49,7 +57,11 @@ describe("InvitesClient", () => {
 
     test("create (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { email: "email", scope: "scope" };
         const rawResponseBody = { message: "message" };
         server
@@ -72,7 +84,11 @@ describe("InvitesClient", () => {
 
     test("create (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { email: "email", scope: "scope" };
         const rawResponseBody = { key: "value" };
         server
@@ -94,7 +110,11 @@ describe("InvitesClient", () => {
 
     test("delete (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { message: "message" };
         server
@@ -116,7 +136,11 @@ describe("InvitesClient", () => {
 
     test("delete (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server

@@ -170,8 +170,10 @@ export class MediaClient {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)) ??
-                    environments.DeepgramEnvironment.Production,
+                    (
+                        (await core.Supplier.get(this._options.environment)) ??
+                        environments.DeepgramEnvironment.Production
+                    ).base,
                 "v1/listen",
             ),
             method: "POST",
@@ -284,8 +286,10 @@ export class MediaClient {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)) ??
-                    environments.DeepgramEnvironment.Production,
+                    (
+                        (await core.Supplier.get(this._options.environment)) ??
+                        environments.DeepgramEnvironment.Production
+                    ).base,
                 "v1/listen",
             ),
             method: "POST",

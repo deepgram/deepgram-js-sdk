@@ -7,7 +7,11 @@ import { mockServerPool } from "../../../mock-server/MockServerPool";
 describe("TextClient", () => {
     test("analyze (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = {
             metadata: {
@@ -88,7 +92,11 @@ describe("TextClient", () => {
 
     test("analyze (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = { key: "value" };
         server

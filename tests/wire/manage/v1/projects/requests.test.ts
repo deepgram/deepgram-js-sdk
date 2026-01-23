@@ -7,7 +7,11 @@ import { mockServerPool } from "../../../../mock-server/MockServerPool";
 describe("RequestsClient", () => {
     test("list (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = {
             page: 1.1,
@@ -69,7 +73,11 @@ describe("RequestsClient", () => {
 
     test("list (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server
@@ -87,7 +95,11 @@ describe("RequestsClient", () => {
 
     test("get (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = {
             request: {
@@ -133,7 +145,11 @@ describe("RequestsClient", () => {
 
     test("get (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server

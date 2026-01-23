@@ -7,7 +7,11 @@ import { mockServerPool } from "../../../../mock-server/MockServerPool";
 describe("KeysClient", () => {
     test("list (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = {
             api_keys: [
@@ -53,7 +57,11 @@ describe("KeysClient", () => {
 
     test("list (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server
@@ -71,7 +79,11 @@ describe("KeysClient", () => {
 
     test("create (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { key: "value" };
         const rawResponseBody = {
             api_key_id: "api_key_id",
@@ -105,7 +117,11 @@ describe("KeysClient", () => {
 
     test("create (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { key: "value" };
         const rawResponseBody = { key: "value" };
         server
@@ -126,7 +142,11 @@ describe("KeysClient", () => {
 
     test("get (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = {
             item: {
@@ -180,7 +200,11 @@ describe("KeysClient", () => {
 
     test("get (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server
@@ -198,7 +222,11 @@ describe("KeysClient", () => {
 
     test("delete (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { message: "message" };
         server
@@ -220,7 +248,11 @@ describe("KeysClient", () => {
 
     test("delete (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server

@@ -7,7 +7,11 @@ import { mockServerPool } from "../../../../../mock-server/MockServerPool";
 describe("ScopesClient", () => {
     test("list (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { scopes: ["scopes"] };
         server
@@ -29,7 +33,11 @@ describe("ScopesClient", () => {
 
     test("list (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
 
         const rawResponseBody = { key: "value" };
         server
@@ -47,7 +55,11 @@ describe("ScopesClient", () => {
 
     test("update (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { scope: "admin" };
         const rawResponseBody = { message: "message" };
         server
@@ -73,7 +85,11 @@ describe("ScopesClient", () => {
 
     test("update (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+        });
         const rawRequestBody = { scope: "scope" };
         const rawResponseBody = { key: "value" };
         server

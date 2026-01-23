@@ -3,6 +3,7 @@
 import type { BaseClientOptions } from "../../../../BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "../../../../BaseClient.js";
 import { V1Client } from "../resources/v1/client/Client.js";
+import { V2Client } from "../resources/v2/client/Client.js";
 
 export declare namespace ListenClient {
     export type Options = BaseClientOptions;
@@ -11,6 +12,7 @@ export declare namespace ListenClient {
 export class ListenClient {
     protected readonly _options: NormalizedClientOptionsWithAuth<ListenClient.Options>;
     protected _v1: V1Client | undefined;
+    protected _v2: V2Client | undefined;
 
     constructor(options: ListenClient.Options = {}) {
         this._options = normalizeClientOptionsWithAuth(options);
@@ -18,5 +20,9 @@ export class ListenClient {
 
     public get v1(): V1Client {
         return (this._v1 ??= new V1Client(this._options));
+    }
+
+    public get v2(): V2Client {
+        return (this._v2 ??= new V2Client(this._options));
     }
 }

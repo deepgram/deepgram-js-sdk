@@ -67,8 +67,10 @@ export class FieldsClient {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)) ??
-                    environments.DeepgramEnvironment.Production,
+                    (
+                        (await core.Supplier.get(this._options.environment)) ??
+                        environments.DeepgramEnvironment.Production
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/usage/fields`,
             ),
             method: "GET",

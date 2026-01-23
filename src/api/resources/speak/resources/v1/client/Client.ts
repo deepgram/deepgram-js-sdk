@@ -2,10 +2,28 @@
 
 import type { BaseClientOptions } from "../../../../../../BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "../../../../../../BaseClient.js";
+import { mergeHeaders, mergeOnlyDefinedHeaders } from "../../../../../../core/headers.js";
+import * as core from "../../../../../../core/index.js";
+import * as environments from "../../../../../../environments.js";
 import { AudioClient } from "../resources/audio/client/Client.js";
+import { V1Socket } from "./Socket.js";
 
 export declare namespace V1Client {
     export type Options = BaseClientOptions;
+
+    export interface ConnectArgs {
+        encoding?: string;
+        mip_opt_out?: string;
+        model?: string;
+        sample_rate?: string;
+        Authorization: string;
+        /** Arbitrary headers to send with the websocket connect request. */
+        headers?: Record<string, string>;
+        /** Enable debug mode on the websocket. Defaults to false. */
+        debug?: boolean;
+        /** Number of reconnect attempts. Defaults to 30. */
+        reconnectAttempts?: number;
+    }
 }
 
 export class V1Client {
@@ -18,5 +36,42 @@ export class V1Client {
 
     public get audio(): AudioClient {
         return (this._audio ??= new AudioClient(this._options));
+    }
+
+    public async connect(args: V1Client.ConnectArgs): Promise<V1Socket> {
+        const {
+            encoding,
+            mip_opt_out: mipOptOut,
+            model,
+            sample_rate: sampleRate,
+            headers,
+            debug,
+            reconnectAttempts,
+        } = args;
+        const _queryParams: Record<string, unknown> = {
+            encoding,
+            mip_opt_out: mipOptOut,
+            model,
+            sample_rate: sampleRate,
+        };
+        const _headers: Record<string, unknown> = mergeHeaders(
+            mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
+            headers,
+        );
+        const socket = new core.ReconnectingWebSocket({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (
+                        (await core.Supplier.get(this._options.environment)) ??
+                        environments.DeepgramEnvironment.Production
+                    ).production,
+                "/v1/speak",
+            ),
+            protocols: [],
+            queryParameters: _queryParams,
+            headers: _headers,
+            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
+        });
+        return new V1Socket({ socket });
     }
 }
