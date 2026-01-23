@@ -7,5 +7,4 @@ export const RequestsListRequestDeployment = {
     SelfHosted: "self-hosted",
 } as const;
 export type RequestsListRequestDeployment =
-    | (typeof RequestsListRequestDeployment)[keyof typeof RequestsListRequestDeployment]
-    | string;
+    (typeof RequestsListRequestDeployment)[keyof typeof RequestsListRequestDeployment];

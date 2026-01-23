@@ -6,5 +6,4 @@ export const AudioGenerateRequestContainer = {
     Ogg: "ogg",
 } as const;
 export type AudioGenerateRequestContainer =
-    | (typeof AudioGenerateRequestContainer)[keyof typeof AudioGenerateRequestContainer]
-    | string;
+    (typeof AudioGenerateRequestContainer)[keyof typeof AudioGenerateRequestContainer];

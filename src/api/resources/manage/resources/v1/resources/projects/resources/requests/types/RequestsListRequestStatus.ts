@@ -4,6 +4,4 @@ export const RequestsListRequestStatus = {
     Succeeded: "succeeded",
     Failed: "failed",
 } as const;
-export type RequestsListRequestStatus =
-    | (typeof RequestsListRequestStatus)[keyof typeof RequestsListRequestStatus]
-    | string;
+export type RequestsListRequestStatus = (typeof RequestsListRequestStatus)[keyof typeof RequestsListRequestStatus];

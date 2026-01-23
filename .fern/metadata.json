@@ -1,7 +1,7 @@
 {
     "cliVersion": "3.50.0",
     "generatorName": "fernapi/fern-typescript-node-sdk",
-    "generatorVersion": "3.44.1",
+    "generatorVersion": "3.43.7",
     "generatorConfig": {
         "enableInlineTypes": true,
         "namespaceExport": "Deepgram",
@@ -9,10 +9,9 @@
         "skipResponseValidation": true,
         "includeApiReference": true,
         "shouldGenerateWebsocketClients": true,
-        "enableForwardCompatibleEnums": true,
         "packageJson": {
             "name": "@deepgram/sdk"
         }
     },
-    "sdkVersion": "0.0.279"
+    "sdkVersion": "0.0.280"
 }

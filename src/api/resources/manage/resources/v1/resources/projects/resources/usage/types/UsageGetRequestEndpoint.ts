@@ -6,4 +6,4 @@ export const UsageGetRequestEndpoint = {
     Speak: "speak",
     Agent: "agent",
 } as const;
-export type UsageGetRequestEndpoint = (typeof UsageGetRequestEndpoint)[keyof typeof UsageGetRequestEndpoint] | string;
+export type UsageGetRequestEndpoint = (typeof UsageGetRequestEndpoint)[keyof typeof UsageGetRequestEndpoint];

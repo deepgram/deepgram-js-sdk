@@ -4,5 +4,4 @@ export const MediaTranscribeRequestSummarize = {
     V2: "v2",
 } as const;
 export type MediaTranscribeRequestSummarize =
-    | (typeof MediaTranscribeRequestSummarize)[keyof typeof MediaTranscribeRequestSummarize]
-    | string;
+    (typeof MediaTranscribeRequestSummarize)[keyof typeof MediaTranscribeRequestSummarize];

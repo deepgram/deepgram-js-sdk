@@ -20,22 +20,21 @@ export namespace AgentThinkModelsV1Response {
                       | "gpt-4.1-mini"
                       | "gpt-4.1-nano"
                       | "gpt-4o"
-                      | "gpt-4o-mini"
-                      | string;
+                      | "gpt-4o-mini";
                   name: string;
                   provider: "open_ai";
               }
             /**
              * Anthropic models */
             | {
-                  id: "claude-3-5-haiku-latest" | "claude-sonnet-4-20250514" | string;
+                  id: "claude-3-5-haiku-latest" | "claude-sonnet-4-20250514";
                   name: string;
                   provider: "anthropic";
               }
             /**
              * Google models */
             | {
-                  id: "gemini-2.5-flash" | "gemini-2.0-flash" | "gemini-2.0-flash-lite" | string;
+                  id: "gemini-2.5-flash" | "gemini-2.0-flash" | "gemini-2.0-flash-lite";
                   name: string;
                   provider: "google";
               }

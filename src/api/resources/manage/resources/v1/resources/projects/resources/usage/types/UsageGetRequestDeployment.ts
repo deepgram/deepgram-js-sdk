@@ -6,6 +6,4 @@ export const UsageGetRequestDeployment = {
     Beta: "beta",
     SelfHosted: "self-hosted",
 } as const;
-export type UsageGetRequestDeployment =
-    | (typeof UsageGetRequestDeployment)[keyof typeof UsageGetRequestDeployment]
-    | string;
+export type UsageGetRequestDeployment = (typeof UsageGetRequestDeployment)[keyof typeof UsageGetRequestDeployment];

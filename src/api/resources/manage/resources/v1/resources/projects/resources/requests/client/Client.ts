@@ -74,8 +74,8 @@ export class RequestsClient {
             status,
         } = request;
         const _queryParams: Record<string, unknown> = {
-            start: start != null ? start : undefined,
-            end: end != null ? end : undefined,
+            start,
+            end,
             limit,
             page,
             accessor,

@@ -4,4 +4,4 @@ export const KeysListRequestStatus = {
     Active: "active",
     Expired: "expired",
 } as const;
-export type KeysListRequestStatus = (typeof KeysListRequestStatus)[keyof typeof KeysListRequestStatus] | string;
+export type KeysListRequestStatus = (typeof KeysListRequestStatus)[keyof typeof KeysListRequestStatus];

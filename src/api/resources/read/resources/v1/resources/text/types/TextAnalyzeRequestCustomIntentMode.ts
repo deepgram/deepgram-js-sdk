@@ -5,5 +5,4 @@ export const TextAnalyzeRequestCustomIntentMode = {
     Strict: "strict",
 } as const;
 export type TextAnalyzeRequestCustomIntentMode =
-    | (typeof TextAnalyzeRequestCustomIntentMode)[keyof typeof TextAnalyzeRequestCustomIntentMode]
-    | string;
+    (typeof TextAnalyzeRequestCustomIntentMode)[keyof typeof TextAnalyzeRequestCustomIntentMode];

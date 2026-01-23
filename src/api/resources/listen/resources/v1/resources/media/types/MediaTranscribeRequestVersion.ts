@@ -4,5 +4,4 @@ export const MediaTranscribeRequestVersion = {
     Latest: "latest",
 } as const;
 export type MediaTranscribeRequestVersion =
-    | (typeof MediaTranscribeRequestVersion)[keyof typeof MediaTranscribeRequestVersion]
-    | string;
+    (typeof MediaTranscribeRequestVersion)[keyof typeof MediaTranscribeRequestVersion];

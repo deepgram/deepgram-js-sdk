@@ -7,5 +7,4 @@ export const BreakdownListRequestGroupingItem = {
     Tags: "tags",
 } as const;
 export type BreakdownListRequestGroupingItem =
-    | (typeof BreakdownListRequestGroupingItem)[keyof typeof BreakdownListRequestGroupingItem]
-    | string;
+    (typeof BreakdownListRequestGroupingItem)[keyof typeof BreakdownListRequestGroupingItem];

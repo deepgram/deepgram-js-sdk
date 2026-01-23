@@ -7,5 +7,4 @@ export const BreakdownGetRequestEndpoint = {
     Agent: "agent",
 } as const;
 export type BreakdownGetRequestEndpoint =
-    | (typeof BreakdownGetRequestEndpoint)[keyof typeof BreakdownGetRequestEndpoint]
-    | string;
+    (typeof BreakdownGetRequestEndpoint)[keyof typeof BreakdownGetRequestEndpoint];

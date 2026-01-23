@@ -11,5 +11,4 @@ export const MediaTranscribeRequestEncoding = {
     G729: "g729",
 } as const;
 export type MediaTranscribeRequestEncoding =
-    | (typeof MediaTranscribeRequestEncoding)[keyof typeof MediaTranscribeRequestEncoding]
-    | string;
+    (typeof MediaTranscribeRequestEncoding)[keyof typeof MediaTranscribeRequestEncoding];

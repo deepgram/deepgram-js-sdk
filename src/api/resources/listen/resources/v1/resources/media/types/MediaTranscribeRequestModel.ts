@@ -32,5 +32,4 @@ export const MediaTranscribeRequestModel = {
     Video: "video",
 } as const;
 export type MediaTranscribeRequestModel =
-    | (typeof MediaTranscribeRequestModel)[keyof typeof MediaTranscribeRequestModel]
-    | string;
+    (typeof MediaTranscribeRequestModel)[keyof typeof MediaTranscribeRequestModel];

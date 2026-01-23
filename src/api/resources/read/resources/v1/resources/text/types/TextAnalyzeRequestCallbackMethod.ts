@@ -5,5 +5,4 @@ export const TextAnalyzeRequestCallbackMethod = {
     Put: "PUT",
 } as const;
 export type TextAnalyzeRequestCallbackMethod =
-    | (typeof TextAnalyzeRequestCallbackMethod)[keyof typeof TextAnalyzeRequestCallbackMethod]
-    | string;
+    (typeof TextAnalyzeRequestCallbackMethod)[keyof typeof TextAnalyzeRequestCallbackMethod];

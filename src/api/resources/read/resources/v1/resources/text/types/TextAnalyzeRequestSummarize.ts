@@ -4,5 +4,4 @@ export const TextAnalyzeRequestSummarize = {
     V2: "v2",
 } as const;
 export type TextAnalyzeRequestSummarize =
-    | (typeof TextAnalyzeRequestSummarize)[keyof typeof TextAnalyzeRequestSummarize]
-    | string;
+    (typeof TextAnalyzeRequestSummarize)[keyof typeof TextAnalyzeRequestSummarize];

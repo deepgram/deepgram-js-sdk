@@ -6,6 +6,4 @@ export const BreakdownGetRequestMethod = {
     Async: "async",
     Streaming: "streaming",
 } as const;
-export type BreakdownGetRequestMethod =
-    | (typeof BreakdownGetRequestMethod)[keyof typeof BreakdownGetRequestMethod]
-    | string;
+export type BreakdownGetRequestMethod = (typeof BreakdownGetRequestMethod)[keyof typeof BreakdownGetRequestMethod];
