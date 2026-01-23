@@ -5,4 +5,5 @@ export const TextAnalyzeRequestCustomTopicMode = {
     Strict: "strict",
 } as const;
 export type TextAnalyzeRequestCustomTopicMode =
-    (typeof TextAnalyzeRequestCustomTopicMode)[keyof typeof TextAnalyzeRequestCustomTopicMode];
+    | (typeof TextAnalyzeRequestCustomTopicMode)[keyof typeof TextAnalyzeRequestCustomTopicMode]
+    | string;

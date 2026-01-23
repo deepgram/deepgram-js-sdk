@@ -7,4 +7,5 @@ export const RequestsListRequestEndpoint = {
     Agent: "agent",
 } as const;
 export type RequestsListRequestEndpoint =
-    (typeof RequestsListRequestEndpoint)[keyof typeof RequestsListRequestEndpoint];
+    | (typeof RequestsListRequestEndpoint)[keyof typeof RequestsListRequestEndpoint]
+    | string;

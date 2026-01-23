@@ -6,4 +6,4 @@ export const UsageGetRequestMethod = {
     Async: "async",
     Streaming: "streaming",
 } as const;
-export type UsageGetRequestMethod = (typeof UsageGetRequestMethod)[keyof typeof UsageGetRequestMethod];
+export type UsageGetRequestMethod = (typeof UsageGetRequestMethod)[keyof typeof UsageGetRequestMethod] | string;

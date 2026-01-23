@@ -7,4 +7,5 @@ export const BreakdownGetRequestDeployment = {
     SelfHosted: "self-hosted",
 } as const;
 export type BreakdownGetRequestDeployment =
-    (typeof BreakdownGetRequestDeployment)[keyof typeof BreakdownGetRequestDeployment];
+    | (typeof BreakdownGetRequestDeployment)[keyof typeof BreakdownGetRequestDeployment]
+    | string;

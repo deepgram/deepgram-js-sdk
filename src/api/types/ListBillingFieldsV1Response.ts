@@ -21,6 +21,6 @@ export namespace ListBillingFieldsV1Response {
             SelfHosted: "self-hosted",
             Dedicated: "dedicated",
         } as const;
-        export type Item = (typeof Item)[keyof typeof Item];
+        export type Item = (typeof Item)[keyof typeof Item] | string;
     }
 }

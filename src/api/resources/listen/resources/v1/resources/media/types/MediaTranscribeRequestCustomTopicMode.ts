@@ -5,4 +5,5 @@ export const MediaTranscribeRequestCustomTopicMode = {
     Strict: "strict",
 } as const;
 export type MediaTranscribeRequestCustomTopicMode =
-    (typeof MediaTranscribeRequestCustomTopicMode)[keyof typeof MediaTranscribeRequestCustomTopicMode];
+    | (typeof MediaTranscribeRequestCustomTopicMode)[keyof typeof MediaTranscribeRequestCustomTopicMode]
+    | string;
