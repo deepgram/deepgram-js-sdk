@@ -7,11 +7,7 @@ import { mockServerPool } from "../../../mock-server/MockServerPool";
 describe("ProjectsClient", () => {
     test("list (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { projects: [{ project_id: "project_id", name: "name" }] };
         server.mockEndpoint().get("/v1/projects").respondWith().statusCode(200).jsonBody(rawResponseBody).build();
@@ -29,11 +25,7 @@ describe("ProjectsClient", () => {
 
     test("list (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { key: "value" };
         server.mockEndpoint().get("/v1/projects").respondWith().statusCode(400).jsonBody(rawResponseBody).build();
@@ -45,11 +37,7 @@ describe("ProjectsClient", () => {
 
     test("get (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { project_id: "project_id", mip_opt_out: true, name: "name" };
         server
@@ -73,11 +61,7 @@ describe("ProjectsClient", () => {
 
     test("get (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { key: "value" };
         server
@@ -95,11 +79,7 @@ describe("ProjectsClient", () => {
 
     test("delete (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { message: "message" };
         server
@@ -118,11 +98,7 @@ describe("ProjectsClient", () => {
 
     test("delete (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { key: "value" };
         server
@@ -140,11 +116,7 @@ describe("ProjectsClient", () => {
 
     test("update (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
         const rawRequestBody = {};
         const rawResponseBody = { message: "Successfully updated project info." };
         server
@@ -164,11 +136,7 @@ describe("ProjectsClient", () => {
 
     test("update (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
         const rawRequestBody = {};
         const rawResponseBody = { key: "value" };
         server
@@ -187,11 +155,7 @@ describe("ProjectsClient", () => {
 
     test("leave (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { message: "message" };
         server
@@ -210,11 +174,7 @@ describe("ProjectsClient", () => {
 
     test("leave (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { key: "value" };
         server

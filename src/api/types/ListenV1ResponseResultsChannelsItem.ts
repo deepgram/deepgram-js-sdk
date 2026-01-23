@@ -37,6 +37,7 @@ export namespace ListenV1ResponseResultsChannelsItem {
             confidence?: number;
             words?: Item.Words.Item[];
             paragraphs?: Item.Paragraphs;
+            entities?: Item.Entities.Item[];
             summaries?: Item.Summaries.Item[];
             topics?: Item.Topics.Item[];
         }
@@ -81,6 +82,19 @@ export namespace ListenV1ResponseResultsChannelsItem {
                             }
                         }
                     }
+                }
+            }
+
+            export type Entities = Entities.Item[];
+
+            export namespace Entities {
+                export interface Item {
+                    label?: string;
+                    value?: string;
+                    raw_value?: string;
+                    confidence?: number;
+                    start_word?: number;
+                    end_word?: number;
                 }
             }
 

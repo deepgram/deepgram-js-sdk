@@ -7,11 +7,7 @@ import { mockServerPool } from "../../../mock-server/MockServerPool";
 describe("MediaClient", () => {
     test("transcribeUrl (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
         const rawRequestBody = { url: "https://dpgr.am/spacewalk.wav" };
         const rawResponseBody = {
             metadata: {
@@ -183,11 +179,7 @@ describe("MediaClient", () => {
 
     test("transcribeUrl (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = { key: "value" };
         server

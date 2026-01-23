@@ -6,4 +6,6 @@ export const RequestsListRequestMethod = {
     Async: "async",
     Streaming: "streaming",
 } as const;
-export type RequestsListRequestMethod = (typeof RequestsListRequestMethod)[keyof typeof RequestsListRequestMethod];
+export type RequestsListRequestMethod =
+    | (typeof RequestsListRequestMethod)[keyof typeof RequestsListRequestMethod]
+    | string;

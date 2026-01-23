@@ -74,8 +74,8 @@ export class RequestsClient {
             status,
         } = request;
         const _queryParams: Record<string, unknown> = {
-            start,
-            end,
+            start: start != null ? start : undefined,
+            end: end != null ? end : undefined,
             limit,
             page,
             accessor,
@@ -94,10 +94,8 @@ export class RequestsClient {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).base,
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.DeepgramEnvironment.Production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/requests`,
             ),
             method: "GET",
@@ -171,10 +169,8 @@ export class RequestsClient {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).base,
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.DeepgramEnvironment.Production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/requests/${core.url.encodePathParam(request_id)}`,
             ),
             method: "GET",

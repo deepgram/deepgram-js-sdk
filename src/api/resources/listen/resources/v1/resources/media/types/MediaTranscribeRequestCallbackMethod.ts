@@ -5,4 +5,5 @@ export const MediaTranscribeRequestCallbackMethod = {
     Put: "PUT",
 } as const;
 export type MediaTranscribeRequestCallbackMethod =
-    (typeof MediaTranscribeRequestCallbackMethod)[keyof typeof MediaTranscribeRequestCallbackMethod];
+    | (typeof MediaTranscribeRequestCallbackMethod)[keyof typeof MediaTranscribeRequestCallbackMethod]
+    | string;

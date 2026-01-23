@@ -10,4 +10,5 @@ export const BreakdownGetRequestGrouping = {
     Deployment: "deployment",
 } as const;
 export type BreakdownGetRequestGrouping =
-    (typeof BreakdownGetRequestGrouping)[keyof typeof BreakdownGetRequestGrouping];
+    | (typeof BreakdownGetRequestGrouping)[keyof typeof BreakdownGetRequestGrouping]
+    | string;

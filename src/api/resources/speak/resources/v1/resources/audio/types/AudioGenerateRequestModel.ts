@@ -65,4 +65,6 @@ export const AudioGenerateRequestModel = {
     Aura2EstrellaEs: "aura-2-estrella-es",
     Aura2JavierEs: "aura-2-javier-es",
 } as const;
-export type AudioGenerateRequestModel = (typeof AudioGenerateRequestModel)[keyof typeof AudioGenerateRequestModel];
+export type AudioGenerateRequestModel =
+    | (typeof AudioGenerateRequestModel)[keyof typeof AudioGenerateRequestModel]
+    | string;

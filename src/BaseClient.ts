@@ -6,7 +6,7 @@ import * as core from "./core/index.js";
 import type * as environments from "./environments.js";
 
 export type BaseClientOptions = {
-    environment?: core.Supplier<environments.DeepgramEnvironment | environments.DeepgramEnvironmentUrls>;
+    environment?: core.Supplier<environments.DeepgramEnvironment | string>;
     /** Specify a custom URL to connect the client to. */
     baseUrl?: core.Supplier<string>;
     /** Additional headers to include in requests. */
@@ -52,8 +52,8 @@ export function normalizeClientOptions<T extends BaseClientOptions = BaseClientO
         {
             "X-Fern-Language": "JavaScript",
             "X-Fern-SDK-Name": "",
-            "X-Fern-SDK-Version": "0.0.259",
-            "User-Agent": "/0.0.259",
+            "X-Fern-SDK-Version": "0.0.278",
+            "User-Agent": "/0.0.278",
             "X-Fern-Runtime": core.RUNTIME.type,
             "X-Fern-Runtime-Version": core.RUNTIME.version,
         },

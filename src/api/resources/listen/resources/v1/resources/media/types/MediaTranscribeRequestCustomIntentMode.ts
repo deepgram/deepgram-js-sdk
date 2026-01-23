@@ -5,4 +5,5 @@ export const MediaTranscribeRequestCustomIntentMode = {
     Strict: "strict",
 } as const;
 export type MediaTranscribeRequestCustomIntentMode =
-    (typeof MediaTranscribeRequestCustomIntentMode)[keyof typeof MediaTranscribeRequestCustomIntentMode];
+    | (typeof MediaTranscribeRequestCustomIntentMode)[keyof typeof MediaTranscribeRequestCustomIntentMode]
+    | string;

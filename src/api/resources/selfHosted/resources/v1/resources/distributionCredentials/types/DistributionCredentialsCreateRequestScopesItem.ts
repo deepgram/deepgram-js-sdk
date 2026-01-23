@@ -11,4 +11,5 @@ export const DistributionCredentialsCreateRequestScopesItem = {
     SelfHostedProductMetricsServer: "self-hosted:product:metrics-server",
 } as const;
 export type DistributionCredentialsCreateRequestScopesItem =
-    (typeof DistributionCredentialsCreateRequestScopesItem)[keyof typeof DistributionCredentialsCreateRequestScopesItem];
+    | (typeof DistributionCredentialsCreateRequestScopesItem)[keyof typeof DistributionCredentialsCreateRequestScopesItem]
+    | string;

@@ -10,4 +10,5 @@ export const AudioGenerateRequestEncoding = {
     Aac: "aac",
 } as const;
 export type AudioGenerateRequestEncoding =
-    (typeof AudioGenerateRequestEncoding)[keyof typeof AudioGenerateRequestEncoding];
+    | (typeof AudioGenerateRequestEncoding)[keyof typeof AudioGenerateRequestEncoding]
+    | string;

@@ -5,4 +5,5 @@ export const AudioGenerateRequestCallbackMethod = {
     Put: "PUT",
 } as const;
 export type AudioGenerateRequestCallbackMethod =
-    (typeof AudioGenerateRequestCallbackMethod)[keyof typeof AudioGenerateRequestCallbackMethod];
+    | (typeof AudioGenerateRequestCallbackMethod)[keyof typeof AudioGenerateRequestCallbackMethod]
+    | string;
