@@ -27,7 +27,8 @@ async function liveTranscriptionV2() {
   let pingInterval = null;
 
   try {
-    const deepgramConnection = await deepgramClient.listen.v2.connect({
+    // Create a connection object with transcription options (not yet connected)
+    const deepgramConnection = await deepgramClient.listen.v2.createConnection({
       model: "flux-general-en",
       // V2 API parameters - model is required
       // encoding and sample_rate are optional and may be auto-detected

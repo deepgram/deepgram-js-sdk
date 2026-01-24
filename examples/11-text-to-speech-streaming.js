@@ -12,7 +12,8 @@ const deepgramClient = new DeepgramClient({
 
 async function textToSpeechStreaming() {
   try {
-    const deepgramConnection = await deepgramClient.speak.v1.connect({
+    // Create a connection object with TTS options (not yet connected)
+    const deepgramConnection = await deepgramClient.speak.v1.createConnection({
       model: "aura-2-thalia-en",
       encoding: "linear16",
     });

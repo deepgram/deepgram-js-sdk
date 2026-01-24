@@ -479,6 +479,23 @@ class WrappedAgentV1Client extends AgentV1Client {
 
         return new WrappedAgentV1Socket({ socket });
     }
+
+    /**
+     * Creates a WebSocket connection object without actually connecting.
+     * This is an alias for connect() with clearer naming - the returned socket
+     * is not connected until you call socket.connect().
+     *
+     * Usage:
+     * ```typescript
+     * const socket = await client.agent.v1.createConnection();
+     * socket.on('open', () => console.log('Connected!'));
+     * socket.on('message', (msg) => console.log('Message:', msg));
+     * socket.connect(); // Actually initiates the connection
+     * ```
+     */
+    public async createConnection(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
+        return this.connect(args);
+    }
 }
 
 /**
@@ -597,6 +614,23 @@ class WrappedListenV1Client extends ListenV1Client {
 
         return new WrappedListenV1Socket({ socket });
     }
+
+    /**
+     * Creates a WebSocket connection object without actually connecting.
+     * This is an alias for connect() with clearer naming - the returned socket
+     * is not connected until you call socket.connect().
+     *
+     * Usage:
+     * ```typescript
+     * const socket = await client.listen.v1.createConnection({ model: 'nova-3' });
+     * socket.on('open', () => console.log('Connected!'));
+     * socket.on('message', (msg) => console.log('Transcript:', msg));
+     * socket.connect(); // Actually initiates the connection
+     * ```
+     */
+    public async createConnection(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
+        return this.connect(args);
+    }
 }
 
 /**
@@ -675,6 +709,23 @@ class WrappedListenV2Client extends ListenV2Client {
         });
 
         return new WrappedListenV2Socket({ socket });
+    }
+
+    /**
+     * Creates a WebSocket connection object without actually connecting.
+     * This is an alias for connect() with clearer naming - the returned socket
+     * is not connected until you call socket.connect().
+     *
+     * Usage:
+     * ```typescript
+     * const socket = await client.listen.v2.createConnection({ model: 'flux-general-en' });
+     * socket.on('open', () => console.log('Connected!'));
+     * socket.on('message', (msg) => console.log('Transcript:', msg));
+     * socket.connect(); // Actually initiates the connection
+     * ```
+     */
+    public async createConnection(args: Omit<ListenV2Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV2Socket> {
+        return this.connect(args);
     }
 }
 
@@ -780,6 +831,23 @@ class WrappedSpeakV1Client extends SpeakV1Client {
         });
 
         return new WrappedSpeakV1Socket({ socket });
+    }
+
+    /**
+     * Creates a WebSocket connection object without actually connecting.
+     * This is an alias for connect() with clearer naming - the returned socket
+     * is not connected until you call socket.connect().
+     *
+     * Usage:
+     * ```typescript
+     * const socket = await client.speak.v1.createConnection({ model: 'aura-asteria-en' });
+     * socket.on('open', () => console.log('Connected!'));
+     * socket.on('message', (audioData) => console.log('Audio received'));
+     * socket.connect(); // Actually initiates the connection
+     * ```
+     */
+    public async createConnection(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
+        return this.connect(args);
     }
 }
 

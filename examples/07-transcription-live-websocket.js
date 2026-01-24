@@ -13,7 +13,8 @@ const deepgramClient = new DeepgramClient({
 
 async function liveTranscription() {
   try {
-    const deepgramConnection = await deepgramClient.listen.v1.connect({
+    // Create a connection object with transcription options (not yet connected)
+    const deepgramConnection = await deepgramClient.listen.v1.createConnection({
       model: "nova-3",
       language: "en",
       punctuate: "true",

@@ -13,8 +13,8 @@ const deepgramClient = new DeepgramClient({
 
 async function voiceAgent() {
   try {
-    // Create an agent connection
-    const deepgramConnection = await deepgramClient.agent.v1.connect();
+    // Create an agent connection object (not yet connected)
+    const deepgramConnection = await deepgramClient.agent.v1.createConnection();
 
     // Set up event handlers before connecting
     deepgramConnection.on("open", () => {
