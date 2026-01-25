@@ -1,5 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from "vitest";
 import { ReconnectingWebSocket } from "../../src/core/websocket/ws";
+
+// Global cleanup to ensure no lingering timeouts
+afterAll(() => {
+  vi.clearAllTimers();
+});
 
 /**
  * Unit tests for WebSocket wrapper functionality.
@@ -7,11 +12,20 @@ import { ReconnectingWebSocket } from "../../src/core/websocket/ws";
  * event registrations and handle binary data without needing real connections.
  */
 describe("WebSocket wrapper functionality", () => {
+  // Use fake timers to prevent actual connection attempts
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
   describe("ReconnectingWebSocket event management", () => {
     let socket: ReconnectingWebSocket;
 
     beforeEach(() => {
-      socket = new ReconnectingWebSocket("ws://test.com", ["test"], {
+      socket = new ReconnectingWebSocket("ws://localhost:9999/test", ["test"], {
         automaticOpen: false,  // Prevent automatic connection
         reconnectInterval: 0,
         reconnectDecay: 1,
@@ -19,12 +33,17 @@ describe("WebSocket wrapper functionality", () => {
         timeoutInterval: 0,
         maxRetries: 0
       });
+
+      // Catch and suppress connection errors in tests
+      socket.addEventListener("error", () => {});
     });
 
     afterEach(() => {
       // Clean up to prevent connection attempts
       if (socket) {
-        (socket as any)._shouldReconnect = false;
+        const socketAny = socket as any;
+        socketAny._shouldReconnect = false;
+        socketAny._closeCalled = true;
         socket.close();
       }
     });
@@ -146,10 +165,13 @@ describe("WebSocket wrapper functionality", () => {
 
   describe("Event handler isolation", () => {
     it("should maintain separate listener arrays for each event type", () => {
-      const socket = new ReconnectingWebSocket("ws://test.com", ["test"], {
+      const socket = new ReconnectingWebSocket("ws://localhost:9999/test", ["test"], {
         automaticOpen: false,
         maxRetries: 0
       });
+
+      // Catch and suppress connection errors in tests
+      socket.addEventListener("error", () => {});
 
       const openHandler = vi.fn();
       const messageHandler = vi.fn();
@@ -171,6 +193,11 @@ describe("WebSocket wrapper functionality", () => {
       // Each array should only contain its specific handler
       expect(socketAny._listeners.open).not.toContain(messageHandler);
       expect(socketAny._listeners.message).not.toContain(openHandler);
+
+      // Clean up
+      socketAny._shouldReconnect = false;
+      socketAny._closeCalled = true;
+      socket.close();
     });
   });
 
@@ -250,10 +277,13 @@ describe("WebSocket wrapper functionality", () => {
     });
 
     it("should correctly implement preventDuplicateEventListeners pattern", () => {
-      const socket = new ReconnectingWebSocket("ws://test.com", ["test"], {
+      const socket = new ReconnectingWebSocket("ws://localhost:9999/test", ["test"], {
         automaticOpen: false,
         maxRetries: 0
       });
+
+      // Catch and suppress connection errors in tests
+      socket.addEventListener("error", () => {});
 
       const handlers = {
         handleOpen: vi.fn(),
@@ -285,6 +315,11 @@ describe("WebSocket wrapper functionality", () => {
       expect(socketAny._listeners.message).not.toContain(handlers.handleMessage);
       expect(socketAny._listeners.close).not.toContain(handlers.handleClose);
       expect(socketAny._listeners.error).not.toContain(handlers.handleError);
+
+      // Clean up
+      socketAny._shouldReconnect = false;
+      socketAny._closeCalled = true;
+      socket.close();
     });
   });
 });

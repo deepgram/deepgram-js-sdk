@@ -714,7 +714,12 @@ class WrappedListenV1Socket extends ListenV1Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedListenV2Client extends ListenV2Client {
-    public async connect(args: Omit<ListenV2Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV2Socket> {
+    public async connect(
+        args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
+            Authorization?: string;
+            keyterm?: string | string[];
+        }
+    ): Promise<ListenV2Socket> {
         const {
             model,
             encoding,
@@ -768,7 +773,12 @@ class WrappedListenV2Client extends ListenV2Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<ListenV2Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV2Socket> {
+    public async createConnection(
+        args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
+            Authorization?: string;
+            keyterm?: string | string[];
+        }
+    ): Promise<ListenV2Socket> {
         return this.connect(args);
     }
 }

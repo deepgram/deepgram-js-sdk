@@ -16,6 +16,7 @@ webpack.config.js
 tests/browser
 tests/esm-build.test.ts
 tests/unit/websocket-wrappers.test.ts
+tests/unit/multiple-keyterms.test.ts
 tests/wire/websocket
 vitest.config.mts
 
