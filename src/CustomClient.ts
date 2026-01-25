@@ -382,6 +382,32 @@ function setupBinaryHandling(socket: ReconnectingWebSocket, eventHandlers: { mes
 }
 
 /**
+ * Helper to prevent duplicate event listeners on WebSocket connections.
+ * This removes all event listeners that were registered by the auto-generated
+ * Socket class constructor, preventing duplicate event firing when connect() is called.
+ */
+function preventDuplicateEventListeners(socket: ReconnectingWebSocket, handlers: {
+    handleOpen?: () => void;
+    handleMessage?: (event: any) => void;
+    handleClose?: (event: any) => void;
+    handleError?: (event: any) => void;
+}) {
+    // Remove the handlers that were added by the auto-generated constructor
+    if (handlers.handleOpen) {
+        socket.removeEventListener("open", handlers.handleOpen);
+    }
+    if (handlers.handleMessage) {
+        socket.removeEventListener("message", handlers.handleMessage);
+    }
+    if (handlers.handleClose) {
+        socket.removeEventListener("close", handlers.handleClose);
+    }
+    if (handlers.handleError) {
+        socket.removeEventListener("error", handlers.handleError);
+    }
+}
+
+/**
  * Helper function to reset socket connection state before connecting.
  * Ensures _connectLock is reset if the socket is in CLOSED state.
  */
@@ -519,6 +545,15 @@ class WrappedAgentV1Socket extends AgentV1Socket {
     }
 
     public connect(): WrappedAgentV1Socket {
+        // Remove duplicate listeners before calling super.connect()
+        const socketAny = this as any;
+        preventDuplicateEventListeners(this.socket, {
+            handleOpen: socketAny.handleOpen,
+            handleMessage: socketAny.handleMessage,
+            handleClose: socketAny.handleClose,
+            handleError: socketAny.handleError
+        });
+
         resetSocketConnectionState(this.socket);
         super.connect();
         // Re-setup binary handling in case connect() re-registered handlers
@@ -654,6 +689,15 @@ class WrappedListenV1Socket extends ListenV1Socket {
     }
 
     public connect(): WrappedListenV1Socket {
+        // Remove duplicate listeners before calling super.connect()
+        const socketAny = this as any;
+        preventDuplicateEventListeners(this.socket, {
+            handleOpen: socketAny.handleOpen,
+            handleMessage: socketAny.handleMessage,
+            handleClose: socketAny.handleClose,
+            handleError: socketAny.handleError
+        });
+
         resetSocketConnectionState(this.socket);
         super.connect();
         this.setupBinaryHandling();
@@ -751,6 +795,15 @@ class WrappedListenV2Socket extends ListenV2Socket {
     }
 
     public connect(): WrappedListenV2Socket {
+        // Remove duplicate listeners before calling super.connect()
+        const socketAny = this as any;
+        preventDuplicateEventListeners(this.socket, {
+            handleOpen: socketAny.handleOpen,
+            handleMessage: socketAny.handleMessage,
+            handleClose: socketAny.handleClose,
+            handleError: socketAny.handleError
+        });
+
         resetSocketConnectionState(this.socket);
         super.connect();
         this.setupBinaryHandling();
@@ -872,6 +925,15 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
     }
 
     public connect(): WrappedSpeakV1Socket {
+        // Remove duplicate listeners before calling super.connect()
+        const socketAny = this as any;
+        preventDuplicateEventListeners(this.socket, {
+            handleOpen: socketAny.handleOpen,
+            handleMessage: socketAny.handleMessage,
+            handleClose: socketAny.handleClose,
+            handleError: socketAny.handleError
+        });
+
         resetSocketConnectionState(this.socket);
         super.connect();
         this.setupBinaryHandling();
