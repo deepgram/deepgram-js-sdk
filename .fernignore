@@ -20,7 +20,10 @@ tests/unit/multiple-keyterms.test.ts
 tests/unit/async-send-finalize.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
 tests/unit/websocket-reconnection.test.ts
+tests/unit/error-handling.test.ts
+tests/unit/custom-client.test.ts
 tests/wire/websocket
+tests/wire/listen/v1/transcription.test.ts
 vitest.config.mts
 
 # Other Stuff
