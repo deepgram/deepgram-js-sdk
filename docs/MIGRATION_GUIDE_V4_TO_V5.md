@@ -236,6 +236,11 @@ await connection.waitForOpen();
 
 > **Note:** In v5, WebSocket options that accept boolean values must be passed as strings (`"true"` instead of `true`).
 
+> **Tip:** You can also use `createConnection()` as an alias for `connect()` if you find the naming clearer:
+> ```typescript
+> const connection = await deepgram.listen.v1.createConnection({ model: "nova-3" });
+> ```
+
 ### V2 WebSocket API (New)
 
 V5 introduces a new V2 live transcription API with improved features.
@@ -266,6 +271,17 @@ connection.sendMedia(audioChunk);
 
 // Close stream when done
 connection.sendCloseStream({ type: "CloseStream" });
+```
+
+### Multiple Keyterms
+
+V2 supports multiple keyterms (boosted terms) passed as an array:
+
+```typescript
+const connection = await deepgram.listen.v2.connect({
+  model: "nova-3",
+  keyterm: ["deepgram", "transcription", "speech-to-text"]
+});
 ```
 
 ## Voice Agent
@@ -299,6 +315,11 @@ connection.on("message", (data) => {
   }
 });
 
+connection.connect();
+await connection.waitForOpen();
+
+// Or use the clearer alias
+const connection = await deepgram.agent.v1.createConnection();
 connection.connect();
 await connection.waitForOpen();
 
@@ -395,6 +416,11 @@ connection.on("message", (data) => {
   }
 });
 
+connection.connect();
+await connection.waitForOpen();
+
+// Or use the clearer alias
+const connection = await deepgram.speak.v1.createConnection({ model: "aura-2-thalia-en" });
 connection.connect();
 await connection.waitForOpen();
 
@@ -751,7 +777,7 @@ Use this checklist to ensure you've updated all parts of your application:
 - [ ] Change `key` property to `apiKey` in options
 - [ ] Update all API method calls to include version namespace (`v1`, `v2`)
 - [ ] Update transcription methods: `listen.prerecorded.*` → `listen.v1.media.*`
-- [ ] Update WebSocket connections to use async `connect()` and `waitForOpen()`
+- [ ] Update WebSocket connections to use async `connect()` (or `createConnection()`) and `waitForOpen()`
 - [ ] Update event handlers from named events to `message` with type checking
 - [ ] Update error handling from `{ result, error }` to try/catch
 - [ ] Update management API calls: `manage.*` → `manage.v1.*`
