@@ -61,7 +61,8 @@ describe("WebSocket duplicate 'open' event prevention", () => {
       apiKey: "test",
       environment: {
         base: server.baseUrl,
-        ws: `ws://localhost:${wsPort}`,
+        production: `ws://localhost:${wsPort}`,
+        agent: `ws://localhost:${wsPort}`,
       }
     });
 
@@ -110,7 +111,8 @@ describe("WebSocket duplicate 'open' event prevention", () => {
       apiKey: "test",
       environment: {
         base: server.baseUrl,
-        ws: `ws://localhost:${wsPort}`,
+        production: `ws://localhost:${wsPort}`,
+        agent: `ws://localhost:${wsPort}`,
       }
     });
 
@@ -154,7 +156,8 @@ describe("WebSocket duplicate 'open' event prevention", () => {
       apiKey: "test",
       environment: {
         base: server.baseUrl,
-        ws: `ws://localhost:${wsPort}`,
+        production: `ws://localhost:${wsPort}`,
+        agent: `ws://localhost:${wsPort}`,
       }
     });
 
@@ -198,7 +201,8 @@ describe("WebSocket duplicate 'open' event prevention", () => {
       apiKey: "test",
       environment: {
         base: server.baseUrl,
-        ws: `ws://localhost:${wsPort}`,
+        production: `ws://localhost:${wsPort}`,
+        agent: `ws://localhost:${wsPort}`,
       }
     });
 
@@ -242,7 +246,8 @@ describe("WebSocket duplicate 'open' event prevention", () => {
       apiKey: "test",
       environment: {
         base: server.baseUrl,
-        ws: `ws://localhost:${wsPort}`,
+        production: `ws://localhost:${wsPort}`,
+        agent: `ws://localhost:${wsPort}`,
       }
     });
 
