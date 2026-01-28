@@ -2,52 +2,10 @@
 
 import type { BaseClientOptions } from "../../../../../../BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "../../../../../../BaseClient.js";
-import { mergeHeaders, mergeOnlyDefinedHeaders } from "../../../../../../core/headers.js";
-import * as core from "../../../../../../core/index.js";
-import * as environments from "../../../../../../environments.js";
 import { MediaClient } from "../resources/media/client/Client.js";
-import { V1Socket } from "./Socket.js";
 
 export declare namespace V1Client {
     export type Options = BaseClientOptions;
-
-    export interface ConnectArgs {
-        callback?: string;
-        callback_method?: string;
-        channels?: string;
-        detect_entities?: string;
-        diarize?: string;
-        dictation?: string;
-        encoding?: string;
-        endpointing?: string;
-        extra?: string;
-        interim_results?: string;
-        keyterm?: string;
-        keywords?: string;
-        language?: string;
-        mip_opt_out?: string;
-        model: string;
-        multichannel?: string;
-        numerals?: string;
-        profanity_filter?: string;
-        punctuate?: string;
-        redact?: string;
-        replace?: string;
-        sample_rate?: string;
-        search?: string;
-        smart_format?: string;
-        tag?: string;
-        utterance_end_ms?: string;
-        vad_events?: string;
-        version?: string;
-        Authorization: string;
-        /** Arbitrary headers to send with the websocket connect request. */
-        headers?: Record<string, string>;
-        /** Enable debug mode on the websocket. Defaults to false. */
-        debug?: boolean;
-        /** Number of reconnect attempts. Defaults to 30. */
-        reconnectAttempts?: number;
-    }
 }
 
 export class V1Client {
@@ -60,90 +18,5 @@ export class V1Client {
 
     public get media(): MediaClient {
         return (this._media ??= new MediaClient(this._options));
-    }
-
-    public async connect(args: V1Client.ConnectArgs): Promise<V1Socket> {
-        const {
-            callback,
-            callback_method: callbackMethod,
-            channels,
-            detect_entities: detectEntities,
-            diarize,
-            dictation,
-            encoding,
-            endpointing,
-            extra,
-            interim_results: interimResults,
-            keyterm,
-            keywords,
-            language,
-            mip_opt_out: mipOptOut,
-            model,
-            multichannel,
-            numerals,
-            profanity_filter: profanityFilter,
-            punctuate,
-            redact,
-            replace,
-            sample_rate: sampleRate,
-            search,
-            smart_format: smartFormat,
-            tag,
-            utterance_end_ms: utteranceEndMs,
-            vad_events: vadEvents,
-            version,
-            headers,
-            debug,
-            reconnectAttempts,
-        } = args;
-        const _queryParams: Record<string, unknown> = {
-            callback,
-            callback_method: callbackMethod,
-            channels,
-            detect_entities: detectEntities,
-            diarize,
-            dictation,
-            encoding,
-            endpointing,
-            extra,
-            interim_results: interimResults,
-            keyterm,
-            keywords,
-            language,
-            mip_opt_out: mipOptOut,
-            model,
-            multichannel,
-            numerals,
-            profanity_filter: profanityFilter,
-            punctuate,
-            redact,
-            replace,
-            sample_rate: sampleRate,
-            search,
-            smart_format: smartFormat,
-            tag,
-            utterance_end_ms: utteranceEndMs,
-            vad_events: vadEvents,
-            version,
-        };
-        const _headers: Record<string, unknown> = mergeHeaders(
-            mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
-            headers,
-        );
-        const socket = new core.ReconnectingWebSocket({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (
-                        (await core.Supplier.get(this._options.environment)) ??
-                        environments.DeepgramEnvironment.Production
-                    ).production,
-                "/v1/listen",
-            ),
-            protocols: [],
-            queryParameters: _queryParams,
-            headers: _headers,
-            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
-        });
-        return new V1Socket({ socket });
     }
 }

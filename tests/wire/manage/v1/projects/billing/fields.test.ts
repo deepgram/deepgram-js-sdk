@@ -7,11 +7,7 @@ import { mockServerPool } from "../../../../../mock-server/MockServerPool";
 describe("FieldsClient", () => {
     test("list (1)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = {
             accessors: ["12345678-1234-1234-1234-123456789012", "87654321-4321-4321-4321-210987654321"],
@@ -44,11 +40,7 @@ describe("FieldsClient", () => {
 
     test("list (2)", async () => {
         const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
-        });
+        const client = new DeepgramClient({ maxRetries: 0, apiKey: "test", environment: server.baseUrl });
 
         const rawResponseBody = { key: "value" };
         server
