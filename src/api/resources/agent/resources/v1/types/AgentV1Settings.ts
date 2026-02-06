@@ -137,49 +137,7 @@ export namespace AgentV1Settings {
             provider?: Deepgram.agent.AgentV1SettingsAgentListenProvider;
         }
 
-        export type Think =
-            | {
-                  provider: Record<string, unknown>;
-                  endpoint?:
-                      | {
-                            url?: string | undefined;
-                            headers?: Record<string, string> | undefined;
-                        }
-                      | undefined;
-                  functions?: Record<string, unknown>[] | undefined;
-                  prompt?: string | undefined;
-                  context_length?: ("max" | number) | undefined;
-              }
-            | {
-                  provider: Record<string, unknown>;
-                  endpoint?:
-                      | {
-                            url?: string | undefined;
-                            headers?: Record<string, string> | undefined;
-                        }
-                      | undefined;
-                  functions?: Record<string, unknown>[] | undefined;
-                  prompt?: string | undefined;
-                  context_length?: ("max" | number) | undefined;
-              }[];
-        export type Speak =
-            | {
-                  provider: Record<string, unknown>;
-                  endpoint?:
-                      | {
-                            url?: string | undefined;
-                            headers?: Record<string, string> | undefined;
-                        }
-                      | undefined;
-              }
-            | {
-                  provider: Record<string, unknown>;
-                  endpoint?:
-                      | {
-                            url?: string | undefined;
-                            headers?: Record<string, string> | undefined;
-                        }
-                      | undefined;
-              }[];
+        export type Think = Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[];
+        export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
     }
 }

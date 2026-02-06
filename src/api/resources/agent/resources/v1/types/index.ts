@@ -17,7 +17,6 @@ export * from "./AgentV1SettingsApplied.js";
 export * from "./AgentV1SpeakUpdated.js";
 export * from "./AgentV1UpdatePrompt.js";
 export * from "./AgentV1UpdateSpeak.js";
-export * from "./AgentV1UpdateSpeakSpeakProvider.js";
 export * from "./AgentV1UserStartedSpeaking.js";
 export * from "./AgentV1Warning.js";
 export * from "./AgentV1Welcome.js";
