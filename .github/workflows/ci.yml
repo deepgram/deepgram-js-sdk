@@ -18,7 +18,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --no-optional=false
 
       - name: Compile
         run: make build
@@ -44,7 +44,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --no-optional=false
 
       - name: Download build artifacts
         uses: actions/download-artifact@v7
@@ -72,7 +72,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --no-optional=false
 
       - name: Download build artifacts
         uses: actions/download-artifact@v7
@@ -100,7 +100,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --no-optional=false
 
       - name: Download build artifacts
         uses: actions/download-artifact@v7
