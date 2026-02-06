@@ -47,7 +47,9 @@ help:
 
 # Run all examples
 examples:
-	@printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
+	@printf "\033[1;36mInstalling tsx...\033[0m\n"; \
+	pnpm install --save-exact --save-dev tsx; \
+	printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
 	TOTAL=27; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
@@ -71,7 +73,7 @@ examples:
 		for i in $$(seq 1 $$EMPTY); do printf "░"; done; \
 		printf "\033[0m] %3d%% \033[36m%s\033[0m ... " "$$PERCENT" "$$NAME"; \
 		ERROR_FILE=$$ERROR_DIR/example-$$NUM.err; \
-		if node "$$FILE" >$$ERROR_FILE 2>&1; then \
+		if pnpm exec tsx "$$FILE" >$$ERROR_FILE 2>&1; then \
 			rm -f $$ERROR_FILE; \
 			printf "\033[1;32m✓ PASS\033[0m\n"; \
 			PASS_COUNT=$$((PASS_COUNT + 1)); \
@@ -91,33 +93,33 @@ examples:
 		fi; \
 	}; \
 	\
-	run_example 1 "examples/01-authentication-api-key.js" "Authentication API Key"; \
-	run_example 2 "examples/02-authentication-access-token.js" "Authentication Access Token"; \
-	run_example 3 "examples/03-authentication-proxy.js" "Authentication Proxy"; \
-	run_example 4 "examples/04-transcription-prerecorded-url.js" "Transcription Prerecorded URL"; \
-	run_example 5 "examples/05-transcription-prerecorded-file.js" "Transcription Prerecorded File"; \
-	run_example 6 "examples/06-transcription-prerecorded-callback.js" "Transcription Prerecorded Callback"; \
-	run_example 7 "examples/07-transcription-live-websocket.js" "Transcription Live WebSocket"; \
-	run_example 8 "examples/08-transcription-captions.js" "Transcription Captions"; \
-	run_example 9 "examples/09-voice-agent.js" "Voice Agent"; \
-	run_example 10 "examples/10-text-to-speech-single.js" "Text-to-Speech Single"; \
-	run_example 11 "examples/11-text-to-speech-streaming.js" "Text-to-Speech Streaming"; \
-	run_example 12 "examples/12-text-intelligence.js" "Text Intelligence"; \
-	run_example 13 "examples/13-management-projects.js" "Management Projects"; \
-	run_example 14 "examples/14-management-keys.js" "Management Keys"; \
-	run_example 15 "examples/15-management-members.js" "Management Members"; \
-	run_example 16 "examples/16-management-invites.js" "Management Invites"; \
-	run_example 17 "examples/17-management-usage.js" "Management Usage"; \
-	run_example 18 "examples/18-management-billing.js" "Management Billing"; \
-	run_example 19 "examples/19-management-models.js" "Management Models"; \
-	run_example 20 "examples/20-onprem-credentials.js" "On-Premises Credentials"; \
-	run_example 21 "examples/21-configuration-scoped.js" "Configuration Scoped"; \
-	run_example 22 "examples/22-transcription-advanced-options.js" "Transcription Advanced Options"; \
-	run_example 23 "examples/23-file-upload-types.js" "File Upload Types"; \
-	run_example 24 "examples/24-error-handling.js" "Error Handling"; \
-	run_example 25 "examples/25-binary-response.js" "Binary Response"; \
-	run_example 26 "examples/26-transcription-live-websocket-v2.js" "Transcription Live WebSocket V2"; \
-	run_example 27 "examples/27-deepgram-session-header.js" "Deepgram Session Header"; \
+	run_example 1 "examples/01-authentication-api-key.ts" "Authentication API Key"; \
+	run_example 2 "examples/02-authentication-access-token.ts" "Authentication Access Token"; \
+	run_example 3 "examples/03-authentication-proxy.ts" "Authentication Proxy"; \
+	run_example 4 "examples/04-transcription-prerecorded-url.ts" "Transcription Prerecorded URL"; \
+	run_example 5 "examples/05-transcription-prerecorded-file.ts" "Transcription Prerecorded File"; \
+	run_example 6 "examples/06-transcription-prerecorded-callback.ts" "Transcription Prerecorded Callback"; \
+	run_example 7 "examples/07-transcription-live-websocket.ts" "Transcription Live WebSocket"; \
+	run_example 8 "examples/08-transcription-captions.ts" "Transcription Captions"; \
+	run_example 9 "examples/09-voice-agent.ts" "Voice Agent"; \
+	run_example 10 "examples/10-text-to-speech-single.ts" "Text-to-Speech Single"; \
+	run_example 11 "examples/11-text-to-speech-streaming.ts" "Text-to-Speech Streaming"; \
+	run_example 12 "examples/12-text-intelligence.ts" "Text Intelligence"; \
+	run_example 13 "examples/13-management-projects.ts" "Management Projects"; \
+	run_example 14 "examples/14-management-keys.ts" "Management Keys"; \
+	run_example 15 "examples/15-management-members.ts" "Management Members"; \
+	run_example 16 "examples/16-management-invites.ts" "Management Invites"; \
+	run_example 17 "examples/17-management-usage.ts" "Management Usage"; \
+	run_example 18 "examples/18-management-billing.ts" "Management Billing"; \
+	run_example 19 "examples/19-management-models.ts" "Management Models"; \
+	run_example 20 "examples/20-onprem-credentials.ts" "On-Premises Credentials"; \
+	run_example 21 "examples/21-configuration-scoped.ts" "Configuration Scoped"; \
+	run_example 22 "examples/22-transcription-advanced-options.ts" "Transcription Advanced Options"; \
+	run_example 23 "examples/23-file-upload-types.ts" "File Upload Types"; \
+	run_example 24 "examples/24-error-handling.ts" "Error Handling"; \
+	run_example 25 "examples/25-binary-response.ts" "Binary Response"; \
+	run_example 26 "examples/26-transcription-live-websocket-v2.ts" "Transcription Live WebSocket V2"; \
+	run_example 27 "examples/27-deepgram-session-header.ts" "Deepgram Session Header"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -146,94 +148,152 @@ examples:
 		done; \
 		printf "\n"; \
 		rm -rf $$ERROR_DIR; \
+		printf "\033[1;36mUninstalling tsx...\033[0m\n"; \
+		pnpm uninstall tsx; \
 		exit 1; \
 	else \
 		printf "\033[1;32m  All examples passed! 🎉\033[0m\n\n"; \
 		rm -rf $$ERROR_DIR; \
+		printf "\033[1;36mUninstalling tsx...\033[0m\n"; \
+		pnpm uninstall tsx; \
 		exit 0; \
 	fi
 
 # Individual example targets
 example-1:
-	node examples/01-authentication-api-key.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/01-authentication-api-key.ts
+	pnpm uninstall tsx
 
 example-2:
-	node examples/02-authentication-access-token.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/02-authentication-access-token.ts
+	pnpm uninstall tsx
 
 example-3:
-	node examples/03-authentication-proxy.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/03-authentication-proxy.ts
+	pnpm uninstall tsx
 
 example-4:
-	node examples/04-transcription-prerecorded-url.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/04-transcription-prerecorded-url.ts
+	pnpm uninstall tsx
 
 example-5:
-	node examples/05-transcription-prerecorded-file.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/05-transcription-prerecorded-file.ts
+	pnpm uninstall tsx
 
 example-6:
-	node examples/06-transcription-prerecorded-callback.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/06-transcription-prerecorded-callback.ts
+	pnpm uninstall tsx
 
 example-7:
-	node examples/07-transcription-live-websocket.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/07-transcription-live-websocket.ts
+	pnpm uninstall tsx
 
 example-8:
-	node examples/08-transcription-captions.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/08-transcription-captions.ts
+	pnpm uninstall tsx
 
 example-9:
-	node examples/09-voice-agent.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/09-voice-agent.ts
+	pnpm uninstall tsx
 
 example-10:
-	node examples/10-text-to-speech-single.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/10-text-to-speech-single.ts
+	pnpm uninstall tsx
 
 example-11:
-	node examples/11-text-to-speech-streaming.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/11-text-to-speech-streaming.ts
+	pnpm uninstall tsx
 
 example-12:
-	node examples/12-text-intelligence.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/12-text-intelligence.ts
+	pnpm uninstall tsx
 
 example-13:
-	node examples/13-management-projects.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/13-management-projects.ts
+	pnpm uninstall tsx
 
 example-14:
-	node examples/14-management-keys.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/14-management-keys.ts
+	pnpm uninstall tsx
 
 example-15:
-	node examples/15-management-members.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/15-management-members.ts
+	pnpm uninstall tsx
 
 example-16:
-	node examples/16-management-invites.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/16-management-invites.ts
+	pnpm uninstall tsx
 
 example-17:
-	node examples/17-management-usage.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/17-management-usage.ts
+	pnpm uninstall tsx
 
 example-18:
-	node examples/18-management-billing.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/18-management-billing.ts
+	pnpm uninstall tsx
 
 example-19:
-	node examples/19-management-models.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/19-management-models.ts
+	pnpm uninstall tsx
 
 example-20:
-	node examples/20-onprem-credentials.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/20-onprem-credentials.ts
+	pnpm uninstall tsx
 
 example-21:
-	node examples/21-configuration-scoped.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/21-configuration-scoped.ts
+	pnpm uninstall tsx
 
 example-22:
-	node examples/22-transcription-advanced-options.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/22-transcription-advanced-options.ts
+	pnpm uninstall tsx
 
 example-23:
-	node examples/23-file-upload-types.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/23-file-upload-types.ts
+	pnpm uninstall tsx
 
 example-24:
-	node examples/24-error-handling.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/24-error-handling.ts
+	pnpm uninstall tsx
 
 example-25:
-	node examples/25-binary-response.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/25-binary-response.ts
+	pnpm uninstall tsx
 
 example-26:
-	node examples/26-transcription-live-websocket-v2.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/26-transcription-live-websocket-v2.ts
+	pnpm uninstall tsx
 
 example-27:
-	node examples/27-deepgram-session-header.js
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/27-deepgram-session-header.ts
+	pnpm uninstall tsx
 
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
