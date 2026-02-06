@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication with API Key - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Authentication with API Key</h1>
+  <p>This example demonstrates authentication through the proxy server. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
+
+  <div class="container">
+    <button id="runExample">Run Example</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const runButton = document.getElementById('runExample');
+    const output = document.getElementById('output');
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    runButton.addEventListener('click', async () => {
+      output.textContent = '';
+      runButton.disabled = true;
+      log('Running example...\n');
+
+      try {
+        // Create client - API key is handled by the proxy server
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        log('Making request through proxy server...');
+        const data = await deepgramClient.manage.v1.projects.list();
+        if (data) {
+          log(`✓ Authentication successful! Projects: ${JSON.stringify(data, null, 2)}`, 'success');
+        } else {
+          log('✗ No data returned from the API', 'error');
+        }
+
+        log('\n✓ Example completed successfully!', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

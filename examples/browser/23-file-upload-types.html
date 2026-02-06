@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload Types - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="file"] {
+      padding: 5px;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>File Upload Types</h1>
+  <p>Demonstrates different file upload types supported by the SDK. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
+
+  <div class="container">
+    <label for="audioFile">Audio File:</label>
+    <input type="file" id="audioFile" accept="audio/*">
+    <div>
+      <button id="fileButton">Transcribe with File</button>
+      <button id="blobButton">Transcribe with Blob</button>
+      <button id="arrayBufferButton">Transcribe with ArrayBuffer</button>
+      <button id="uint8ArrayButton">Transcribe with Uint8Array</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const audioFileInput = document.getElementById('audioFile');
+    const fileButton = document.getElementById('fileButton');
+    const blobButton = document.getElementById('blobButton');
+    const arrayBufferButton = document.getElementById('arrayBufferButton');
+    const uint8ArrayButton = document.getElementById('uint8ArrayButton');
+    const output = document.getElementById('output');
+
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function getClient() {
+      return new DeepgramClient({ 
+        apiKey: 'proxy',
+        baseUrl: 'http://localhost:8001',
+      });
+    }
+
+    async function transcribe(file, type) {
+      const client = getClient();
+      if (!client) return;
+      if (!file) {
+        log('Please select an audio file', 'error');
+        return;
+      }
+      output.textContent = '';
+      try {
+        const data = await client.listen.v1.media.transcribeFile(file, {
+          model: "nova-3",
+        });
+        log(`✓ Transcribed with ${type}:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error with ${type}: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      }
+    }
+
+    fileButton.addEventListener('click', async () => {
+      const file = audioFileInput.files[0];
+      await transcribe(file, 'File');
+    });
+
+    blobButton.addEventListener('click', async () => {
+      const file = audioFileInput.files[0];
+      if (!file) {
+        log('Please select an audio file', 'error');
+        return;
+      }
+      const blob = file.slice();
+      await transcribe(blob, 'Blob');
+    });
+
+    arrayBufferButton.addEventListener('click', async () => {
+      const file = audioFileInput.files[0];
+      if (!file) {
+        log('Please select an audio file', 'error');
+        return;
+      }
+      const arrayBuffer = await file.arrayBuffer();
+      await transcribe(arrayBuffer, 'ArrayBuffer');
+    });
+
+    uint8ArrayButton.addEventListener('click', async () => {
+      const file = audioFileInput.files[0];
+      if (!file) {
+        log('Please select an audio file', 'error');
+        return;
+      }
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      await transcribe(uint8Array, 'Uint8Array');
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Agent - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="file"] {
+      padding: 5px;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.stop {
+      background: #d32f2f;
+    }
+    button.stop:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .info {
+      color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Voice Agent</h1>
+  <p>Configure and use a Voice Agent for conversational AI interactions.</p>
+
+  <div class="container">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    <label for="audioFile">Audio File (to stream):</label>
+    <input type="file" id="audioFile" accept="audio/*">
+    <button id="startButton">Start Voice Agent</button>
+    <button id="stopButton" class="stop" disabled>Stop</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const audioFileInput = document.getElementById('audioFile');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const output = document.getElementById('output');
+
+    let deepgramConnection = null;
+    let keepAliveInterval = null;
+    let isStreaming = false;
+
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'info' ? 'info' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    async function readFileAsArrayBuffer(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    startButton.addEventListener('click', async () => {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
+      const apiKey = apiKeyInput.value.trim();
+      const audioFile = audioFileInput.files[0];
+
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return;
+      }
+      if (!audioFile) {
+        log('Please select an audio file', 'error');
+        return;
+      }
+
+
+      output.textContent = '';
+      startButton.disabled = true;
+      stopButton.disabled = false;
+      isStreaming = true;
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: apiKey,
+        });
+
+        // Create an agent connection
+        deepgramConnection = await deepgramClient.agent.v1.connect();
+
+        // Set up event handlers
+        deepgramConnection.on("open", () => {
+          log('✓ Connection opened', 'success');
+        });
+
+        deepgramConnection.on("message", (data) => {
+          if (typeof data === "string" || data instanceof ArrayBuffer || data instanceof Blob) {
+            // Audio data comes as string
+            log(`Audio received (length): ${data instanceof ArrayBuffer ? data.byteLength : data instanceof Blob ? data.size : data.length}`, 'info');
+          } else if (data && typeof data === "object") {
+            // Handle different message types
+            if (data.type === "Welcome") {
+              log(`✓ Welcome: ${JSON.stringify(data, null, 2)}`, 'success');
+            } else if (data.type === "SettingsApplied") {
+              log(`✓ Settings Applied: ${JSON.stringify(data, null, 2)}`, 'success');
+            } else if (data.type === "ConversationText") {
+              log(`Conversation text: ${JSON.stringify(data, null, 2)}`, 'info');
+            } else if (data.type === "AgentAudioDone") {
+              log(`✓ Agent audio done: ${JSON.stringify(data, null, 2)}`, 'success');
+            } else if (data.type === "Warning") {
+              log(`⚠ Warning: ${JSON.stringify(data, null, 2)}`, 'error');
+            } else if (data.type === "Error") {
+              log(`✗ Error: ${JSON.stringify(data, null, 2)}`, 'error');
+            } else {
+              log(`Message (${data.type || 'unknown'}): ${JSON.stringify(data, null, 2)}`, 'info');
+            }
+          } else {
+            log(`Unknown message: ${JSON.stringify(data, null, 2)}`, 'info');
+          }
+        });
+
+        deepgramConnection.on("error", (error) => {
+          log(`✗ Error: ${error.message}`, 'error');
+        });
+
+        deepgramConnection.on("close", () => {
+          log('Connection closed', 'info');
+          if (keepAliveInterval) {
+            clearInterval(keepAliveInterval);
+            keepAliveInterval = null;
+          }
+          isStreaming = false;
+          startButton.disabled = false;
+          stopButton.disabled = true;
+          deepgramConnection = null;
+        });
+
+        // Connect to the websocket
+        deepgramConnection.connect();
+
+        // Wait for connection to open before configuring
+        await deepgramConnection.waitForOpen();
+
+        // Configure the agent once connection is established
+        deepgramConnection.sendSettings({
+          type: "Settings",
+          audio: {
+            input: {
+              encoding: "linear16",
+              sample_rate: 24000,
+            },
+            output: {
+              encoding: "linear16",
+              sample_rate: 16000,
+              container: "wav",
+            },
+          },
+          agent: {
+            language: "en",
+            listen: {
+              provider: {
+                type: "deepgram",
+                model: "nova-3",
+              },
+            },
+            think: {
+              provider: {
+                type: "open_ai",
+                model: "gpt-4o-mini",
+              },
+              prompt: "You are a friendly AI assistant.",
+            },
+            speak: {
+              provider: {
+                type: "deepgram",
+                model: "aura-2-thalia-en",
+              },
+            },
+            greeting: "Hello! How can I help you today?",
+          },
+        });
+
+        // Wait a moment for settings to be applied
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Set up keepalive messages to keep the connection alive
+        keepAliveInterval = setInterval(() => {
+          if (deepgramConnection && deepgramConnection.socket.readyState === 1) {
+            deepgramConnection.sendKeepAlive({ type: "KeepAlive" });
+          } else {
+            if (keepAliveInterval) {
+              clearInterval(keepAliveInterval);
+              keepAliveInterval = null;
+            }
+          }
+        }, 5000);
+
+        // Read audio file and send in chunks
+        const arrayBuffer = await readFileAsArrayBuffer(audioFile);
+        const chunkSize = 4096; // 4KB chunks
+
+        for (let offset = 0; offset < arrayBuffer.byteLength && isStreaming; offset += chunkSize) {
+          const chunk = arrayBuffer.slice(offset, offset + chunkSize);
+          deepgramConnection.sendMedia(chunk);
+          // Small delay to simulate streaming
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        log('Finished sending audio data', 'info');
+
+        // Auto-close after 1 minute
+        setTimeout(() => {
+          if (deepgramConnection && isStreaming) {
+            deepgramConnection.close();
+          }
+        }, 60000);
+
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+        isStreaming = false;
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        if (keepAliveInterval) {
+          clearInterval(keepAliveInterval);
+          keepAliveInterval = null;
+        }
+      }
+    });
+
+    stopButton.addEventListener('click', () => {
+      if (deepgramConnection) {
+        isStreaming = false;
+        deepgramConnection.close();
+      }
+    });
+  </script>
+</body>
+</html>
+

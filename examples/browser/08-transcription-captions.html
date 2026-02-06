@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convert Transcription to Captions - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .warning {
+      color: #f57c00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Convert Transcription to Captions</h1>
+  <p>Convert Deepgram transcriptions to WebVTT or SRT caption formats. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
+
+  <div class="container">
+    <label for="audioUrl">Audio URL:</label>
+    <input type="text" id="audioUrl" placeholder="https://dpgr.am/spacewalk.wav" value="https://dpgr.am/spacewalk.wav">
+    <button id="runExample">Generate Captions</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const audioUrlInput = document.getElementById('audioUrl');
+    const runButton = document.getElementById('runExample');
+    const output = document.getElementById('output');
+
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    runButton.addEventListener('click', async () => {
+      const audioUrl = audioUrlInput.value.trim();
+
+      if (!audioUrl) {
+        log('Please enter an audio URL', 'error');
+        return;
+      }
+
+
+      output.textContent = '';
+      runButton.disabled = true;
+      log('Generating transcription...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.listen.v1.media.transcribeUrl({
+          url: audioUrl,
+          model: "nova-3",
+          punctuate: true,
+          utterances: true,
+        });
+
+        if (data) {
+          log(`✓ Transcription result:\n${JSON.stringify(data, null, 2)}`, 'success');
+          log('\nNote: To convert to WebVTT or SRT captions, use the @deepgram/node-captions package or implement your own converter.', 'warning');
+        } else {
+          log('✗ No data returned from the API', 'error');
+        }
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+
