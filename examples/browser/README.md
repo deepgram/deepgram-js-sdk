@@ -79,9 +79,9 @@ These examples use ES modules and modern browser APIs. They should work in:
 
 ## Features
 
-- **Local Storage**: API keys and project IDs are saved to localStorage for convenience
+- **Proxy Server**: REST API examples use a local proxy server to bypass CORS restrictions
 - **File Upload**: Examples support file uploads using the browser File API
-- **WebSocket Support**: Live transcription and streaming TTS examples use WebSocket connections
+- **WebSocket Support**: Live transcription and streaming TTS examples use WebSocket connections (no proxy needed)
 - **Error Handling**: Examples demonstrate proper error handling patterns
 - **Responsive UI**: Examples include basic styling and are mobile-friendly
 
@@ -93,8 +93,10 @@ These examples use ES modules and modern browser APIs. They should work in:
 - The SDK is also available as `Deepgram` (uppercase) for consistency with the build output
 - File uploads use the browser File API instead of Node.js `fs` module
 - WebSocket examples stream audio data in chunks
-- API keys are stored in localStorage for convenience but are only accessible locally
 - These examples are safe for local development and CI environments
+- **Proxy Required for REST APIs**: Due to CORS header restrictions, REST API examples must use the proxy server at `http://localhost:8001`
+- **WebSocket APIs Work Directly**: Live transcription, voice agent, and streaming TTS connect directly without a proxy
+- The proxy server is automatically started with `make browser-serve` and handles authentication using your `DEEPGRAM_API_KEY`
 
 ## Differences from Node.js Examples
 

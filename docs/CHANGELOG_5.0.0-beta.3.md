@@ -28,7 +28,7 @@ const socket = await client.listen.v1.createConnection({ model: "nova-3" });
 
 ```typescript
 const socket = await client.listen.v2.connect({
-  model: "nova-3",
+  model: "flux-general-en",
   keyterm: ["deepgram", "transcription", "speech-to-text"]
 });
 ```

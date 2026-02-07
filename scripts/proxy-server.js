@@ -4,6 +4,16 @@
  * Simple HTTP proxy server for Deepgram API
  * Forwards requests from localhost:8001 to api.deepgram.com
  * Uses raw Node.js http/https modules (no dependencies)
+ *
+ * NOTE: This proxy is REQUIRED for browser REST API calls.
+ * The Deepgram SDK sends custom headers (X-Fern-Runtime-Version, etc.) that are
+ * not whitelisted by the Deepgram API's CORS configuration, causing preflight
+ * requests to fail. This proxy strips those headers and adds proper authentication.
+ *
+ * Additional benefits:
+ * - Hides your API key from client-side code (security)
+ * - Enables rate limiting or custom authentication
+ * - Provides logging/analytics for API calls
  */
 
 const http = require('http');

@@ -248,7 +248,7 @@ V5 introduces a new V2 live transcription API with improved features.
 **v5 (After):**
 ```typescript
 const connection = await deepgram.listen.v2.connect({
-  model: "nova-3"
+  model: "flux-general-en"
 });
 
 connection.on("open", () => {
@@ -279,7 +279,7 @@ V2 supports multiple keyterms (boosted terms) passed as an array:
 
 ```typescript
 const connection = await deepgram.listen.v2.connect({
-  model: "nova-3",
+  model: "flux-general-en",
   keyterm: ["deepgram", "transcription", "speech-to-text"]
 });
 ```
@@ -714,7 +714,33 @@ try {
 
 ## TypeScript Support
 
-V5 provides enhanced TypeScript support with auto-generated types.
+V5 provides enhanced TypeScript support with auto-generated types. All request and response types can be imported in two ways:
+
+### Direct Type Imports (Recommended)
+
+Import types directly for better IDE autocomplete:
+
+```typescript
+import { DeepgramClient } from "@deepgram/sdk";
+import type {
+  ListenV1Response,
+  SpeakV1Response,
+  ReadV1Response,
+  GetProjectV1Response,
+} from "@deepgram/sdk";
+
+const deepgram = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
+
+// Use types directly
+const data: ListenV1Response = await deepgram.listen.v1.media.transcribeUrl({
+  url: "https://dpgr.am/spacewalk.wav",
+  model: "nova-3",
+});
+```
+
+### Namespace Type Imports
+
+Alternatively, import via the `Deepgram` namespace:
 
 ```typescript
 import { DeepgramClient } from "@deepgram/sdk";
@@ -722,13 +748,15 @@ import type { Deepgram } from "@deepgram/sdk";
 
 const deepgram = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
 
-// All response types are available
-const data: Deepgram.listen.v1.MediaTranscribeResponse =
+// Use types via namespace
+const data: Deepgram.ListenV1Response =
   await deepgram.listen.v1.media.transcribeUrl({
     url: "https://dpgr.am/spacewalk.wav",
-    model: "nova-3"
+    model: "nova-3",
   });
 ```
+
+Both import styles refer to the same types and can be used interchangeably.
 
 ## API Structure Reference
 

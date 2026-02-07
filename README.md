@@ -214,9 +214,9 @@ const deepgramClient = new DeepgramClient({
 });
 ```
 
-#### Proxy requests in the browser
+#### Proxy requests in the browser (Required)
 
-This SDK now works in the browser. If you'd like to make REST-based requests (pre-recorded transcription, on-premise, and management requests), then you'll need to use a proxy as we do not support custom CORS origins on our API. To set up your proxy, you configure the SDK like so:
+Due to CORS header restrictions in the Deepgram API, you must use a proxy server when making REST API calls from browsers. To set up your proxy, you configure the SDK like so:
 
 ```js
 import { DeepgramClient } from "@deepgram/sdk";
@@ -232,6 +232,8 @@ const deepgramClient = new DeepgramClient({
 Your proxy service should replace the Authorization header with `Authorization: token <DEEPGRAM_API_KEY>` and return results verbatim to the SDK.
 
 Check out our example Node-based proxy here: [Deepgram Node Proxy](https://github.com/deepgram-devs/deepgram-node-proxy).
+
+**Why is a proxy required?** The SDK sends custom headers (`X-Fern-Runtime-Version`, etc.) that are not whitelisted by the Deepgram API's CORS configuration, causing preflight requests to fail. A proxy bypasses this limitation while also keeping your API key secure.
 
 #### Set custom headers for fetch
 
@@ -258,9 +260,11 @@ The SDK works in modern browsers with some considerations:
 
 ### REST API Features (Proxy Required)
 
-- **Pre-recorded Transcription**: ⚠️ Requires proxy due to CORS
-- **Text Intelligence**: ⚠️ Requires proxy due to CORS
-- **Management APIs**: ⚠️ Requires proxy due to CORS
+- **Pre-recorded Transcription**: ⚠️ Requires proxy due to CORS header restrictions
+- **Text Intelligence**: ⚠️ Requires proxy due to CORS header restrictions
+- **Management APIs**: ⚠️ Requires proxy due to CORS header restrictions
+
+> **Important:** The SDK sends custom headers that are not allowed by the Deepgram API's CORS policy. You must use a proxy server (see setup instructions above) to make REST API calls from browsers.
 
 ### Setup Options
 
@@ -328,7 +332,7 @@ const deepgramClient = new DeepgramClient({ apiKey: "YOUR_API_KEY" });
 
 #### Option 4: Proxy for REST APIs
 
-See [proxy requests in the browser](#proxy-requests-in-the-browser) for REST API access.
+See [proxy requests in the browser](#proxy-requests-in-the-browser-optional) to hide your API key from client-side code.
 
 ## Transcription
 
@@ -984,16 +988,53 @@ project, let us know! You can either:
 
 ## Request And Response Types
 
-The SDK exports all request and response types as TypeScript interfaces. Simply import them with the
-following namespace:
+The SDK exports all request and response types as TypeScript interfaces. You can import them in two ways:
+
+### Direct Import (Recommended)
+
+Import types directly for better IDE autocomplete and discoverability:
+
+```typescript
+import {
+  ListenV1Response,
+  SpeakV1Response,
+  ReadV1Response,
+  GetProjectV1Response,
+  CreateKeyV1Response,
+  UsageV1Response,
+} from "@deepgram/sdk";
+
+// Use types directly
+async function handleTranscription(response: ListenV1Response) {
+  console.log(response.metadata);
+  console.log(response.results);
+}
+
+async function handleProject(project: GetProjectV1Response) {
+  console.log(project.projectId);
+  console.log(project.name);
+}
+```
+
+### Namespace Import
+
+Alternatively, import types via the `Deepgram` namespace:
 
 ```typescript
 import { Deepgram } from "@deepgram/sdk";
 
+// Use types via namespace
+async function handleTranscription(response: Deepgram.ListenV1Response) {
+  console.log(response.metadata);
+  console.log(response.results);
+}
+
 const request: Deepgram.GrantV1Request = {
-    ...
+  // ...
 };
 ```
+
+Both import styles refer to the same types and can be used interchangeably or mixed in the same file.
 
 ## Exception Handling
 

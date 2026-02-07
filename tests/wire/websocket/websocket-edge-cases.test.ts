@@ -288,7 +288,7 @@ describe("WebSocket edge cases and error handling", () => {
       });
 
       const socket = await client.listen.v2.createConnection({
-        model: "nova-3"
+        model: "flux-general-en"
       });
 
       socket.on("open", () => tracker.track("open"));
