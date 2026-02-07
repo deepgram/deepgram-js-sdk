@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 test test-esm lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 test test-esm lint build browser browser-serve
 
 # Default target
 help:
@@ -50,13 +50,15 @@ help:
 	@printf "  \033[36m31\033[0m - Management Member Permissions\n"
 	@printf "  \033[36m32\033[0m - Management Project Models\n"
 	@printf "  \033[36m33\033[0m - Configuration EU Endpoint\n"
+	@printf "  \033[36m34\033[0m - Agent Custom Providers\n"
+	@printf "  \033[36m35\033[0m - Agent Provider Combinations\n"
 
 # Run all examples
 examples:
 	@printf "\033[1;36mInstalling tsx...\033[0m\n"; \
 	pnpm install --save-exact --save-dev tsx; \
 	printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
-	TOTAL=33; \
+	TOTAL=35; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
 	PASSED_LIST=""; \
@@ -132,6 +134,8 @@ examples:
 	run_example 31 "examples/31-management-member-permissions.ts" "Management Member Permissions"; \
 	run_example 32 "examples/32-management-project-models.ts" "Management Project Models"; \
 	run_example 33 "examples/33-configuration-eu-endpoint.ts" "Configuration EU Endpoint"; \
+	run_example 34 "examples/34-agent-custom-providers.ts" "Agent Custom Providers"; \
+	run_example 35 "examples/35-agent-provider-combinations.ts" "Agent Provider Combinations"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -335,6 +339,16 @@ example-32:
 example-33:
 	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/33-configuration-eu-endpoint.ts
+	pnpm uninstall tsx
+
+example-34:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/34-agent-custom-providers.ts
+	pnpm uninstall tsx
+
+example-35:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/35-agent-provider-combinations.ts
 	pnpm uninstall tsx
 
 lint:
