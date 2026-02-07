@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Text Intelligence - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .feature-group {
+      margin: 15px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+    input[type="text"], input[type="url"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 150px;
+      font-family: inherit;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+    .checkbox-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px 5px 5px 0;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .section-title {
+      color: #0066ff;
+      margin-top: 15px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Advanced Text Intelligence</h1>
+  <p>Explore advanced text analysis features including sentiment analysis, topic detection, intent recognition, and custom topics/intents.</p>
+
+  <div class="container">
+    <h3>Analysis Input</h3>
+
+    <label>
+      <input type="radio" name="inputMode" value="text" checked> Text Input
+      <input type="radio" name="inputMode" value="url"> URL Input
+    </label>
+
+    <div id="textInput" style="display: block;">
+      <label for="text">Text to Analyze:</label>
+      <textarea id="text" placeholder="Enter text to analyze">I absolutely love the new product features! The user interface is incredibly intuitive and the performance improvements are outstanding. However, I'm a bit concerned about the pricing changes. The new tier structure seems confusing. Overall though, I'm excited about the direction the company is heading.</textarea>
+    </div>
+
+    <div id="urlInput" style="display: none;">
+      <label for="url">URL to Analyze:</label>
+      <input type="url" id="url" placeholder="https://example.com/article.txt" value="https://dpgr.am/spacewalk.txt">
+    </div>
+
+    <h4 class="section-title">Analysis Features</h4>
+    <div class="checkbox-group">
+      <div class="checkbox-item">
+        <input type="checkbox" id="sentiment" checked>
+        <label for="sentiment">Sentiment Analysis</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="summarize" checked>
+        <label for="summarize">Summarize</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="topics" checked>
+        <label for="topics">Topic Detection</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="intents" checked>
+        <label for="intents">Intent Recognition</label>
+      </div>
+    </div>
+
+    <div class="feature-group">
+      <h4 class="section-title">Custom Topics</h4>
+      <label for="customTopics">Custom Topics (comma-separated):</label>
+      <input type="text" id="customTopics" placeholder="e.g., product, pricing, support, features">
+
+      <label for="customTopicMode">Topic Mode:</label>
+      <select id="customTopicMode">
+        <option value="extended">Extended (custom + auto-detected)</option>
+        <option value="strict">Strict (custom topics only)</option>
+      </select>
+    </div>
+
+    <div class="feature-group">
+      <h4 class="section-title">Custom Intents</h4>
+      <label for="customIntents">Custom Intents (comma-separated):</label>
+      <input type="text" id="customIntents" placeholder="e.g., request_demo, ask_question, provide_feedback">
+
+      <label for="customIntentMode">Intent Mode:</label>
+      <select id="customIntentMode">
+        <option value="extended">Extended (custom + auto-detected)</option>
+        <option value="strict">Strict (custom intents only)</option>
+      </select>
+    </div>
+
+    <button id="analyzeBtn">Analyze Text</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    // DOM elements
+    const textInputDiv = document.getElementById('textInput');
+    const urlInputDiv = document.getElementById('urlInput');
+    const textArea = document.getElementById('text');
+    const urlInput = document.getElementById('url');
+    const sentimentCheck = document.getElementById('sentiment');
+    const summarizeCheck = document.getElementById('summarize');
+    const topicsCheck = document.getElementById('topics');
+    const intentsCheck = document.getElementById('intents');
+    const customTopicsInput = document.getElementById('customTopics');
+    const customTopicMode = document.getElementById('customTopicMode');
+    const customIntentsInput = document.getElementById('customIntents');
+    const customIntentMode = document.getElementById('customIntentMode');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const output = document.getElementById('output');
+
+    // Handle input mode toggle
+    document.querySelectorAll('input[name="inputMode"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'text') {
+          textInputDiv.style.display = 'block';
+          urlInputDiv.style.display = 'none';
+        } else {
+          textInputDiv.style.display = 'none';
+          urlInputDiv.style.display = 'block';
+        }
+      });
+    });
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    analyzeBtn.addEventListener('click', async () => {
+      const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
+
+      // Validate input
+      if (inputMode === 'text' && !textArea.value.trim()) {
+        log('Please enter text to analyze', 'error');
+        return;
+      }
+      if (inputMode === 'url' && !urlInput.value.trim()) {
+        log('Please enter a URL to analyze', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      analyzeBtn.disabled = true;
+      log('Analyzing text...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        // Build request options
+        const options = {
+          language: "en",
+        };
+
+        // Add body (text or URL)
+        if (inputMode === 'text') {
+          options.text = textArea.value.trim();
+        } else {
+          options.body = { url: urlInput.value.trim() };
+        }
+
+        // Add selected features
+        if (sentimentCheck.checked) options.sentiment = true;
+        if (summarizeCheck.checked) options.summarize = true;
+        if (topicsCheck.checked) options.topics = true;
+        if (intentsCheck.checked) options.intents = true;
+
+        // Add custom topics if provided
+        const customTopics = customTopicsInput.value.trim();
+        if (customTopics) {
+          options.custom_topic = customTopics.split(',').map(t => t.trim());
+          options.custom_topic_mode = customTopicMode.value;
+        }
+
+        // Add custom intents if provided
+        const customIntents = customIntentsInput.value.trim();
+        if (customIntents) {
+          options.custom_intent = customIntents.split(',').map(i => i.trim());
+          options.custom_intent_mode = customIntentMode.value;
+        }
+
+        const data = await deepgramClient.read.v1.text.analyze(options);
+
+        log(`✓ Analysis complete!\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        analyzeBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

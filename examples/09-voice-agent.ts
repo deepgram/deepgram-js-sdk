@@ -2,6 +2,7 @@
  * Example: Voice Agent
  *
  * Configure and use a Voice Agent for conversational AI interactions.
+ * Includes listing available thinking models for agent configuration.
  */
 
 const { DeepgramClient } = require("../dist/cjs/index.js");
@@ -10,6 +11,20 @@ const { createReadStream } = require("fs");
 const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
+
+// Example: List available thinking models
+async function listAvailableThinkingModels() {
+  console.log("\n=== Available Thinking Models ===\n");
+
+  try {
+    const models = await deepgramClient.agent.v1.settings.think.models.list();
+
+    console.log("Available thinking models for agents:");
+    console.log(JSON.stringify(models, null, 2));
+  } catch (error) {
+    console.error("Error fetching thinking models:", error);
+  }
+}
 
 async function voiceAgent() {
   try {
@@ -132,4 +147,11 @@ async function voiceAgent() {
   }
 }
 
-voiceAgent();
+// Run examples
+(async () => {
+  // First, list available thinking models
+  await listAvailableThinkingModels();
+
+  // Then run the voice agent example
+  await voiceAgent();
+})();

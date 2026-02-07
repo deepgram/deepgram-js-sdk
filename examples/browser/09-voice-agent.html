@@ -80,6 +80,11 @@
   <div class="container">
     <label for="apiKey">API Key:</label>
     <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    <button id="listModelsButton">List Available Thinking Models</button>
+  </div>
+
+  <div class="container">
+    <h3>Voice Agent Session</h3>
     <label for="audioFile">Audio File (to stream):</label>
     <input type="file" id="audioFile" accept="audio/*">
     <button id="startButton">Start Voice Agent</button>
@@ -93,6 +98,7 @@
     const { DeepgramClient } = deepgram;
 
     const apiKeyInput = document.getElementById('apiKey');
+    const listModelsButton = document.getElementById('listModelsButton');
     const audioFileInput = document.getElementById('audioFile');
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
@@ -122,6 +128,36 @@
         reader.readAsArrayBuffer(file);
       });
     }
+
+    // List available thinking models
+    listModelsButton.addEventListener('click', async () => {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
+      const apiKey = apiKeyInput.value.trim();
+
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      listModelsButton.disabled = true;
+      log('Fetching available thinking models...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({ apiKey });
+        const models = await deepgramClient.agent.v1.settings.think.models.list();
+
+        log('✓ Available thinking models:', 'success');
+        log(JSON.stringify(models, null, 2));
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        listModelsButton.disabled = false;
+      }
+    });
 
     startButton.addEventListener('click', async () => {
       // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage

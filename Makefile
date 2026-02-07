@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 test test-esm lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 test test-esm lint build browser browser-serve
 
 # Default target
 help:
@@ -11,7 +11,7 @@ help:
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
-	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-26) sequentially\n"
+	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-32) sequentially\n"
 	@printf "  \033[1;32mmake example-N\033[0m         - Run a specific example by number (e.g., make example-1)\n"
 	@printf "  \033[1;32mmake browser\033[0m           - Run browser tests\n"
 	@printf "  \033[1;32mmake browser-serve\033[0m     - Serve the browser examples for manual testing\n"
@@ -44,13 +44,18 @@ help:
 	@printf "  \033[36m25\033[0m - Binary Response\n"
 	@printf "  \033[36m26\033[0m - Transcription Live WebSocket V2\n"
 	@printf "  \033[36m27\033[0m - Deepgram Session Header\n"
+	@printf "  \033[36m28\033[0m - Text Intelligence Advanced\n"
+	@printf "  \033[36m29\033[0m - Management Usage Breakdown\n"
+	@printf "  \033[36m30\033[0m - Management Billing Detailed\n"
+	@printf "  \033[36m31\033[0m - Management Member Permissions\n"
+	@printf "  \033[36m32\033[0m - Management Project Models\n"
 
 # Run all examples
 examples:
 	@printf "\033[1;36mInstalling tsx...\033[0m\n"; \
 	pnpm install --save-exact --save-dev tsx; \
 	printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
-	TOTAL=27; \
+	TOTAL=32; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
 	PASSED_LIST=""; \
@@ -120,6 +125,11 @@ examples:
 	run_example 25 "examples/25-binary-response.ts" "Binary Response"; \
 	run_example 26 "examples/26-transcription-live-websocket-v2.ts" "Transcription Live WebSocket V2"; \
 	run_example 27 "examples/27-deepgram-session-header.ts" "Deepgram Session Header"; \
+	run_example 28 "examples/28-text-intelligence-advanced.ts" "Text Intelligence Advanced"; \
+	run_example 29 "examples/29-management-usage-breakdown.ts" "Management Usage Breakdown"; \
+	run_example 30 "examples/30-management-billing-detailed.ts" "Management Billing Detailed"; \
+	run_example 31 "examples/31-management-member-permissions.ts" "Management Member Permissions"; \
+	run_example 32 "examples/32-management-project-models.ts" "Management Project Models"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -293,6 +303,31 @@ example-26:
 example-27:
 	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/27-deepgram-session-header.ts
+	pnpm uninstall tsx
+
+example-28:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/28-text-intelligence-advanced.ts
+	pnpm uninstall tsx
+
+example-29:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/29-management-usage-breakdown.ts
+	pnpm uninstall tsx
+
+example-30:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/30-management-billing-detailed.ts
+	pnpm uninstall tsx
+
+example-31:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/31-management-member-permissions.ts
+	pnpm uninstall tsx
+
+example-32:
+	pnpm install --save-exact --save-dev tsx
+	pnpm exec tsx examples/32-management-project-models.ts
 	pnpm uninstall tsx
 
 lint:
