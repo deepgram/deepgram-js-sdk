@@ -1,0 +1,24 @@
+{
+  "name": "@deepgram/sdk-middleware-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example server implementations for Deepgram SDK middleware",
+  "type": "module",
+  "scripts": {
+    "express": "tsx express.ts",
+    "fastify": "tsx fastify.ts",
+    "http": "tsx http.ts",
+    "token-auth-express": "tsx token-auth-express.ts",
+    "token-auth-fastify": "tsx token-auth-fastify.ts",
+    "token-auth-http": "tsx token-auth-http.ts"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "fastify": "^5.2.0",
+    "fastify-plugin": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "tsx": "^4.19.2"
+  }
+}

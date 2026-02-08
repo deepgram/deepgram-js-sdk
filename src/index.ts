@@ -14,3 +14,6 @@ export { CustomDeepgramClient as DeepgramClient } from "./CustomClient.js";
 export { DeepgramEnvironment, type DeepgramEnvironmentUrls } from "./environments.js";
 export { DeepgramError, DeepgramTimeoutError } from "./errors/index.js";
 export * from "./exports.js";
+
+// Middleware exports for Express and Fastify proxy support
+export * from "./middleware/index.js";
