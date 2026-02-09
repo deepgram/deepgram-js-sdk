@@ -15,13 +15,16 @@ webpack.config.js
 # Tests
 tests/browser
 tests/esm-build.test.ts
-tests/unit/websocket-wrappers.test.ts
-tests/unit/multiple-keyterms.test.ts
+tests/unit/agent-providers.test.ts
 tests/unit/async-send-finalize.test.ts
+tests/unit/baseurl-priority.test.ts
+tests/unit/custom-baseurl.test.ts
+tests/unit/custom-client.test.ts
+tests/unit/error-handling.test.ts
+tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
 tests/unit/websocket-reconnection.test.ts
-tests/unit/error-handling.test.ts
-tests/unit/custom-client.test.ts
+tests/unit/websocket-wrappers.test.ts
 tests/wire/websocket
 tests/wire/listen/v1/transcription.test.ts
 vitest.config.mts
