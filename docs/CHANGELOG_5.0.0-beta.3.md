@@ -54,6 +54,8 @@ const socket = await client.listen.v2.connect({
 - **Added**: Wire tests for REST-based transcription endpoints
 - **Added**: Tests verifying async-send-finalize patterns
 - **Added**: Tests for Node.js version compatibility
+- **Added**: Tests for custom providers and fallback behaviour
+- **Added**: Tests for base URL configuration priority (ensuring correct precedence)
 
 ### Test Infrastructure
 - **Updated**: `.fernignore` to preserve custom test files during SDK regeneration
@@ -64,6 +66,10 @@ const socket = await client.listen.v2.connect({
 - **Updated**: Added documentation for `createConnection()` alias
 - **Updated**: Added documentation for multiple keyterms in V2
 - **Updated**: Migration checklist updated to mention `createConnection()` option
+
+### Examples
+- **Converted**: All examples converted from JavaScript to TypeScript for better type safety and developer experience
+- **Enhanced**: Additional example coverage across various SDK features
 
 ## 🐛 Bug Fixes
 

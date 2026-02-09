@@ -13,7 +13,7 @@
  * This example shows the configuration structure but won't run without proper credentials.
  */
 
-import { DeepgramClient } from "../src/CustomClient.js";
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
 const deepgramClient = new DeepgramClient({
 	apiKey: process.env.DEEPGRAM_API_KEY ?? "",

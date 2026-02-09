@@ -13,7 +13,7 @@
  * to the specified endpoint.
  */
 
-import { DeepgramClient } from "../src/CustomClient.js";
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
 async function testEUEndpoint(): Promise<void> {
 	console.log("=== EU Endpoint Configuration Example ===\n");

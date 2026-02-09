@@ -11,7 +11,7 @@
  * - Enterprise deployments
  */
 
-import { DeepgramClient } from "../src/CustomClient.js";
+const { DeepgramClient } = require("../dist/cjs/index.js");
 
 const deepgramClient = new DeepgramClient({
 	apiKey: process.env.DEEPGRAM_API_KEY ?? "",
