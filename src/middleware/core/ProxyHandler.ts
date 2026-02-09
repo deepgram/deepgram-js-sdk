@@ -3,6 +3,7 @@ import https from "node:https";
 import { URL } from "node:url";
 
 import type { MiddlewareOptions } from "./types.js";
+import { verifyProxyToken } from "./jwt.js";
 
 /**
  * Handles HTTP/REST request proxying to Deepgram API
@@ -10,10 +11,12 @@ import type { MiddlewareOptions } from "./types.js";
 export class ProxyHandler {
   private readonly apiKey: string;
   private readonly baseUrl: string;
+  private readonly tokenMode: "deepgram" | "jwt";
 
   constructor(options: MiddlewareOptions) {
     this.apiKey = options.apiKey;
     this.baseUrl = options.baseUrl ?? "https://api.deepgram.com";
+    this.tokenMode = options.tokenMode ?? "deepgram";
   }
 
   /**
@@ -55,8 +58,8 @@ export class ProxyHandler {
     const targetUrl = new URL(cleanUrl, this.baseUrl);
     console.log(`[ProxyHandler] Target URL: ${targetUrl.toString()}`);
 
-    // Prepare headers
-    const headers = this.prepareHeaders(req);
+    // Prepare headers (may verify JWT)
+    const headers = await this.prepareHeaders(req);
     console.log(`[ProxyHandler] Request headers prepared`);
 
     // Create request to Deepgram
@@ -145,7 +148,7 @@ export class ProxyHandler {
   /**
    * Prepare headers for Deepgram request
    */
-  private prepareHeaders(req: IncomingMessage): Record<string, string> {
+  private async prepareHeaders(req: IncomingMessage): Promise<Record<string, string>> {
     const headers: Record<string, string> = {};
 
     // Copy relevant headers
@@ -171,15 +174,31 @@ export class ProxyHandler {
 
     // Authentication logic:
     // 1. If client sends dummy key "Token Dummy key for SDK proxying" -> use server API key
-    // 2. If client sends valid token (e.g., temp JWT from /token endpoint) -> forward it
-    // 3. If client sends no auth header -> use server API key
+    // 2. If tokenMode is "jwt" and client sends Bearer token -> verify JWT and use server API key
+    // 3. If tokenMode is "deepgram" and client sends Token -> forward it (Deepgram temp token)
+    // 4. If client sends no auth header -> use server API key
     const clientAuth = req.headers.authorization;
     const isDummyKey = clientAuth === "Token Dummy key for SDK proxying";
 
     if (clientAuth && !isDummyKey) {
-      console.log(`[ProxyHandler] Client provided authorization header, forwarding to Deepgram`);
-      headers.authorization = clientAuth;
-      console.log(`[ProxyHandler] Authorization header: ${headers.authorization.substring(0, 30)}...`);
+      // Check if it's a JWT Bearer token
+      if (this.tokenMode === "jwt" && clientAuth.startsWith("Bearer ")) {
+        const token = clientAuth.replace("Bearer ", "");
+        console.log(`[ProxyHandler] Client provided JWT token, verifying...`);
+
+        try {
+          await verifyProxyToken(token, this.apiKey);
+          console.log(`[ProxyHandler] JWT verified successfully, using server API key`);
+          headers.authorization = `Token ${this.apiKey}`;
+        } catch (error) {
+          console.error(`[ProxyHandler] JWT verification failed:`, error);
+          throw new Error("Invalid or expired token");
+        }
+      } else {
+        console.log(`[ProxyHandler] Client provided authorization header, forwarding to Deepgram`);
+        headers.authorization = clientAuth;
+        console.log(`[ProxyHandler] Authorization header: ${headers.authorization.substring(0, 30)}...`);
+      }
     } else {
       if (isDummyKey) {
         console.log(`[ProxyHandler] Client sent dummy key, using server API key`);

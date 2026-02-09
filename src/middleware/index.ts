@@ -74,6 +74,14 @@ export {
   type FastifyDeepgramProxyOptions,
 } from "./adapters/fastify.js";
 
+// JWT token management
+export {
+  createProxyToken,
+  verifyProxyToken,
+  type ProxyTokenOptions,
+  type ProxyTokenPayload,
+} from "./core/jwt.js";
+
 // Core classes (for advanced usage)
 export { ProxyHandler } from "./core/ProxyHandler.js";
 export { TokenManager } from "./core/TokenManager.js";

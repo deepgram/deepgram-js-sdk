@@ -1,11 +1,14 @@
 /**
- * Example: Temporary Token Authentication with Middleware
+ * Example: JWT Token Authentication with Middleware
  *
- * This example demonstrates how to use temporary token authentication
+ * This example demonstrates how to use JWT-based token authentication
  * with the Deepgram proxy middleware. This provides enhanced security by:
- * - Keeping the main API key server-side
- * - Issuing short-lived tokens to clients
- * - Allowing token expiration and renewal
+ * - Keeping the main API key server-side only
+ * - Issuing JWT tokens signed with the API key
+ * - Verifying JWTs on the proxy before forwarding to Deepgram
+ * - Supporting custom scopes and metadata in tokens
+ *
+ * This follows the same pattern as LiveKit's token-based authentication.
  *
  * Prerequisites:
  * ```bash
@@ -54,30 +57,19 @@ app.use((req, res, next) => {
  * Health check endpoint
  */
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", service: "deepgram-proxy-token-auth" });
+  res.json({ status: "ok", service: "deepgram-proxy-jwt-auth" });
 });
 
 /**
- * Custom JSON endpoint (demonstrates mixing proxy with custom routes)
+ * Create Deepgram proxy middleware with JWT auth enabled
  */
-app.post("/json", express.json(), (req, res) => {
-  res.json({
-    success: true,
-    message: "Custom route working!",
-    received: req.body,
-    timestamp: new Date().toISOString(),
-  });
-});
-
-/**
- * Create Deepgram proxy middleware with token auth enabled
- */
-console.log("🔧 Creating Deepgram proxy with token authentication...");
+console.log("🔧 Creating Deepgram proxy with JWT authentication...");
 
 const { middleware, server: registerWebSocket } = createDeepgramMiddleware({
   apiKey: API_KEY,
-  enableTokenAuth: true, // Enable temporary tokens
-  tokenExpiresIn: 300, // Token lifetime: 5 minutes
+  enableTokenAuth: true,       // Enable token generation endpoint
+  tokenMode: "jwt",             // Use JWT mode instead of Deepgram's temp tokens
+  defaultTokenExpiration: 3600, // Default JWT lifetime: 1 hour
 });
 
 /**
@@ -90,7 +82,7 @@ const { middleware, server: registerWebSocket } = createDeepgramMiddleware({
 app.use("/api/deepgram", middleware);
 
 /**
- * Example client endpoint that demonstrates the token flow
+ * Example client endpoint that demonstrates the JWT flow
  */
 app.post("/demo/transcribe", express.json(), async (req, res) => {
   try {
@@ -100,12 +92,16 @@ app.post("/demo/transcribe", express.json(), async (req, res) => {
       return res.status(400).json({ error: "Missing 'url' in request body" });
     }
 
-    console.log("\n📝 Demo: Transcribing with temporary token...");
+    console.log("\n📝 Demo: Transcribing with JWT token...");
 
-    // Step 1: Request a temporary token from the proxy
-    console.log("  1️⃣  Requesting temporary token...");
+    // Step 1: Request a JWT from the proxy
+    console.log("  1️⃣  Requesting JWT token...");
     const tokenResponse = await fetch(`http://localhost:${PORT}/api/deepgram/token`, {
-      method: "GET",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ttlSeconds: 3600, // 1 hour expiration
+      }),
     });
 
     if (!tokenResponse.ok) {
@@ -116,12 +112,13 @@ app.post("/demo/transcribe", express.json(), async (req, res) => {
       token: string;
       expiresIn: number;
     };
-    console.log(`  ✅ Received token (expires in ${expiresIn}s)`);
+    console.log(`  ✅ Received JWT token (expires in ${expiresIn}s)`);
 
-    // Step 2: Use the token with the Deepgram SDK
-    console.log("  2️⃣  Creating Deepgram client with token...");
+    // Step 2: Use the JWT with the Deepgram SDK
+    // IMPORTANT: Use Bearer token format, not Token format
+    console.log("  2️⃣  Creating Deepgram client with JWT...");
     const client = new DeepgramClient({
-      apiKey: token, // Use the temporary token
+      apiKey: `Bearer ${token}`, // Use Bearer format for JWTs
       baseUrl: `http://localhost:${PORT}/api/deepgram`,
     });
 
@@ -134,6 +131,7 @@ app.post("/demo/transcribe", express.json(), async (req, res) => {
     // Return the transcription
     return res.json({
       success: true,
+      tokenType: "jwt",
       tokenExpiresIn: expiresIn,
       transcription: result.results,
     });
@@ -149,26 +147,32 @@ app.post("/demo/transcribe", express.json(), async (req, res) => {
  * Start the server
  */
 const httpServer = app.listen(PORT, () => {
-  console.log(`✅ Deepgram proxy server with token auth running`);
+  console.log(`✅ Deepgram proxy server with JWT auth running`);
   console.log(`📡 Server: http://localhost:${PORT}`);
   console.log(`🔑 Token endpoint: http://localhost:${PORT}/api/deepgram/token`);
   console.log(`🏥 Health check: http://localhost:${PORT}/health`);
   console.log(`📝 Demo endpoint: POST http://localhost:${PORT}/demo/transcribe`);
   console.log("");
-  console.log("Token Authentication Flow:");
+  console.log("JWT Authentication Flow:");
   console.log(`
-  1. Client requests temporary token:
-     GET http://localhost:${PORT}/api/deepgram/token
+  1. Client requests JWT token:
+     POST http://localhost:${PORT}/api/deepgram/token
+     Body: { "ttlSeconds": 3600 }
 
-     Response: { "token": "...", "expiresIn": 300 }
+     Response: { "token": "eyJhbGc...", "expiresIn": 3600 }
 
-  2. Client uses token with SDK:
+  2. Client uses JWT with SDK (Bearer format):
      const client = new DeepgramClient({
-       apiKey: token,
+       apiKey: 'Bearer ' + token,
        baseUrl: 'http://localhost:${PORT}/api/deepgram'
      });
 
-  3. Token expires after 5 minutes
+  3. Proxy verifies JWT signature and uses server API key
+     - JWT is signed with HMAC256 using the API key
+     - Proxy verifies JWT before forwarding to Deepgram
+     - API key never leaves the server!
+
+  4. Token expires after configured time
      Client must request a new token after expiration
   `);
   console.log("");

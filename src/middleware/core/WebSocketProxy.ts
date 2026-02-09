@@ -4,6 +4,7 @@ import { URL } from "node:url";
 import WebSocket from "ws";
 
 import type { MiddlewareOptions } from "./types.js";
+import { verifyProxyToken } from "./jwt.js";
 
 /**
  * Handles WebSocket proxying to Deepgram API
@@ -11,9 +12,11 @@ import type { MiddlewareOptions } from "./types.js";
 export class WebSocketProxy {
   private readonly apiKey: string;
   private readonly baseUrl: string;
+  private readonly tokenMode: "deepgram" | "jwt";
 
   constructor(options: MiddlewareOptions) {
     this.apiKey = options.apiKey;
+    this.tokenMode = options.tokenMode ?? "deepgram";
     // Convert HTTP(S) base URL to WebSocket URL
     this.baseUrl = (options.baseUrl ?? "https://api.deepgram.com")
       .replace(/^https:/, "wss:")
@@ -28,12 +31,26 @@ export class WebSocketProxy {
     socket: Duplex,
     head: Buffer
   ): void {
+    this.handleUpgradeAsync(req, socket, head).catch((error) => {
+      console.error("WebSocket upgrade error:", error);
+      socket.destroy();
+    });
+  }
+
+  /**
+   * Async version of handleUpgrade to support JWT verification
+   */
+  private async handleUpgradeAsync(
+    req: IncomingMessage,
+    socket: Duplex,
+    head: Buffer
+  ): Promise<void> {
     try {
       // Build Deepgram WebSocket URL
       const targetUrl = this.buildWebSocketUrl(req);
 
-      // Prepare headers
-      const headers = this.prepareHeaders(req);
+      // Prepare headers (may verify JWT)
+      const headers = await this.prepareHeaders(req);
 
       // Connect to Deepgram WebSocket
       const deepgramSocket = new WebSocket(targetUrl, { headers });
@@ -64,7 +81,7 @@ export class WebSocketProxy {
       });
     } catch (error) {
       console.error("WebSocket upgrade error:", error);
-      socket.destroy();
+      throw error;
     }
   }
 
@@ -81,7 +98,7 @@ export class WebSocketProxy {
   /**
    * Prepare headers for Deepgram WebSocket connection
    */
-  private prepareHeaders(req: IncomingMessage): Record<string, string> {
+  private async prepareHeaders(req: IncomingMessage): Promise<Record<string, string>> {
     const headers: Record<string, string> = {};
 
     // Copy relevant headers
@@ -100,8 +117,25 @@ export class WebSocketProxy {
       }
     }
 
-    // Inject API key
-    headers.authorization = `Token ${this.apiKey}`;
+    // Authentication logic (similar to ProxyHandler)
+    const clientAuth = req.headers.authorization;
+
+    if (clientAuth && this.tokenMode === "jwt" && clientAuth.startsWith("Bearer ")) {
+      const token = clientAuth.replace("Bearer ", "");
+      console.log(`[WebSocketProxy] Client provided JWT token, verifying...`);
+
+      try {
+        await verifyProxyToken(token, this.apiKey);
+        console.log(`[WebSocketProxy] JWT verified successfully, using server API key`);
+        headers.authorization = `Token ${this.apiKey}`;
+      } catch (error) {
+        console.error(`[WebSocketProxy] JWT verification failed:`, error);
+        throw new Error("Invalid or expired token");
+      }
+    } else {
+      // Use server API key
+      headers.authorization = `Token ${this.apiKey}`;
+    }
 
     return headers;
   }

@@ -206,16 +206,16 @@
                         🚀 Fastify<br>
                         <small>Port 3003</small>
                     </button>
-                    <button class="endpoint-btn" data-port="3004" data-name="Token Auth (HTTP)" data-token="true">
-                        🔑 HTTP + Token<br>
+                    <button class="endpoint-btn" data-port="3004" data-name="JWT Auth (HTTP)" data-token="jwt">
+                        🔑 HTTP + JWT<br>
                         <small>Port 3004</small>
                     </button>
-                    <button class="endpoint-btn" data-port="3005" data-name="Token Auth (Express)" data-token="true">
-                        🔐 Express + Token<br>
+                    <button class="endpoint-btn" data-port="3005" data-name="JWT Auth (Express)" data-token="jwt">
+                        🔐 Express + JWT<br>
                         <small>Port 3005</small>
                     </button>
-                    <button class="endpoint-btn" data-port="3006" data-name="Token Auth (Fastify)" data-token="true">
-                        🔒 Fastify + Token<br>
+                    <button class="endpoint-btn" data-port="3006" data-name="JWT Auth (Fastify)" data-token="jwt">
+                        🔒 Fastify + JWT<br>
                         <small>Port 3006</small>
                     </button>
                 </div>
@@ -247,6 +247,7 @@
         let selectedPort = 3001;
         let selectedName = 'HTTP';
         let isTokenAuth = false;
+        let isJWTAuth = false;
 
         // Endpoint selection
         document.querySelectorAll('.endpoint-btn').forEach(btn => {
@@ -255,7 +256,8 @@
                 btn.classList.add('active');
                 selectedPort = parseInt(btn.dataset.port, 10);  // Convert to number
                 selectedName = btn.dataset.name;
-                isTokenAuth = btn.dataset.token === 'true';
+                isJWTAuth = btn.dataset.token === 'jwt';
+                isTokenAuth = isJWTAuth;  // Keep compatibility
                 log(`✅ Selected ${selectedName} endpoint (port ${selectedPort})`, 'info');
             });
         });
@@ -288,14 +290,16 @@
             let token = null;
 
             try {
-                // Step 1: Get temporary token if using Token Auth
-                if (isTokenAuth) {
-                    log('🔑 Step 1: Requesting temporary token...', 'info');
+                // Step 1: Get JWT token if using JWT Auth
+                if (isJWTAuth) {
+                    log('🔑 Step 1: Requesting JWT token...', 'info');
                     const tokenUrl = `http://localhost:${selectedPort}/api/deepgram/token`;
-                    log(`📤 GET ${tokenUrl}`, 'info');
+                    log(`📤 POST ${tokenUrl}`, 'info');
 
                     const tokenResponse = await fetch(tokenUrl, {
-                        method: 'GET'
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ttlSeconds: 3600 })
                     });
 
                     if (!tokenResponse.ok) {
@@ -304,7 +308,7 @@
 
                     const tokenData = await tokenResponse.json();
                     token = tokenData.token;
-                    log(`✅ Received token: ${token.substring(0, 20)}...`, 'success');
+                    log(`✅ Received JWT token: ${token.substring(0, 20)}...`, 'success');
                     log(`⏰ Token expires in: ${tokenData.expiresIn} seconds`, 'info');
                     log('', 'info'); // Blank line for readability
                 }
@@ -319,10 +323,10 @@
                     'Content-Type': 'application/json',
                 };
 
-                // Add token to Authorization header if using token auth
+                // Add token to Authorization header if using JWT auth
                 if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;  // Temporary tokens use Bearer
-                    log(`🔐 Using temporary token for authentication`, 'info');
+                    headers['Authorization'] = `Bearer ${token}`;  // JWT tokens use Bearer format
+                    log(`🔐 Using JWT token for authentication`, 'info');
                 }
 
                 const startTime = Date.now();
@@ -351,8 +355,9 @@
                     log(`📝 Transcript: "${transcript}"`, 'success');
                     log('✅ REST API test PASSED!', 'success');
 
-                    if (isTokenAuth) {
-                        log('✨ Token authentication flow completed successfully!', 'success');
+                    if (isJWTAuth) {
+                        log('✨ JWT authentication flow completed successfully!', 'success');
+                        log('🔐 The proxy verified the JWT and used the server API key!', 'success');
                     }
                 } else {
                     log('⚠️ Response structure unexpected', 'error');
@@ -379,37 +384,42 @@
                 const { DeepgramClient } = window.deepgram;
                 let client;
 
-                // Handle token auth vs basic proxy differently
-                if (isTokenAuth) {
-                    // Token auth flow: Request token first, then create client with accessToken
-                    log('🔑 Step 1: Requesting temporary token from proxy...', 'info');
-                    log(`📤 GET http://localhost:${selectedPort}/api/deepgram/token`, 'info');
+                // Handle JWT auth vs basic proxy differently
+                if (isJWTAuth) {
+                    // JWT auth flow: Request JWT first, then create client with Bearer token
+                    log('🔑 Step 1: Requesting JWT token from proxy...', 'info');
+                    log(`📤 POST http://localhost:${selectedPort}/api/deepgram/token`, 'info');
 
-                    const tokenResponse = await fetch(`http://localhost:${selectedPort}/api/deepgram/token`);
+                    const tokenResponse = await fetch(`http://localhost:${selectedPort}/api/deepgram/token`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ttlSeconds: 3600 })
+                    });
+
                     if (!tokenResponse.ok) {
                         throw new Error(`Token request failed: ${tokenResponse.status}`);
                     }
 
                     const tokenData = await tokenResponse.json();
-                    const token = tokenData.access_token || tokenData.token;
-                    const expiresIn = tokenData.expires_in || tokenData.expiresIn;
+                    const token = tokenData.token;
+                    const expiresIn = tokenData.expiresIn;
 
                     if (!token) {
                         throw new Error(`No token in response: ${JSON.stringify(tokenData)}`);
                     }
 
-                    log(`✅ Received token: ${token.substring(0, 20)}...`, 'success');
+                    log(`✅ Received JWT: ${token.substring(0, 20)}...`, 'success');
                     log(`⏰ Token expires in: ${expiresIn} seconds`, 'info');
                     log('', 'info');
-                    log('🌐 Step 2: Creating Deepgram client with access token...', 'info');
+                    log('🌐 Step 2: Creating Deepgram client with JWT (Bearer format)...', 'info');
                     log(`🔗 Base URL: http://localhost:${selectedPort}/api/deepgram`, 'info');
 
                     client = new DeepgramClient({
-                        accessToken: token,
+                        apiKey: `Bearer ${token}`,  // JWT uses Bearer format
                         baseUrl: `http://localhost:${selectedPort}/api/deepgram`
                     });
 
-                    log('✅ Deepgram client created with access token', 'success');
+                    log('✅ Deepgram client created with JWT Bearer token', 'success');
                 } else {
                     // Basic proxy flow: Use dummy key, proxy handles authentication
                     log('📦 Creating Deepgram client with baseUrl configuration...', 'info');
@@ -449,12 +459,13 @@
                     log('', 'info');
                     log('✅ SDK REST API test PASSED!', 'success');
 
-                    if (isTokenAuth) {
-                        log('🎉 The complete token flow worked:', 'success');
-                        log('  1. ✅ Proxy generated temporary token', 'success');
-                        log('  2. ✅ SDK used token with accessToken parameter', 'success');
-                        log('  3. ✅ Proxy forwarded token to Deepgram', 'success');
-                        log('  4. ✅ Deepgram accepted the token!', 'success');
+                    if (isJWTAuth) {
+                        log('🎉 The complete JWT flow worked:', 'success');
+                        log('  1. ✅ Proxy generated JWT signed with API key (HMAC256)', 'success');
+                        log('  2. ✅ SDK sent JWT with Bearer format', 'success');
+                        log('  3. ✅ Proxy verified JWT signature', 'success');
+                        log('  4. ✅ Proxy used server API key to call Deepgram', 'success');
+                        log('  5. ✅ API key never exposed to browser! 🔐', 'success');
                     } else {
                         log('✨ The SDK successfully used your proxy with the baseUrl configuration!', 'success');
                         log('🔐 Your API key stayed safe on the server!', 'success');

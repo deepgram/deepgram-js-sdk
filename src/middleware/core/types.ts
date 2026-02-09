@@ -8,6 +8,15 @@ export interface MiddlewareOptions {
   /** Enable temporary token generation endpoint (GET /token) */
   enableTokenAuth?: boolean;
 
+  /**
+   * Token mode: how tokens are generated and verified
+   * - "deepgram": Use Deepgram's native temporary token API (legacy)
+   * - "jwt": Use JWT tokens signed with API key (recommended for browser clients)
+   *
+   * @default "deepgram"
+   */
+  tokenMode?: "deepgram" | "jwt";
+
   /** Custom Deepgram API base URL (e.g., for EU endpoint) */
   baseUrl?: string;
 

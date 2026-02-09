@@ -2,23 +2,33 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 
 import { CustomDeepgramClient as DeepgramClient } from "../../CustomClient.js";
 import type { MiddlewareOptions, TokenRequest, TokenResponse } from "./types.js";
+import { createProxyToken } from "./jwt.js";
 
 /**
  * Manages temporary token generation for client authentication
  */
 export class TokenManager {
   private readonly client: DeepgramClient;
+  private readonly apiKey: string;
+  private readonly tokenMode: "deepgram" | "jwt";
   private readonly defaultExpiration: number;
 
   constructor(options: MiddlewareOptions) {
     this.client = new DeepgramClient({ apiKey: options.apiKey });
+    this.apiKey = options.apiKey;
+    this.tokenMode = options.tokenMode ?? "deepgram";
     this.defaultExpiration = options.defaultTokenExpiration ?? 3600;
   }
 
   /**
-   * Generate a temporary access token using Deepgram API
+   * Generate a temporary access token
+   * Uses either Deepgram's native token API or JWT signing based on tokenMode
    */
   async generateToken(ttlSeconds: number): Promise<string> {
+    if (this.tokenMode === "jwt") {
+      return createProxyToken(this.apiKey, { ttl: ttlSeconds });
+    }
+
     const response = await this.client.auth.v1.tokens.grant({
       ttl_seconds: ttlSeconds,
     });

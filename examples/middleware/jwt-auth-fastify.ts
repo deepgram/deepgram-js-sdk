@@ -1,11 +1,14 @@
 /**
- * Example: Temporary Token Authentication with Fastify
+ * Example: JWT Token Authentication with Fastify
  *
- * This example demonstrates how to use temporary token authentication
+ * This example demonstrates how to use JWT-based token authentication
  * with the Deepgram proxy using Fastify. This provides enhanced security by:
- * - Keeping the main API key server-side
- * - Issuing short-lived tokens to clients
- * - Allowing token expiration and renewal
+ * - Keeping the main API key server-side only
+ * - Issuing JWT tokens signed with the API key
+ * - Verifying JWTs on the proxy before forwarding to Deepgram
+ * - Supporting custom scopes and metadata in tokens
+ *
+ * This follows the same pattern as LiveKit's token-based authentication.
  *
  * Prerequisites:
  * ```bash
@@ -53,23 +56,11 @@ fastify.options("*", async (request, reply) => {
  * Health check endpoint
  */
 fastify.get("/health", async () => {
-  return { status: "ok", service: "deepgram-proxy-token-auth" };
+  return { status: "ok", service: "deepgram-proxy-jwt-auth" };
 });
 
 /**
- * Custom JSON endpoint (demonstrates mixing proxy with custom routes)
- */
-fastify.post("/json", async (request) => {
-  return {
-    success: true,
-    message: "Custom route working!",
-    received: request.body,
-    timestamp: new Date().toISOString(),
-  };
-});
-
-/**
- * Example client endpoint that demonstrates the token flow
+ * Example client endpoint that demonstrates the JWT flow
  */
 fastify.post<{ Body: { url?: string } }>("/demo/transcribe", async (request, reply) => {
   try {
@@ -79,12 +70,16 @@ fastify.post<{ Body: { url?: string } }>("/demo/transcribe", async (request, rep
       return reply.status(400).send({ error: "Missing 'url' in request body" });
     }
 
-    console.log("\n📝 Demo: Transcribing with temporary token...");
+    console.log("\n📝 Demo: Transcribing with JWT token...");
 
-    // Step 1: Request a temporary token from the proxy
-    console.log("  1️⃣  Requesting temporary token...");
+    // Step 1: Request a JWT from the proxy
+    console.log("  1️⃣  Requesting JWT token...");
     const tokenResponse = await fetch(`http://localhost:${PORT}/api/deepgram/token`, {
-      method: "GET",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ttlSeconds: 3600, // 1 hour expiration
+      }),
     });
 
     if (!tokenResponse.ok) {
@@ -95,12 +90,12 @@ fastify.post<{ Body: { url?: string } }>("/demo/transcribe", async (request, rep
       token: string;
       expiresIn: number;
     };
-    console.log(`  ✅ Received token (expires in ${expiresIn}s)`);
+    console.log(`  ✅ Received JWT token (expires in ${expiresIn}s)`);
 
-    // Step 2: Use the token with the Deepgram SDK
-    console.log("  2️⃣  Creating Deepgram client with token...");
+    // Step 2: Use the JWT with the Deepgram SDK
+    console.log("  2️⃣  Creating Deepgram client with JWT...");
     const client = new DeepgramClient({
-      apiKey: token, // Use the temporary token
+      apiKey: `Bearer ${token}`, // Use Bearer format for JWTs
       baseUrl: `http://localhost:${PORT}/api/deepgram`,
     });
 
@@ -113,6 +108,7 @@ fastify.post<{ Body: { url?: string } }>("/demo/transcribe", async (request, rep
     // Return the transcription
     return {
       success: true,
+      tokenType: "jwt",
       tokenExpiresIn: expiresIn,
       transcription: result.results,
     };
@@ -125,17 +121,18 @@ fastify.post<{ Body: { url?: string } }>("/demo/transcribe", async (request, rep
 });
 
 /**
- * Register Deepgram proxy plugin with token auth enabled
+ * Register Deepgram proxy plugin with JWT auth enabled
  * All requests to /api/deepgram/* will be proxied to api.deepgram.com
  * WebSocket upgrades are automatically handled
  */
-console.log("🔧 Registering Deepgram proxy with token authentication...");
+console.log("🔧 Registering Deepgram proxy with JWT authentication...");
 
 await fastify.register(fastifyDeepgramProxy, {
   prefix: "/api/deepgram",
   apiKey: API_KEY,
-  enableTokenAuth: true, // Enable temporary tokens
-  tokenExpiresIn: 300, // Token lifetime: 5 minutes
+  enableTokenAuth: true,         // Enable token generation endpoint
+  tokenMode: "jwt",               // Use JWT mode instead of Deepgram's temp tokens
+  defaultTokenExpiration: 3600,  // Default JWT lifetime: 1 hour
 });
 
 /**
@@ -144,26 +141,32 @@ await fastify.register(fastifyDeepgramProxy, {
 try {
   await fastify.listen({ port: PORT, host: "0.0.0.0" });
 
-  console.log(`✅ Deepgram proxy server with token auth running`);
+  console.log(`✅ Deepgram proxy server with JWT auth running`);
   console.log(`📡 Server: http://localhost:${PORT}`);
   console.log(`🔑 Token endpoint: http://localhost:${PORT}/api/deepgram/token`);
   console.log(`🏥 Health check: http://localhost:${PORT}/health`);
   console.log(`📝 Demo endpoint: POST http://localhost:${PORT}/demo/transcribe`);
   console.log("");
-  console.log("Token Authentication Flow:");
+  console.log("JWT Authentication Flow:");
   console.log(`
-  1. Client requests temporary token:
-     GET http://localhost:${PORT}/api/deepgram/token
+  1. Client requests JWT token:
+     POST http://localhost:${PORT}/api/deepgram/token
+     Body: { "ttlSeconds": 3600 }
 
-     Response: { "token": "...", "expiresIn": 300 }
+     Response: { "token": "eyJhbGc...", "expiresIn": 3600 }
 
-  2. Client uses token with SDK:
+  2. Client uses JWT with SDK (Bearer format):
      const client = new DeepgramClient({
-       apiKey: token,
+       apiKey: 'Bearer ' + token,
        baseUrl: 'http://localhost:${PORT}/api/deepgram'
      });
 
-  3. Token expires after 5 minutes
+  3. Proxy verifies JWT signature and uses server API key
+     - JWT is signed with HMAC256 using the API key
+     - Proxy verifies JWT before forwarding to Deepgram
+     - API key never leaves the server!
+
+  4. Token expires after configured time
      Client must request a new token after expiration
   `);
   console.log("");
@@ -174,37 +177,16 @@ try {
     -d '{"url": "https://dpgr.am/spacewalk.wav"}'
   `);
 } catch (error) {
-  console.error("❌ Error starting server:", error);
+  console.error("❌ Failed to start server:", error);
   process.exit(1);
 }
 
 /**
  * Graceful shutdown
  */
-const shutdown = async (signal: string): Promise<void> => {
-  console.log(`\n🛑 Received ${signal}, shutting down proxy server...`);
+process.on("SIGINT", async () => {
+  console.log("\n🛑 Shutting down proxy server...");
   await fastify.close();
   console.log("✅ Server closed");
   process.exit(0);
-};
-
-process.on("SIGINT", () => {
-  void shutdown("SIGINT");
-});
-
-process.on("SIGTERM", () => {
-  void shutdown("SIGTERM");
-});
-
-/**
- * Error handling
- */
-process.on("uncaughtException", (error) => {
-  console.error("❌ Uncaught exception:", error);
-  process.exit(1);
-});
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("❌ Unhandled rejection at:", promise, "reason:", reason);
-  process.exit(1);
 });
