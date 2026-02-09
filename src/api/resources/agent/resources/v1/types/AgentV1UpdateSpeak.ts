@@ -5,5 +5,9 @@ import type * as Deepgram from "../../../../../index.js";
 export interface AgentV1UpdateSpeak {
     /** Message type identifier for updating the speak model */
     type: "UpdateSpeak";
-    speak: Deepgram.SpeakSettingsV1;
+    speak: AgentV1UpdateSpeak.Speak;
+}
+
+export namespace AgentV1UpdateSpeak {
+    export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
 }
