@@ -1,6 +1,4 @@
-SHELL := /bin/bash
-
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 test test-esm lint build browser browser-serve middleware
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 test test-esm lint build browser browser-serve
 
 # Default target
 help:
@@ -13,11 +11,10 @@ help:
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
-	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-35) sequentially\n"
+	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-32) sequentially\n"
 	@printf "  \033[1;32mmake example-N\033[0m         - Run a specific example by number (e.g., make example-1)\n"
 	@printf "  \033[1;32mmake browser\033[0m           - Run browser tests\n"
 	@printf "  \033[1;32mmake browser-serve\033[0m     - Serve the browser examples for manual testing\n"
-	@printf "\033[1;32mmake middleware\033[0m       - Run all middleware server examples simultaneously\n"
 	@echo ""
 	@printf "\033[1;33mAvailable Examples:\033[0m\n"
 	@printf "  \033[36m1\033[0m  - Authentication API Key\n"
@@ -55,6 +52,90 @@ help:
 	@printf "  \033[36m33\033[0m - Configuration EU Endpoint\n"
 	@printf "  \033[36m34\033[0m - Agent Custom Providers\n"
 	@printf "  \033[36m35\033[0m - Agent Provider Combinations\n"
+
+# Run all examples
+examples:
+	@printf "\033[1;36mInstalling tsx...\033[0m\n"; \
+	pnpm install --save-exact --save-dev tsx; \
+	printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
+	TOTAL=35; \
+	PASS_COUNT=0; \
+	FAIL_COUNT=0; \
+	PASSED_LIST=""; \
+	FAILED_LIST=""; \
+	ERROR_DIR=/tmp/example-errors; \
+	mkdir -p $$ERROR_DIR; \
+	\
+	run_example() { \
+		NUM=$$1; \
+		FILE=$$2; \
+		NAME=$$3; \
+		PERCENT=$$((NUM * 100 / TOTAL)); \
+		BAR_LEN=25; \
+		FILLED=$$((NUM * BAR_LEN / TOTAL)); \
+		EMPTY=$$((BAR_LEN - FILLED)); \
+		printf "\r\033[1;33m[%2d/%2d]\033[0m [" "$$NUM" "$$TOTAL"; \
+		printf "\033[32m"; \
+		for i in $$(seq 1 $$FILLED); do printf "█"; done; \
+		printf "\033[90m"; \
+		for i in $$(seq 1 $$EMPTY); do printf "░"; done; \
+		printf "\033[0m] %3d%% \033[36m%s\033[0m ... " "$$PERCENT" "$$NAME"; \
+		ERROR_FILE=$$ERROR_DIR/example-$$NUM.err; \
+		if pnpm exec tsx "$$FILE" >$$ERROR_FILE 2>&1; then \
+			rm -f $$ERROR_FILE; \
+			printf "\033[1;32m✓ PASS\033[0m\n"; \
+			PASS_COUNT=$$((PASS_COUNT + 1)); \
+			if [ -z "$$PASSED_LIST" ]; then \
+				PASSED_LIST="$$NUM - $$NAME"; \
+			else \
+				PASSED_LIST="$$PASSED_LIST"$$'\n'"$$NUM - $$NAME"; \
+			fi; \
+		else \
+			printf "\033[1;31m✗ FAIL\033[0m\n"; \
+			FAIL_COUNT=$$((FAIL_COUNT + 1)); \
+			if [ -z "$$FAILED_LIST" ]; then \
+				FAILED_LIST="$$NUM - $$NAME"; \
+			else \
+				FAILED_LIST="$$FAILED_LIST"$$'\n'"$$NUM - $$NAME"; \
+			fi; \
+		fi; \
+	}; \
+	\
+	run_example 1 "examples/01-authentication-api-key.ts" "Authentication API Key"; \
+	run_example 2 "examples/02-authentication-access-token.ts" "Authentication Access Token"; \
+	run_example 3 "examples/03-authentication-proxy.ts" "Authentication Proxy"; \
+	run_example 4 "examples/04-transcription-prerecorded-url.ts" "Transcription Prerecorded URL"; \
+	run_example 5 "examples/05-transcription-prerecorded-file.ts" "Transcription Prerecorded File"; \
+	run_example 6 "examples/06-transcription-prerecorded-callback.ts" "Transcription Prerecorded Callback"; \
+	run_example 7 "examples/07-transcription-live-websocket.ts" "Transcription Live WebSocket"; \
+	run_example 8 "examples/08-transcription-captions.ts" "Transcription Captions"; \
+	run_example 9 "examples/09-voice-agent.ts" "Voice Agent"; \
+	run_example 10 "examples/10-text-to-speech-single.ts" "Text-to-Speech Single"; \
+	run_example 11 "examples/11-text-to-speech-streaming.ts" "Text-to-Speech Streaming"; \
+	run_example 12 "examples/12-text-intelligence.ts" "Text Intelligence"; \
+	run_example 13 "examples/13-management-projects.ts" "Management Projects"; \
+	run_example 14 "examples/14-management-keys.ts" "Management Keys"; \
+	run_example 15 "examples/15-management-members.ts" "Management Members"; \
+	run_example 16 "examples/16-management-invites.ts" "Management Invites"; \
+	run_example 17 "examples/17-management-usage.ts" "Management Usage"; \
+	run_example 18 "examples/18-management-billing.ts" "Management Billing"; \
+	run_example 19 "examples/19-management-models.ts" "Management Models"; \
+	run_example 20 "examples/20-onprem-credentials.ts" "On-Premises Credentials"; \
+	run_example 21 "examples/21-configuration-scoped.ts" "Configuration Scoped"; \
+	run_example 22 "examples/22-transcription-advanced-options.ts" "Transcription Advanced Options"; \
+	run_example 23 "examples/23-file-upload-types.ts" "File Upload Types"; \
+	run_example 24 "examples/24-error-handling.ts" "Error Handling"; \
+	run_example 25 "examples/25-binary-response.ts" "Binary Response"; \
+	run_example 26 "examples/26-transcription-live-websocket-v2.ts" "Transcription Live WebSocket V2"; \
+	run_example 27 "examples/27-deepgram-session-header.ts" "Deepgram Session Header"; \
+	run_example 28 "examples/28-text-intelligence-advanced.ts" "Text Intelligence Advanced"; \
+	run_example 29 "examples/29-management-usage-breakdown.ts" "Management Usage Breakdown"; \
+	run_example 30 "examples/30-management-billing-detailed.ts" "Management Billing Detailed"; \
+	run_example 31 "examples/31-management-member-permissions.ts" "Management Member Permissions"; \
+	run_example 32 "examples/32-management-project-models.ts" "Management Project Models"; \
+	run_example 33 "examples/33-configuration-eu-endpoint.ts" "Configuration EU Endpoint"; \
+	run_example 34 "examples/34-agent-custom-providers.ts" "Agent Custom Providers"; \
+	run_example 35 "examples/35-agent-provider-combinations.ts" "Agent Provider Combinations"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -270,42 +351,139 @@ example-35:
 	pnpm exec tsx examples/35-agent-provider-combinations.ts
 	pnpm uninstall tsx
 
-# Build the SDK (compile TypeScript to both CommonJS and ESM)
-build:
-	@printf "\033[1;36mBuilding SDK...\033[0m\n"
-	@source ~/.nvm/nvm.sh && pnpm build
+lint:
+	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
+	pnpm exec biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
 
-# Run middleware examples simultaneously on different ports
-middleware: build
-	@printf "\033[1;36mSetting up middleware examples...\033[0m\n"
-	@source ~/.nvm/nvm.sh && cd examples/middleware && pnpm install --ignore-workspace
-	@printf "\033[1;36mCopying browser SDK bundle...\033[0m\n"
-	@cp examples/browser/deepgram.js examples/middleware/deepgram.js
-	@printf "\n\033[1;36mStarting all middleware servers...\033[0m\n"
-	@printf "\033[33mPress CTRL-C to stop all servers\033[0m\n\n"
-	@(source ~/.nvm/nvm.sh && cd examples/middleware && PORT=3001 pnpm run http) & \
-	HTTP_PID=$$!; \
-	(source ~/.nvm/nvm.sh && cd examples/middleware && PORT=3002 pnpm run express) & \
-	EXPRESS_PID=$$!; \
-	(source ~/.nvm/nvm.sh && cd examples/middleware && PORT=3003 pnpm run fastify) & \
-	FASTIFY_PID=$$!; \
-	(source ~/.nvm/nvm.sh && cd examples/middleware && PORT=3004 pnpm run token-auth-http) & \
-	TOKEN_HTTP_PID=$$!; \
-	(source ~/.nvm/nvm.sh && cd examples/middleware && PORT=3005 pnpm run token-auth-express) & \
-	TOKEN_EXPRESS_PID=$$!; \
-	(source ~/.nvm/nvm.sh && cd examples/middleware && PORT=3006 pnpm run token-auth-fastify) & \
-	TOKEN_FASTIFY_PID=$$!; \
-	python3 -m http.server 8000 --directory examples/middleware & \
-	TEST_SERVER_PID=$$!; \
-	trap "echo '\n\033[1;31mShutting down all servers...\033[0m'; kill $$HTTP_PID $$EXPRESS_PID $$FASTIFY_PID $$TOKEN_HTTP_PID $$TOKEN_EXPRESS_PID $$TOKEN_FASTIFY_PID $$TEST_SERVER_PID 2>/dev/null; exit" EXIT INT TERM; \
-	sleep 2; \
-	printf "\033[1;32m✓ HTTP Server:             \033[0mhttp://localhost:3001/api/deepgram\n"; \
-	printf "\033[1;32m✓ Express Server:          \033[0mhttp://localhost:3002/api/deepgram\n"; \
-	printf "\033[1;32m✓ Fastify Server:          \033[0mhttp://localhost:3003/api/deepgram\n"; \
-	printf "\033[1;32m✓ Token Auth (HTTP):       \033[0mhttp://localhost:3004/api/deepgram\n"; \
-	printf "\033[1;32m✓ Token Auth (Express):    \033[0mhttp://localhost:3005/api/deepgram\n"; \
-	printf "\033[1;32m✓ Token Auth (Fastify):    \033[0mhttp://localhost:3006/api/deepgram\n"; \
-	printf "\033[1;32m✓ Test Suite:              \033[0mhttp://localhost:8000/test.html\n"; \
-	printf "\n\033[1;36mAll servers running! Open http://localhost:8000/test.html to test.\033[0m\n"; \
-	printf "\033[33mPress CTRL-C to stop all servers.\033[0m\n\n"; \
-	wait $$HTTP_PID $$EXPRESS_PID $$FASTIFY_PID $$TOKEN_HTTP_PID $$TOKEN_EXPRESS_PID $$TOKEN_FASTIFY_PID $$TEST_SERVER_PID
+build:
+	pnpm --package=typescript --package=tsup dlx tsup src/index.ts --out-dir dist/browser --format iife --global-name Deepgram --clean --platform browser
+	pnpm exec tsc --project ./tsconfig.cjs.json
+	pnpm exec tsc --project ./tsconfig.esm.json
+	node scripts/rename-to-esm-files.js dist/esm
+	node scripts/validate-esm-build.mjs
+
+test:
+	node scripts/fix-wire-test-imports.js
+	pnpm exec vitest --project unit --run
+	pnpm exec vitest --project wire --run
+	node scripts/revert-wire-test-imports.js
+
+test-esm:
+	@printf "\033[1;36mRunning ESM build tests...\033[0m\n"
+	pnpm exec vitest run tests/esm-build.test.ts
+
+browser:
+	pnpm install --save-exact --save-dev playwright
+	@if [ -n "$$CI" ]; then \
+		echo "CI detected: Installing Playwright browsers without system dependencies"; \
+		pnpm exec playwright install chromium; \
+	else \
+		echo "Local environment: Attempting to install with system dependencies (may prompt for sudo)"; \
+		pnpm exec playwright install chromium --with-deps 2>/dev/null || \
+		{ echo "Failed with --with-deps, trying without..."; pnpm exec playwright install chromium; }; \
+	fi
+	@printf "\033[1;36mRunning browser tests...\033[0m\n\n"; \
+	pnpm exec vitest --project browser --run --reporter=json --reporter=verbose --outputFile=/tmp/browser-test-results.json > /tmp/browser-test-output.txt 2>&1; \
+	TEST_EXIT_CODE=$$?; \
+	printf "\n\033[1;36m=========================================\033[0m\n"; \
+	printf "\033[1;36mSummary Report\033[0m\n"; \
+	printf "\033[1;36m=========================================\033[0m\n\n"; \
+	if [ -f /tmp/browser-test-results.json ] && command -v node >/dev/null 2>&1; then \
+		printf 'const fs = require("fs");\n' > /tmp/browser-summary.js; \
+		printf 'try {\n' >> /tmp/browser-summary.js; \
+		printf '  const rawData = fs.readFileSync("/tmp/browser-test-results.json", "utf8");\n' >> /tmp/browser-summary.js; \
+		printf '  const data = JSON.parse(rawData);\n' >> /tmp/browser-summary.js; \
+		printf '  const testResults = data.testResults || [];\n' >> /tmp/browser-summary.js; \
+		printf '  let passCount = 0;\n' >> /tmp/browser-summary.js; \
+		printf '  let failCount = 0;\n' >> /tmp/browser-summary.js; \
+		printf '  const passed = [];\n' >> /tmp/browser-summary.js; \
+		printf '  const failed = [];\n' >> /tmp/browser-summary.js; \
+		printf '  const errors = [];\n' >> /tmp/browser-summary.js; \
+		printf '  testResults.forEach((result, idx) => {\n' >> /tmp/browser-summary.js; \
+		printf '    const num = idx + 1;\n' >> /tmp/browser-summary.js; \
+		printf '    const filePath = result.name || "";\n' >> /tmp/browser-summary.js; \
+		printf '    let fileName = filePath.split("/").pop();\n' >> /tmp/browser-summary.js; \
+		printf '    if (fileName.endsWith(".test.ts")) {\n' >> /tmp/browser-summary.js; \
+		printf '      fileName = fileName.slice(0, -8);\n' >> /tmp/browser-summary.js; \
+		printf '    }\n' >> /tmp/browser-summary.js; \
+		printf '    const match = fileName.match(/^(\\d+)-(.+)/);\n' >> /tmp/browser-summary.js; \
+		printf '    const name = match ? match[2].replace(/-/g, " ") : fileName;\n' >> /tmp/browser-summary.js; \
+		printf '    const hasFailures = result.status === "failed";\n' >> /tmp/browser-summary.js; \
+		printf '    if (hasFailures) {\n' >> /tmp/browser-summary.js; \
+		printf '      failCount++;\n' >> /tmp/browser-summary.js; \
+		printf '      failed.push(num + " - " + name);\n' >> /tmp/browser-summary.js; \
+		printf '      const testCases = result.assertionResults || [];\n' >> /tmp/browser-summary.js; \
+		printf '      const failedTests = testCases.filter(t => t.status === "failed");\n' >> /tmp/browser-summary.js; \
+		printf '      if (failedTests.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '        const errorMessages = failedTests.map(t => {\n' >> /tmp/browser-summary.js; \
+		printf '          const title = t.title || "Unknown test";\n' >> /tmp/browser-summary.js; \
+		printf '          const failureMessages = t.failureMessages || [];\n' >> /tmp/browser-summary.js; \
+		printf '          const errorText = failureMessages.length > 0 ? failureMessages[0] : "No error message available";\n' >> /tmp/browser-summary.js; \
+		printf '          return { num, name, title, error: errorText };\n' >> /tmp/browser-summary.js; \
+		printf '        });\n' >> /tmp/browser-summary.js; \
+		printf '        errors.push(...errorMessages);\n' >> /tmp/browser-summary.js; \
+		printf '      } else if (result.failureMessage) {\n' >> /tmp/browser-summary.js; \
+		printf '        errors.push({ num, name, title: "Test suite", error: result.failureMessage });\n' >> /tmp/browser-summary.js; \
+		printf '      }\n' >> /tmp/browser-summary.js; \
+		printf '    } else {\n' >> /tmp/browser-summary.js; \
+		printf '      passCount++;\n' >> /tmp/browser-summary.js; \
+		printf '      passed.push(num + " - " + name);\n' >> /tmp/browser-summary.js; \
+		printf '    }\n' >> /tmp/browser-summary.js; \
+		printf '  });\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;32mPassed: " + passCount + "/" + testResults.length + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  if (passed.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("\\033[1;32m  ✓ Passed tests:\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '    passed.forEach(p => console.log("    \\033[32m" + p + "\\033[0m"));\n' >> /tmp/browser-summary.js; \
+		printf '  }\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;31mFailed: " + failCount + "/" + testResults.length + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  if (failed.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("\\033[1;31m  ✗ Failed tests:\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '    failed.forEach(f => console.log("    \\033[31m" + f + "\\033[0m"));\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '    if (errors.length > 0) {\n' >> /tmp/browser-summary.js; \
+		printf '      console.log("\\033[1;33mError Details:\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '      errors.forEach(err => {\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("\\033[1;31m  Test " + err.num + " - " + err.name + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("\\033[1;33m    " + err.title + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        console.log("\\033[90m    ────────────────────────────────────────\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        const errorLines = err.error.split("\\n").slice(0, 15);\n' >> /tmp/browser-summary.js; \
+		printf '        errorLines.forEach(line => console.log("    " + line));\n' >> /tmp/browser-summary.js; \
+		printf '        if (err.error.split("\\n").length > 15) {\n' >> /tmp/browser-summary.js; \
+		printf '          console.log("    \\033[90m... (truncated, see /tmp/browser-test-output.txt for full output)\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '        }\n' >> /tmp/browser-summary.js; \
+		printf '      });\n' >> /tmp/browser-summary.js; \
+		printf '      console.log("");\n' >> /tmp/browser-summary.js; \
+		printf '    }\n' >> /tmp/browser-summary.js; \
+		printf '  } else {\n' >> /tmp/browser-summary.js; \
+		printf '    console.log("\\033[1;32m  All tests passed! 🎉\\033[0m\\n");\n' >> /tmp/browser-summary.js; \
+		printf '  }\n' >> /tmp/browser-summary.js; \
+		printf '} catch (e) {\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[1;33mCould not parse test results: " + e.message + "\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '  console.log("\\033[90mFull test output available at /tmp/browser-test-output.txt\\033[0m");\n' >> /tmp/browser-summary.js; \
+		printf '}\n' >> /tmp/browser-summary.js; \
+		node /tmp/browser-summary.js; \
+	fi; \
+	pnpm uninstall playwright; \
+	exit $$TEST_EXIT_CODE
+
+browser-serve:
+	@rm -f examples/browser/deepgram.js || true
+	@cp dist/browser/index.global.js examples/browser/deepgram.js
+	@echo "" >> examples/browser/deepgram.js
+	@echo "// Expose Deepgram as global for browser compatibility" >> examples/browser/deepgram.js
+	@echo "if (typeof window !== 'undefined') {" >> examples/browser/deepgram.js
+	@echo "  window.Deepgram = Deepgram;" >> examples/browser/deepgram.js
+	@echo "  window.deepgram = Deepgram;" >> examples/browser/deepgram.js
+	@echo "}" >> examples/browser/deepgram.js
+	@echo "Starting proxy server on port 8001..."
+	@node scripts/proxy-server.js & \
+	PROXY_PID=$$!; \
+	echo "Starting http-server on port 8000..."; \
+	pnpx http-server -p 8000 examples/browser & \
+	HTTP_SERVER_PID=$$!; \
+	trap "kill $$PROXY_PID $$HTTP_SERVER_PID 2>/dev/null; exit" EXIT INT TERM; \
+	echo "Servers started. Proxy: http://localhost:8001, Examples: http://localhost:8000"; \
+	echo "Press CTRL-C to stop both servers"; \
+	wait $$PROXY_PID $$HTTP_SERVER_PID

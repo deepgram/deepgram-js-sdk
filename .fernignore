@@ -4,7 +4,6 @@ examples
 # Custom wrapper
 src/CustomClient.ts
 src/index.ts
-src/middleware
 
 # Custom Scripts
 scripts/fix-wire-test-imports.js
