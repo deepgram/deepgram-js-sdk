@@ -26,37 +26,11 @@ async function testEUEndpoint(): Promise<void> {
 
 	console.log("Client configured with:");
 	console.log("  baseUrl: https://api.eu.deepgram.com");
-	console.log("  (all requests will go to EU endpoint)\n");
+	console.log("  (transcription requests will go to EU endpoint)\n");
 
 	try {
-		// Test 1: Auth endpoint
-		console.log("Test 1: Auth endpoint (generate temporary token)");
-		console.log("Expected URL: https://api.eu.deepgram.com/v1/auth/grant\n");
-
-		const tokenResponse = await euClient.auth.v1.tokens.grant({
-			scopes: ["usage:write"],
-			expires_in: 30,
-		});
-
-		console.log("✓ Auth request successful!");
-		console.log(`  Token generated: ${tokenResponse.token?.substring(0, 20)}...`);
-		console.log();
-
-		// Test 2: Management endpoint
-		console.log("Test 2: Management endpoint (list projects)");
-		console.log("Expected URL: https://api.eu.deepgram.com/v1/projects\n");
-
-		const projects = await euClient.manage.v1.projects.list();
-
-		console.log("✓ Management request successful!");
-		console.log(`  Projects found: ${projects.projects?.length ?? 0}`);
-		if (projects.projects?.[0]) {
-			console.log(`  First project: ${projects.projects[0].name}`);
-		}
-		console.log();
-
-		// Test 3: Listen endpoint (transcribe from URL)
-		console.log("Test 3: Listen endpoint (transcribe from URL)");
+		// Test: Listen endpoint (transcribe from URL)
+		console.log("Test: Transcribe audio using EU endpoint");
 		console.log("Expected URL: https://api.eu.deepgram.com/v1/listen\n");
 
 		const transcription = await euClient.listen.v1.media.transcribeUrl({
@@ -73,9 +47,11 @@ async function testEUEndpoint(): Promise<void> {
 		}
 		console.log();
 
-		console.log("=== All tests passed! ===");
+		console.log("=== Test passed! ===");
 		console.log("The baseUrl configuration is working correctly.");
-		console.log("All requests were routed to api.eu.deepgram.com\n");
+		console.log("Audio processing was routed to api.eu.deepgram.com\n");
+		console.log("Note: Management APIs (projects, keys, etc.) are only");
+		console.log("available on the default US endpoint (api.deepgram.com).");
 	} catch (error) {
 		console.error("✗ Test failed!");
 		if (error instanceof Error) {
@@ -98,13 +74,22 @@ async function compareWithDefaultEndpoint(): Promise<void> {
 	console.log("  (requests will go to US endpoint)\n");
 
 	try {
-		console.log("Test: List projects with default endpoint");
-		console.log("Expected URL: https://api.deepgram.com/v1/projects\n");
+		console.log("Test: Transcribe audio with default endpoint");
+		console.log("Expected URL: https://api.deepgram.com/v1/listen\n");
 
-		const projects = await usClient.manage.v1.projects.list();
+		const transcription = await usClient.listen.v1.media.transcribeUrl({
+			url: "https://dpgr.am/spacewalk.wav",
+			model: "nova-3",
+			language: "en",
+		});
 
 		console.log("✓ Default endpoint request successful!");
-		console.log(`  Projects found: ${projects.projects?.length ?? 0}\n`);
+		const transcript =
+			transcription.results?.channels?.[0]?.alternatives?.[0]?.transcript;
+		if (transcript) {
+			console.log(`  Transcript preview: ${transcript.substring(0, 50)}...`);
+		}
+		console.log();
 	} catch (error) {
 		console.error("✗ Default endpoint test failed!");
 		if (error instanceof Error) {
