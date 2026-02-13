@@ -123,7 +123,7 @@ npm install @deepgram/sdk
 or
 
 ```bash
-pnpm install @deepgram/sdk
+pnpm add @deepgram/sdk
 ```
 
 or
