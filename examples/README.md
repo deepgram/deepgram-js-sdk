@@ -19,6 +19,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 
 ### Voice Agent
 - **09-voice-agent.js** - Voice Agent configuration and usage
+- **36-agent-inject-message.js** - Injecting agent and user messages into an active session
 
 ### Text-to-Speech
 - **10-text-to-speech-single.js** - Single request TTS
