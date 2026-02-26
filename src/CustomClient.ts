@@ -23,16 +23,35 @@ import { RUNTIME } from "./core/runtime/index.js";
 // Default WebSocket connection timeout in milliseconds
 const DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
 
-// Import ws library for Node.js (will be undefined in browser)
+// ws for Node.js - loaded lazily to support CJS, ESM, and browser builds.
+// A static import of "module" (for createRequire) would break the browser bundle,
+// so we detect the environment at runtime and use an opaque dynamic import in ESM
+// Node so bundlers cannot statically analyse and reject it.
 let NodeWebSocket: any;
-try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    NodeWebSocket = require("ws");
-    // Handle both default export and named export
-    NodeWebSocket = NodeWebSocket.WebSocket || NodeWebSocket.default || NodeWebSocket;
-} catch {
-    // ws not available (e.g., in browser)
-    NodeWebSocket = undefined;
+let _wsInitialized = false;
+
+async function loadNodeWebSocket(): Promise<void> {
+    if (_wsInitialized) return;
+    _wsInitialized = true;
+    try {
+        if (typeof require !== "undefined") {
+            // CJS: require is injected as a module-scoped binding
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            let ws = require("ws");
+            NodeWebSocket = ws.WebSocket || ws.default || ws;
+        } else if (typeof process !== "undefined" && process.versions?.node) {
+            // ESM Node: require is not defined. Wrap import() in new Function so
+            // bundlers (esbuild, webpack) cannot statically resolve or reject "ws".
+            // eslint-disable-next-line no-new-func
+            const dynamicImport = new Function("specifier", "return import(specifier)");
+            const ws = await dynamicImport("ws");
+            NodeWebSocket = ws.WebSocket || ws.default || ws;
+        }
+        // Browser: process.versions?.node is undefined → NodeWebSocket stays undefined
+    } catch {
+        // ws not available or failed to load
+        NodeWebSocket = undefined;
+    }
 }
 
 // Helper function to generate UUID that works in both Node.js and browser
@@ -441,6 +460,9 @@ async function createWebSocketConnection({
     debug?: boolean;
     reconnectAttempts?: number;
 }): Promise<ReconnectingWebSocket> {
+    // Ensure ws is loaded for Node.js environments (no-op after first call)
+    await loadNodeWebSocket();
+
     // Get Authorization from authProvider (cast to any to access internal property)
     const authRequest = await (options as any).authProvider?.getAuthRequest();
 
