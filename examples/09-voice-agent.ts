@@ -5,11 +5,12 @@
  * Includes listing available thinking models for agent configuration.
  */
 
-const { DeepgramClient } = require("../dist/cjs/index.js");
+const { DeepgramClient, DeepgramEnvironment } = require("../dist/cjs/index.js");
 const { createReadStream } = require("fs");
 
 const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
+  environment: DeepgramEnvironment.Agent,
 });
 
 // Example: List available thinking models

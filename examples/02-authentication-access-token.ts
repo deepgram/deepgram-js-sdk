@@ -60,7 +60,7 @@ async function example() {
     
       try {
         const data = await tempClient.read.v1.text.analyze({
-          text,
+          body: { text },
           language: "en",
           summarize: true, // Enable at least one feature
           // Add more text intelligence options as needed
