@@ -3,11 +3,11 @@
 export interface OpenAiThinkProvider {
     type: "open_ai";
     /** The REST API version for the OpenAI chat completions API */
-    version?: "v1";
+    version?: "v1" | undefined;
     /** OpenAI model to use */
     model: OpenAiThinkProvider.Model;
     /** OpenAI temperature (0-2) */
-    temperature?: number;
+    temperature?: number | undefined;
 }
 
 export namespace OpenAiThinkProvider {

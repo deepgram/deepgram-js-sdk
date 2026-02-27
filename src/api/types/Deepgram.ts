@@ -3,7 +3,7 @@
 export interface Deepgram {
     type: "deepgram";
     /** The REST API version for the Deepgram text-to-speech API */
-    version?: "v1";
+    version?: "v1" | undefined;
     /** Deepgram TTS model */
     model: Deepgram.Model;
 }

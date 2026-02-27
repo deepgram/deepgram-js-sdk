@@ -10,15 +10,15 @@ export interface ListenV1Results {
     /** The start time of the transcription */
     start: number;
     /** Whether the transcription is final */
-    is_final?: boolean;
+    is_final?: boolean | undefined;
     /** Whether the transcription is speech final */
-    speech_final?: boolean;
+    speech_final?: boolean | undefined;
     channel: ListenV1Results.Channel;
     metadata: ListenV1Results.Metadata;
     /** Whether the transcription is from a finalize message */
-    from_finalize?: boolean;
+    from_finalize?: boolean | undefined;
     /** Extracted entities from the audio when detect_entities is enabled. Only present in is_final messages. Returns an empty array if no entities are detected */
-    entities?: ListenV1Results.Entities.Item[];
+    entities?: ListenV1Results.Entities.Item[] | undefined;
 }
 
 export namespace ListenV1Results {
@@ -35,7 +35,7 @@ export namespace ListenV1Results {
                 transcript: string;
                 /** The confidence of the transcription */
                 confidence: number;
-                languages?: string[];
+                languages?: string[] | undefined;
                 words: Item.Words.Item[];
             }
 
@@ -53,11 +53,11 @@ export namespace ListenV1Results {
                         /** The confidence of the word */
                         confidence: number;
                         /** The language of the word */
-                        language?: string;
+                        language?: string | undefined;
                         /** The punctuated word of the word */
-                        punctuated_word?: string;
+                        punctuated_word?: string | undefined;
                         /** The speaker of the word */
-                        speaker?: number;
+                        speaker?: number | undefined;
                     }
                 }
             }

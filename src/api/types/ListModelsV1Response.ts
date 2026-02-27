@@ -3,6 +3,6 @@
 import type * as Deepgram from "../index.js";
 
 export interface ListModelsV1Response {
-    stt?: Deepgram.ListModelsV1ResponseSttModels[];
-    tts?: Deepgram.ListModelsV1ResponseTtsModels[];
+    stt?: Deepgram.ListModelsV1ResponseSttModels[] | undefined;
+    tts?: Deepgram.ListModelsV1ResponseTtsModels[] | undefined;
 }

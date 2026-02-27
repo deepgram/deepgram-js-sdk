@@ -3,12 +3,12 @@
 export interface Cartesia {
     type: "cartesia";
     /** The API version header for the Cartesia text-to-speech API */
-    version?: "2025-03-17";
+    version?: "2025-03-17" | undefined;
     /** Cartesia model ID */
     model_id: Cartesia.ModelId;
     voice: Cartesia.Voice;
     /** Cartesia language code */
-    language?: string;
+    language?: string | undefined;
 }
 
 export namespace Cartesia {

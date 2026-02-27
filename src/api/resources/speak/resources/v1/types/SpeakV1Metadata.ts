@@ -7,8 +7,10 @@ export interface SpeakV1Metadata {
     request_id: string;
     /** Name of the model being used */
     model_name: string;
-    /** Version of the model being used */
+    /** Version of the primary model being used */
     model_version: string;
-    /** Unique identifier for the model */
+    /** Unique identifier for the primary model used */
     model_uuid: string;
+    /** List of unique identifiers for any additional models used to serve the request */
+    additional_model_uuids?: string[] | undefined;
 }

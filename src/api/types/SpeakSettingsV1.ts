@@ -8,7 +8,7 @@ export interface SpeakSettingsV1 {
      * Optional if provider is Deepgram. Required for non-Deepgram TTS providers.
      * When present, must include url field and headers object. Valid schemes are https and wss with wss only supported for Eleven Labs.
      */
-    endpoint?: SpeakSettingsV1.Endpoint;
+    endpoint?: SpeakSettingsV1.Endpoint | undefined;
 }
 
 export namespace SpeakSettingsV1 {
@@ -18,7 +18,7 @@ export namespace SpeakSettingsV1 {
      */
     export interface Endpoint {
         /** Custom TTS endpoint URL. Cannot contain `output_format` or `model_id` query parameters when the provider is Eleven Labs. */
-        url?: string;
-        headers?: Record<string, string>;
+        url?: string | undefined;
+        headers?: Record<string, string> | undefined;
     }
 }

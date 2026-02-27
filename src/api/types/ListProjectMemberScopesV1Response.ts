@@ -2,5 +2,5 @@
 
 export interface ListProjectMemberScopesV1Response {
     /** The API scopes of the member */
-    scopes?: string[];
+    scopes?: string[] | undefined;
 }

@@ -5,21 +5,21 @@
  */
 export interface ProjectRequestResponse {
     /** The unique identifier of the request */
-    request_id?: string;
+    request_id?: string | undefined;
     /** The unique identifier of the project */
-    project_uuid?: string;
+    project_uuid?: string | undefined;
     /** The date and time the request was created */
-    created?: string;
+    created?: string | undefined;
     /** The API path of the request */
-    path?: string;
+    path?: string | undefined;
     /** The unique identifier of the API key */
-    api_key_id?: string;
+    api_key_id?: string | undefined;
     /** The response of the request */
-    response?: Record<string, unknown>;
+    response?: Record<string, unknown> | undefined;
     /** The response code of the request */
-    code?: number;
+    code?: number | undefined;
     /** The deployment type */
-    deployment?: string;
+    deployment?: string | undefined;
     /** The callback URL for the request */
-    callback?: string;
+    callback?: string | undefined;
 }

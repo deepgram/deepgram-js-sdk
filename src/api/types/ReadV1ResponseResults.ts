@@ -3,8 +3,8 @@
 import type * as Deepgram from "../index.js";
 
 export interface ReadV1ResponseResults {
-    summary?: Deepgram.ReadV1ResponseResultsSummary;
-    topics?: Deepgram.SharedTopics;
-    intents?: Deepgram.SharedIntents;
-    sentiments?: Deepgram.SharedSentiments;
+    summary?: Deepgram.ReadV1ResponseResultsSummary | undefined;
+    topics?: Deepgram.SharedTopics | undefined;
+    intents?: Deepgram.SharedIntents | undefined;
+    sentiments?: Deepgram.SharedSentiments | undefined;
 }

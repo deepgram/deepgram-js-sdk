@@ -5,9 +5,9 @@ export interface AwsBedrockThinkProvider {
     /** AWS Bedrock model to use */
     model: AwsBedrockThinkProvider.Model;
     /** AWS Bedrock temperature (0-2) */
-    temperature?: number;
+    temperature?: number | undefined;
     /** AWS credentials type (STS short-lived or IAM long-lived) */
-    credentials?: AwsBedrockThinkProvider.Credentials;
+    credentials?: AwsBedrockThinkProvider.Credentials | undefined;
 }
 
 export namespace AwsBedrockThinkProvider {
@@ -23,15 +23,15 @@ export namespace AwsBedrockThinkProvider {
      */
     export interface Credentials {
         /** AWS credentials type (STS short-lived or IAM long-lived) */
-        type?: Credentials.Type;
+        type?: Credentials.Type | undefined;
         /** AWS region */
-        region?: string;
+        region?: string | undefined;
         /** AWS access key */
-        access_key_id?: string;
+        access_key_id?: string | undefined;
         /** AWS secret access key */
-        secret_access_key?: string;
+        secret_access_key?: string | undefined;
         /** AWS session token (required for STS only) */
-        session_token?: string;
+        session_token?: string | undefined;
     }
 
     export namespace Credentials {

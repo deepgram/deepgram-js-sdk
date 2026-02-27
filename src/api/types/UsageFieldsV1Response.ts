@@ -2,13 +2,13 @@
 
 export interface UsageFieldsV1Response {
     /** List of tags associated with the project */
-    tags?: string[];
+    tags?: string[] | undefined;
     /** List of models available for the project. */
-    models?: UsageFieldsV1Response.Models.Item[];
+    models?: UsageFieldsV1Response.Models.Item[] | undefined;
     /** Processing methods supported by the API */
-    processing_methods?: string[];
+    processing_methods?: string[] | undefined;
     /** API features available to the project */
-    features?: string[];
+    features?: string[] | undefined;
 }
 
 export namespace UsageFieldsV1Response {
@@ -17,13 +17,13 @@ export namespace UsageFieldsV1Response {
     export namespace Models {
         export interface Item {
             /** Name of the model. */
-            name?: string;
+            name?: string | undefined;
             /** The language supported by the model (IETF language tag). */
-            language?: string;
+            language?: string | undefined;
             /** Version identifier of the model, typically with a date and a revision number. */
-            version?: string;
+            version?: string | undefined;
             /** Unique identifier for the model. */
-            model_id?: string;
+            model_id?: string | undefined;
         }
     }
 }

@@ -5,12 +5,12 @@ import type * as Deepgram from "../../../../../index.js";
 export interface AgentV1Settings {
     type: "Settings";
     /** Tags to associate with the request */
-    tags?: string[];
+    tags?: string[] | undefined;
     /** To enable experimental features */
-    experimental?: boolean;
-    flags?: AgentV1Settings.Flags;
+    experimental?: boolean | undefined;
+    flags?: AgentV1Settings.Flags | undefined;
     /** To opt out of Deepgram Model Improvement Program */
-    mip_opt_out?: boolean;
+    mip_opt_out?: boolean | undefined;
     audio: AgentV1Settings.Audio;
     agent: AgentV1Settings.Agent;
 }
@@ -18,14 +18,14 @@ export interface AgentV1Settings {
 export namespace AgentV1Settings {
     export interface Flags {
         /** Enable or disable history message reporting */
-        history?: boolean;
+        history?: boolean | undefined;
     }
 
     export interface Audio {
         /** Audio input configuration settings. If omitted, defaults to encoding=linear16 and sample_rate=24000. Higher sample rates like 44100 Hz provide better audio quality. */
-        input?: Audio.Input;
+        input?: Audio.Input | undefined;
         /** Audio output configuration settings */
-        output?: Audio.Output;
+        output?: Audio.Output | undefined;
     }
 
     export namespace Audio {
@@ -62,13 +62,13 @@ export namespace AgentV1Settings {
          */
         export interface Output {
             /** Audio encoding format for streaming TTS output */
-            encoding?: Output.Encoding;
+            encoding?: Output.Encoding | undefined;
             /** Sample rate in Hz */
-            sample_rate?: number;
+            sample_rate?: number | undefined;
             /** Audio bitrate in bits per second */
-            bitrate?: number;
+            bitrate?: number | undefined;
             /** Audio container format. If omitted, defaults to 'none' */
-            container?: string;
+            container?: string | undefined;
         }
 
         export namespace Output {
@@ -84,14 +84,14 @@ export namespace AgentV1Settings {
 
     export interface Agent {
         /** Deprecated. Use `listen.provider.language` and `speak.provider.language` fields instead. */
-        language?: string;
+        language?: string | undefined;
         /** Conversation context including the history of messages and function calls */
-        context?: Agent.Context;
-        listen?: Agent.Listen;
-        think?: Agent.Think;
-        speak?: Agent.Speak;
+        context?: Agent.Context | undefined;
+        listen?: Agent.Listen | undefined;
+        think?: Agent.Think | undefined;
+        speak?: Agent.Speak | undefined;
         /** Optional message that agent will speak at the start */
-        greeting?: string;
+        greeting?: string | undefined;
     }
 
     export namespace Agent {
@@ -100,7 +100,7 @@ export namespace AgentV1Settings {
          */
         export interface Context {
             /** Conversation history as a list of messages and function calls */
-            messages?: Context.Messages.Item[];
+            messages?: Context.Messages.Item[] | undefined;
         }
 
         export namespace Context {
@@ -134,7 +134,7 @@ export namespace AgentV1Settings {
         }
 
         export interface Listen {
-            provider?: Deepgram.agent.AgentV1SettingsAgentListenProvider;
+            provider?: Deepgram.agent.AgentV1SettingsAgentListenProvider | undefined;
         }
 
         export type Think = Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[];

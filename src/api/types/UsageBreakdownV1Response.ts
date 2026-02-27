@@ -41,23 +41,23 @@ export namespace UsageBreakdownV1Response {
         export namespace Item {
             export interface Grouping {
                 /** Start date for this group */
-                start?: string;
+                start?: string | undefined;
                 /** End date for this group */
-                end?: string;
+                end?: string | undefined;
                 /** Optional accessor identifier */
-                accessor?: string;
+                accessor?: string | undefined;
                 /** Optional endpoint identifier */
-                endpoint?: string;
+                endpoint?: string | undefined;
                 /** Optional feature set identifier */
-                feature_set?: string;
+                feature_set?: string | undefined;
                 /** Optional models identifier */
-                models?: string;
+                models?: string | undefined;
                 /** Optional method identifier */
-                method?: string;
+                method?: string | undefined;
                 /** Optional tags */
-                tags?: string;
+                tags?: string | undefined;
                 /** Optional deployment identifier */
-                deployment?: string;
+                deployment?: string | undefined;
             }
         }
     }

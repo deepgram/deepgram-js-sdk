@@ -19,7 +19,7 @@ export namespace GetProjectDistributionCredentialsV1Response {
         /** The provider of the distribution service */
         provider: string;
         /** Optional comment about the credentials */
-        comment?: string;
+        comment?: string | undefined;
         /** List of permission scopes for the credentials */
         scopes: string[];
         /** Timestamp when the credentials were created */

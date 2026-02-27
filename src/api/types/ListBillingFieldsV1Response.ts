@@ -2,13 +2,13 @@
 
 export interface ListBillingFieldsV1Response {
     /** List of accessor UUIDs for the time period */
-    accessors?: string[];
+    accessors?: string[] | undefined;
     /** List of deployment types for the time period */
-    deployments?: ListBillingFieldsV1Response.Deployments.Item[];
+    deployments?: ListBillingFieldsV1Response.Deployments.Item[] | undefined;
     /** List of tags for the time period */
-    tags?: string[];
+    tags?: string[] | undefined;
     /** Map of line item names to human-readable descriptions for the time period */
-    line_items?: Record<string, string>;
+    line_items?: Record<string, string> | undefined;
 }
 
 export namespace ListBillingFieldsV1Response {

@@ -5,15 +5,15 @@
  */
 export interface CreateKeyV1Response {
     /** The unique identifier of the API key */
-    api_key_id?: string;
+    api_key_id?: string | undefined;
     /** The API key */
-    key?: string;
+    key?: string | undefined;
     /** A comment for the API key */
-    comment?: string;
+    comment?: string | undefined;
     /** The scopes for the API key */
-    scopes?: string[];
+    scopes?: string[] | undefined;
     /** The tags for the API key */
-    tags?: string[];
+    tags?: string[] | undefined;
     /** The expiration date of the API key */
-    expiration_date?: string;
+    expiration_date?: string | undefined;
 }

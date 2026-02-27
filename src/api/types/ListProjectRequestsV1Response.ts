@@ -4,8 +4,8 @@ import type * as Deepgram from "../index.js";
 
 export interface ListProjectRequestsV1Response {
     /** The page number of the paginated response */
-    page?: number;
+    page?: number | undefined;
     /** The number of results per page */
-    limit?: number;
-    requests?: Deepgram.ProjectRequestResponse[];
+    limit?: number | undefined;
+    requests?: Deepgram.ProjectRequestResponse[] | undefined;
 }

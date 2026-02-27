@@ -7,7 +7,7 @@ export interface AwsPollySpeakProvider {
     /** Language code to use, e.g. 'en-US'. Corresponds to the `language_code` parameter in the AWS Polly API */
     language: string;
     /** Use the `language` field instead. */
-    language_code?: string;
+    language_code?: string | undefined;
     engine: AwsPollySpeakProvider.Engine;
     credentials: AwsPollySpeakProvider.Credentials;
 }
@@ -39,7 +39,7 @@ export namespace AwsPollySpeakProvider {
         access_key_id: string;
         secret_access_key: string;
         /** Required for STS only */
-        session_token?: string;
+        session_token?: string | undefined;
     }
 
     export namespace Credentials {

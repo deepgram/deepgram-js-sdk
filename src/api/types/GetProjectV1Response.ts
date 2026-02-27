@@ -2,9 +2,9 @@
 
 export interface GetProjectV1Response {
     /** The unique identifier of the project */
-    project_id?: string;
+    project_id?: string | undefined;
     /** Model Improvement Program opt-out */
-    mip_opt_out?: boolean;
+    mip_opt_out?: boolean | undefined;
     /** The name of the project */
-    name?: string;
+    name?: string | undefined;
 }

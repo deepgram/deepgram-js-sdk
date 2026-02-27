@@ -2,5 +2,5 @@
 
 export interface LeaveProjectV1Response {
     /** confirmation message */
-    message?: string;
+    message?: string | undefined;
 }

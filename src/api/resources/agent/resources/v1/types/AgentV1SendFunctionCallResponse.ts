@@ -22,7 +22,7 @@ export interface AgentV1SendFunctionCallResponse {
      * • **Optional for server responses**: Server may omit when responding
      *   to internal function executions
      */
-    id?: string;
+    id?: string | undefined;
     /** The name of the function being called */
     name: string;
     /** The content or result of the function call */

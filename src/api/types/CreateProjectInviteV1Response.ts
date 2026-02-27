@@ -2,5 +2,5 @@
 
 export interface CreateProjectInviteV1Response {
     /** confirmation message */
-    message?: string;
+    message?: string | undefined;
 }

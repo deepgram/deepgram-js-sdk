@@ -2,11 +2,11 @@
 
 export interface ErrorResponseModernError {
     /** The category of the error */
-    category?: string;
+    category?: string | undefined;
     /** A message about the error */
-    message?: string;
+    message?: string | undefined;
     /** A description of the error */
-    details?: string;
+    details?: string | undefined;
     /** The unique identifier of the request */
-    request_id?: string;
+    request_id?: string | undefined;
 }

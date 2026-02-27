@@ -3,11 +3,11 @@
 export interface Google {
     type: "google";
     /** The REST API version for the Google generative language API */
-    version?: "v1beta";
+    version?: "v1beta" | undefined;
     /** Google model to use */
     model: Google.Model;
     /** Google temperature (0-2) */
-    temperature?: number;
+    temperature?: number | undefined;
 }
 
 export namespace Google {

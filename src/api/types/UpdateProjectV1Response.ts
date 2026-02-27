@@ -2,5 +2,5 @@
 
 export interface UpdateProjectV1Response {
     /** confirmation message */
-    message?: string;
+    message?: string | undefined;
 }

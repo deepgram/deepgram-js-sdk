@@ -2,5 +2,5 @@
 
 export interface DeleteProjectV1Response {
     /** Confirmation message */
-    message?: string;
+    message?: string | undefined;
 }

@@ -13,6 +13,7 @@ export declare namespace V1Socket {
         | Deepgram.agent.AgentV1ReceiveFunctionCallResponse
         | Deepgram.agent.AgentV1PromptUpdated
         | Deepgram.agent.AgentV1SpeakUpdated
+        | Deepgram.agent.AgentV1ThinkUpdated
         | Deepgram.agent.AgentV1InjectionRefused
         | Deepgram.agent.AgentV1Welcome
         | Deepgram.agent.AgentV1SettingsApplied
@@ -85,6 +86,11 @@ export class V1Socket {
     }
 
     public sendUpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -181,6 +187,7 @@ export class V1Socket {
         payload:
             | Deepgram.agent.AgentV1Settings
             | Deepgram.agent.AgentV1UpdateSpeak
+            | Deepgram.agent.AgentV1UpdateThink
             | Deepgram.agent.AgentV1InjectUserMessage
             | Deepgram.agent.AgentV1InjectAgentMessage
             | Deepgram.agent.AgentV1SendFunctionCallResponse

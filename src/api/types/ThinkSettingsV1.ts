@@ -5,11 +5,11 @@ import type * as Deepgram from "../index.js";
 export interface ThinkSettingsV1 {
     provider: Deepgram.ThinkSettingsV1Provider;
     /** Optional for non-Deepgram LLM providers. When present, must include url field and headers object */
-    endpoint?: ThinkSettingsV1.Endpoint;
-    functions?: ThinkSettingsV1.Functions.Item[];
-    prompt?: string;
+    endpoint?: ThinkSettingsV1.Endpoint | undefined;
+    functions?: ThinkSettingsV1.Functions.Item[] | undefined;
+    prompt?: string | undefined;
     /** Specifies the number of characters retained in context between user messages, agent responses, and function calls. This setting is only configurable when a custom think endpoint is used */
-    context_length?: ThinkSettingsV1.ContextLength;
+    context_length?: ThinkSettingsV1.ContextLength | undefined;
 }
 
 export namespace ThinkSettingsV1 {
@@ -18,9 +18,9 @@ export namespace ThinkSettingsV1 {
      */
     export interface Endpoint {
         /** Custom LLM endpoint URL */
-        url?: string;
+        url?: string | undefined;
         /** Custom headers for the endpoint */
-        headers?: Record<string, string>;
+        headers?: Record<string, string> | undefined;
     }
 
     export type Functions = Functions.Item[];
@@ -28,13 +28,13 @@ export namespace ThinkSettingsV1 {
     export namespace Functions {
         export interface Item {
             /** Function name */
-            name?: string;
+            name?: string | undefined;
             /** Function description */
-            description?: string;
+            description?: string | undefined;
             /** Function parameters */
-            parameters?: Record<string, unknown>;
+            parameters?: Record<string, unknown> | undefined;
             /** The Function endpoint to call. if not passed, function is called client-side */
-            endpoint?: Item.Endpoint;
+            endpoint?: Item.Endpoint | undefined;
         }
 
         export namespace Item {
@@ -43,10 +43,10 @@ export namespace ThinkSettingsV1 {
              */
             export interface Endpoint {
                 /** Endpoint URL */
-                url?: string;
+                url?: string | undefined;
                 /** HTTP method */
-                method?: string;
-                headers?: Record<string, string>;
+                method?: string | undefined;
+                headers?: Record<string, string> | undefined;
             }
         }
     }

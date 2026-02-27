@@ -29,17 +29,17 @@ export namespace BillingBreakdownV1Response {
         export namespace Item {
             export interface Grouping {
                 /** Start date for this group */
-                start?: string;
+                start?: string | undefined;
                 /** End date for this group */
-                end?: string;
+                end?: string | undefined;
                 /** Optional accessor identifier, null unless grouped by accessor. */
-                accessor?: string;
+                accessor?: string | undefined;
                 /** Optional deployment identifier, null unless grouped by deployment. */
-                deployment?: string;
+                deployment?: string | undefined;
                 /** Optional line item identifier, null unless grouped by line item. */
-                line_item?: string;
+                line_item?: string | undefined;
                 /** Optional list of tags, null unless grouped by tags. */
-                tags?: string[];
+                tags?: string[] | undefined;
             }
         }
     }

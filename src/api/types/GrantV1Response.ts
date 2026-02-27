@@ -4,5 +4,5 @@ export interface GrantV1Response {
     /** JSON Web Token (JWT) */
     access_token: string;
     /** Time in seconds until the JWT expires */
-    expires_in?: number;
+    expires_in?: number | undefined;
 }

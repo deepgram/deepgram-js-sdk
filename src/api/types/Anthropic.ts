@@ -3,11 +3,11 @@
 export interface Anthropic {
     type: "anthropic";
     /** The REST API version for the Anthropic Messages API */
-    version?: "v1";
+    version?: "v1" | undefined;
     /** Anthropic model to use */
     model: Anthropic.Model;
     /** Anthropic temperature (0-1) */
-    temperature?: number;
+    temperature?: number | undefined;
 }
 
 export namespace Anthropic {

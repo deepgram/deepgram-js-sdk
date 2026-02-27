@@ -3,7 +3,7 @@
 export interface OpenAiSpeakProvider {
     type: "open_ai";
     /** The REST API version for the OpenAI text-to-speech API */
-    version?: "v1";
+    version?: "v1" | undefined;
     /** OpenAI TTS model */
     model: OpenAiSpeakProvider.Model;
     /** OpenAI voice */

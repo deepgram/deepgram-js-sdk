@@ -3,5 +3,5 @@
 import type * as Deepgram from "../index.js";
 
 export interface GetProjectRequestV1Response {
-    request?: Deepgram.ProjectRequestResponse;
+    request?: Deepgram.ProjectRequestResponse | undefined;
 }

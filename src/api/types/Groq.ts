@@ -3,9 +3,9 @@
 export interface Groq {
     type: "groq";
     /** The REST API version for the Groq's chat completions API (mostly OpenAI-compatible) */
-    version?: "v1";
+    version?: "v1" | undefined;
     /** Groq model to use */
     model: "openai/gpt-oss-20b";
     /** Groq temperature (0-2) */
-    temperature?: number;
+    temperature?: number | undefined;
 }

@@ -4,8 +4,8 @@
  * Output whenever `sentiment=true` is used
  */
 export interface SharedSentiments {
-    segments?: SharedSentiments.Segments.Item[];
-    average?: SharedSentiments.Average;
+    segments?: SharedSentiments.Segments.Item[] | undefined;
+    average?: SharedSentiments.Average | undefined;
 }
 
 export namespace SharedSentiments {
@@ -13,16 +13,16 @@ export namespace SharedSentiments {
 
     export namespace Segments {
         export interface Item {
-            text?: string;
-            start_word?: number;
-            end_word?: number;
-            sentiment?: string;
-            sentiment_score?: number;
+            text?: string | undefined;
+            start_word?: number | undefined;
+            end_word?: number | undefined;
+            sentiment?: string | undefined;
+            sentiment_score?: number | undefined;
         }
     }
 
     export interface Average {
-        sentiment?: string;
-        sentiment_score?: number;
+        sentiment?: string | undefined;
+        sentiment_score?: number | undefined;
     }
 }

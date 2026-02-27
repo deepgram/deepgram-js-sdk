@@ -2,11 +2,11 @@
 
 export interface GetProjectBalanceV1Response {
     /** The unique identifier of the balance */
-    balance_id?: string;
+    balance_id?: string | undefined;
     /** The amount of the balance */
-    amount?: number;
+    amount?: number | undefined;
     /** The units of the balance, such as "USD" */
-    units?: string;
+    units?: string | undefined;
     /** Description or reference of the purchase */
-    purchase_order_id?: string;
+    purchase_order_id?: string | undefined;
 }

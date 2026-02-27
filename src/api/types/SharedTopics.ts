@@ -4,17 +4,17 @@
  * Output whenever `topics=true` is used
  */
 export interface SharedTopics {
-    results?: SharedTopics.Results;
+    results?: SharedTopics.Results | undefined;
 }
 
 export namespace SharedTopics {
     export interface Results {
-        topics?: Results.Topics;
+        topics?: Results.Topics | undefined;
     }
 
     export namespace Results {
         export interface Topics {
-            segments?: Topics.Segments.Item[];
+            segments?: Topics.Segments.Item[] | undefined;
         }
 
         export namespace Topics {
@@ -22,10 +22,10 @@ export namespace SharedTopics {
 
             export namespace Segments {
                 export interface Item {
-                    text?: string;
-                    start_word?: number;
-                    end_word?: number;
-                    topics?: Item.Topics.Item[];
+                    text?: string | undefined;
+                    start_word?: number | undefined;
+                    end_word?: number | undefined;
+                    topics?: Item.Topics.Item[] | undefined;
                 }
 
                 export namespace Item {
@@ -33,8 +33,8 @@ export namespace SharedTopics {
 
                     export namespace Topics {
                         export interface Item {
-                            topic?: string;
-                            confidence_score?: number;
+                            topic?: string | undefined;
+                            confidence_score?: number | undefined;
                         }
                     }
                 }

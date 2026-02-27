@@ -2,7 +2,7 @@
 
 export interface ListProjectDistributionCredentialsV1Response {
     /** Array of distribution credentials with associated member information */
-    distribution_credentials?: ListProjectDistributionCredentialsV1Response.DistributionCredentials.Item[];
+    distribution_credentials?: ListProjectDistributionCredentialsV1Response.DistributionCredentials.Item[] | undefined;
 }
 
 export namespace ListProjectDistributionCredentialsV1Response {
@@ -28,7 +28,7 @@ export namespace ListProjectDistributionCredentialsV1Response {
                 /** The provider of the distribution service */
                 provider: string;
                 /** Optional comment about the credentials */
-                comment?: string;
+                comment?: string | undefined;
                 /** List of permission scopes for the credentials */
                 scopes: string[];
                 /** Timestamp when the credentials were created */

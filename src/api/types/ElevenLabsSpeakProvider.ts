@@ -3,13 +3,13 @@
 export interface ElevenLabsSpeakProvider {
     type: "eleven_labs";
     /** The REST API version for the ElevenLabs text-to-speech API */
-    version?: "v1";
+    version?: "v1" | undefined;
     /** Eleven Labs model ID */
     model_id: ElevenLabsSpeakProvider.ModelId;
     /** Optional language to use, e.g. 'en-US'. Corresponds to the `language_code` parameter in the ElevenLabs API */
-    language?: string;
+    language?: string | undefined;
     /** Use the `language` field instead. */
-    language_code?: string;
+    language_code?: string | undefined;
 }
 
 export namespace ElevenLabsSpeakProvider {

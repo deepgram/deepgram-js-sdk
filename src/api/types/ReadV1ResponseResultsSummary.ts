@@ -4,17 +4,17 @@
  * Output whenever `summary=true` is used
  */
 export interface ReadV1ResponseResultsSummary {
-    results?: ReadV1ResponseResultsSummary.Results;
+    results?: ReadV1ResponseResultsSummary.Results | undefined;
 }
 
 export namespace ReadV1ResponseResultsSummary {
     export interface Results {
-        summary?: Results.Summary;
+        summary?: Results.Summary | undefined;
     }
 
     export namespace Results {
         export interface Summary {
-            text?: string;
+            text?: string | undefined;
         }
     }
 }

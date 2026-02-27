@@ -4,9 +4,9 @@ import type * as Deepgram from "../index.js";
 
 export interface ListenV1ResponseResults {
     channels: Deepgram.ListenV1ResponseResultsChannels;
-    utterances?: Deepgram.ListenV1ResponseResultsUtterances;
-    summary?: Deepgram.ListenV1ResponseResultsSummary;
-    topics?: Deepgram.SharedTopics;
-    intents?: Deepgram.SharedIntents;
-    sentiments?: Deepgram.SharedSentiments;
+    utterances?: Deepgram.ListenV1ResponseResultsUtterances | undefined;
+    summary?: Deepgram.ListenV1ResponseResultsSummary | undefined;
+    topics?: Deepgram.SharedTopics | undefined;
+    intents?: Deepgram.SharedIntents | undefined;
+    sentiments?: Deepgram.SharedSentiments | undefined;
 }
