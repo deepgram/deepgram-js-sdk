@@ -17,10 +17,11 @@ This phrase is commonly used for typing practice and testing keyboards.`;
 
   try {
     const data = await deepgramClient.read.v1.text.analyze({
-      text,
+      body: {
+        text,
+      },
       language: "en",
-      summarize: true, // Enable at least one feature
-      // Add more text intelligence options as needed
+      summarize: "v2",
     });
 
     console.log("Analysis result:", JSON.stringify(data, null, 2));
