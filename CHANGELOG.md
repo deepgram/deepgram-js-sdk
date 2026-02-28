@@ -5,7 +5,6 @@
 ### Bug Fixes
 
 * support keyterms with Flux models in ListenLiveClient ([#449](https://github.com/deepgram/deepgram-js-sdk/issues/449)) ([f87961a](https://github.com/deepgram/deepgram-js-sdk/commit/f87961a))
-* **ci:** bump node version for semantic-release ([#452](https://github.com/deepgram/deepgram-js-sdk/issues/452)) ([e7fda4c](https://github.com/deepgram/deepgram-js-sdk/commit/e7fda4c))
 
 ### Miscellaneous Chores
 
@@ -17,11 +16,6 @@
 ### Bug Fixes
 
 * agent timing issue ([#428](https://github.com/deepgram/deepgram-js-sdk/issues/428)) ([cee9b19](https://github.com/deepgram/deepgram-js-sdk/commit/cee9b19))
-* typo to kick off release ([6ba50f6](https://github.com/deepgram/deepgram-js-sdk/commit/6ba50f6))
-
-### Miscellaneous Chores
-
-* model-friendly updates to the readme language ([#427](https://github.com/deepgram/deepgram-js-sdk/issues/427)) ([6a5ffdb](https://github.com/deepgram/deepgram-js-sdk/commit/6a5ffdb))
 
 ## [4.11.1](https://github.com/deepgram/deepgram-js-sdk/compare/v4.11.0...v4.11.1) (2025-07-25)
 
