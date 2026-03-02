@@ -482,6 +482,7 @@ async function createWebSocketConnection({
     headers,
     debug,
     reconnectAttempts,
+    connectionTimeoutInSeconds,
 }: {
     options: DeepgramClient.Options;
     urlPath: string;
@@ -490,6 +491,7 @@ async function createWebSocketConnection({
     headers?: Record<string, unknown>;
     debug?: boolean;
     reconnectAttempts?: number;
+    connectionTimeoutInSeconds?: number;
 }): Promise<ReconnectingWebSocket> {
     // Ensure ws is loaded for Node.js environments (no-op after first call)
     await loadNodeWebSocket();
@@ -528,7 +530,7 @@ async function createWebSocketConnection({
             debug: debug ?? false,
             maxRetries: reconnectAttempts ?? 30,
             startClosed: true,
-            connectionTimeout: DEFAULT_CONNECTION_TIMEOUT_MS,
+            connectionTimeout: connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : DEFAULT_CONNECTION_TIMEOUT_MS,
         },
     });
 }
@@ -543,7 +545,7 @@ async function createWebSocketConnection({
  */
 class WrappedAgentV1Client extends AgentV1Client {
     public async connect(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
-        const { headers, debug, reconnectAttempts } = args;
+        const { headers, debug, reconnectAttempts, connectionTimeoutInSeconds } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -553,6 +555,7 @@ class WrappedAgentV1Client extends AgentV1Client {
             headers,
             debug,
             reconnectAttempts,
+            connectionTimeoutInSeconds,
         });
 
         return new WrappedAgentV1Socket({ socket });
@@ -624,7 +627,7 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  */
 class WrappedListenV1Client extends ListenV1Client {
     public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
-        const { headers, debug, reconnectAttempts } = args;
+        const { headers, debug, reconnectAttempts, connectionTimeoutInSeconds } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -634,6 +637,7 @@ class WrappedListenV1Client extends ListenV1Client {
             headers,
             debug,
             reconnectAttempts,
+            connectionTimeoutInSeconds,
         });
 
         return new WrappedListenV1Socket({ socket });
@@ -709,7 +713,7 @@ class WrappedListenV2Client extends ListenV2Client {
             keyterm?: string | string[];
         }
     ): Promise<ListenV2Socket> {
-        const { headers, debug, reconnectAttempts } = args;
+        const { headers, debug, reconnectAttempts, connectionTimeoutInSeconds } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -719,6 +723,7 @@ class WrappedListenV2Client extends ListenV2Client {
             headers,
             debug,
             reconnectAttempts,
+            connectionTimeoutInSeconds,
         });
 
         return new WrappedListenV2Socket({ socket });
@@ -825,7 +830,7 @@ class WrappedListenV2Socket extends ListenV2Socket {
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
     public async connect(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
-        const { headers, debug, reconnectAttempts } = args;
+        const { headers, debug, reconnectAttempts, connectionTimeoutInSeconds } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -835,6 +840,7 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             headers,
             debug,
             reconnectAttempts,
+            connectionTimeoutInSeconds,
         });
 
         return new WrappedSpeakV1Socket({ socket });
