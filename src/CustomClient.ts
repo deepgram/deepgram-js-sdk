@@ -23,6 +23,18 @@ import { RUNTIME } from "./core/runtime/index.js";
 // Default WebSocket connection timeout in milliseconds
 const DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
 
+// Keys present in every ConnectArgs interface that control the WebSocket connection itself.
+// Every other key in ConnectArgs is treated as an API query parameter.
+const WEBSOCKET_OPTION_KEYS = new Set([
+    "Authorization",
+    "headers",
+    "debug",
+    "reconnectAttempts",
+    "connectionTimeoutInSeconds",
+    "abortSignal",
+    "queryParams",
+]);
+
 // ws for Node.js - loaded lazily to support CJS, ESM, and browser builds.
 // A static import of "module" (for createRequire) would break the browser bundle,
 // so we detect the environment at runtime and use an opaque dynamic import in ESM
@@ -290,6 +302,25 @@ async function resolveHeaders(headers: Record<string, unknown>): Promise<Record<
 }
 
 /**
+ * Builds API query parameters from a ConnectArgs object, excluding all WebSocket
+ * infrastructure keys. This means any new typed parameter added to ConnectArgs by
+ * the generator is automatically included without needing manual updates here.
+ * An explicit `queryParams` override is merged in last.
+ */
+function buildQueryParams(args: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(args)) {
+        if (!WEBSOCKET_OPTION_KEYS.has(key) && value != null) {
+            result[key] = value;
+        }
+    }
+    if (args.queryParams != null && typeof args.queryParams === "object") {
+        Object.assign(result, args.queryParams);
+    }
+    return result;
+}
+
+/**
  * Helper function to get WebSocket class and handle headers/protocols based on runtime.
  * In Node.js, use the 'ws' library which supports headers.
  * In browser, use Sec-WebSocket-Protocol for authentication since headers aren't supported.
@@ -455,7 +486,7 @@ async function createWebSocketConnection({
     options: DeepgramClient.Options;
     urlPath: string;
     environmentKey: 'agent' | 'production';
-    queryParams: Record<string, string | string[] | object | object[] | null>;
+    queryParams: Record<string, unknown>;
     headers?: Record<string, unknown>;
     debug?: boolean;
     reconnectAttempts?: number;
@@ -514,12 +545,11 @@ class WrappedAgentV1Client extends AgentV1Client {
     public async connect(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
         const { headers, debug, reconnectAttempts } = args;
 
-        // Use shared connection helper
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/agent/converse",
             environmentKey: 'agent',
-            queryParams: {},
+            queryParams: buildQueryParams(args as Record<string, unknown>),
             headers,
             debug,
             reconnectAttempts,
@@ -594,76 +624,13 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  */
 class WrappedListenV1Client extends ListenV1Client {
     public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
-        // Extract all the args (same as the original implementation)
-        const {
-            callback,
-            callback_method: callbackMethod,
-            channels,
-            diarize,
-            dictation,
-            encoding,
-            endpointing,
-            extra,
-            interim_results: interimResults,
-            keyterm,
-            keywords,
-            language,
-            mip_opt_out: mipOptOut,
-            model,
-            multichannel,
-            numerals,
-            profanity_filter: profanityFilter,
-            punctuate,
-            redact,
-            replace,
-            sample_rate: sampleRate,
-            search,
-            smart_format: smartFormat,
-            tag,
-            utterance_end_ms: utteranceEndMs,
-            vad_events: vadEvents,
-            version,
-            headers,
-            debug,
-            reconnectAttempts,
-        } = args;
+        const { headers, debug, reconnectAttempts } = args;
 
-        // Build query params (same as original)
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (callback != null) _queryParams.callback = callback;
-        if (callbackMethod != null) _queryParams.callback_method = callbackMethod;
-        if (channels != null) _queryParams.channels = channels;
-        if (diarize != null) _queryParams.diarize = diarize;
-        if (dictation != null) _queryParams.dictation = dictation;
-        if (encoding != null) _queryParams.encoding = encoding;
-        if (endpointing != null) _queryParams.endpointing = endpointing;
-        if (extra != null) _queryParams.extra = extra;
-        if (interimResults != null) _queryParams.interim_results = interimResults;
-        if (keyterm != null) _queryParams.keyterm = keyterm;
-        if (keywords != null) _queryParams.keywords = keywords;
-        if (language != null) _queryParams.language = language;
-        if (mipOptOut != null) _queryParams.mip_opt_out = mipOptOut;
-        _queryParams.model = model;
-        if (multichannel != null) _queryParams.multichannel = multichannel;
-        if (numerals != null) _queryParams.numerals = numerals;
-        if (profanityFilter != null) _queryParams.profanity_filter = profanityFilter;
-        if (punctuate != null) _queryParams.punctuate = punctuate;
-        if (redact != null) _queryParams.redact = redact;
-        if (replace != null) _queryParams.replace = replace;
-        if (sampleRate != null) _queryParams.sample_rate = sampleRate;
-        if (search != null) _queryParams.search = search;
-        if (smartFormat != null) _queryParams.smart_format = smartFormat;
-        if (tag != null) _queryParams.tag = tag;
-        if (utteranceEndMs != null) _queryParams.utterance_end_ms = utteranceEndMs;
-        if (vadEvents != null) _queryParams.vad_events = vadEvents;
-        if (version != null) _queryParams.version = version;
-
-        // Use shared connection helper
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/listen",
             environmentKey: 'production',
-            queryParams: _queryParams,
+            queryParams: buildQueryParams(args as Record<string, unknown>),
             headers,
             debug,
             reconnectAttempts,
@@ -742,38 +709,13 @@ class WrappedListenV2Client extends ListenV2Client {
             keyterm?: string | string[];
         }
     ): Promise<ListenV2Socket> {
-        const {
-            model,
-            encoding,
-            sample_rate: sampleRate,
-            eager_eot_threshold: eagerEotThreshold,
-            eot_threshold: eotThreshold,
-            eot_timeout_ms: eotTimeoutMs,
-            keyterm,
-            mip_opt_out: mipOptOut,
-            tag,
-            headers,
-            debug,
-            reconnectAttempts,
-        } = args;
+        const { headers, debug, reconnectAttempts } = args;
 
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams.model = model;
-        if (encoding != null) _queryParams.encoding = encoding;
-        if (sampleRate != null) _queryParams.sample_rate = sampleRate;
-        if (eagerEotThreshold != null) _queryParams.eager_eot_threshold = eagerEotThreshold;
-        if (eotThreshold != null) _queryParams.eot_threshold = eotThreshold;
-        if (eotTimeoutMs != null) _queryParams.eot_timeout_ms = eotTimeoutMs;
-        if (keyterm != null) _queryParams.keyterm = keyterm;
-        if (mipOptOut != null) _queryParams.mip_opt_out = mipOptOut;
-        if (tag != null) _queryParams.tag = tag;
-
-        // Use shared connection helper
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v2/listen",
             environmentKey: 'production',
-            queryParams: _queryParams,
+            queryParams: buildQueryParams(args as Record<string, unknown>),
             headers,
             debug,
             reconnectAttempts,
@@ -795,12 +737,7 @@ class WrappedListenV2Client extends ListenV2Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(
-        args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
-            Authorization?: string;
-            keyterm?: string | string[];
-        }
-    ): Promise<ListenV2Socket> {
+    public async createConnection(args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & { Authorization?: string; keyterm?: string | string[] }): Promise<ListenV2Socket> {
         return this.connect(args);
     }
 }
@@ -888,28 +825,13 @@ class WrappedListenV2Socket extends ListenV2Socket {
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
     public async connect(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
-        const {
-            encoding,
-            mip_opt_out: mipOptOut,
-            model,
-            sample_rate: sampleRate,
-            headers,
-            debug,
-            reconnectAttempts,
-        } = args;
+        const { headers, debug, reconnectAttempts } = args;
 
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (encoding != null) _queryParams.encoding = encoding;
-        if (mipOptOut != null) _queryParams.mip_opt_out = mipOptOut;
-        if (model != null) _queryParams.model = model;
-        if (sampleRate != null) _queryParams.sample_rate = sampleRate;
-
-        // Use shared connection helper
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/speak",
             environmentKey: 'production',
-            queryParams: _queryParams,
+            queryParams: buildQueryParams(args as Record<string, unknown>),
             headers,
             debug,
             reconnectAttempts,
