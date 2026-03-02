@@ -4,22 +4,24 @@ import type { BaseClientOptions } from "../../../../../../BaseClient.js";
 import { type NormalizedClientOptions, normalizeClientOptions } from "../../../../../../BaseClient.js";
 import { mergeHeaders, mergeOnlyDefinedHeaders } from "../../../../../../core/headers.js";
 import * as core from "../../../../../../core/index.js";
+import { toJson } from "../../../../../../core/json.js";
 import * as environments from "../../../../../../environments.js";
+import type * as Deepgram from "../../../../../index.js";
 import { V2Socket } from "./Socket.js";
 
 export declare namespace V2Client {
     export type Options = BaseClientOptions;
 
     export interface ConnectArgs {
-        model: string;
-        encoding?: string;
-        sample_rate?: string;
-        eager_eot_threshold?: string;
-        eot_threshold?: string;
-        eot_timeout_ms?: string;
-        keyterm?: string;
-        mip_opt_out?: string;
-        tag?: string;
+        model: Deepgram.ListenV2Model;
+        encoding?: Deepgram.ListenV2Encoding;
+        sample_rate?: Deepgram.ListenV2SampleRate | undefined;
+        eager_eot_threshold?: Deepgram.ListenV2EagerEotThreshold | undefined;
+        eot_threshold?: Deepgram.ListenV2EotThreshold | undefined;
+        eot_timeout_ms?: Deepgram.ListenV2EotTimeoutMs | undefined;
+        keyterm?: Deepgram.ListenV2Keyterm;
+        mip_opt_out?: Deepgram.ListenV2MipOptOut | undefined;
+        tag?: Deepgram.ListenV2Tag | undefined;
         Authorization: string;
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
@@ -29,6 +31,10 @@ export declare namespace V2Client {
         debug?: boolean;
         /** Number of reconnect attempts. Defaults to 30. */
         reconnectAttempts?: number;
+        /** The timeout for establishing the WebSocket connection in seconds. */
+        connectionTimeoutInSeconds?: number;
+        /** A signal to abort the WebSocket connection. */
+        abortSignal?: AbortSignal;
     }
 }
 
@@ -54,17 +60,36 @@ export class V2Client {
             headers,
             debug,
             reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
         } = args;
         const _queryParams: Record<string, unknown> = {
             model,
-            encoding,
-            sample_rate: sampleRate,
-            eager_eot_threshold: eagerEotThreshold,
-            eot_threshold: eotThreshold,
-            eot_timeout_ms: eotTimeoutMs,
-            keyterm,
-            mip_opt_out: mipOptOut,
-            tag,
+            encoding: encoding != null ? encoding : undefined,
+            sample_rate:
+                sampleRate != null ? (typeof sampleRate === "string" ? sampleRate : toJson(sampleRate)) : undefined,
+            eager_eot_threshold:
+                eagerEotThreshold != null
+                    ? typeof eagerEotThreshold === "string"
+                        ? eagerEotThreshold
+                        : toJson(eagerEotThreshold)
+                    : undefined,
+            eot_threshold:
+                eotThreshold != null
+                    ? typeof eotThreshold === "string"
+                        ? eotThreshold
+                        : toJson(eotThreshold)
+                    : undefined,
+            eot_timeout_ms:
+                eotTimeoutMs != null
+                    ? typeof eotTimeoutMs === "string"
+                        ? eotTimeoutMs
+                        : toJson(eotTimeoutMs)
+                    : undefined,
+            keyterm: keyterm != null ? (typeof keyterm === "string" ? keyterm : toJson(keyterm)) : undefined,
+            mip_opt_out:
+                mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
+            tag: tag != null ? (typeof tag === "string" ? tag : toJson(tag)) : undefined,
         };
         const _headers: Record<string, unknown> = mergeHeaders(
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
@@ -82,7 +107,12 @@ export class V2Client {
             protocols: [],
             queryParameters: { ..._queryParams, ...queryParams },
             headers: _headers,
-            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
+            options: {
+                debug: debug ?? false,
+                maxRetries: reconnectAttempts ?? 30,
+                connectionTimeout: connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : undefined,
+            },
+            abortSignal: abortSignal,
         });
         return new V2Socket({ socket });
     }

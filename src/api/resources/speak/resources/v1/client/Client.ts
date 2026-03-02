@@ -4,7 +4,9 @@ import type { BaseClientOptions } from "../../../../../../BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "../../../../../../BaseClient.js";
 import { mergeHeaders, mergeOnlyDefinedHeaders } from "../../../../../../core/headers.js";
 import * as core from "../../../../../../core/index.js";
+import { toJson } from "../../../../../../core/json.js";
 import * as environments from "../../../../../../environments.js";
+import type * as Deepgram from "../../../../../index.js";
 import { AudioClient } from "../resources/audio/client/Client.js";
 import { V1Socket } from "./Socket.js";
 
@@ -12,10 +14,10 @@ export declare namespace V1Client {
     export type Options = BaseClientOptions;
 
     export interface ConnectArgs {
-        encoding?: string;
-        mip_opt_out?: string;
-        model?: string;
-        sample_rate?: string;
+        encoding?: Deepgram.SpeakV1Encoding;
+        mip_opt_out?: Deepgram.SpeakV1MipOptOut | undefined;
+        model?: Deepgram.SpeakV1Model;
+        sample_rate?: Deepgram.SpeakV1SampleRate;
         Authorization: string;
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
@@ -25,6 +27,10 @@ export declare namespace V1Client {
         debug?: boolean;
         /** Number of reconnect attempts. Defaults to 30. */
         reconnectAttempts?: number;
+        /** The timeout for establishing the WebSocket connection in seconds. */
+        connectionTimeoutInSeconds?: number;
+        /** A signal to abort the WebSocket connection. */
+        abortSignal?: AbortSignal;
     }
 }
 
@@ -50,12 +56,15 @@ export class V1Client {
             headers,
             debug,
             reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
         } = args;
         const _queryParams: Record<string, unknown> = {
-            encoding,
-            mip_opt_out: mipOptOut,
-            model,
-            sample_rate: sampleRate,
+            encoding: encoding != null ? encoding : undefined,
+            mip_opt_out:
+                mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
+            model: model != null ? model : undefined,
+            sample_rate: sampleRate != null ? sampleRate : undefined,
         };
         const _headers: Record<string, unknown> = mergeHeaders(
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
@@ -73,7 +82,12 @@ export class V1Client {
             protocols: [],
             queryParameters: { ..._queryParams, ...queryParams },
             headers: _headers,
-            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
+            options: {
+                debug: debug ?? false,
+                maxRetries: reconnectAttempts ?? 30,
+                connectionTimeout: connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : undefined,
+            },
+            abortSignal: abortSignal,
         });
         return new V1Socket({ socket });
     }

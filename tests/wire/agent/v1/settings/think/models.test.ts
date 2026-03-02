@@ -10,7 +10,7 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { models: [{ id: "gpt-5", name: "name", provider: "open_ai" }] };
@@ -39,7 +39,7 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { key: "value" };

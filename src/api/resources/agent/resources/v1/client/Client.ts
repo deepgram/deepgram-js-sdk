@@ -21,6 +21,10 @@ export declare namespace V1Client {
         debug?: boolean;
         /** Number of reconnect attempts. Defaults to 30. */
         reconnectAttempts?: number;
+        /** The timeout for establishing the WebSocket connection in seconds. */
+        connectionTimeoutInSeconds?: number;
+        /** A signal to abort the WebSocket connection. */
+        abortSignal?: AbortSignal;
     }
 }
 
@@ -37,7 +41,7 @@ export class V1Client {
     }
 
     public async connect(args: V1Client.ConnectArgs): Promise<V1Socket> {
-        const { queryParams, headers, debug, reconnectAttempts } = args;
+        const { queryParams, headers, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
         const _headers: Record<string, unknown> = mergeHeaders(
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
@@ -54,7 +58,12 @@ export class V1Client {
             protocols: [],
             queryParameters: queryParams ?? {},
             headers: _headers,
-            options: { debug: debug ?? false, maxRetries: reconnectAttempts ?? 30 },
+            options: {
+                debug: debug ?? false,
+                maxRetries: reconnectAttempts ?? 30,
+                connectionTimeout: connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : undefined,
+            },
+            abortSignal: abortSignal,
         });
         return new V1Socket({ socket });
     }

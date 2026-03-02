@@ -51,11 +51,9 @@ export function normalizeClientOptions<T extends BaseClientOptions = BaseClientO
     const headers = mergeHeaders(
         {
             "X-Fern-Language": "JavaScript",
-            "X-Fern-SDK-Name": "",
-            // x-release-please-start-version
-            "X-Fern-SDK-Version": "5.0.0-beta.4",
-            "User-Agent": "/5.0.0-beta.4",
-            // x-release-please-end
+            "X-Fern-SDK-Name": "@deepgram/sdk",
+            "X-Fern-SDK-Version": "4.11.4",
+            "User-Agent": "@deepgram/sdk/4.11.4",
             "X-Fern-Runtime": core.RUNTIME.type,
             "X-Fern-Runtime-Version": core.RUNTIME.version,
         },

@@ -10,7 +10,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { projects: [{ project_id: "project_id", name: "name" }] };
@@ -32,7 +32,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { key: "value" };
@@ -48,7 +48,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { project_id: "project_id", mip_opt_out: true, name: "name" };
@@ -76,7 +76,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { key: "value" };
@@ -98,7 +98,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { message: "message" };
@@ -121,7 +121,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { key: "value" };
@@ -143,7 +143,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
         const rawRequestBody = {};
         const rawResponseBody = { message: "Successfully updated project info." };
@@ -167,7 +167,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
         const rawRequestBody = {};
         const rawResponseBody = { key: "value" };
@@ -190,7 +190,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { message: "message" };
@@ -213,7 +213,7 @@ describe("ProjectsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
         const rawResponseBody = { key: "value" };

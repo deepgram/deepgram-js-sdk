@@ -27,6 +27,7 @@ export class AudioClient {
 
     /**
      * Convert text into natural-sounding speech using Deepgram's TTS REST API
+     *
      * @throws {@link Deepgram.BadRequestError}
      */
     public generate(
@@ -75,7 +76,7 @@ export class AudioClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 "v1/speak",
             ),
             method: "POST",

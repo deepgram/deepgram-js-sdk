@@ -5,9 +5,6 @@ import type * as Deepgram from "../../../../../../../../index.js";
 /**
  * @example
  *     {}
- *
- * @example
- *     {}
  */
 export interface MediaTranscribeRequestOctetStream {
     /** URL to which we'll make the callback request */

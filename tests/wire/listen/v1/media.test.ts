@@ -10,7 +10,7 @@ describe("MediaClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
         const rawRequestBody = { url: "https://dpgr.am/spacewalk.wav" };
         const rawResponseBody = {
@@ -56,6 +56,34 @@ describe("MediaClient", () => {
                 summary: {
                     result: "success",
                     short: "Speaker 0 discusses the significance of the first all-female spacewalk with an all-female team, stating that it is a tribute to the skilled and qualified women who were denied opportunities in the past.",
+                },
+                topics: {
+                    results: {
+                        topics: {
+                            segments: [
+                                {
+                                    text: "And, um, I think if it signifies anything, it is, uh, to honor the the women who came before us who, um, were skilled and qualified, um, and didn't get the the same opportunities that we have today.",
+                                    start_word: 32,
+                                    end_word: 69,
+                                    topics: [{ topic: "Spacewalk", confidence_score: 0.91581345 }],
+                                },
+                            ],
+                        },
+                    },
+                },
+                intents: {
+                    results: {
+                        intents: {
+                            segments: [
+                                {
+                                    text: "If you found this valuable, you can subscribe to the show on spotify or your favorite podcast app.",
+                                    start_word: 354,
+                                    end_word: 414,
+                                    intents: [{ intent: "Encourage podcasting", confidence_score: 0.0038975573 }],
+                                },
+                            ],
+                        },
+                    },
                 },
                 sentiments: {
                     segments: [
@@ -162,6 +190,44 @@ describe("MediaClient", () => {
                     result: "success",
                     short: "Speaker 0 discusses the significance of the first all-female spacewalk with an all-female team, stating that it is a tribute to the skilled and qualified women who were denied opportunities in the past.",
                 },
+                topics: {
+                    results: {
+                        topics: {
+                            segments: [
+                                {
+                                    text: "And, um, I think if it signifies anything, it is, uh, to honor the the women who came before us who, um, were skilled and qualified, um, and didn't get the the same opportunities that we have today.",
+                                    start_word: 32,
+                                    end_word: 69,
+                                    topics: [
+                                        {
+                                            topic: "Spacewalk",
+                                            confidence_score: 0.91581345,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                },
+                intents: {
+                    results: {
+                        intents: {
+                            segments: [
+                                {
+                                    text: "If you found this valuable, you can subscribe to the show on spotify or your favorite podcast app.",
+                                    start_word: 354,
+                                    end_word: 414,
+                                    intents: [
+                                        {
+                                            intent: "Encourage podcasting",
+                                            confidence_score: 0.0038975573,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                },
                 sentiments: {
                     segments: [
                         {
@@ -186,7 +252,7 @@ describe("MediaClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, production: server.baseUrl, agent: server.baseUrl },
+            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = { key: "value" };

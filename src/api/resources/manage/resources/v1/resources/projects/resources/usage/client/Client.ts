@@ -38,6 +38,8 @@ export class UsageClient {
     }
 
     /**
+     * @deprecated
+     *
      * Retrieves the usage for a specific project. Use Get Project Usage Breakdown for a more comprehensive usage summary.
      *
      * @param {string} project_id - The unique identifier of the project
@@ -211,7 +213,7 @@ export class UsageClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/usage`,
             ),
             method: "GET",

@@ -62,7 +62,7 @@ export class ScopesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/members/${core.url.encodePathParam(member_id)}/scopes`,
             ),
             method: "GET",
@@ -144,7 +144,7 @@ export class ScopesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/members/${core.url.encodePathParam(member_id)}/scopes`,
             ),
             method: "PUT",
