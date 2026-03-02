@@ -36,6 +36,12 @@ docs
 .npmignore
 .gitignore
 .github/workflows/ci.yml
+.github/workflows/pr-title-check.yml
+.github/workflows/release-please.yml
+.github/.commitlintrc.json
+.github/.release-please-manifest.json
+.github/release-please-config.json
+CHANGELOG.md
 .npmrc
 
 # Because the generator tries to roll the examples back to the old signature?
