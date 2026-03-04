@@ -59,7 +59,7 @@ export class DistributionCredentialsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials`,
             ),
             method: "GET",
@@ -143,7 +143,7 @@ export class DistributionCredentialsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials`,
             ),
             method: "POST",
@@ -225,7 +225,7 @@ export class DistributionCredentialsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials/${core.url.encodePathParam(distribution_credentials_id)}`,
             ),
             method: "GET",
@@ -304,7 +304,7 @@ export class DistributionCredentialsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials/${core.url.encodePathParam(distribution_credentials_id)}`,
             ),
             method: "DELETE",

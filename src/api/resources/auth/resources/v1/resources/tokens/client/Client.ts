@@ -59,7 +59,7 @@ export class TokensClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 "v1/auth/grant",
             ),
             method: "POST",

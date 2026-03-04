@@ -173,7 +173,7 @@ export class MediaClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 "v1/listen",
             ),
             method: "POST",
@@ -289,7 +289,7 @@ export class MediaClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).base,
+                    ).production,
                 "v1/listen",
             ),
             method: "POST",
