@@ -68,7 +68,7 @@ export class ModelsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/models`,
             ),
             method: "GET",
@@ -142,7 +142,7 @@ export class ModelsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/models/${core.url.encodePathParam(model_id)}`,
             ),
             method: "GET",

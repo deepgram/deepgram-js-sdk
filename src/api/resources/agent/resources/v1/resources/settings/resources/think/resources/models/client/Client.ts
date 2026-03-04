@@ -51,7 +51,7 @@ export class ModelsClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).agent,
+                    ).base,
                 "v1/agent/settings/think/models",
             ),
             method: "GET",
