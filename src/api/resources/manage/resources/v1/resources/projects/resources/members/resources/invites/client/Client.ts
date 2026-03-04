@@ -59,7 +59,7 @@ export class InvitesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/invites`,
             ),
             method: "GET",
@@ -139,7 +139,7 @@ export class InvitesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/invites`,
             ),
             method: "POST",
@@ -219,7 +219,7 @@ export class InvitesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/invites/${core.url.encodePathParam(email)}`,
             ),
             method: "DELETE",

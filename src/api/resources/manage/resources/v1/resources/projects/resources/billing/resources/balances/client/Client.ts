@@ -59,7 +59,7 @@ export class BalancesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/balances`,
             ),
             method: "GET",
@@ -136,7 +136,7 @@ export class BalancesClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/balances/${core.url.encodePathParam(balance_id)}`,
             ),
             method: "GET",

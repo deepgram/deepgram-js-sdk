@@ -104,7 +104,7 @@ export class TextClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 "v1/read",
             ),
             method: "POST",

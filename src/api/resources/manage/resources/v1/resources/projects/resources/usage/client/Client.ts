@@ -213,7 +213,7 @@ export class UsageClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 `v1/projects/${core.url.encodePathParam(project_id)}/usage`,
             ),
             method: "GET",

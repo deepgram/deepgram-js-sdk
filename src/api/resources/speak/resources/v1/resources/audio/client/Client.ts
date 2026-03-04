@@ -76,7 +76,7 @@ export class AudioClient {
                     (
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
-                    ).production,
+                    ).base,
                 "v1/speak",
             ),
             method: "POST",
