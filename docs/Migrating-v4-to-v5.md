@@ -547,6 +547,9 @@ const data = await deepgram.manage.v1.projects.update(projectId, options);
 
 // Delete project
 await deepgram.manage.v1.projects.delete(projectId);
+
+// Leave project
+await deepgram.manage.v1.projects.leave(projectId);
 ```
 
 #### Keys
@@ -577,16 +580,16 @@ const { error } = await deepgram.manage.deleteProjectKey(projectId, keyId);
 
 ```typescript
 // List keys
-const data = await deepgram.manage.v1.keys.list(projectId);
+const data = await deepgram.manage.v1.projects.keys.list(projectId);
 
 // Get key
-const data = await deepgram.manage.v1.keys.get(projectId, keyId);
+const data = await deepgram.manage.v1.projects.keys.get(projectId, keyId);
 
 // Create key
-const data = await deepgram.manage.v1.keys.create(projectId, options);
+const data = await deepgram.manage.v1.projects.keys.create(projectId, options);
 
 // Delete key
-await deepgram.manage.v1.keys.delete(projectId, keyId);
+await deepgram.manage.v1.projects.keys.delete(projectId, keyId);
 ```
 
 #### Members
@@ -608,10 +611,10 @@ const { error } = await deepgram.manage.removeProjectMember(
 
 ```typescript
 // Get members
-const data = await deepgram.manage.v1.members.list(projectId);
+const data = await deepgram.manage.v1.projects.members.list(projectId);
 
 // Remove member
-await deepgram.manage.v1.members.delete(projectId, memberId);
+await deepgram.manage.v1.projects.members.delete(projectId, memberId);
 ```
 
 #### Scopes
@@ -637,10 +640,13 @@ const { result, error } = await deepgram.manage.updateProjectMemberScope(
 
 ```typescript
 // Get member scopes
-const data = await deepgram.manage.v1.scopes.list(projectId, memberId);
+const data = await deepgram.manage.v1.projects.members.scopes.list(
+  projectId,
+  memberId
+);
 
 // Update scope
-const data = await deepgram.manage.v1.scopes.update(
+const data = await deepgram.manage.v1.projects.members.scopes.update(
   projectId,
   memberId,
   options
@@ -669,13 +675,16 @@ const { error } = await deepgram.manage.deleteProjectInvite(projectId, email);
 
 ```typescript
 // List invites
-const data = await deepgram.manage.v1.invites.list(projectId);
+const data = await deepgram.manage.v1.projects.members.invites.list(projectId);
 
 // Send invite
-const data = await deepgram.manage.v1.invites.create(projectId, options);
+const data = await deepgram.manage.v1.projects.members.invites.create(
+  projectId,
+  options
+);
 
 // Delete invite
-await deepgram.manage.v1.invites.delete(projectId, email);
+await deepgram.manage.v1.projects.members.invites.delete(projectId, email);
 ```
 
 #### Usage
@@ -706,13 +715,19 @@ const { result, error } = await deepgram.manage.getProjectUsageFields(
 
 ```typescript
 // Get all requests
-const data = await deepgram.manage.v1.usage.listRequests(projectId, options);
+const data = await deepgram.manage.v1.projects.requests.list(projectId, options);
+
+// Get a specific request
+const data = await deepgram.manage.v1.projects.requests.get(projectId, requestId);
 
 // Get usage summary
-const data = await deepgram.manage.v1.usage.getSummary(projectId, options);
+const data = await deepgram.manage.v1.projects.usage.get(projectId, options);
 
 // Get usage fields
-const data = await deepgram.manage.v1.usage.getFields(projectId, options);
+const data = await deepgram.manage.v1.projects.usage.fields.list(projectId, options);
+
+// Get usage breakdown
+const data = await deepgram.manage.v1.projects.usage.breakdown.get(projectId, options);
 ```
 
 #### Billing
@@ -734,10 +749,28 @@ const { result, error } = await deepgram.manage.getProjectBalance(
 
 ```typescript
 // Get all balances
-const data = await deepgram.manage.v1.billing.listBalances(projectId);
+const data = await deepgram.manage.v1.projects.billing.balances.list(projectId);
 
 // Get balance
-const data = await deepgram.manage.v1.billing.getBalance(projectId, balanceId);
+const data = await deepgram.manage.v1.projects.billing.balances.get(
+  projectId,
+  balanceId
+);
+
+// Get billing breakdown
+const data = await deepgram.manage.v1.projects.billing.breakdown.list(
+  projectId,
+  options
+);
+
+// Get billing fields
+const data = await deepgram.manage.v1.projects.billing.fields.list(projectId);
+
+// Get purchases
+const data = await deepgram.manage.v1.projects.billing.purchases.list(
+  projectId,
+  options
+);
 ```
 
 ### Self-Hosted V1
@@ -896,6 +929,8 @@ const data: Deepgram.ListenV1Response =
 - **Session ID Tracking**: Automatic session ID generation for request tracking
 - **Enhanced TypeScript**: Auto-generated types with direct and namespace imports
 - **Unified Analysis**: Single `analyze()` method for text and URL analysis
+- **Extended Billing**: Breakdown, fields, and purchases endpoints under `billing`
+- **Extended Usage**: Breakdown and per-request endpoints under `usage`
 
 ### Migration Checklist
 
@@ -907,7 +942,13 @@ const data: Deepgram.ListenV1Response =
 - [ ] Update WebSocket connections to use async `connect()` and `waitForOpen()`
 - [ ] Update event handlers from named events to `message` with type checking
 - [ ] Update error handling from `{ result, error }` to try/catch
-- [ ] Update management API calls: `manage.*` → `manage.v1.*`
+- [ ] Update project methods: `manage.*` → `manage.v1.projects.*`
+- [ ] Update keys: `manage.getProjectKeys()` → `manage.v1.projects.keys.list()`
+- [ ] Update members: `manage.getProjectMembers()` → `manage.v1.projects.members.list()`
+- [ ] Update scopes: `manage.getProjectMemberScopes()` → `manage.v1.projects.members.scopes.list()`
+- [ ] Update invites: `manage.getProjectInvites()` → `manage.v1.projects.members.invites.list()`
+- [ ] Update usage: `manage.getProjectUsageSummary()` → `manage.v1.projects.usage.get()`
+- [ ] Update billing: `manage.getProjectBalances()` → `manage.v1.projects.billing.balances.list()`
 - [ ] Update models API: `models.*` → `manage.v1.models.*` or `manage.v1.projects.models.*`
 - [ ] Update text intelligence: `read.analyzeText()` / `read.analyzeUrl()` → `read.v1.text.analyze()`
 - [ ] Update authentication: `auth.grantToken()` → `auth.v1.tokens.grant()`
