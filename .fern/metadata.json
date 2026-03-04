@@ -14,5 +14,5 @@
             "name": "@deepgram/sdk"
         }
     },
-    "sdkVersion": "4.11.4"
+    "sdkVersion": "5.0.0"
 }
