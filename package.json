@@ -1,117 +1,502 @@
 {
-  "name": "@deepgram/sdk",
-  "version": "0.0.0-automated",
-  "description": "Isomorphic Javascript client for Deepgram",
-  "keywords": [
-    "javascript",
-    "typescript",
-    "deepgram",
-    "asr",
-    "speech",
-    "sdk"
-  ],
-  "packageManager": "pnpm@10.12.1",
-  "homepage": "https://github.com/deepgram/deepgram-js-sdk",
-  "bugs": "https://github.com/deepgram/deepgram-js-sdk/issues",
-  "license": "MIT",
-  "author": {
-    "name": "Deepgram DevRel Team",
-    "email": "devrel@deepgram.com"
-  },
-  "contributors": [
-    "Brian Barrow",
-    "Brian Hillis",
-    "Luke Oliff",
-    "Michael Jolley",
-    "Sandra Rodgers",
-    "Shir Goldberg"
-  ],
-  "files": [
-    "dist",
-    "src"
-  ],
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "main": "dist/main/index.js",
-  "module": "dist/module/index.js",
-  "types": "dist/module/index.d.ts",
-  "sideEffects": false,
-  "repository": "deepgram/deepgram-js-sdk",
-  "scripts": {
-    "clean": "rimraf dist docs/v2",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "build": "run-s clean format build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
-    "build:umd": "webpack --mode=production",
-    "lint": "run-s lint:*",
-    "lint:js": "eslint -c .eslintrc-examples.js examples --max-warnings 0",
-    "lint:md": "markdownlint **/*.md *.md",
-    "lint:yml": "yamllint .github/workflows",
-    "lint:ts": "eslint src --max-warnings 0",
-    "watch": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "docs": "typedoc --entryPoints src/index.ts --out docs/ --includes src/packages/**/*.ts   --emit none",
-    "docs:json": "typedoc --entryPoints src/index.ts --includes src/packages/**/*.ts --json docs/spec.json   --emit none",
-    "test": "jest",
-    "test:unit": "jest --testPathPattern=tests/unit",
-    "test:e2e": "jest --testPathPattern=tests/e2e",
-    "test:e2e:offline": "node scripts/test-offline.js",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false"
-  },
-  "dependencies": {
-    "@deepgram/captions": "^1.1.1",
-    "@types/node": "^18.19.39",
-    "cross-fetch": "^3.1.5",
-    "deepmerge": "^4.3.1",
-    "events": "^3.3.0",
-    "ws": "^8.17.0"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^17.6.7",
-    "@commitlint/config-conventional": "^17.6.7",
-    "@types/jest": "^29.5.12",
-    "@types/ws": "^8.5.10",
-    "@typescript-eslint/eslint-plugin": "^8.7.0",
-    "@typescript-eslint/parser": "^8.7.0",
-    "buffer": "^6.0.3",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.5.0",
-    "eslint": "^8.57.1",
-    "husky": "^4.3.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "markdownlint": "^0.35.0",
-    "markdownlint-cli": "^0.42.0",
-    "nodemon": "^3.0.1",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.5.1",
-    "pretty-quick": "^3.1.3",
-    "rimraf": "^3.0.2",
-    "semantic-release-plugin-update-version-in-files": "^1.1.0",
-    "stream-browserify": "^3.0.0",
-    "ts-jest": "^29.1.2",
-    "ts-loader": "^8.0.11",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.22.16",
-    "typescript": "^4.5.5",
-    "url": "^0.11.4",
-    "util": "^0.12.5",
-    "webpack": "^5.69.1",
-    "webpack-cli": "^4.9.2",
-    "yaml-lint": "^1.7.0"
-  },
-  "overrides": {
-    "es5-ext": "0.10.53"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "jsdelivr": "dist/umd/deepgram.js",
-  "unpkg": "dist/umd/deepgram.js"
+    "name": "@deepgram/sdk",
+    "version": "4.11.4",
+    "private": false,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/deepgram/deepgram-js-sdk.git"
+    },
+    "license": "MIT",
+    "type": "commonjs",
+    "main": "./dist/cjs/index.js",
+    "module": "./dist/esm/index.mjs",
+    "types": "./dist/cjs/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/esm/index.d.mts",
+                "default": "./dist/esm/index.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.ts",
+                "default": "./dist/cjs/index.js"
+            },
+            "default": "./dist/cjs/index.js"
+        },
+        "./agent": {
+            "import": {
+                "types": "./dist/esm/api/resources/agent/exports.d.mts",
+                "default": "./dist/esm/api/resources/agent/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/agent/exports.d.ts",
+                "default": "./dist/cjs/api/resources/agent/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/agent/exports.js"
+        },
+        "./agent/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/agent/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/agent/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/agent/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/agent/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/agent/resources/v1/exports.js"
+        },
+        "./agent/v1/settings": {
+            "import": {
+                "types": "./dist/esm/api/resources/agent/resources/v1/resources/settings/exports.d.mts",
+                "default": "./dist/esm/api/resources/agent/resources/v1/resources/settings/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/exports.d.ts",
+                "default": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/exports.js"
+        },
+        "./agent/v1/settings/think": {
+            "import": {
+                "types": "./dist/esm/api/resources/agent/resources/v1/resources/settings/resources/think/exports.d.mts",
+                "default": "./dist/esm/api/resources/agent/resources/v1/resources/settings/resources/think/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/resources/think/exports.d.ts",
+                "default": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/resources/think/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/resources/think/exports.js"
+        },
+        "./agent/v1/settings/think/models": {
+            "import": {
+                "types": "./dist/esm/api/resources/agent/resources/v1/resources/settings/resources/think/resources/models/exports.d.mts",
+                "default": "./dist/esm/api/resources/agent/resources/v1/resources/settings/resources/think/resources/models/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/resources/think/resources/models/exports.d.ts",
+                "default": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/resources/think/resources/models/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/agent/resources/v1/resources/settings/resources/think/resources/models/exports.js"
+        },
+        "./auth": {
+            "import": {
+                "types": "./dist/esm/api/resources/auth/exports.d.mts",
+                "default": "./dist/esm/api/resources/auth/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/auth/exports.d.ts",
+                "default": "./dist/cjs/api/resources/auth/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/auth/exports.js"
+        },
+        "./auth/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/auth/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/auth/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/auth/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/auth/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/auth/resources/v1/exports.js"
+        },
+        "./auth/v1/tokens": {
+            "import": {
+                "types": "./dist/esm/api/resources/auth/resources/v1/resources/tokens/exports.d.mts",
+                "default": "./dist/esm/api/resources/auth/resources/v1/resources/tokens/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/auth/resources/v1/resources/tokens/exports.d.ts",
+                "default": "./dist/cjs/api/resources/auth/resources/v1/resources/tokens/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/auth/resources/v1/resources/tokens/exports.js"
+        },
+        "./listen": {
+            "import": {
+                "types": "./dist/esm/api/resources/listen/exports.d.mts",
+                "default": "./dist/esm/api/resources/listen/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/listen/exports.d.ts",
+                "default": "./dist/cjs/api/resources/listen/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/listen/exports.js"
+        },
+        "./listen/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/listen/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/listen/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/listen/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/listen/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/listen/resources/v1/exports.js"
+        },
+        "./listen/v2": {
+            "import": {
+                "types": "./dist/esm/api/resources/listen/resources/v2/exports.d.mts",
+                "default": "./dist/esm/api/resources/listen/resources/v2/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/listen/resources/v2/exports.d.ts",
+                "default": "./dist/cjs/api/resources/listen/resources/v2/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/listen/resources/v2/exports.js"
+        },
+        "./listen/v1/media": {
+            "import": {
+                "types": "./dist/esm/api/resources/listen/resources/v1/resources/media/exports.d.mts",
+                "default": "./dist/esm/api/resources/listen/resources/v1/resources/media/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/listen/resources/v1/resources/media/exports.d.ts",
+                "default": "./dist/cjs/api/resources/listen/resources/v1/resources/media/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/listen/resources/v1/resources/media/exports.js"
+        },
+        "./manage": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/exports.js"
+        },
+        "./manage/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/exports.js"
+        },
+        "./manage/v1/models": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/models/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/models/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/models/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/models/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/models/exports.js"
+        },
+        "./manage/v1/projects": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/exports.js"
+        },
+        "./manage/v1/projects/keys": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/keys/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/keys/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/keys/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/keys/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/keys/exports.js"
+        },
+        "./manage/v1/projects/members": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/members/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/members/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/exports.js"
+        },
+        "./manage/v1/projects/models": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/models/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/models/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/models/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/models/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/models/exports.js"
+        },
+        "./manage/v1/projects/requests": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/requests/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/requests/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/requests/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/requests/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/requests/exports.js"
+        },
+        "./manage/v1/projects/usage": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/usage/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/usage/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/exports.js"
+        },
+        "./manage/v1/projects/billing": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/exports.js"
+        },
+        "./manage/v1/projects/billing/balances": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/balances/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/balances/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/balances/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/balances/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/balances/exports.js"
+        },
+        "./manage/v1/projects/billing/breakdown": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/breakdown/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/breakdown/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/breakdown/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/breakdown/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/breakdown/exports.js"
+        },
+        "./manage/v1/projects/billing/fields": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/fields/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/fields/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/fields/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/fields/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/fields/exports.js"
+        },
+        "./manage/v1/projects/billing/purchases": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/purchases/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/purchases/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/purchases/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/purchases/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/billing/resources/purchases/exports.js"
+        },
+        "./manage/v1/projects/members/invites": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/members/resources/invites/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/members/resources/invites/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/resources/invites/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/resources/invites/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/resources/invites/exports.js"
+        },
+        "./manage/v1/projects/members/scopes": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/members/resources/scopes/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/members/resources/scopes/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/resources/scopes/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/resources/scopes/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/members/resources/scopes/exports.js"
+        },
+        "./manage/v1/projects/usage/breakdown": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/breakdown/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/breakdown/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/breakdown/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/breakdown/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/breakdown/exports.js"
+        },
+        "./manage/v1/projects/usage/fields": {
+            "import": {
+                "types": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/fields/exports.d.mts",
+                "default": "./dist/esm/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/fields/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/fields/exports.d.ts",
+                "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/fields/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/manage/resources/v1/resources/projects/resources/usage/resources/fields/exports.js"
+        },
+        "./read": {
+            "import": {
+                "types": "./dist/esm/api/resources/read/exports.d.mts",
+                "default": "./dist/esm/api/resources/read/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/read/exports.d.ts",
+                "default": "./dist/cjs/api/resources/read/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/read/exports.js"
+        },
+        "./read/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/read/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/read/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/read/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/read/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/read/resources/v1/exports.js"
+        },
+        "./read/v1/text": {
+            "import": {
+                "types": "./dist/esm/api/resources/read/resources/v1/resources/text/exports.d.mts",
+                "default": "./dist/esm/api/resources/read/resources/v1/resources/text/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/read/resources/v1/resources/text/exports.d.ts",
+                "default": "./dist/cjs/api/resources/read/resources/v1/resources/text/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/read/resources/v1/resources/text/exports.js"
+        },
+        "./selfHosted": {
+            "import": {
+                "types": "./dist/esm/api/resources/selfHosted/exports.d.mts",
+                "default": "./dist/esm/api/resources/selfHosted/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/selfHosted/exports.d.ts",
+                "default": "./dist/cjs/api/resources/selfHosted/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/selfHosted/exports.js"
+        },
+        "./selfHosted/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/selfHosted/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/selfHosted/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/selfHosted/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/selfHosted/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/selfHosted/resources/v1/exports.js"
+        },
+        "./selfHosted/v1/distributionCredentials": {
+            "import": {
+                "types": "./dist/esm/api/resources/selfHosted/resources/v1/resources/distributionCredentials/exports.d.mts",
+                "default": "./dist/esm/api/resources/selfHosted/resources/v1/resources/distributionCredentials/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/selfHosted/resources/v1/resources/distributionCredentials/exports.d.ts",
+                "default": "./dist/cjs/api/resources/selfHosted/resources/v1/resources/distributionCredentials/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/selfHosted/resources/v1/resources/distributionCredentials/exports.js"
+        },
+        "./speak": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/exports.js"
+        },
+        "./speak/v1": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/resources/v1/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/resources/v1/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/resources/v1/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/resources/v1/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/resources/v1/exports.js"
+        },
+        "./speak/v1/audio": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/resources/v1/resources/audio/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/resources/v1/resources/audio/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist",
+        "reference.md",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "format": "biome format --write --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
+        "format:check": "biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
+        "lint": "biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
+        "lint:fix": "biome lint --fix --unsafe --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
+        "check": "biome check --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
+        "check:fix": "biome check --fix --unsafe --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none",
+        "build": "pnpm build:cjs && pnpm build:esm",
+        "build:cjs": "tsc --project ./tsconfig.cjs.json",
+        "build:esm": "tsc --project ./tsconfig.esm.json && node scripts/rename-to-esm-files.js dist/esm",
+        "test": "vitest",
+        "test:unit": "vitest --project unit",
+        "test:wire": "vitest --project wire"
+    },
+    "dependencies": {
+        "ws": "^8.16.0"
+    },
+    "devDependencies": {
+        "webpack": "^5.97.1",
+        "ts-loader": "^9.5.1",
+        "@types/ws": "^8.5.10",
+        "vitest": "^3.2.4",
+        "msw": "2.11.2",
+        "@types/node": "^18.19.70",
+        "typescript": "~5.7.2",
+        "@biomejs/biome": "2.4.3"
+    },
+    "browser": {
+        "fs": false,
+        "os": false,
+        "path": false,
+        "stream": false,
+        "crypto": false
+    },
+    "packageManager": "pnpm@10.20.0",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "sideEffects": false
 }

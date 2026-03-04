@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication with Access Token - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Authentication with Access Token</h1>
+  <p>Access tokens are temporary (30-second TTL) and must be obtained using an API key. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server. Uses Bearer scheme in Authorization header.</p>
+
+  <div class="container">
+    <button id="runExample">Run Example</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const runButton = document.getElementById('runExample');
+    const output = document.getElementById('output');
+
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    runButton.addEventListener('click', async () => {
+      output.textContent = '';
+      runButton.disabled = true;
+      log('Running example...\n');
+
+      try {
+        // First, create a client to generate access token (API key handled by proxy)
+        const apiKeyClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        log('Generating access token...');
+        const tokenData = await apiKeyClient.auth.v1.tokens.grant();
+        log(`✓ Access token: ${tokenData.access_token}`, 'success');
+        log(`✓ Expires in: ${tokenData.expires_in} seconds`, 'success');
+
+        // Use the access token in a new client instance
+        log('\nCreating client with access token...');
+        const tempClient = new DeepgramClient({ 
+          accessToken: tokenData.access_token,
+          baseUrl: 'http://localhost:8001',
+        });
+
+        // Verify the access token is actually being used (Bearer scheme, not Token)
+        log('Verifying access token is being used...');
+        const authRequest = await tempClient._options.authProvider.getAuthRequest();
+        const authHeader = authRequest.headers.Authorization;
+        
+        log(`Authorization header: ${authHeader.substring(0, 30)}...`);
+        
+        if (authHeader.startsWith("Bearer ")) {
+          const tokenInHeader = authHeader.substring(7);
+          if (tokenInHeader === tokenData.access_token) {
+            log('✓ PASS: Access token is being used (Bearer scheme)', 'success');
+          } else {
+            log('✗ FAIL: Access token in header doesn\'t match provided token', 'error');
+            return;
+          }
+        } else {
+          log(`✗ FAIL: Expected Bearer scheme, got: ${authHeader.substring(0, 30)}...`, 'error');
+          return;
+        }
+
+        // Now use the temporary client to verify it works
+        // Note: Access tokens from grant() have usage:write permission for voice APIs,
+        // but NOT for Manage APIs. So we verify with auth.v1.tokens.get() instead.
+        log('\nTesting API call with access token...');
+        const text = `The history of the phrase 'The quick brown fox jumps over the lazy dog'. 
+    The earliest known apperance of the phrase was in The Boston Journal. 
+    This phrase is commonly used for typing practice and testing keyboards.`;
+    
+      try {
+        const data = await tempClient.read.v1.text.analyze({
+          text,
+          language: "en",
+          summarize: true, // Enable at least one feature
+          // Add more text intelligence options as needed
+        });
+    
+        console.log("Analysis result:", JSON.stringify(data, null, 2));
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

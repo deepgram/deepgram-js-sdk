@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Permissions Management - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px 5px 5px 0;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.danger {
+      background: #d32f2f;
+    }
+    button.danger:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .warning {
+      color: #f57c00;
+      padding: 10px;
+      background: #fff3e0;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Member Permissions Management</h1>
+  <p>Manage project members, permissions, and invitations.</p>
+
+  <div class="container">
+    <label for="projectId">Project ID:</label>
+    <input type="text" id="projectId" placeholder="Enter your Deepgram project ID">
+
+    <button id="listMembers">List Members</button>
+    <button id="listInvites">List Invitations</button>
+    <button id="auditPermissions">Audit Permissions</button>
+  </div>
+
+  <div class="container">
+    <h3>Member Actions</h3>
+    <label for="memberId">Member ID:</label>
+    <input type="text" id="memberId" placeholder="Enter member ID">
+
+    <button id="getScopes">Get Member Scopes</button>
+  </div>
+
+  <div class="container">
+    <h3>Update Member Scope</h3>
+    <div class="warning">⚠️ Changing member scopes affects their permissions. Use with caution.</div>
+
+    <label for="updateMemberId">Member ID:</label>
+    <input type="text" id="updateMemberId" placeholder="Enter member ID">
+
+    <label for="newScope">New Scope:</label>
+    <select id="newScope">
+      <option value="member">Member</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button id="updateScope">Update Scope</button>
+  </div>
+
+  <div class="container">
+    <h3>Send Invitation</h3>
+    <label for="inviteEmail">Email:</label>
+    <input type="email" id="inviteEmail" placeholder="newmember@example.com">
+
+    <label for="inviteScope">Scope:</label>
+    <select id="inviteScope">
+      <option value="member">Member</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button id="sendInvite">Send Invitation</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const projectIdInput = document.getElementById('projectId');
+    const memberIdInput = document.getElementById('memberId');
+    const updateMemberIdInput = document.getElementById('updateMemberId');
+    const newScopeSelect = document.getElementById('newScope');
+    const inviteEmailInput = document.getElementById('inviteEmail');
+    const inviteScopeSelect = document.getElementById('inviteScope');
+    const output = document.getElementById('output');
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function validateProjectId() {
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return null;
+      }
+      return projectId;
+    }
+
+    document.getElementById('listMembers').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Fetching project members...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.members.list(projectId);
+
+        log(`✓ Project members:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('listInvites').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Fetching pending invitations...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.members.invites.list(projectId);
+
+        log(`✓ Pending invitations:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('getScopes').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      const memberId = memberIdInput.value.trim();
+      if (!memberId) {
+        log('Please enter a member ID', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      log('Fetching member scopes...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.members.scopes.list(projectId, memberId);
+
+        log(`✓ Member scopes:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('updateScope').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      const memberId = updateMemberIdInput.value.trim();
+      if (!memberId) {
+        log('Please enter a member ID', 'error');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to update this member's scope to ${newScopeSelect.value}?`)) {
+        log('Scope update cancelled', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      log('Updating member scope...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.members.scopes.update(
+          projectId,
+          memberId,
+          { scope: newScopeSelect.value }
+        );
+
+        log(`✓ Member scope updated:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('sendInvite').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      const email = inviteEmailInput.value.trim();
+      if (!email) {
+        log('Please enter an email address', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      log('Sending invitation...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.members.invites.create(
+          projectId,
+          {
+            email: email,
+            scope: inviteScopeSelect.value,
+          }
+        );
+
+        log(`✓ Invitation sent:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('auditPermissions').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Running permissions audit...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const members = await deepgramClient.manage.v1.projects.members.list(projectId);
+
+        log('=== Permission Audit Report ===\n');
+
+        for (const member of members.members || []) {
+          try {
+            const scopes = await deepgramClient.manage.v1.projects.members.scopes.list(projectId, member.member_id);
+
+            log(`Member: ${member.email || member.member_id}`);
+            log(`  Role: ${member.scope || 'unknown'}`);
+            log(`  Scopes: ${JSON.stringify(scopes)}\n`);
+          } catch (err) {
+            log(`  Error getting scopes: ${err.message}\n`, 'error');
+          }
+        }
+
+        log('✓ Audit complete', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

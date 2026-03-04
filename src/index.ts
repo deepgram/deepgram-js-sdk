@@ -1,68 +1,16 @@
-import { DeepgramClientOptions, IKeyFactory } from "./lib/types/DeepgramClientOptions";
-import { DeepgramVersionError } from "./lib/errors";
-import DeepgramClient from "./DeepgramClient";
+// Export everything under Deepgram namespace for backwards compatibility
+export * as Deepgram from "./api/index.js";
 
-/**
- * This class is deprecated and should not be used. It throws a `DeepgramVersionError` when instantiated.
- *
- * @deprecated
- * @see https://dpgr.am/js-v3
- */
-class Deepgram {
-  constructor(protected apiKey: string, protected apiUrl?: string, protected requireSSL?: boolean) {
-    throw new DeepgramVersionError();
-  }
-}
+// ALSO export all types directly for better discoverability and IDE autocomplete
+// This allows: import { ListenV1Response } from "@deepgram/sdk"
+// While still supporting: import { Deepgram } from "@deepgram/sdk"; type Response = Deepgram.ListenV1Response;
+export * from "./api/types/index.js";
+export * from "./api/resources/index.js";
 
-/**
- * Creates a new Deepgram client instance.
- *
- * @param {DeepgramClientArgs} args - Arguments to pass to the Deepgram client constructor.
- * @returns A new Deepgram client instance.
- */
-function createClient(): DeepgramClient;
-function createClient(key?: string | IKeyFactory): DeepgramClient;
-function createClient(options?: DeepgramClientOptions): DeepgramClient;
-function createClient(key?: string | IKeyFactory, options?: DeepgramClientOptions): DeepgramClient;
-function createClient(
-  keyOrOptions?: string | IKeyFactory | DeepgramClientOptions,
-  options?: DeepgramClientOptions
-): DeepgramClient {
-  let resolvedOptions: DeepgramClientOptions = {};
-
-  if (typeof keyOrOptions === "string" || typeof keyOrOptions === "function") {
-    if (typeof options === "object") {
-      resolvedOptions = options;
-    }
-
-    resolvedOptions.key = keyOrOptions;
-  } else if (typeof keyOrOptions === "object") {
-    resolvedOptions = keyOrOptions;
-  }
-
-  return new DeepgramClient(resolvedOptions);
-}
-
-export { createClient, DeepgramClient, Deepgram };
-
-/**
- * Helpful exports.
- */
-export * from "./packages";
-export * from "./lib/types";
-export * from "./lib/enums";
-export * from "./lib/constants";
-export * from "./lib/errors";
-export * from "./lib/helpers";
-
-/**
- * Captions. These will be tree-shaken if unused.
- *
- * @see https://github.com/deepgram/deepgram-node-captions
- *
- * import/export declarations don't do anything but set up an alias to the
- * exported variable, they do not count as a "use". Given their semantics,
- * they are tracked specially by any bundler and will not adversely affect
- * tree-shaking.
- */
-export { webvtt, srt } from "@deepgram/captions";
+// Core client exports
+export type { BaseClientOptions, BaseRequestOptions } from "./BaseClient.js";
+export { DeepgramClient as DefaultDeepgramClient } from "./Client.js";
+export { CustomDeepgramClient as DeepgramClient } from "./CustomClient.js";
+export { DeepgramEnvironment, type DeepgramEnvironmentUrls } from "./environments.js";
+export { DeepgramError, DeepgramTimeoutError } from "./errors/index.js";
+export * from "./exports.js";

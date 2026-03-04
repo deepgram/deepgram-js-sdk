@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usage Breakdown - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px 5px 5px 0;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Usage Breakdown Management</h1>
+  <p>Retrieve detailed usage analytics and breakdown by various dimensions.</p>
+
+  <div class="container">
+    <label for="projectId">Project ID:</label>
+    <input type="text" id="projectId" placeholder="Enter your Deepgram project ID">
+
+    <label for="grouping">Group By:</label>
+    <select id="grouping">
+      <option value="">No Grouping</option>
+      <option value="tag">Tag</option>
+      <option value="model">Model</option>
+      <option value="accessor">Accessor (API Key)</option>
+      <option value="endpoint">Endpoint</option>
+    </select>
+
+    <label for="endpoint">Filter by Endpoint:</label>
+    <select id="endpoint">
+      <option value="">All Endpoints</option>
+      <option value="listen">Listen (Transcription)</option>
+      <option value="speak">Speak (TTS)</option>
+      <option value="read">Read (Text Intelligence)</option>
+    </select>
+
+    <label for="method">Filter by Method:</label>
+    <select id="method">
+      <option value="">All Methods</option>
+      <option value="sync">Sync</option>
+      <option value="async">Async</option>
+      <option value="streaming">Streaming</option>
+    </select>
+
+    <button id="getBasicUsage">Get Basic Usage</button>
+    <button id="getBreakdown">Get Usage Breakdown</button>
+    <button id="getFields">Get Usage Fields</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const projectIdInput = document.getElementById('projectId');
+    const groupingSelect = document.getElementById('grouping');
+    const endpointSelect = document.getElementById('endpoint');
+    const methodSelect = document.getElementById('method');
+    const getBasicUsageBtn = document.getElementById('getBasicUsage');
+    const getBreakdownBtn = document.getElementById('getBreakdown');
+    const getFieldsBtn = document.getElementById('getFields');
+    const output = document.getElementById('output');
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function validateProjectId() {
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return null;
+      }
+      return projectId;
+    }
+
+    getBasicUsageBtn.addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      getBasicUsageBtn.disabled = true;
+      log('Fetching basic usage summary...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.usage.get(projectId);
+
+        log(`✓ Usage summary:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        getBasicUsageBtn.disabled = false;
+      }
+    });
+
+    getBreakdownBtn.addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      getBreakdownBtn.disabled = true;
+      log('Fetching usage breakdown...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const options = {};
+
+        // Add grouping if selected
+        const grouping = groupingSelect.value;
+        if (grouping) {
+          options.grouping = grouping;
+        }
+
+        // Add endpoint filter if selected
+        const endpoint = endpointSelect.value;
+        if (endpoint) {
+          options.endpoint = endpoint;
+        }
+
+        // Add method filter if selected
+        const method = methodSelect.value;
+        if (method) {
+          options.method = method;
+        }
+
+        const data = await deepgramClient.manage.v1.projects.usage.breakdown.get(projectId, options);
+
+        log(`✓ Usage breakdown:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        getBreakdownBtn.disabled = false;
+      }
+    });
+
+    getFieldsBtn.addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      getFieldsBtn.disabled = true;
+      log('Fetching usage fields...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.usage.fields.list(projectId);
+
+        log(`✓ Available usage fields:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      } finally {
+        getFieldsBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

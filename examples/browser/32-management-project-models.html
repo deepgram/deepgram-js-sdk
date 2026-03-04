@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Models Management - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px 5px 5px 0;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Project Models Management</h1>
+  <p>Explore models available to your project, including custom and private models.</p>
+
+  <div class="container">
+    <label for="projectId">Project ID:</label>
+    <input type="text" id="projectId" placeholder="Enter your Deepgram project ID">
+
+    <div class="checkbox-item">
+      <input type="checkbox" id="includeOutdated">
+      <label for="includeOutdated">Include Outdated Models</label>
+    </div>
+
+    <button id="listModels">List Available Models</button>
+    <button id="compareModels">Compare Global vs Project Models</button>
+    <button id="groupByLanguage">Group Models by Language</button>
+    <button id="exportInventory">Export Model Inventory</button>
+  </div>
+
+  <div class="container">
+    <h3>Get Specific Model</h3>
+    <label for="modelId">Model UUID:</label>
+    <input type="text" id="modelId" placeholder="Enter model UUID">
+
+    <button id="getModel">Get Model Details</button>
+  </div>
+
+  <div class="container">
+    <h3>Find Model by Name</h3>
+    <label for="modelName">Model Name (partial match):</label>
+    <input type="text" id="modelName" placeholder="e.g., nova, whisper, aura">
+
+    <button id="findModel">Find Model</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const projectIdInput = document.getElementById('projectId');
+    const includeOutdatedCheck = document.getElementById('includeOutdated');
+    const modelIdInput = document.getElementById('modelId');
+    const modelNameInput = document.getElementById('modelName');
+    const output = document.getElementById('output');
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function validateProjectId() {
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return null;
+      }
+      return projectId;
+    }
+
+    document.getElementById('listModels').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Fetching project models...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.models.list(projectId, {
+          include_outdated: includeOutdatedCheck.checked,
+        });
+
+        log(`✓ Available models:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('getModel').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      const modelId = modelIdInput.value.trim();
+      if (!modelId) {
+        log('Please enter a model UUID', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      log('Fetching model details...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.models.get(projectId, modelId);
+
+        log(`✓ Model details:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('findModel').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      const modelName = modelNameInput.value.trim().toLowerCase();
+      if (!modelName) {
+        log('Please enter a model name to search', 'error');
+        return;
+      }
+
+      output.textContent = '';
+      log(`Searching for models matching "${modelName}"...\n`);
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.models.list(projectId, {
+          include_outdated: true,
+        });
+
+        const matches = (data.stt || []).filter(m =>
+          m.name?.toLowerCase().includes(modelName)
+        );
+
+        if (matches.length > 0) {
+          log(`✓ Found ${matches.length} matching model(s):\n`);
+          for (const model of matches) {
+            log(`\nModel: ${model.name} (${model.version})`);
+            log(`  UUID: ${model.uuid}`);
+            log(`  Language: ${model.language}`);
+          }
+        } else {
+          log('No matching models found', 'error');
+        }
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('compareModels').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Comparing global vs project models...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const globalModels = await deepgramClient.manage.v1.models.list({
+          include_outdated: false,
+        });
+
+        const projectModels = await deepgramClient.manage.v1.projects.models.list(projectId, {
+          include_outdated: false,
+        });
+
+        log(`Global models count: ${globalModels.stt?.length || 0}`);
+        log(`Project models count: ${projectModels.stt?.length || 0}\n`);
+
+        const globalModelIds = new Set((globalModels.stt || []).map(m => m.uuid));
+        const customModels = (projectModels.stt || []).filter(m => !globalModelIds.has(m.uuid));
+
+        log(`Custom/Private models: ${customModels.length}`);
+        if (customModels.length > 0) {
+          log('\nCustom models:');
+          for (const model of customModels) {
+            log(`  - ${model.name} (${model.version})`);
+          }
+        }
+
+        log('\n✓ Comparison complete', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('groupByLanguage').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Grouping models by language...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.models.list(projectId, {
+          include_outdated: false,
+        });
+
+        const byLanguage = {};
+
+        for (const model of data.stt || []) {
+          const language = model.language || 'unknown';
+          if (!byLanguage[language]) {
+            byLanguage[language] = [];
+          }
+          byLanguage[language].push({
+            name: model.name,
+            version: model.version,
+          });
+        }
+
+        log('Models grouped by language:\n');
+        for (const [language, models] of Object.entries(byLanguage)) {
+          log(`\n${language.toUpperCase()}:`);
+          for (const model of models) {
+            log(`  - ${model.name} (${model.version})`);
+          }
+        }
+
+        log('\n✓ Grouping complete', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+
+    document.getElementById('exportInventory').addEventListener('click', async () => {
+      const projectId = validateProjectId();
+      if (!projectId) return;
+
+      output.textContent = '';
+      log('Exporting model inventory...\n');
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: 'proxy',
+          baseUrl: 'http://localhost:8001',
+        });
+
+        const data = await deepgramClient.manage.v1.projects.models.list(projectId, {
+          include_outdated: false,
+        });
+
+        const inventory = {
+          project_id: projectId,
+          exported_at: new Date().toISOString(),
+          total_models: data.stt?.length || 0,
+          models: (data.stt || []).map(m => ({
+            name: m.name,
+            version: m.version,
+            uuid: m.uuid,
+            language: m.language,
+          })),
+        };
+
+        log(`✓ Model Inventory:\n${JSON.stringify(inventory, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

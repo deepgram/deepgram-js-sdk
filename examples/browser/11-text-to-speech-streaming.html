@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text-to-Speech Streaming - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 100px;
+      font-family: inherit;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.stop {
+      background: #d32f2f;
+    }
+    button.stop:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .info {
+      color: #1976d2;
+    }
+    audio {
+      margin-top: 10px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Text-to-Speech Streaming (WebSocket)</h1>
+  <p>Connect to Deepgram's websocket and send a continuous text stream to generate speech.</p>
+
+  <div class="container">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
+    <label for="text">Text to Convert:</label>
+    <textarea id="text" placeholder="Enter text to convert to speech">Hello, this is a test of Deepgram's streaming text-to-speech API.</textarea>
+    <button id="startButton">Start Streaming</button>
+    <button id="stopButton" class="stop" disabled>Stop</button>
+  </div>
+
+  <div id="output"></div>
+  <div id="audioContainer"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const textInput = document.getElementById('text');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const output = document.getElementById('output');
+    const audioContainer = document.getElementById('audioContainer');
+
+    let deepgramConnection = null;
+    let audioChunks = [];
+    let isStreaming = false;
+
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'info' ? 'info' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    startButton.addEventListener('click', async () => {
+      // codeql[js/clear-text-storage-of-sensitive-information] This is an example file demonstrating API key usage
+      const apiKey = apiKeyInput.value.trim();
+      const text = textInput.value.trim();
+
+      if (!apiKey) {
+        log('Please enter an API key', 'error');
+        return;
+      }
+      if (!text) {
+        log('Please enter text to convert', 'error');
+        return;
+      }
+
+
+      output.textContent = '';
+      audioContainer.textContent = '';
+      audioChunks = [];
+      startButton.disabled = true;
+      stopButton.disabled = false;
+      isStreaming = true;
+
+      try {
+        const deepgramClient = new DeepgramClient({
+          apiKey: apiKey,
+        });
+
+        deepgramConnection = await deepgramClient.speak.v1.connect({
+          model: "aura-2-thalia-en",
+          encoding: "linear16",
+        });
+
+        // Set up event handlers
+        deepgramConnection.on("open", () => {
+          log('✓ Connection opened', 'success');
+        });
+
+        let flushed = false;
+        deepgramConnection.on("message", (data) => {
+          if (typeof data === "string" || data instanceof ArrayBuffer || data instanceof Blob) {
+            // Audio data comes as string
+            log(`Audio received (length): ${data instanceof ArrayBuffer ? data.byteLength : data instanceof Blob ? data.size : data.length}`, 'info');
+          } else if (data && typeof data === "object") {
+            // Handle different message types
+            if (data.type === "Metadata") {
+              log(`Metadata: ${JSON.stringify(data, null, 2)}`, 'info');
+            } else if (data.type === "Flushed" || data.type === "Cleared") {
+              log(`✓ ${data.type}: ${JSON.stringify(data, null, 2)}`, 'success');
+              flushed = true;
+              // Wait a moment for any remaining audio, then close
+              setTimeout(() => {
+                if (deepgramConnection) {
+                  deepgramConnection.close();
+                }
+              }, 1000);
+            } else if (data.type === "Warning") {
+              log(`⚠ Warning: ${JSON.stringify(data, null, 2)}`, 'error');
+            } else {
+              log(`Message (${data.type || 'unknown'}): ${JSON.stringify(data, null, 2)}`, 'info');
+            }
+          } else {
+            log(`Unknown message: ${JSON.stringify(data, null, 2)}`);
+          }
+        });
+
+        deepgramConnection.on("error", (error) => {
+          log(`✗ Error: ${error.message}`, 'error');
+        });
+
+        deepgramConnection.on("close", () => {
+          log('Connection closed', 'info');
+          isStreaming = false;
+          startButton.disabled = false;
+          stopButton.disabled = true;
+
+          // Combine audio chunks and create audio element
+          if (audioChunks.length > 0) {
+            try {
+              // Decode base64 audio chunks
+              const binaryStrings = audioChunks.map(chunk => atob(chunk));
+              const bytes = new Uint8Array(binaryStrings.reduce((acc, str) => acc + str.length, 0));
+              let offset = 0;
+              for (const str of binaryStrings) {
+                for (let i = 0; i < str.length; i++) {
+                  bytes[offset++] = str.charCodeAt(i);
+                }
+              }
+              const blob = new Blob([bytes], { type: 'audio/wav' });
+              const audioUrl = URL.createObjectURL(blob);
+              const audio = document.createElement('audio');
+              audio.controls = true;
+              audio.src = audioUrl;
+              audioContainer.appendChild(audio);
+              log('✓ Audio playback ready', 'success');
+            } catch (err) {
+              log(`Error creating audio: ${err.message}`, 'error');
+            }
+          }
+
+          deepgramConnection = null;
+        });
+
+        // Connect to the websocket
+        deepgramConnection.connect();
+
+        // Wait for connection to open
+        await deepgramConnection.waitForOpen();
+
+        // Send text data for TTS synthesis
+        deepgramConnection.sendText({ type: "Speak", text });
+
+        // Send Flush message to the server after sending the text
+        deepgramConnection.sendFlush({ type: "Flush" });
+
+        // Timeout fallback
+        setTimeout(() => {
+          if (!flushed && deepgramConnection && isStreaming) {
+            log('Timeout waiting for Flushed message, closing connection', 'info');
+            deepgramConnection.close();
+          }
+        }, 10000);
+
+        // Auto-close after 1 minute
+        setTimeout(() => {
+          if (deepgramConnection && isStreaming) {
+            deepgramConnection.close();
+          }
+        }, 60000);
+
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) {
+          log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+        }
+        isStreaming = false;
+        startButton.disabled = false;
+        stopButton.disabled = true;
+      }
+    });
+
+    stopButton.addEventListener('click', () => {
+      if (deepgramConnection) {
+        isStreaming = false;
+        deepgramConnection.close();
+      }
+    });
+  </script>
+</body>
+</html>
+

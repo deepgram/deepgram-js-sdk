@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example 33: Configuration EU Endpoint - Deepgram SDK</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 28px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #764ba2;
+            font-size: 20px;
+            margin-top: 25px;
+        }
+        .description {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .config-section {
+            background: #fff8dc;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffa500;
+        }
+        .config-section h3 {
+            margin-top: 0;
+            color: #ff8c00;
+        }
+        .endpoint-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .endpoint-label {
+            font-weight: bold;
+            color: #764ba2;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .warning { color: #fbbf24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Example 33: Configuration EU Endpoint</h1>
+
+        <div class="description">
+            <strong>What this example demonstrates:</strong>
+            <ul>
+                <li>How to configure the SDK to use the EU endpoint (api.eu.deepgram.com)</li>
+                <li>GDPR compliance and regional data residency</li>
+                <li>Lower latency for EU-based users</li>
+                <li>Using baseUrl to route all API requests to a specific region</li>
+            </ul>
+        </div>
+
+        <div class="config-section">
+            <h3>📍 Available Regional Endpoints</h3>
+            <div class="endpoint-info">
+                <span class="endpoint-label">US (default):</span>
+                <span>https://api.deepgram.com</span>
+
+                <span class="endpoint-label">EU:</span>
+                <span>https://api.eu.deepgram.com</span>
+
+                <span class="endpoint-label">Proxy/Self-hosted:</span>
+                <span>http://localhost:8001 (or your custom URL)</span>
+            </div>
+        </div>
+
+        <h2>Test Configuration</h2>
+
+        <button id="testDefaultBtn">Test Default US Endpoint</button>
+        <button id="testEuBtn">Test EU Endpoint</button>
+        <button id="testProxyBtn">Test Proxy Endpoint</button>
+        <button id="compareBtn">Compare All Endpoints</button>
+
+        <h2>Output</h2>
+        <div id="output" class="output">Ready to test endpoint configurations...</div>
+    </div>
+
+    <script src="deepgram.js"></script>
+    <script>
+        const outputEl = document.getElementById('output');
+        const testDefaultBtn = document.getElementById('testDefaultBtn');
+        const testEuBtn = document.getElementById('testEuBtn');
+        const testProxyBtn = document.getElementById('testProxyBtn');
+        const compareBtn = document.getElementById('compareBtn');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            outputEl.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            outputEl.scrollTop = outputEl.scrollHeight;
+        }
+
+        function clear() {
+            outputEl.innerHTML = '';
+        }
+
+        async function testDefaultEndpoint() {
+            clear();
+            log('=== Testing Default US Endpoint ===\n', 'info');
+
+            // The proxy is required for browser REST API calls
+            const client = new Deepgram.DeepgramClient({
+                apiKey: 'proxy',
+                baseUrl: 'http://localhost:8001'
+            });
+
+            log('Client configured with:', 'info');
+            log('  baseUrl: http://localhost:8001 (proxy to api.deepgram.com)', 'info');
+            log('  (The proxy forwards to the default US endpoint)\n', 'info');
+
+            try {
+                log('Test: List projects with default endpoint', 'info');
+                log('Backend URL: https://api.deepgram.com/v1/projects\n', 'warning');
+
+                const projects = await client.manage.v1.projects.list();
+
+                log('✓ Default endpoint request successful!', 'success');
+                log(`  Projects found: ${projects.projects?.length ?? 0}`, 'info');
+                if (projects.projects?.[0]) {
+                    log(`  First project: ${projects.projects[0].name}`, 'info');
+                }
+            } catch (error) {
+                log('✗ Default endpoint test failed!', 'error');
+                log(`  Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEuEndpoint() {
+            clear();
+            log('=== Testing EU Endpoint ===\n', 'info');
+
+            // Note: In a real EU deployment, you would configure the proxy
+            // to forward to api.eu.deepgram.com instead of api.deepgram.com
+            const client = new Deepgram.DeepgramClient({
+                apiKey: 'proxy',
+                baseUrl: 'http://localhost:8001'
+            });
+
+            log('Client configured with:', 'info');
+            log('  baseUrl: http://localhost:8001', 'info');
+            log('  (In production, configure proxy to forward to api.eu.deepgram.com)\n', 'warning');
+
+            log('Note: For true EU endpoint usage:', 'warning');
+            log('1. Deploy proxy in EU region', 'warning');
+            log('2. Configure proxy to forward to https://api.eu.deepgram.com', 'warning');
+            log('3. Point SDK baseUrl to your EU proxy\n', 'warning');
+
+            try {
+                log('Test 1: List projects', 'info');
+                log('Backend URL (in production): https://api.eu.deepgram.com/v1/projects\n', 'warning');
+
+                const projects = await client.manage.v1.projects.list();
+
+                log('✓ Projects request successful!', 'success');
+                log(`  Projects found: ${projects.projects?.length ?? 0}`, 'info');
+                if (projects.projects?.[0]) {
+                    log(`  First project: ${projects.projects[0].name}\n`, 'info');
+                }
+
+                log('Test 2: Transcribe from URL', 'info');
+                log('Backend URL (in production): https://api.eu.deepgram.com/v1/listen\n', 'warning');
+
+                const transcription = await client.listen.v1.media.transcribeUrl({
+                    url: 'https://dpgr.am/spacewalk.wav',
+                    model: 'nova-3',
+                    language: 'en'
+                });
+
+                log('✓ Transcription request successful!', 'success');
+                const transcript = transcription.results?.channels?.[0]?.alternatives?.[0]?.transcript;
+                if (transcript) {
+                    log(`  Transcript preview: ${transcript.substring(0, 100)}...`, 'info');
+                }
+            } catch (error) {
+                log('✗ EU endpoint test failed!', 'error');
+                log(`  Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProxyEndpoint() {
+            clear();
+            log('=== Testing Proxy Configuration ===\n', 'info');
+
+            const client = new Deepgram.DeepgramClient({
+                apiKey: 'proxy',
+                baseUrl: 'http://localhost:8001'
+            });
+
+            log('Client configured with:', 'info');
+            log('  baseUrl: http://localhost:8001 (local proxy)', 'info');
+            log('  apiKey: "proxy" (proxy handles authentication)\n', 'info');
+
+            log('Proxy configuration benefits:', 'info');
+            log('  • Hides API keys from client-side code', 'success');
+            log('  • Enables rate limiting and throttling', 'success');
+            log('  • Provides request logging and analytics', 'success');
+            log('  • Can route to any Deepgram endpoint\n', 'success');
+
+            try {
+                log('Test: List projects through proxy\n', 'info');
+
+                const projects = await client.manage.v1.projects.list();
+
+                log('✓ Proxy request successful!', 'success');
+                log(`  Projects found: ${projects.projects?.length ?? 0}`, 'info');
+                if (projects.projects?.[0]) {
+                    log(`  First project: ${projects.projects[0].name}`, 'info');
+                }
+            } catch (error) {
+                log('✗ Proxy test failed!', 'error');
+                log(`  Error: ${error.message}`, 'error');
+                log('\nMake sure the proxy server is running:', 'warning');
+                log('  npm run proxy', 'warning');
+            }
+        }
+
+        async function compareEndpoints() {
+            clear();
+            log('=== Endpoint Comparison Guide ===\n', 'info');
+
+            log('1. Default US Endpoint (api.deepgram.com)', 'info');
+            log('   Use when:', 'info');
+            log('     • Serving global users', 'success');
+            log('     • No specific regional requirements', 'success');
+            log('     • Lowest latency for US-based users\n', 'success');
+
+            log('2. EU Endpoint (api.eu.deepgram.com)', 'info');
+            log('   Use when:', 'info');
+            log('     • GDPR compliance required', 'success');
+            log('     • EU data residency mandated', 'success');
+            log('     • Serving primarily EU users', 'success');
+            log('     • Lower latency for EU-based users\n', 'success');
+
+            log('3. Proxy Configuration', 'info');
+            log('   Use when:', 'info');
+            log('     • Need to hide API keys from browser', 'success');
+            log('     • Implementing rate limiting', 'success');
+            log('     • Adding custom logging/analytics', 'success');
+            log('     • Routing to self-hosted Deepgram\n', 'success');
+
+            log('Configuration Examples:\n', 'warning');
+
+            log('// US Endpoint (default)', 'info');
+            log('const usClient = new DeepgramClient({', 'info');
+            log('  apiKey: "proxy",', 'info');
+            log('  baseUrl: "http://localhost:8001" // proxy to api.deepgram.com', 'info');
+            log('});\n', 'info');
+
+            log('// EU Endpoint (via EU proxy)', 'info');
+            log('const euClient = new DeepgramClient({', 'info');
+            log('  apiKey: "proxy",', 'info');
+            log('  baseUrl: "https://eu-proxy.example.com" // forwards to api.eu.deepgram.com', 'info');
+            log('});\n', 'info');
+
+            log('// Self-Hosted Deepgram', 'info');
+            log('const onpremClient = new DeepgramClient({', 'info');
+            log('  apiKey: "proxy",', 'info');
+            log('  baseUrl: "https://proxy.example.com" // forwards to your self-hosted instance', 'info');
+            log('});', 'info');
+        }
+
+        // Event listeners
+        testDefaultBtn.addEventListener('click', testDefaultEndpoint);
+        testEuBtn.addEventListener('click', testEuEndpoint);
+        testProxyBtn.addEventListener('click', testProxyEndpoint);
+        compareBtn.addEventListener('click', compareEndpoints);
+
+        log('Ready! Click a button above to test endpoint configurations.', 'success');
+        log('\nNote: Browser examples require the proxy server to be running:', 'warning');
+        log('  npm run proxy\n', 'warning');
+    </script>
+</body>
+</html>

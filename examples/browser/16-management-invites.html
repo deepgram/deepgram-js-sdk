@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Invitation Management - Deepgram SDK</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #0052cc;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.danger {
+      background: #d32f2f;
+    }
+    button.danger:hover {
+      background: #b71c1c;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>Project Invitation Management</h1>
+  <p>Examples for managing project invitations: list, send, delete, leave project. The API key is configured via the DEEPGRAM_API_KEY environment variable on the proxy server.</p>
+
+  <div class="container">
+    <label for="projectId">Project ID:</label>
+    <input type="text" id="projectId" placeholder="Enter project ID">
+    <div>
+      <button id="listButton">List Invites</button>
+      <button id="sendButton">Send Invite</button>
+      <button id="deleteButton" class="danger">Delete Invite</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="deepgram.js"></script>
+  <script>
+    const { DeepgramClient } = deepgram;
+
+    const projectIdInput = document.getElementById('projectId');
+    const listButton = document.getElementById('listButton');
+    const sendButton = document.getElementById('sendButton');
+    const deleteButton = document.getElementById('deleteButton');
+    const output = document.getElementById('output');
+
+    // Try to load project ID from localStorage (non-sensitive)
+    const savedProjectId = localStorage.getItem('DEEPGRAM_PROJECT_ID');
+    if (savedProjectId) projectIdInput.value = savedProjectId;
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      if (className) {
+        div.className = className;
+      }
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function getClient() {
+      return new DeepgramClient({ 
+        apiKey: 'proxy',
+        baseUrl: 'http://localhost:8001',
+      });
+    }
+
+    listButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      output.textContent = '';
+      listButton.disabled = true;
+      try {
+        const data = await client.manage.v1.projects.members.invites.list(projectId);
+        log(`✓ Invites:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        listButton.disabled = false;
+      }
+    });
+
+    sendButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      const email = prompt('Enter email address:');
+      if (!email) return;
+      output.textContent = '';
+      sendButton.disabled = true;
+      try {
+        const data = await client.manage.v1.projects.members.invites.create(projectId, {
+          email: email,
+          scope: "member",
+        });
+        log(`✓ Invite sent:\n${JSON.stringify(data, null, 2)}`, 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        sendButton.disabled = false;
+      }
+    });
+
+    deleteButton.addEventListener('click', async () => {
+      const client = getClient();
+      if (!client) return;
+      const projectId = projectIdInput.value.trim();
+      if (!projectId) {
+        log('Please enter a project ID', 'error');
+        return;
+      }
+      const email = prompt('Enter email address to delete invite:');
+      if (!email) return;
+      if (!confirm(`Are you sure you want to delete invite for ${email}?`)) return;
+      output.textContent = '';
+      deleteButton.disabled = true;
+      try {
+        await client.manage.v1.projects.members.invites.delete(projectId, email);
+        log('✓ Invite deleted successfully', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        if (error.body) log(`Error details: ${JSON.stringify(error.body, null, 2)}`, 'error');
+      } finally {
+        deleteButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+
