@@ -2,11 +2,11 @@
 
 import type * as Deepgram from "../../../../../index.js";
 
-export type AgentV1SettingsAgentListenProvider =
-    | Deepgram.agent.AgentV1SettingsAgentListenProvider.V1
-    | Deepgram.agent.AgentV1SettingsAgentListenProvider.V2;
+export type AgentV1SettingsAgentContextListenProvider =
+    | Deepgram.agent.AgentV1SettingsAgentContextListenProvider.V1
+    | Deepgram.agent.AgentV1SettingsAgentContextListenProvider.V2;
 
-export namespace AgentV1SettingsAgentListenProvider {
+export namespace AgentV1SettingsAgentContextListenProvider {
     export interface V1 {
         version: "v1";
         /** Provider type for speech-to-text */
@@ -15,7 +15,6 @@ export namespace AgentV1SettingsAgentListenProvider {
         model?: string | undefined;
         /** Language code to use for speech-to-text. Can be a BCP-47 language tag (e.g. `en`), or `multi` for code-switching transcription */
         language?: string | undefined;
-        /** Prompt keyterm recognition to improve Keyword Recall Rate */
         keyterms?: string[] | undefined;
         /** Applies smart formatting to improve transcript readability */
         smart_format?: boolean | undefined;
@@ -27,7 +26,8 @@ export namespace AgentV1SettingsAgentListenProvider {
         type: "deepgram";
         /** Model to use for speech to text using the V2 API (e.g. flux-general-en) */
         model: string;
-        /** Prompt keyterm recognition to improve Keyword Recall Rate */
         keyterms?: string[] | undefined;
+        eot_threshold?: Deepgram.ListenV2EotThreshold | undefined;
+        eager_eot_threshold?: Deepgram.ListenV2EagerEotThreshold | undefined;
     }
 }

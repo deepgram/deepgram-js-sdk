@@ -13,7 +13,17 @@ describe("MembersClient", () => {
             environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
         });
 
-        const rawResponseBody = { members: [{ member_id: "member_id", email: "email" }] };
+        const rawResponseBody = {
+            members: [
+                {
+                    member_id: "member_id",
+                    scopes: ["scopes"],
+                    email: "email",
+                    first_name: "first_name",
+                    last_name: "last_name",
+                },
+            ],
+        };
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/members")
@@ -27,7 +37,10 @@ describe("MembersClient", () => {
             members: [
                 {
                     member_id: "member_id",
+                    scopes: ["scopes"],
                     email: "email",
+                    first_name: "first_name",
+                    last_name: "last_name",
                 },
             ],
         });
