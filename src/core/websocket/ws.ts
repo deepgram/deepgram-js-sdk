@@ -4,17 +4,20 @@ import { RUNTIME } from "../runtime/index.js";
 import { toQueryString } from "../url/qs.js";
 import * as Events from "./events.js";
 
-const getGlobalWebSocket = (): WebSocket | undefined => {
-        // Bun's native WebSocket doesn't support custom headers in its constructor
-        // (the 3rd `options` argument is silently ignored), which breaks authentication.
-        // Fall through to NodeWebSocket (ws) which handles headers correctly.
-        if (RUNTIME.type !== "bun" && typeof WebSocket !== "undefined") {
-                    // @ts-ignore
-                    return WebSocket;
-        } else if (RUNTIME.type === "node" || RUNTIME.type === "bun") {
-                    return NodeWebSocket as unknown as WebSocket;
-        }
-        return undefined;
+export const getGlobalWebSocket = (): WebSocket | undefined => {
+    // Server runtimes must use the `ws` package (NodeWebSocket) because their
+    // native WebSockets (Bun, Node 21+) do not support the 3rd `options` argument for headers.
+    if (RUNTIME.type === "node" || RUNTIME.type === "bun") {
+        return NodeWebSocket as unknown as WebSocket;
+    }
+
+    // Fallback to the environment's native WebSocket (Browser, Edge, Deno, etc.)
+    if (typeof WebSocket !== "undefined") {
+        // @ts-ignore
+        return WebSocket;
+    }
+
+    return undefined;
 };
 
 /**

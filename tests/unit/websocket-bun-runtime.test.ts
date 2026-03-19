@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { getGlobalWebSocket } from "../../src/core/websocket/ws.js";
+import { WebSocket as NodeWebSocket } from "ws";
 
 /**
  * Tests for WebSocket runtime selection in Bun environments.
@@ -10,57 +12,73 @@ import { describe, it, expect } from "vitest";
  *
  * The fix ensures that `getGlobalWebSocket()` returns `NodeWebSocket`
  * (from the `ws` library) instead of Bun's native `WebSocket` when
- * running in a Bun environment.
+ * running in a server runtime.
  *
  * Related issue: #466
  */
 
-describe("WebSocket runtime selection for Bun", () => {
-      it("should skip native WebSocket when runtime is bun", () => {
-                const runtimeType = "bun";
-                const hasNativeWebSocket = true;
+// Mock the RUNTIME object
+vi.mock("../../src/core/runtime/index.js", () => {
+    return {
+        RUNTIME: {
+            type: "browser"
+        }
+    };
+});
 
-                 const shouldUseNative = runtimeType !== "bun" && hasNativeWebSocket;
+import { RUNTIME } from "../../src/core/runtime/index.js";
 
-                 expect(shouldUseNative).toBe(false);
-      });
+describe("WebSocket runtime selection logic", () => {
+    let originalWebSocket: any;
 
-             it("should use NodeWebSocket when runtime is bun", () => {
-                       const runtimeType = "bun";
+    beforeEach(() => {
+        originalWebSocket = (globalThis as any).WebSocket;
+    });
 
-                        const shouldUseNodeWebSocket = runtimeType === "node" || runtimeType === "bun";
+    afterEach(() => {
+        if (originalWebSocket !== undefined) {
+            (globalThis as any).WebSocket = originalWebSocket;
+        } else {
+            delete (globalThis as any).WebSocket;
+        }
+    });
 
-                        expect(shouldUseNodeWebSocket).toBe(true);
-             });
+    it("should return NodeWebSocket when runtime is bun", () => {
+        RUNTIME.type = "bun";
+        (globalThis as any).WebSocket = class NativeBunWebSocket {};
 
-             it("should use native WebSocket when runtime is browser", () => {
-                       const runtimeType = "browser";
-                       const hasNativeWebSocket = true;
+        const wsClass = getGlobalWebSocket();
+        
+        expect(wsClass).toBe(NodeWebSocket);
+        expect(wsClass).not.toBe((globalThis as any).WebSocket);
+    });
 
-                        const shouldUseNative = runtimeType !== "bun" && hasNativeWebSocket;
+    it("should return NodeWebSocket when runtime is node", () => {
+        RUNTIME.type = "node";
+        (globalThis as any).WebSocket = class NativeNodeWebSocket {}; // Simulating Node 21+
 
-                        expect(shouldUseNative).toBe(true);
-             });
+        const wsClass = getGlobalWebSocket();
+        
+        expect(wsClass).toBe(NodeWebSocket);
+    });
 
-             it("should use NodeWebSocket when runtime is node", () => {
-                       const runtimeType = "node";
-                       const hasNativeWebSocket = false;
+    it("should return native WebSocket when runtime is browser", () => {
+        RUNTIME.type = "browser";
+        const MockNativeWebSocket = class {};
+        (globalThis as any).WebSocket = MockNativeWebSocket;
 
-                        const shouldUseNative = runtimeType !== "bun" && hasNativeWebSocket;
-                       const shouldUseNodeWebSocket = runtimeType === "node" || runtimeType === "bun";
+        const wsClass = getGlobalWebSocket();
+        
+        expect(wsClass).toBe(MockNativeWebSocket);
+        expect(wsClass).not.toBe(NodeWebSocket);
+    });
 
-                        expect(shouldUseNative).toBe(false);
-                       expect(shouldUseNodeWebSocket).toBe(true);
-             });
+    it("should return undefined when no WebSocket is available and runtime is unknown", () => {
+        RUNTIME.type = "unknown";
+        delete (globalThis as any).WebSocket;
 
-             it("should return undefined when no WebSocket is available and runtime is unknown", () => {
-                       const runtimeType = "unknown";
-                       const hasNativeWebSocket = false;
-
-                        const shouldUseNative = runtimeType !== "bun" && hasNativeWebSocket;
-                       const shouldUseNodeWebSocket = runtimeType === "node" || runtimeType === "bun";
-
-                        expect(shouldUseNative).toBe(false);
-                       expect(shouldUseNodeWebSocket).toBe(false);
-             });
+        const wsClass = getGlobalWebSocket();
+        
+        expect(wsClass).toBeUndefined();
+    });
 });
