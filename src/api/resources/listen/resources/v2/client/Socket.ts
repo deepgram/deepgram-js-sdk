@@ -12,8 +12,6 @@ export declare namespace V2Socket {
     export type Response =
         | Deepgram.listen.ListenV2Connected
         | Deepgram.listen.ListenV2TurnInfo
-        | Deepgram.listen.ListenV2ConfigureSuccess
-        | Deepgram.listen.ListenV2ConfigureFailure
         | Deepgram.listen.ListenV2FatalError;
     type EventHandlers = {
         open?: () => void;
@@ -79,11 +77,6 @@ export class V2Socket {
         this.sendJson(message);
     }
 
-    public sendListenV2Configure(message: Deepgram.listen.ListenV2Configure): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
     /** Connect to the websocket and register event handlers. */
     public connect(): V2Socket {
         this.socket.reconnect();
@@ -142,9 +135,7 @@ export class V2Socket {
     }
 
     /** Send a JSON payload to the websocket. */
-    protected sendJson(
-        payload: string | Deepgram.listen.ListenV2CloseStream | Deepgram.listen.ListenV2Configure,
-    ): void {
+    protected sendJson(payload: string | Deepgram.listen.ListenV2CloseStream): void {
         const jsonPayload = toJson(payload);
         this.socket.send(jsonPayload);
     }

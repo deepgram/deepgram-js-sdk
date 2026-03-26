@@ -50,8 +50,7 @@ export namespace UsageBreakdownV1Response {
                 endpoint?: string | undefined;
                 /** Optional feature set identifier */
                 feature_set?: string | undefined;
-                /** Optional models identifier */
-                models?: string | undefined;
+                models?: (string | undefined)[] | undefined;
                 /** Optional method identifier */
                 method?: string | undefined;
                 /** Optional tags */
