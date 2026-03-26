@@ -41,3 +41,9 @@ CHANGELOG.md
 
 # Because the generator tries to roll the examples back to the old signature?
 README.md
+
+# Claude Code agent files
+CLAUDE.md
+AGENTS.md
+.claude
+.mcp.json
