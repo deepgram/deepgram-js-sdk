@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "deepgram-styles": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "-p",
+        "@deepgram/styles",
+        "mcp"
+      ],
+      "env": {}
+    }
+  }
+}
