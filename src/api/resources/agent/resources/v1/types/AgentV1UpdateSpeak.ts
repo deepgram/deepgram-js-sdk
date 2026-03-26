@@ -9,5 +9,23 @@ export interface AgentV1UpdateSpeak {
 }
 
 export namespace AgentV1UpdateSpeak {
-    export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
+    export type Speak =
+        | {
+              provider: Deepgram.agent.AgentV1UpdateSpeakSpeakEndpointProvider;
+              endpoint?:
+                  | {
+                        url?: string | undefined;
+                        headers?: Record<string, string> | undefined;
+                    }
+                  | undefined;
+          }
+        | {
+              provider: Deepgram.agent.AgentV1UpdateSpeakSpeakOneItemProvider;
+              endpoint?:
+                  | {
+                        url?: string | undefined;
+                        headers?: Record<string, string> | undefined;
+                    }
+                  | undefined;
+          }[];
 }

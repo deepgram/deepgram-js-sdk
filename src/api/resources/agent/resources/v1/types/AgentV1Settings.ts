@@ -137,7 +137,56 @@ export namespace AgentV1Settings {
             provider?: Deepgram.agent.AgentV1SettingsAgentListenProvider | undefined;
         }
 
-        export type Think = Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[];
-        export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
+        export type Think =
+            | Deepgram.ThinkSettingsV1
+            | {
+                  provider:
+                      | (Deepgram.OpenAiThinkProvider | undefined)
+                      | (Deepgram.AwsBedrockThinkProvider | undefined)
+                      | (Deepgram.Anthropic | undefined)
+                      | (Deepgram.Google | undefined)
+                      | (Deepgram.Groq | undefined);
+                  endpoint?:
+                      | {
+                            url?: string | undefined;
+                            headers?: Record<string, string> | undefined;
+                        }
+                      | undefined;
+                  functions?:
+                      | {
+                            name?: string | undefined;
+                            description?: string | undefined;
+                            parameters?: Record<string, unknown> | undefined;
+                            endpoint?:
+                                | {
+                                      url?: string | undefined;
+                                      method?: string | undefined;
+                                      headers?: Record<string, string> | undefined;
+                                  }
+                                | undefined;
+                        }[]
+                      | undefined;
+                  prompt?: string | undefined;
+                  context_length?: ("max" | number) | undefined;
+              }[];
+        export type Speak =
+            | {
+                  provider: Deepgram.agent.AgentV1SettingsAgentSpeakEndpointProvider;
+                  endpoint?:
+                      | {
+                            url?: string | undefined;
+                            headers?: Record<string, string> | undefined;
+                        }
+                      | undefined;
+              }
+            | {
+                  provider: Deepgram.agent.AgentV1SettingsAgentSpeakOneItemProvider;
+                  endpoint?:
+                      | {
+                            url?: string | undefined;
+                            headers?: Record<string, string> | undefined;
+                        }
+                      | undefined;
+              }[];
     }
 }
