@@ -11,7 +11,11 @@ export namespace ListProjectMembersV1Response {
         export interface Item {
             /** The unique identifier of the member */
             member_id?: string | undefined;
+            /** The API scopes of the member */
+            scopes?: string[] | undefined;
             email?: string | undefined;
+            first_name?: string | undefined;
+            last_name?: string | undefined;
         }
     }
 }

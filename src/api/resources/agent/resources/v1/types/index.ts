@@ -12,7 +12,7 @@ export * from "./AgentV1PromptUpdated.js";
 export * from "./AgentV1ReceiveFunctionCallResponse.js";
 export * from "./AgentV1SendFunctionCallResponse.js";
 export * from "./AgentV1Settings.js";
-export * from "./AgentV1SettingsAgentListenProvider.js";
+export * from "./AgentV1SettingsAgentContextListenProvider.js";
 export * from "./AgentV1SettingsApplied.js";
 export * from "./AgentV1SpeakUpdated.js";
 export * from "./AgentV1ThinkUpdated.js";
