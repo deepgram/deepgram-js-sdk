@@ -23,6 +23,17 @@
             },
             "default": "./dist/cjs/index.js"
         },
+        "./react": {
+            "import": {
+                "types": "./dist/esm/react/index.d.mts",
+                "default": "./dist/esm/react/index.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/react/index.d.ts",
+                "default": "./dist/cjs/react/index.js"
+            },
+            "default": "./dist/cjs/react/index.js"
+        },
         "./agent": {
             "import": {
                 "types": "./dist/esm/api/resources/agent/exports.d.mts",
@@ -476,6 +487,14 @@
     },
     "dependencies": {
         "ws": "^8.16.0"
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0"
+    },
+    "peerDependenciesMeta": {
+        "react": {
+            "optional": true
+        }
     },
     "devDependencies": {
         "webpack": "^5.97.1",
