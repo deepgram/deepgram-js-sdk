@@ -128,6 +128,7 @@ export namespace AgentV1Settings {
                               client_side: boolean;
                               arguments: string;
                               response: string;
+                              thought_signature?: string | undefined;
                           }[];
                       };
             }

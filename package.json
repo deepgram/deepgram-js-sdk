@@ -1,6 +1,6 @@
 {
     "name": "@deepgram/sdk",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -451,6 +451,39 @@
                 "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
             },
             "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
+        },
+        "./voiceAgent": {
+            "import": {
+                "types": "./dist/esm/api/resources/voiceAgent/exports.d.mts",
+                "default": "./dist/esm/api/resources/voiceAgent/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/voiceAgent/exports.d.ts",
+                "default": "./dist/cjs/api/resources/voiceAgent/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/voiceAgent/exports.js"
+        },
+        "./voiceAgent/configurations": {
+            "import": {
+                "types": "./dist/esm/api/resources/voiceAgent/resources/configurations/exports.d.mts",
+                "default": "./dist/esm/api/resources/voiceAgent/resources/configurations/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/voiceAgent/resources/configurations/exports.d.ts",
+                "default": "./dist/cjs/api/resources/voiceAgent/resources/configurations/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/voiceAgent/resources/configurations/exports.js"
+        },
+        "./voiceAgent/variables": {
+            "import": {
+                "types": "./dist/esm/api/resources/voiceAgent/resources/variables/exports.d.mts",
+                "default": "./dist/esm/api/resources/voiceAgent/resources/variables/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/voiceAgent/resources/variables/exports.d.ts",
+                "default": "./dist/cjs/api/resources/voiceAgent/resources/variables/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/voiceAgent/resources/variables/exports.js"
         },
         "./package.json": "./package.json"
     },

@@ -90,11 +90,6 @@ export class V1Socket {
         this.sendJson(message);
     }
 
-    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
     public sendInjectUserMessage(message: Deepgram.agent.AgentV1InjectUserMessage): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -116,6 +111,11 @@ export class V1Socket {
     }
 
     public sendUpdatePrompt(message: Deepgram.agent.AgentV1UpdatePrompt): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -187,12 +187,12 @@ export class V1Socket {
         payload:
             | Deepgram.agent.AgentV1Settings
             | Deepgram.agent.AgentV1UpdateSpeak
-            | Deepgram.agent.AgentV1UpdateThink
             | Deepgram.agent.AgentV1InjectUserMessage
             | Deepgram.agent.AgentV1InjectAgentMessage
             | Deepgram.agent.AgentV1SendFunctionCallResponse
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
+            | Deepgram.agent.AgentV1UpdateThink
             | string,
     ): void {
         const jsonPayload = toJson(payload);

@@ -7,6 +7,7 @@ import { ManageClient } from "./api/resources/manage/client/Client.js";
 import { ReadClient } from "./api/resources/read/client/Client.js";
 import { SelfHostedClient } from "./api/resources/selfHosted/client/Client.js";
 import { SpeakClient } from "./api/resources/speak/client/Client.js";
+import { VoiceAgentClient } from "./api/resources/voiceAgent/client/Client.js";
 import type { BaseClientOptions, BaseRequestOptions } from "./BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "./BaseClient.js";
 
@@ -25,6 +26,7 @@ export class DeepgramClient {
     protected _read: ReadClient | undefined;
     protected _selfHosted: SelfHostedClient | undefined;
     protected _speak: SpeakClient | undefined;
+    protected _voiceAgent: VoiceAgentClient | undefined;
 
     constructor(options: DeepgramClient.Options = {}) {
         this._options = normalizeClientOptionsWithAuth(options);
@@ -56,5 +58,9 @@ export class DeepgramClient {
 
     public get speak(): SpeakClient {
         return (this._speak ??= new SpeakClient(this._options));
+    }
+
+    public get voiceAgent(): VoiceAgentClient {
+        return (this._voiceAgent ??= new VoiceAgentClient(this._options));
     }
 }

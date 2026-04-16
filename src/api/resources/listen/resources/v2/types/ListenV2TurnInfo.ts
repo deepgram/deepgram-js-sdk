@@ -31,6 +31,17 @@ export interface ListenV2TurnInfo {
     words: ListenV2TurnInfo.Words.Item[];
     /** Confidence that no more speech is coming in this turn */
     end_of_turn_confidence: number;
+    /**
+     * Detected languages sorted by descending frequency in the
+     * transcript. Only present when the flux-general-multi model
+     * detects languages in the audio.
+     */
+    languages?: string[] | undefined;
+    /**
+     * The language hints that were supplied for this turn. Only
+     * present when language hints are configured.
+     */
+    languages_hinted?: string[] | undefined;
 }
 
 export namespace ListenV2TurnInfo {

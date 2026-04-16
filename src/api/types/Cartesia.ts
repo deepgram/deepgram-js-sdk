@@ -9,6 +9,8 @@ export interface Cartesia {
     voice: Cartesia.Voice;
     /** Cartesia language code */
     language?: string | undefined;
+    /** Volume level for Cartesia TTS output. Valid range: 0.5 to 2.0. See [Cartesia documentation](https://docs.cartesia.ai/build-with-cartesia/sonic-3/volume-speed-emotion#volume-speed-and-emotion). */
+    volume?: number | undefined;
 }
 
 export namespace Cartesia {
