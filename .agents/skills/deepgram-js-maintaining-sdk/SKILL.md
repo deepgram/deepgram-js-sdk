@@ -41,7 +41,7 @@ Current permanently frozen entries from `.fernignore` / `AGENTS.md`:
 - `MIGRATION_GUIDE_V4_TO_V5.md` — migration docs
 - `README.md`, `CHANGELOG.md`, `docs/`, `examples/` — repo docs and examples
 - `.npmignore`, `.gitignore`, `.npmrc`, `.github/` — package/repo config
-- `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json` — agent/tooling files
+- `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.agents/`, `.mcp.json` — agent/tooling files
 
 ### Unfreeze for regen (temporarily frozen)
 
@@ -108,7 +108,7 @@ Relevant underlying commands today:
 2. **`src/CustomClient.ts` is the highest-risk permanent wrapper.** It carries auth prefixing, browser subprotocol auth, custom websocket startup, binary handling, and the user-facing `createConnection()` aliases used by examples.
 3. **The repo ships both CJS and ESM.** Validate both outputs after generator changes.
 4. **Browser behavior matters.** The wrapper intentionally diverges for browser WebSocket auth because browsers cannot send arbitrary socket headers.
-5. **`.agents/` is not currently listed in `.fernignore`.** These skills are hand-written docs, but the current frozen-set declared by the repo only includes `CLAUDE.md`, `AGENTS.md`, `.claude/`, and `.mcp.json` for agent tooling.
+5. **`.agents/` is permanently frozen in `.fernignore`.** Treat these skills as hand-written documentation during regeneration; Fern will not touch the folder. Keep this note aligned with `AGENTS.md` whenever the frozen-file list changes.
 
 ## Source-of-truth note
 
