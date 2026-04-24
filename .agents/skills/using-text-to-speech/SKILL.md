@@ -108,3 +108,13 @@ Unlike the Python SDK, this repo does **not** include a hand-written `TextBuilde
 - `examples/10-text-to-speech-single.ts`
 - `examples/11-text-to-speech-streaming.ts`
 - `examples/25-binary-response.ts`
+
+## Central product skills
+
+For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
+
+```bash
+npx skills add deepgram/skills
+```
+
+This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).

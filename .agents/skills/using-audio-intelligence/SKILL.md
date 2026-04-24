@@ -122,3 +122,13 @@ const deepgramConnection = await deepgramClient.listen.v1.createConnection({
 - `examples/04-transcription-prerecorded-url.ts`
 - `examples/05-transcription-prerecorded-file.ts`
 - `examples/07-transcription-live-websocket.ts`
+
+## Central product skills
+
+For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
+
+```bash
+npx skills add deepgram/skills
+```
+
+This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).

@@ -126,3 +126,13 @@ The current JS SDK does **not** expose persisted Voice Agent configuration CRUD 
 - `examples/30-management-billing-detailed.ts`
 - `examples/31-management-member-permissions.ts`
 - `examples/32-management-project-models.ts`
+
+## Central product skills
+
+For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
+
+```bash
+npx skills add deepgram/skills
+```
+
+This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).

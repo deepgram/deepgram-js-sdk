@@ -97,3 +97,13 @@ audioStream.on("end", () => {
 
 - `examples/26-transcription-live-websocket-v2.ts`
 - `examples/27-deepgram-session-header.ts`
+
+## Central product skills
+
+For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
+
+```bash
+npx skills add deepgram/skills
+```
+
+This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).
