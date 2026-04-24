@@ -51,6 +51,7 @@ export class AudioClient {
             encoding,
             model,
             sample_rate: sampleRate,
+            speed,
             ..._body
         } = request;
         const _queryParams: Record<string, unknown> = {
@@ -63,6 +64,7 @@ export class AudioClient {
             encoding: encoding != null ? encoding : undefined,
             model: model != null ? model : undefined,
             sample_rate: sampleRate,
+            speed,
         };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
@@ -82,7 +84,11 @@ export class AudioClient {
             method: "POST",
             headers: _headers,
             contentType: "application/json",
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             requestType: "json",
             body: _body,
             responseType: "binary-response",

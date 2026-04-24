@@ -19,6 +19,7 @@ describe("FieldsClient", () => {
             tags: ["dev", "production"],
             line_items: { "streaming::nova-3": "Nova - 3 (Stream)", "sync::aura-2": "Aura -2 (Sync)" },
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/billing/fields")
@@ -31,15 +32,7 @@ describe("FieldsClient", () => {
             start: "start",
             end: "end",
         });
-        expect(response).toEqual({
-            accessors: ["12345678-1234-1234-1234-123456789012", "87654321-4321-4321-4321-210987654321"],
-            deployments: ["hosted", "self-hosted"],
-            tags: ["dev", "production"],
-            line_items: {
-                "streaming::nova-3": "Nova - 3 (Stream)",
-                "sync::aura-2": "Aura -2 (Sync)",
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -51,6 +44,7 @@ describe("FieldsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/billing/fields")

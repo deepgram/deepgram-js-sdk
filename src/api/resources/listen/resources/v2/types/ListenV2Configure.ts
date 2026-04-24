@@ -11,6 +11,12 @@ export interface ListenV2Configure {
      */
     thresholds?: ListenV2Configure.Thresholds | undefined;
     keyterms?: Deepgram.ListenV2Keyterm | undefined;
+    /**
+     * Language hints to constrain and prioritize language detection.
+     * Only valid when the model is flux-general-multi. If this field is not supplied,
+     * the session will continue to use the currently configured value.
+     */
+    language_hints?: string[] | undefined;
 }
 
 export namespace ListenV2Configure {

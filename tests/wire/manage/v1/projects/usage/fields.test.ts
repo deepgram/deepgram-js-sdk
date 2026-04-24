@@ -26,6 +26,7 @@ describe("FieldsClient", () => {
             processing_methods: ["sync", "streaming"],
             features: ["alternatives", "detect_entities", "detect_language"],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/usage/fields")
@@ -38,19 +39,7 @@ describe("FieldsClient", () => {
             start: "start",
             end: "end",
         });
-        expect(response).toEqual({
-            tags: ["tag=dev", "tag=production"],
-            models: [
-                {
-                    name: "2-medical-nova",
-                    language: "en-MY",
-                    version: "2024-05-31.13574",
-                    model_id: "1234567890-12345-67890",
-                },
-            ],
-            processing_methods: ["sync", "streaming"],
-            features: ["alternatives", "detect_entities", "detect_language"],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -62,6 +51,7 @@ describe("FieldsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/usage/fields")

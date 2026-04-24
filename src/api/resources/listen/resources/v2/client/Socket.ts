@@ -51,7 +51,7 @@ export class V2Socket {
     }
 
     /** The current state of the connection; this is one of the readyState constants. */
-    get readyState(): number {
+    get readyState(): core.ReconnectingWebSocket.ReadyState {
         return this.socket.readyState;
     }
 
@@ -69,7 +69,7 @@ export class V2Socket {
         this.eventHandlers[event] = callback;
     }
 
-    public sendMedia(message: ArrayBufferLike | Blob | ArrayBufferView): void {
+    public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
         this.sendBinary(message);
     }
@@ -79,7 +79,7 @@ export class V2Socket {
         this.sendJson(message);
     }
 
-    public sendListenV2Configure(message: Deepgram.listen.ListenV2Configure): void {
+    public sendConfigure(message: Deepgram.listen.ListenV2Configure): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -110,7 +110,7 @@ export class V2Socket {
 
     /** Returns a promise that resolves when the websocket is open. */
     public async waitForOpen(): Promise<core.ReconnectingWebSocket> {
-        if (this.socket.readyState === core.ReconnectingWebSocket.OPEN) {
+        if (this.socket.readyState === core.ReconnectingWebSocket.ReadyState.OPEN) {
             return this.socket;
         }
 
@@ -131,13 +131,13 @@ export class V2Socket {
             throw new Error("Socket is not connected.");
         }
 
-        if (this.socket.readyState !== core.ReconnectingWebSocket.OPEN) {
+        if (this.socket.readyState !== core.ReconnectingWebSocket.ReadyState.OPEN) {
             throw new Error("Socket is not open.");
         }
     }
 
     /** Send a binary payload to the websocket. */
-    protected sendBinary(payload: ArrayBufferLike | Blob | ArrayBufferView): void {
+    protected sendBinary(payload: ArrayBuffer | Blob | ArrayBufferView): void {
         this.socket.send(payload);
     }
 

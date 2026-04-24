@@ -18,6 +18,7 @@ describe("TokensClient", () => {
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U",
             expires_in: 30,
         };
+
         server
             .mockEndpoint()
             .post("/v1/auth/grant")
@@ -28,11 +29,7 @@ describe("TokensClient", () => {
             .build();
 
         const response = await client.auth.v1.tokens.grant();
-        expect(response).toEqual({
-            access_token:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U",
-            expires_in: 30,
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("grant (2)", async () => {
@@ -44,6 +41,7 @@ describe("TokensClient", () => {
         });
         const rawRequestBody = {};
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .post("/v1/auth/grant")

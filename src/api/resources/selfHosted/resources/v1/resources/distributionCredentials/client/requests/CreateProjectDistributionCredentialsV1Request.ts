@@ -5,6 +5,7 @@ import type * as Deepgram from "../../../../../../../../index.js";
 /**
  * @example
  *     {
+ *         scopes: ["self-hosted:products"],
  *         provider: "quay"
  *     }
  */

@@ -18,6 +18,7 @@ describe("BalancesClient", () => {
                 { balance_id: "balance_id", amount: 1.1, units: "units", purchase_order_id: "purchase_order_id" },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/balances")
@@ -27,16 +28,7 @@ describe("BalancesClient", () => {
             .build();
 
         const response = await client.manage.v1.projects.billing.balances.list("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            balances: [
-                {
-                    balance_id: "balance_id",
-                    amount: 1.1,
-                    units: "units",
-                    purchase_order_id: "purchase_order_id",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -48,6 +40,7 @@ describe("BalancesClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/balances")
@@ -75,6 +68,7 @@ describe("BalancesClient", () => {
             units: "units",
             purchase_order_id: "purchase_order_id",
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/balances/123456-7890-1234-5678-901234")
@@ -87,12 +81,7 @@ describe("BalancesClient", () => {
             "123456-7890-1234-5678-901234",
             "123456-7890-1234-5678-901234",
         );
-        expect(response).toEqual({
-            balance_id: "balance_id",
-            amount: 1.1,
-            units: "units",
-            purchase_order_id: "purchase_order_id",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -104,6 +93,7 @@ describe("BalancesClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/balances/balance_id")

@@ -32,14 +32,15 @@ describe("BreakdownClient", () => {
                         accessor: "123456789012345678901234",
                         endpoint: "listen",
                         feature_set: "punctuate",
-                        models: "Nova-2",
+                        models: ["Nova-2"],
                         method: "async",
-                        tags: "tag1",
+                        tags: ["tag1", "tag2"],
                         deployment: "self-hosted",
                     },
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/usage/breakdown")
@@ -95,36 +96,7 @@ describe("BreakdownClient", () => {
             utterances: true,
             version: true,
         });
-        expect(response).toEqual({
-            start: "2025-01-16",
-            end: "2025-01-23",
-            resolution: {
-                units: "day",
-                amount: 1,
-            },
-            results: [
-                {
-                    hours: 1619.7242069444444,
-                    total_hours: 1621.7395791666668,
-                    agent_hours: 41.33564388888889,
-                    tokens_in: 0,
-                    tokens_out: 0,
-                    tts_characters: 9158866,
-                    requests: 373381,
-                    grouping: {
-                        start: "2025-01-16",
-                        end: "2025-01-16",
-                        accessor: "123456789012345678901234",
-                        endpoint: "listen",
-                        feature_set: "punctuate",
-                        models: "Nova-2",
-                        method: "async",
-                        tags: "tag1",
-                        deployment: "self-hosted",
-                    },
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -136,6 +108,7 @@ describe("BreakdownClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/usage/breakdown")

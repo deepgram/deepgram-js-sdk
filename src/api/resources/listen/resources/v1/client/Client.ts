@@ -43,6 +43,8 @@ export declare namespace V1Client {
         vad_events?: Deepgram.ListenV1VadEvents;
         version?: Deepgram.ListenV1Version | undefined;
         Authorization: string;
+        /** WebSocket subprotocols to use for the connection. */
+        protocols?: string | string[];
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
         /** Arbitrary headers to send with the websocket connect request. */
@@ -100,6 +102,7 @@ export class V1Client {
             utterance_end_ms: utteranceEndMs,
             vad_events: vadEvents,
             version,
+            protocols,
             queryParams,
             headers,
             debug,
@@ -146,6 +149,7 @@ export class V1Client {
             version: version != null ? (typeof version === "string" ? version : toJson(version)) : undefined,
         };
         const _headers: Record<string, unknown> = mergeHeaders(
+            this._options?.headers,
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
@@ -158,7 +162,7 @@ export class V1Client {
                     ).production,
                 "/v1/listen",
             ),
-            protocols: [],
+            protocols: protocols ?? [],
             queryParameters: { ..._queryParams, ...queryParams },
             headers: _headers,
             options: {

@@ -41,7 +41,8 @@ export class BreakdownClient {
      *         accessor: "12345678-1234-1234-1234-123456789012",
      *         deployment: "hosted",
      *         tag: "tag1",
-     *         line_item: "streaming::nova-3"
+     *         line_item: "streaming::nova-3",
+     *         grouping: ["deployment", "line_item"]
      *     })
      */
     public list(
@@ -84,7 +85,11 @@ export class BreakdownClient {
             ),
             method: "GET",
             headers: _headers,
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,

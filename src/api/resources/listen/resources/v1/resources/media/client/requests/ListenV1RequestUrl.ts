@@ -23,6 +23,7 @@ import type * as Deepgram from "../../../../../../../../index.js";
  *         dictation: true,
  *         encoding: "linear16",
  *         filler_words: true,
+ *         keyterm: ["keyterm"],
  *         keywords: "keywords",
  *         language: "language",
  *         measurements: true,

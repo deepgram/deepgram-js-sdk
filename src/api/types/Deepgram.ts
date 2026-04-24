@@ -6,6 +6,8 @@ export interface Deepgram {
     version?: "v1" | undefined;
     /** Deepgram TTS model */
     model: Deepgram.Model;
+    /** Speaking rate multiplier that adjusts the pace of generated speech while preserving natural prosody and voice quality. Not yet supported in all languages. */
+    speed?: number | undefined;
 }
 
 export namespace Deepgram {

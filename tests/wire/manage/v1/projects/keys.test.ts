@@ -26,6 +26,7 @@ describe("KeysClient", () => {
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/keys")
@@ -37,22 +38,7 @@ describe("KeysClient", () => {
         const response = await client.manage.v1.projects.keys.list("123456-7890-1234-5678-901234", {
             status: "active",
         });
-        expect(response).toEqual({
-            api_keys: [
-                {
-                    member: {
-                        member_id: "1000-2000-3000-4000",
-                        email: "john@test.com",
-                    },
-                    api_key: {
-                        api_key_id: "1234567890abcdef1234567890abcdef",
-                        comment: "A comment",
-                        scopes: ["admin"],
-                        created: "2021-01-01T00:00:00Z",
-                    },
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -64,6 +50,7 @@ describe("KeysClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/keys")
@@ -93,6 +80,7 @@ describe("KeysClient", () => {
             tags: ["tags", "tags"],
             expiration_date: "2024-01-15T09:30:00Z",
         };
+
         server
             .mockEndpoint()
             .post("/v1/projects/project_id/keys")
@@ -105,14 +93,7 @@ describe("KeysClient", () => {
         const response = await client.manage.v1.projects.keys.create("project_id", {
             key: "value",
         });
-        expect(response).toEqual({
-            api_key_id: "api_key_id",
-            key: "key",
-            comment: "comment",
-            scopes: ["scopes", "scopes"],
-            tags: ["tags", "tags"],
-            expiration_date: "2024-01-15T09:30:00Z",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("create (2)", async () => {
@@ -124,6 +105,7 @@ describe("KeysClient", () => {
         });
         const rawRequestBody = { key: "value" };
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .post("/v1/projects/project_id/keys")
@@ -166,6 +148,7 @@ describe("KeysClient", () => {
                 },
             },
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/keys/123456789012345678901234")
@@ -178,24 +161,7 @@ describe("KeysClient", () => {
             "123456-7890-1234-5678-901234",
             "123456789012345678901234",
         );
-        expect(response).toEqual({
-            item: {
-                member: {
-                    member_id: "1000-2000-3000-4000",
-                    email: "john@test.com",
-                    first_name: "John",
-                    last_name: "Doe",
-                    api_key: {
-                        api_key_id: "1000-2000-3000-4000",
-                        comment: "A comment",
-                        scopes: ["admin"],
-                        tags: ["prod", "west-region"],
-                        expiration_date: "2021-01-01T00:00:00Z",
-                        created: "2021-01-01T00:00:00Z",
-                    },
-                },
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -207,6 +173,7 @@ describe("KeysClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/keys/key_id")
@@ -229,6 +196,7 @@ describe("KeysClient", () => {
         });
 
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/123456-7890-1234-5678-901234/keys/123456789012345678901234")
@@ -241,9 +209,7 @@ describe("KeysClient", () => {
             "123456-7890-1234-5678-901234",
             "123456789012345678901234",
         );
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("delete (2)", async () => {
@@ -255,6 +221,7 @@ describe("KeysClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/project_id/keys/key_id")

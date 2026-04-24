@@ -14,6 +14,7 @@ describe("MembersClient", () => {
         });
 
         const rawResponseBody = { members: [{ member_id: "member_id", email: "email" }] };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/members")
@@ -23,14 +24,7 @@ describe("MembersClient", () => {
             .build();
 
         const response = await client.manage.v1.projects.members.list("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            members: [
-                {
-                    member_id: "member_id",
-                    email: "email",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -42,6 +36,7 @@ describe("MembersClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/members")
@@ -64,6 +59,7 @@ describe("MembersClient", () => {
         });
 
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/123456-7890-1234-5678-901234/members/123456789012345678901234")
@@ -76,9 +72,7 @@ describe("MembersClient", () => {
             "123456-7890-1234-5678-901234",
             "123456789012345678901234",
         );
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("delete (2)", async () => {
@@ -90,6 +84,7 @@ describe("MembersClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/project_id/members/member_id")

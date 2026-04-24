@@ -13,6 +13,8 @@ export declare namespace V1Client {
 
     export interface ConnectArgs {
         Authorization: string;
+        /** WebSocket subprotocols to use for the connection. */
+        protocols?: string | string[];
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
         /** Arbitrary headers to send with the websocket connect request. */
@@ -41,8 +43,10 @@ export class V1Client {
     }
 
     public async connect(args: V1Client.ConnectArgs): Promise<V1Socket> {
-        const { queryParams, headers, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+        const { protocols, queryParams, headers, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } =
+            args;
         const _headers: Record<string, unknown> = mergeHeaders(
+            this._options?.headers,
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
@@ -55,7 +59,7 @@ export class V1Client {
                     ).agent,
                 "/v1/agent/converse",
             ),
-            protocols: [],
+            protocols: protocols ?? [],
             queryParameters: queryParams ?? {},
             headers: _headers,
             options: {

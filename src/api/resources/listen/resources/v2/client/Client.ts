@@ -23,6 +23,8 @@ export declare namespace V2Client {
         mip_opt_out?: Deepgram.ListenV2MipOptOut | undefined;
         tag?: Deepgram.ListenV2Tag | undefined;
         Authorization: string;
+        /** WebSocket subprotocols to use for the connection. */
+        protocols?: string | string[];
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
         /** Arbitrary headers to send with the websocket connect request. */
@@ -56,6 +58,7 @@ export class V2Client {
             keyterm,
             mip_opt_out: mipOptOut,
             tag,
+            protocols,
             queryParams,
             headers,
             debug,
@@ -92,6 +95,7 @@ export class V2Client {
             tag: tag != null ? (typeof tag === "string" ? tag : toJson(tag)) : undefined,
         };
         const _headers: Record<string, unknown> = mergeHeaders(
+            this._options?.headers,
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
@@ -104,7 +108,7 @@ export class V2Client {
                     ).production,
                 "/v2/listen",
             ),
-            protocols: [],
+            protocols: protocols ?? [],
             queryParameters: { ..._queryParams, ...queryParams },
             headers: _headers,
             options: {
