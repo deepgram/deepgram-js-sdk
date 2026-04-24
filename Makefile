@@ -56,9 +56,7 @@ help:
 
 # Run all examples
 examples:
-	@printf "\033[1;36mInstalling tsx...\033[0m\n"; \
-	pnpm install --save-exact --save-dev tsx; \
-	printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
+	@printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
 	TOTAL=36; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
@@ -166,197 +164,121 @@ examples:
 		done; \
 		printf "\n"; \
 		rm -rf $$ERROR_DIR; \
-		printf "\033[1;36mUninstalling tsx...\033[0m\n"; \
-		pnpm uninstall tsx; \
 		exit 1; \
 	else \
 		printf "\033[1;32m  All examples passed! 🎉\033[0m\n\n"; \
 		rm -rf $$ERROR_DIR; \
-		printf "\033[1;36mUninstalling tsx...\033[0m\n"; \
-		pnpm uninstall tsx; \
 		exit 0; \
 	fi
 
 # Individual example targets
 example-1:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/01-authentication-api-key.ts
-	pnpm uninstall tsx
 
 example-2:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/02-authentication-access-token.ts
-	pnpm uninstall tsx
 
 example-3:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/03-authentication-proxy.ts
-	pnpm uninstall tsx
 
 example-4:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/04-transcription-prerecorded-url.ts
-	pnpm uninstall tsx
 
 example-5:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/05-transcription-prerecorded-file.ts
-	pnpm uninstall tsx
 
 example-6:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/06-transcription-prerecorded-callback.ts
-	pnpm uninstall tsx
 
 example-7:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/07-transcription-live-websocket.ts
-	pnpm uninstall tsx
 
 example-8:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/08-transcription-captions.ts
-	pnpm uninstall tsx
 
 example-9:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/09-voice-agent.ts
-	pnpm uninstall tsx
 
 example-10:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/10-text-to-speech-single.ts
-	pnpm uninstall tsx
 
 example-11:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/11-text-to-speech-streaming.ts
-	pnpm uninstall tsx
 
 example-12:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/12-text-intelligence.ts
-	pnpm uninstall tsx
 
 example-13:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/13-management-projects.ts
-	pnpm uninstall tsx
 
 example-14:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/14-management-keys.ts
-	pnpm uninstall tsx
 
 example-15:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/15-management-members.ts
-	pnpm uninstall tsx
 
 example-16:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/16-management-invites.ts
-	pnpm uninstall tsx
 
 example-17:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/17-management-usage.ts
-	pnpm uninstall tsx
 
 example-18:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/18-management-billing.ts
-	pnpm uninstall tsx
 
 example-19:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/19-management-models.ts
-	pnpm uninstall tsx
 
 example-20:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/20-onprem-credentials.ts
-	pnpm uninstall tsx
 
 example-21:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/21-configuration-scoped.ts
-	pnpm uninstall tsx
 
 example-22:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/22-transcription-advanced-options.ts
-	pnpm uninstall tsx
 
 example-23:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/23-file-upload-types.ts
-	pnpm uninstall tsx
 
 example-24:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/24-error-handling.ts
-	pnpm uninstall tsx
 
 example-25:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/25-binary-response.ts
-	pnpm uninstall tsx
 
 example-26:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/26-transcription-live-websocket-v2.ts
-	pnpm uninstall tsx
 
 example-27:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/27-deepgram-session-header.ts
-	pnpm uninstall tsx
 
 example-28:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/28-text-intelligence-advanced.ts
-	pnpm uninstall tsx
 
 example-29:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/29-management-usage-breakdown.ts
-	pnpm uninstall tsx
 
 example-30:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/30-management-billing-detailed.ts
-	pnpm uninstall tsx
 
 example-31:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/31-management-member-permissions.ts
-	pnpm uninstall tsx
 
 example-32:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/32-management-project-models.ts
-	pnpm uninstall tsx
 
 example-33:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/33-configuration-eu-endpoint.ts
-	pnpm uninstall tsx
 
 example-34:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/34-agent-custom-providers.ts
-	pnpm uninstall tsx
 
 example-35:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/35-agent-provider-combinations.ts
-	pnpm uninstall tsx
 
 example-36:
-	pnpm install --save-exact --save-dev tsx
 	pnpm exec tsx examples/36-agent-inject-message.ts
-	pnpm uninstall tsx
 
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
@@ -380,7 +302,6 @@ test-esm:
 	pnpm exec vitest run tests/esm-build.test.ts
 
 browser:
-	pnpm install --save-exact --save-dev playwright
 	@if [ -n "$$CI" ]; then \
 		echo "CI detected: Installing Playwright browsers without system dependencies"; \
 		pnpm exec playwright install chromium; \
@@ -472,7 +393,6 @@ browser:
 		printf '}\n' >> /tmp/browser-summary.js; \
 		node /tmp/browser-summary.js; \
 	fi; \
-	pnpm uninstall playwright; \
 	exit $$TEST_EXIT_CODE
 
 browser-serve:
