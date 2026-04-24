@@ -1,6 +1,6 @@
 ---
-name: using-audio-intelligence
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram audio analytics overlays on `/v1/listen` - summarize, topics, intents, sentiment, diarize, redact, detect_language, and entity detection. Same endpoint as plain STT, different params. Covers REST via `client.listen.v1.media.transcribeUrl` / `transcribeFile` and the WebSocket-supported subset on `client.listen.v1.createConnection()` / `connect()`. Use `using-speech-to-text` for plain transcription and `using-text-intelligence` for analytics on already-transcribed text. Triggers include "audio intelligence", "summarize audio", "diarize", "sentiment from audio", "redact PII", and "detect language audio".
+name: deepgram-js-audio-intelligence
+description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram audio analytics overlays on `/v1/listen` - summarize, topics, intents, sentiment, diarize, redact, detect_language, and entity detection. Same endpoint as plain STT, different params. Covers REST via `client.listen.v1.media.transcribeUrl` / `transcribeFile` and the WebSocket-supported subset on `client.listen.v1.createConnection()` / `connect()`. Use `deepgram-js-speech-to-text` for plain transcription and `deepgram-js-text-intelligence` for analytics on already-transcribed text. Triggers include "audio intelligence", "summarize audio", "diarize", "sentiment from audio", "redact PII", and "detect language audio".
 ---
 
 # Using Deepgram Audio Intelligence (JavaScript / TypeScript SDK)
@@ -13,10 +13,10 @@ Analytics overlays applied to `/v1/listen`: summaries, topics, intents, sentimen
 - REST is the primary path; the WebSocket path supports only a subset of intelligence features.
 
 **Use a different skill when:**
-- You just want transcript output → `using-speech-to-text`.
-- You already have text and want analytics on that text → `using-text-intelligence`.
-- You need Flux turn-taking → `using-conversational-stt`.
-- You need a full interactive voice agent → `using-voice-agent`.
+- You just want transcript output → `deepgram-js-speech-to-text`.
+- You already have text and want analytics on that text → `deepgram-js-text-intelligence`.
+- You need Flux turn-taking → `deepgram-js-conversational-stt`.
+- You need a full interactive voice agent → `deepgram-js-voice-agent`.
 
 ## Feature availability: REST vs WSS
 

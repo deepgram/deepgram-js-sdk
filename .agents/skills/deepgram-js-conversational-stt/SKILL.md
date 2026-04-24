@@ -1,6 +1,6 @@
 ---
-name: using-conversational-stt
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Conversational STT v2 / Flux (`/v2/listen`) for turn-aware streaming transcription. Covers `client.listen.v2.createConnection()` / `connect()`, Flux models, and turn events like `TurnInfo`. Use `using-speech-to-text` for standard v1 ASR and `using-voice-agent` for full-duplex assistants. Triggers include "flux", "v2 listen", "conversational STT", "turn detection", "end of turn", "EOT", and "listen.v2".
+name: deepgram-js-conversational-stt
+description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Conversational STT v2 / Flux (`/v2/listen`) for turn-aware streaming transcription. Covers `client.listen.v2.createConnection()` / `connect()`, Flux models, and turn events like `TurnInfo`. Use `deepgram-js-speech-to-text` for standard v1 ASR and `deepgram-js-voice-agent` for full-duplex assistants. Triggers include "flux", "v2 listen", "conversational STT", "turn detection", "end of turn", "EOT", and "listen.v2".
 ---
 
 # Using Deepgram Conversational STT / Flux (JavaScript / TypeScript SDK)
@@ -14,9 +14,9 @@ Turn-aware streaming STT via `/v2/listen` for conversational audio and explicit 
 - You are building a conversational interface but do **not** want the full Voice Agent runtime.
 
 **Use a different skill when:**
-- You want general v1 transcription or prerecorded REST → `using-speech-to-text`.
-- You want a hosted assistant with think + speak built in → `using-voice-agent`.
-- You want analytics overlays like sentiment and summaries → `using-audio-intelligence`.
+- You want general v1 transcription or prerecorded REST → `deepgram-js-speech-to-text`.
+- You want a hosted assistant with think + speak built in → `deepgram-js-voice-agent`.
+- You want analytics overlays like sentiment and summaries → `deepgram-js-audio-intelligence`.
 
 ## Authentication
 

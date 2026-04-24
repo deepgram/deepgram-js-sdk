@@ -1,6 +1,6 @@
 ---
-name: using-text-to-speech
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Text-to-Speech v1 (`/v1/speak`) for audio synthesis. Covers one-shot REST via `client.speak.v1.audio.generate` and streaming WebSocket via `client.speak.v1.createConnection()` / `connect()`. Use `using-voice-agent` when you need full-duplex STT + LLM + TTS instead of one-way synthesis. Triggers include "TTS", "text to speech", "speak", "aura", "streaming TTS", and "speak.v1".
+name: deepgram-js-text-to-speech
+description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Text-to-Speech v1 (`/v1/speak`) for audio synthesis. Covers one-shot REST via `client.speak.v1.audio.generate` and streaming WebSocket via `client.speak.v1.createConnection()` / `connect()`. Use `deepgram-js-voice-agent` when you need full-duplex STT + LLM + TTS instead of one-way synthesis. Triggers include "TTS", "text to speech", "speak", "aura", "streaming TTS", and "speak.v1".
 ---
 
 # Using Deepgram Text-to-Speech (JavaScript / TypeScript SDK)
@@ -13,7 +13,7 @@ Convert text to audio with one-shot REST generation or low-latency streaming syn
 - **WebSocket (`client.speak.v1.createConnection()` / `connect()`)** — stream text in and receive audio out with lower latency. Best when an LLM is still producing tokens.
 
 **Use a different skill when:**
-- You need the agent to also listen, think, and handle barge-in → `using-voice-agent`.
+- You need the agent to also listen, think, and handle barge-in → `deepgram-js-voice-agent`.
 
 ## Authentication
 

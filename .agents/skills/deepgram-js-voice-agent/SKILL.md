@@ -1,6 +1,6 @@
 ---
-name: using-voice-agent
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that builds an interactive voice agent via `agent.deepgram.com/v1/agent/converse`. Covers `client.agent.v1.createConnection()` / `connect()`, `sendSettings`, `sendMedia`, runtime updates, event handling, and function-call responses. Use `using-text-to-speech` for one-way synthesis, `using-speech-to-text` or `using-conversational-stt` for transcription only, and `using-management-api` for project/model admin rather than live agent runtime. Triggers include "voice agent", "agent converse", "full duplex", "barge-in", "function calling", and "agent.v1".
+name: deepgram-js-voice-agent
+description: Use when writing or reviewing JavaScript/TypeScript in this repo that builds an interactive voice agent via `agent.deepgram.com/v1/agent/converse`. Covers `client.agent.v1.createConnection()` / `connect()`, `sendSettings`, `sendMedia`, runtime updates, event handling, and function-call responses. Use `deepgram-js-text-to-speech` for one-way synthesis, `deepgram-js-speech-to-text` or `deepgram-js-conversational-stt` for transcription only, and `deepgram-js-management-api` for project/model admin rather than live agent runtime. Triggers include "voice agent", "agent converse", "full duplex", "barge-in", "function calling", and "agent.v1".
 ---
 
 # Using Deepgram Voice Agent (JavaScript / TypeScript SDK)
@@ -14,9 +14,9 @@ Full-duplex voice agent runtime over `wss://agent.deepgram.com/v1/agent/converse
 - You want Deepgram to host the STT + think + TTS orchestration.
 
 **Use a different skill when:**
-- You only need transcription → `using-speech-to-text` or `using-conversational-stt`.
-- You only need synthesis → `using-text-to-speech`.
-- You want project keys, usage, models, or other admin APIs → `using-management-api`.
+- You only need transcription → `deepgram-js-speech-to-text` or `deepgram-js-conversational-stt`.
+- You only need synthesis → `deepgram-js-text-to-speech`.
+- You want project keys, usage, models, or other admin APIs → `deepgram-js-management-api`.
 
 ## Authentication
 

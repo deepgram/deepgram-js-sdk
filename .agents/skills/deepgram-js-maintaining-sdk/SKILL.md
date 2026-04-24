@@ -1,5 +1,5 @@
 ---
-name: maintaining-js-sdk
+name: deepgram-js-maintaining-sdk
 description: Use when regenerating this JavaScript/TypeScript SDK with Fern, editing `.fernignore`, preparing the repo for a generator release, reconciling hand-maintained files after regen, or deciding whether a file should be permanently frozen vs temporarily frozen. This SDK is Fern-generated - most files under `src/` should not be edited directly. Triggers include "fern regen", "regenerate SDK", ".fernignore", "unfreeze", "re-apply patches", "SDK regeneration", and "freeze classification".
 ---
 

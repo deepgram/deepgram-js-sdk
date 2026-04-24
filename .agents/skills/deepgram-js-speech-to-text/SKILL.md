@@ -1,6 +1,6 @@
 ---
-name: using-speech-to-text
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Speech-to-Text v1 (`/v1/listen`) for prerecorded or live audio transcription. Covers `client.listen.v1.media.transcribeUrl` / `transcribeFile` (REST) plus `client.listen.v1.createConnection()` / `connect()` (WebSocket). Use `using-audio-intelligence` for summarize/sentiment/topics/diarize overlays, `using-conversational-stt` for Flux turn-taking on `/v2/listen`, and `using-voice-agent` for full-duplex assistants. Triggers include "transcribe", "speech to text", "STT", "listen.v1", "nova-3", "live transcription", and "websocket transcription".
+name: deepgram-js-speech-to-text
+description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Speech-to-Text v1 (`/v1/listen`) for prerecorded or live audio transcription. Covers `client.listen.v1.media.transcribeUrl` / `transcribeFile` (REST) plus `client.listen.v1.createConnection()` / `connect()` (WebSocket). Use `deepgram-js-audio-intelligence` for summarize/sentiment/topics/diarize overlays, `deepgram-js-conversational-stt` for Flux turn-taking on `/v2/listen`, and `deepgram-js-voice-agent` for full-duplex assistants. Triggers include "transcribe", "speech to text", "STT", "listen.v1", "nova-3", "live transcription", and "websocket transcription".
 ---
 
 # Using Deepgram Speech-to-Text (JavaScript / TypeScript SDK)
@@ -13,9 +13,9 @@ Basic transcription for prerecorded audio (REST) or live audio (WebSocket) via `
 - **WebSocket (`client.listen.v1.createConnection()` / `connect()`)** — continuous streaming transcription. Good for live captions, microphone audio, telephony streams, browser or Node realtime apps.
 
 **Use a different skill when:**
-- You also want summaries, topics, intents, sentiment, language detection, or redaction guidance on the same `/v1/listen` call → `using-audio-intelligence`.
-- You need Flux turn-taking and end-of-turn events on `/v2/listen` → `using-conversational-stt`.
-- You need a full interactive assistant with STT + LLM + TTS over one socket → `using-voice-agent`.
+- You also want summaries, topics, intents, sentiment, language detection, or redaction guidance on the same `/v1/listen` call → `deepgram-js-audio-intelligence`.
+- You need Flux turn-taking and end-of-turn events on `/v2/listen` → `deepgram-js-conversational-stt`.
+- You need a full interactive assistant with STT + LLM + TTS over one socket → `deepgram-js-voice-agent`.
 
 ## Authentication
 

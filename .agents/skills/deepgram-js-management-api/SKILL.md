@@ -1,6 +1,6 @@
 ---
-name: using-management-api
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Management APIs for projects, API keys, members, invites, requests, usage, billing, models, and agent think-model discovery. Covers `client.manage.v1.*` plus `client.agent.v1.settings.think.models.list()`. Use `using-voice-agent` when you want to run an agent live rather than administer projects or inspect models. Triggers include "management API", "list projects", "API keys", "members", "invites", "usage stats", "billing", "list models", and "manage.v1".
+name: deepgram-js-management-api
+description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Management APIs for projects, API keys, members, invites, requests, usage, billing, models, and agent think-model discovery. Covers `client.manage.v1.*` plus `client.agent.v1.settings.think.models.list()`. Use `deepgram-js-voice-agent` when you want to run an agent live rather than administer projects or inspect models. Triggers include "management API", "list projects", "API keys", "members", "invites", "usage stats", "billing", "list models", and "manage.v1".
 ---
 
 # Using Deepgram Management API (JavaScript / TypeScript SDK)
@@ -17,7 +17,7 @@ Administrative REST endpoints under `/v1/projects`, `/v1/models`, and related pr
 - **Agent think models**: discover available model providers for Voice Agent `think` settings.
 
 **Use a different skill when:**
-- You want to run a live websocket agent session → `using-voice-agent`.
+- You want to run a live websocket agent session → `deepgram-js-voice-agent`.
 - You want transcription or synthesis calls rather than project/admin APIs → product-specific skills.
 
 ## Authentication
