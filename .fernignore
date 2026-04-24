@@ -42,6 +42,9 @@ CHANGELOG.md
 # Because the generator tries to roll the examples back to the old signature?
 README.md
 
+# Context7 verification file — generator deletes it each regen
+context7.json
+
 # Agent files (Claude Code, OpenCode, other agent tools)
 # .agents/skills/ holds agent-agnostic skills discoverable via `npx skills`
 CLAUDE.md
