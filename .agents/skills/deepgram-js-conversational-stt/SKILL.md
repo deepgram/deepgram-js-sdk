@@ -52,6 +52,11 @@ deepgramConnection.on("message", (data) => {
 deepgramConnection.connect();
 await deepgramConnection.waitForOpen();
 
+// Swap this for a live mic capture in real apps; the repo example uses
+// `createReadStream` over a sample file.
+const { createReadStream } = require("node:fs");
+const audioStream = createReadStream("samples/spacewalk.wav");
+
 audioStream.on("data", (chunk) => {
   deepgramConnection.sendMedia(chunk);
 });

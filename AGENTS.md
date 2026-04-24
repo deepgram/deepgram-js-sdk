@@ -37,7 +37,7 @@ Current permanently frozen files:
 - `Makefile` — development commands
 - `MIGRATION_GUIDE_V4_TO_V5.md` — migration documentation
 - `README.md`, `CHANGELOG.md` — docs
-- `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.agents/` — agent files (`.agents/skills/` holds agent-agnostic skills discoverable via `npx skills`)
+- `CLAUDE.md`, `AGENTS.md`, `.mcp.json`, `.claude/`, `.agents/` — agent files (`.agents/skills/` holds agent-agnostic skills discoverable via `npx skills`)
 - `.github/`, `docs/`, `examples/` — folders
 - `.npmignore`, `.gitignore`, `.npmrc` — package/repo config
 

@@ -94,6 +94,11 @@ deepgramConnection.on("message", (data) => {
 deepgramConnection.connect();
 await deepgramConnection.waitForOpen();
 
+// Swap this for a mic capture (e.g. `node-microphone` / `MediaRecorder`)
+// in real apps; the repo examples use `createReadStream` over a sample WAV.
+const { createReadStream } = require("node:fs");
+const audioStream = createReadStream("samples/spacewalk.wav");
+
 audioStream.on("data", (chunk) => {
   deepgramConnection.sendMedia(chunk);
 });

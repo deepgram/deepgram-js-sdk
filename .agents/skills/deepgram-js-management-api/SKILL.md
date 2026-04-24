@@ -36,9 +36,11 @@ Most examples also rely on `process.env.DEEPGRAM_PROJECT_ID` for project-scoped 
 
 ## Quick start — projects + models
 
-From `examples/13-management-projects.ts` and `examples/19-management-models.ts`:
+From `examples/13-management-projects.ts`, `examples/19-management-models.ts`, and `examples/32-management-project-models.ts`:
 
 ```js
+const projectId = process.env.DEEPGRAM_PROJECT_ID;
+
 const projects = await deepgramClient.manage.v1.projects.list();
 console.log("Projects:", JSON.stringify(projects, null, 2));
 
@@ -49,7 +51,7 @@ await deepgramClient.manage.v1.projects.update(project.project_id, {
 
 const models = await deepgramClient.manage.v1.models.list();
 const projectModels = await deepgramClient.manage.v1.projects.models.list(
-  process.env.DEEPGRAM_PROJECT_ID,
+  projectId,
   { include_outdated: false },
 );
 ```
@@ -59,6 +61,8 @@ const projectModels = await deepgramClient.manage.v1.projects.models.list(
 Based on `examples/14-18`:
 
 ```js
+const projectId = process.env.DEEPGRAM_PROJECT_ID;
+
 await deepgramClient.manage.v1.projects.keys.list(projectId);
 await deepgramClient.manage.v1.projects.members.list(projectId);
 await deepgramClient.manage.v1.projects.members.invites.create(projectId, {
