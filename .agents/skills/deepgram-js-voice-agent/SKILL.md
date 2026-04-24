@@ -25,7 +25,7 @@ require("dotenv").config();
 
 const { DeepgramClient, DeepgramEnvironment } = require("@deepgram/sdk");
 
-const client = new DeepgramClient({
+const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
   environment: DeepgramEnvironment.Agent,
 });

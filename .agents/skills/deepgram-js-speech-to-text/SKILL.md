@@ -24,12 +24,12 @@ require("dotenv").config();
 
 const { DeepgramClient } = require("@deepgram/sdk");
 
-const client = new DeepgramClient({
+const deepgramClient = new DeepgramClient({
   apiKey: process.env.DEEPGRAM_API_KEY,
 });
 ```
 
-Use the exported `DeepgramClient` from `src/CustomClient.ts`, not `DefaultDeepgramClient`. The wrapper adds the required `Token ` auth prefix, session headers, and patched WebSocket behavior.
+Use the exported `DeepgramClient` from `src/CustomClient.ts`, not `DefaultDeepgramClient`. The wrapper adds the required `Token` auth prefix, session headers, and patched WebSocket behavior.
 
 ## Quick start — REST (prerecorded URL)
 
