@@ -42,8 +42,10 @@ CHANGELOG.md
 # Because the generator tries to roll the examples back to the old signature?
 README.md
 
-# Claude Code agent files
+# Agent files (Claude Code, OpenCode, other agent tools)
+# .agents/skills/ holds agent-agnostic skills discoverable via `npx skills`
 CLAUDE.md
 AGENTS.md
 .claude
+.agents
 .mcp.json
