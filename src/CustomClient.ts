@@ -629,9 +629,23 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  * consistent behavior across Fern regenerations and allows us to customize
  * connection setup, authentication, and header handling.
  */
+const NOVA3_MODELS = ["nova-3", "nova-3-general", "nova-3-medical"] as const;
+
 class WrappedListenV1Client extends ListenV1Client {
     public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
         const { headers, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+
+        // Warn when 'keywords' is used with nova-3 — the API rejects this combination.
+        // 'keywords' is not supported on nova-3; use 'keyterm' instead.
+        const model = (args as Record<string, unknown>).model as string | undefined;
+        const keywords = (args as Record<string, unknown>).keywords;
+        if (keywords != null && model != null && NOVA3_MODELS.some((m) => model === m || model.startsWith(m))) {
+            console.warn(
+                "[Deepgram] The 'keywords' parameter is not supported with nova-3 models and will cause " +
+                "the WebSocket connection to be rejected (HTTP 400). Use 'keyterm' instead. " +
+                "See: https://developers.deepgram.com/docs/keyterm"
+            );
+        }
 
         const socket = await createWebSocketConnection({
             options: this._options,
