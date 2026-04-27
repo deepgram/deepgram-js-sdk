@@ -108,7 +108,7 @@ export namespace AgentV1Settings {
 
             export namespace Messages {
                 /**
-                 * A message here is either a conversational message or a function call
+                 * A history message is either a conversational message or a function call
                  */
                 export type Item =
                     /**
@@ -128,6 +128,7 @@ export namespace AgentV1Settings {
                               client_side: boolean;
                               arguments: string;
                               response: string;
+                              thought_signature?: string | undefined;
                           }[];
                       };
             }

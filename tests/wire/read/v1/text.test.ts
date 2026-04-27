@@ -65,6 +65,7 @@ describe("TextClient", () => {
                 },
             },
         };
+
         server
             .mockEndpoint()
             .post("/v1/read")
@@ -91,77 +92,7 @@ describe("TextClient", () => {
                 url: "url",
             },
         });
-        expect(response).toEqual({
-            metadata: {
-                metadata: {
-                    request_id: "d04af392-db11-4c1d-83e1-20e34f0b8999",
-                    created: "2024-11-18T23:47:44Z",
-                    language: "en",
-                },
-            },
-            results: {
-                summary: {
-                    results: {
-                        summary: {
-                            text: "The summary of the text submitted.",
-                        },
-                    },
-                },
-                topics: {
-                    results: {
-                        topics: {
-                            segments: [
-                                {
-                                    text: "And, um, I think if it signifies anything, it is, uh, to honor the the women who came before us who, um, were skilled and qualified, um, and didn't get the the same opportunities that we have today.",
-                                    start_word: 32,
-                                    end_word: 69,
-                                    topics: [
-                                        {
-                                            topic: "Spacewalk",
-                                            confidence_score: 0.91581345,
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    },
-                },
-                intents: {
-                    results: {
-                        intents: {
-                            segments: [
-                                {
-                                    text: "If you found this valuable, you can subscribe to the show on spotify or your favorite podcast app.",
-                                    start_word: 354,
-                                    end_word: 414,
-                                    intents: [
-                                        {
-                                            intent: "Encourage podcasting",
-                                            confidence_score: 0.0038975573,
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    },
-                },
-                sentiments: {
-                    segments: [
-                        {
-                            text: "Yeah. As as much as, um, it's worth celebrating, uh, the first, uh, spacewalk, um, with an all-female team, I think many of us are looking forward to it just being normal. And, um, I think if it signifies anything, it is, uh, to honor the the women who came before us who, um, were skilled and qualified, um, and didn't get the the same opportunities that we have today.",
-                            start_word: 0,
-                            end_word: 69,
-                            sentiment: "positive",
-                            sentiment_score: 0.5810546875,
-                        },
-                    ],
-                    average: {
-                        sentiment: "positive",
-                        sentiment_score: 0.5810185185185185,
-                    },
-                },
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("analyze (2)", async () => {
@@ -173,6 +104,7 @@ describe("TextClient", () => {
         });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .post("/v1/read")

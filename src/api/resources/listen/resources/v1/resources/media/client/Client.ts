@@ -53,6 +53,7 @@ export class MediaClient {
      *         dictation: true,
      *         encoding: "linear16",
      *         filler_words: true,
+     *         keyterm: ["keyterm"],
      *         keywords: "keywords",
      *         language: "language",
      *         measurements: true,
@@ -179,7 +180,11 @@ export class MediaClient {
             method: "POST",
             headers: _headers,
             contentType: "application/json",
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             requestType: "json",
             body: _body,
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
@@ -295,7 +300,11 @@ export class MediaClient {
             method: "POST",
             headers: _headers,
             contentType: "application/octet-stream",
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             requestType: "bytes",
             duplex: "half",
             body: _binaryUploadRequest.body,

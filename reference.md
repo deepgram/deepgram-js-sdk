@@ -166,6 +166,7 @@ await client.listen.v1.media.transcribeUrl({
     dictation: true,
     encoding: "linear16",
     filler_words: true,
+    keyterm: ["keyterm"],
     keywords: "keywords",
     language: "language",
     measurements: true,
@@ -1756,7 +1757,8 @@ await client.manage.v1.projects.billing.breakdown.list("123456-7890-1234-5678-90
     accessor: "12345678-1234-1234-1234-123456789012",
     deployment: "hosted",
     tag: "tag1",
-    line_item: "streaming::nova-3"
+    line_item: "streaming::nova-3",
+    grouping: ["deployment", "line_item"]
 });
 
 ```
@@ -2677,6 +2679,7 @@ Creates a set of distribution credentials for the specified project
 
 ```typescript
 await client.selfHosted.v1.distributionCredentials.create("123456-7890-1234-5678-901234", {
+    scopes: ["self-hosted:products"],
     provider: "quay"
 });
 
@@ -2919,6 +2922,733 @@ await client.speak.v1.audio.generate({
 <dd>
 
 **requestOptions:** `AudioClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## VoiceAgent Configurations
+<details><summary><code>client.voiceAgent.configurations.<a href="/src/api/resources/voiceAgent/resources/configurations/client/Client.ts">list</a>(project_id) -> Deepgram.ListAgentConfigurationsV1Response</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all agent configurations for the specified project. Configurations are returned in their uninterpolated form—template variable placeholders appear as-is rather than with their substituted values.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.configurations.list("123456-7890-1234-5678-901234");
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `ConfigurationsClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.configurations.<a href="/src/api/resources/voiceAgent/resources/configurations/client/Client.ts">create</a>(project_id, { ...params }) -> Deepgram.CreateAgentConfigurationV1Response</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new reusable agent configuration. The `config` field must be a valid JSON string representing the `agent` block of a Settings message. The returned `agent_id` can be passed in place of the full `agent` object in future Settings messages.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.configurations.create("123456-7890-1234-5678-901234", {
+    config: "config"
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Deepgram.voiceAgent.CreateAgentConfigurationV1Request` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `ConfigurationsClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.configurations.<a href="/src/api/resources/voiceAgent/resources/configurations/client/Client.ts">get</a>(project_id, agent_id) -> Deepgram.AgentConfigurationV1</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the specified agent configuration in its uninterpolated form
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.configurations.get("123456-7890-1234-5678-901234", "a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**agent_id:** `string` — The unique identifier of the agent configuration
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `ConfigurationsClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.configurations.<a href="/src/api/resources/voiceAgent/resources/configurations/client/Client.ts">update</a>(project_id, agent_id, { ...params }) -> Deepgram.AgentConfigurationV1</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the metadata associated with an agent configuration. The config itself is immutable—to change the configuration, delete the existing agent and create a new one.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.configurations.update("123456-7890-1234-5678-901234", "a1b2c3d4-e5f6-7890-abcd-ef1234567890", {
+    metadata: {
+        "key": "value"
+    }
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**agent_id:** `string` — The unique identifier of the agent configuration
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Deepgram.voiceAgent.UpdateAgentMetadataV1Request` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `ConfigurationsClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.configurations.<a href="/src/api/resources/voiceAgent/resources/configurations/client/Client.ts">delete</a>(project_id, agent_id) -> Deepgram.DeleteAgentConfigurationV1Response</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes the specified agent configuration. Deleting an agent configuration can cause a production outage if your service references this agent UUID. Migrate all active sessions to a new configuration before deleting.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.configurations.delete("123456-7890-1234-5678-901234", "a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**agent_id:** `string` — The unique identifier of the agent configuration
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `ConfigurationsClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## VoiceAgent Variables
+<details><summary><code>client.voiceAgent.variables.<a href="/src/api/resources/voiceAgent/resources/variables/client/Client.ts">list</a>(project_id) -> Deepgram.ListAgentVariablesV1Response</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all template variables for the specified project
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.variables.list("123456-7890-1234-5678-901234");
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `VariablesClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.variables.<a href="/src/api/resources/voiceAgent/resources/variables/client/Client.ts">create</a>(project_id, { ...params }) -> Deepgram.AgentVariableV1</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new template variable. Variables follow the `DG_<VARIABLE_NAME>` naming format and can substitute any JSON value in an agent configuration.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.variables.create("project_id", {
+    key: "key",
+    value: {
+        "key": "value"
+    }
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Deepgram.voiceAgent.CreateAgentVariableV1Request` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `VariablesClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.variables.<a href="/src/api/resources/voiceAgent/resources/variables/client/Client.ts">get</a>(project_id, variable_id) -> Deepgram.AgentVariableV1</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the specified template variable
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.variables.get("123456-7890-1234-5678-901234", "v1a2b3c4-d5e6-7890-abcd-ef1234567890");
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variable_id:** `string` — The unique identifier of the agent variable
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `VariablesClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.variables.<a href="/src/api/resources/voiceAgent/resources/variables/client/Client.ts">delete</a>(project_id, variable_id) -> Deepgram.DeleteAgentVariableV1Response</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes the specified template variable
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.variables.delete("123456-7890-1234-5678-901234", "v1a2b3c4-d5e6-7890-abcd-ef1234567890");
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variable_id:** `string` — The unique identifier of the agent variable
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `VariablesClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.voiceAgent.variables.<a href="/src/api/resources/voiceAgent/resources/variables/client/Client.ts">update</a>(project_id, variable_id, { ...params }) -> Deepgram.AgentVariableV1</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the value of an existing template variable
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.voiceAgent.variables.update("project_id", "variable_id", {
+    value: {
+        "key": "value"
+    }
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `string` — The unique identifier of the project
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variable_id:** `string` — The unique identifier of the agent variable
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Deepgram.voiceAgent.UpdateAgentVariableV1Request` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `VariablesClient.RequestOptions` 
     
 </dd>
 </dl>

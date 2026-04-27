@@ -25,6 +25,7 @@ describe("PurchasesClient", () => {
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/purchases")
@@ -36,18 +37,7 @@ describe("PurchasesClient", () => {
         const response = await client.manage.v1.projects.billing.purchases.list("123456-7890-1234-5678-901234", {
             limit: 1.1,
         });
-        expect(response).toEqual({
-            orders: [
-                {
-                    order_id: "025e19ba-b6d9-4a04-9f99-4fe715aca5f1",
-                    expiration: "2026-03-04T00:00:00Z",
-                    created: "2023-02-21T21:13:40Z",
-                    amount: 150,
-                    units: "usd",
-                    order_type: "promotional",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -59,6 +49,7 @@ describe("PurchasesClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/purchases")

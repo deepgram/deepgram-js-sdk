@@ -14,6 +14,7 @@ describe("ModelsClient", () => {
         });
 
         const rawResponseBody = { models: [{ id: "gpt-5", name: "name", provider: "open_ai" }] };
+
         server
             .mockEndpoint()
             .get("/v1/agent/settings/think/models")
@@ -23,15 +24,7 @@ describe("ModelsClient", () => {
             .build();
 
         const response = await client.agent.v1.settings.think.models.list();
-        expect(response).toEqual({
-            models: [
-                {
-                    id: "gpt-5",
-                    name: "name",
-                    provider: "open_ai",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -43,6 +36,7 @@ describe("ModelsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/agent/settings/think/models")

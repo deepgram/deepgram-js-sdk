@@ -27,6 +27,8 @@ export interface SpeakV1Request {
     model?: Deepgram.speak.v1.AudioGenerateRequestModel;
     /** Sample Rate specifies the sample rate for the output audio. Based on the encoding, different sample rates are supported. For some encodings, the sample rate is not configurable */
     sample_rate?: number;
+    /** Speaking rate multiplier that adjusts the pace of generated speech while preserving natural prosody and voice quality. Not yet supported in all languages. */
+    speed?: number;
     /** The text content to be converted to speech */
     text: string;
 }

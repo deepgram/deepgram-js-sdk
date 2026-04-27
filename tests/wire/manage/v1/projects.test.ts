@@ -14,17 +14,11 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { projects: [{ project_id: "project_id", name: "name" }] };
+
         server.mockEndpoint().get("/v1/projects").respondWith().statusCode(200).jsonBody(rawResponseBody).build();
 
         const response = await client.manage.v1.projects.list();
-        expect(response).toEqual({
-            projects: [
-                {
-                    project_id: "project_id",
-                    name: "name",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -36,6 +30,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server.mockEndpoint().get("/v1/projects").respondWith().statusCode(400).jsonBody(rawResponseBody).build();
 
         await expect(async () => {
@@ -52,6 +47,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { project_id: "project_id", mip_opt_out: true, name: "name" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234")
@@ -64,11 +60,7 @@ describe("ProjectsClient", () => {
             limit: 1.1,
             page: 1.1,
         });
-        expect(response).toEqual({
-            project_id: "project_id",
-            mip_opt_out: true,
-            name: "name",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -80,6 +72,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id")
@@ -102,6 +95,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/123456-7890-1234-5678-901234")
@@ -111,9 +105,7 @@ describe("ProjectsClient", () => {
             .build();
 
         const response = await client.manage.v1.projects.delete("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("delete (2)", async () => {
@@ -125,6 +117,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/project_id")
@@ -147,6 +140,7 @@ describe("ProjectsClient", () => {
         });
         const rawRequestBody = {};
         const rawResponseBody = { message: "Successfully updated project info." };
+
         server
             .mockEndpoint()
             .patch("/v1/projects/123456-7890-1234-5678-901234")
@@ -157,9 +151,7 @@ describe("ProjectsClient", () => {
             .build();
 
         const response = await client.manage.v1.projects.update("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            message: "Successfully updated project info.",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("update (2)", async () => {
@@ -171,6 +163,7 @@ describe("ProjectsClient", () => {
         });
         const rawRequestBody = {};
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .patch("/v1/projects/project_id")
@@ -194,6 +187,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/123456-7890-1234-5678-901234/leave")
@@ -203,9 +197,7 @@ describe("ProjectsClient", () => {
             .build();
 
         const response = await client.manage.v1.projects.leave("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("leave (2)", async () => {
@@ -217,6 +209,7 @@ describe("ProjectsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/project_id/leave")

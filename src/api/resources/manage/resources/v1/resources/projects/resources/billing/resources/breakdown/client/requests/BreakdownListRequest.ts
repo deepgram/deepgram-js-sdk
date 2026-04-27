@@ -10,7 +10,8 @@ import type * as Deepgram from "../../../../../../../../../../../../index.js";
  *         accessor: "12345678-1234-1234-1234-123456789012",
  *         deployment: "hosted",
  *         tag: "tag1",
- *         line_item: "streaming::nova-3"
+ *         line_item: "streaming::nova-3",
+ *         grouping: ["deployment", "line_item"]
  *     }
  */
 export interface BreakdownListRequest {

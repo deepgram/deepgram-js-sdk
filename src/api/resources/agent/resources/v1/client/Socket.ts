@@ -25,6 +25,7 @@ export declare namespace V1Socket {
         | Deepgram.agent.AgentV1AgentAudioDone
         | Deepgram.agent.AgentV1Error
         | Deepgram.agent.AgentV1Warning
+        | Deepgram.agent.AgentV1History
         | string;
     type EventHandlers = {
         open?: () => void;
@@ -62,7 +63,7 @@ export class V1Socket {
     }
 
     /** The current state of the connection; this is one of the readyState constants. */
-    get readyState(): number {
+    get readyState(): core.ReconnectingWebSocket.ReadyState {
         return this.socket.readyState;
     }
 
@@ -86,11 +87,6 @@ export class V1Socket {
     }
 
     public sendUpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -120,7 +116,12 @@ export class V1Socket {
         this.sendJson(message);
     }
 
-    public sendMedia(message: ArrayBufferLike | Blob | ArrayBufferView): void {
+    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
         this.sendBinary(message);
     }
@@ -151,7 +152,7 @@ export class V1Socket {
 
     /** Returns a promise that resolves when the websocket is open. */
     public async waitForOpen(): Promise<core.ReconnectingWebSocket> {
-        if (this.socket.readyState === core.ReconnectingWebSocket.OPEN) {
+        if (this.socket.readyState === core.ReconnectingWebSocket.ReadyState.OPEN) {
             return this.socket;
         }
 
@@ -172,13 +173,13 @@ export class V1Socket {
             throw new Error("Socket is not connected.");
         }
 
-        if (this.socket.readyState !== core.ReconnectingWebSocket.OPEN) {
+        if (this.socket.readyState !== core.ReconnectingWebSocket.ReadyState.OPEN) {
             throw new Error("Socket is not open.");
         }
     }
 
     /** Send a binary payload to the websocket. */
-    protected sendBinary(payload: ArrayBufferLike | Blob | ArrayBufferView): void {
+    protected sendBinary(payload: ArrayBuffer | Blob | ArrayBufferView): void {
         this.socket.send(payload);
     }
 
@@ -187,12 +188,12 @@ export class V1Socket {
         payload:
             | Deepgram.agent.AgentV1Settings
             | Deepgram.agent.AgentV1UpdateSpeak
-            | Deepgram.agent.AgentV1UpdateThink
             | Deepgram.agent.AgentV1InjectUserMessage
             | Deepgram.agent.AgentV1InjectAgentMessage
             | Deepgram.agent.AgentV1SendFunctionCallResponse
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
+            | Deepgram.agent.AgentV1UpdateThink
             | string,
     ): void {
         const jsonPayload = toJson(payload);

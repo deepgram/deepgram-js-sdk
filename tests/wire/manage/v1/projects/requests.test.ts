@@ -30,6 +30,7 @@ describe("RequestsClient", () => {
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/requests")
@@ -50,25 +51,7 @@ describe("RequestsClient", () => {
             method: "sync",
             status: "succeeded",
         });
-        expect(response).toEqual({
-            page: 1.1,
-            limit: 1.1,
-            requests: [
-                {
-                    request_id: "request_id",
-                    project_uuid: "project_uuid",
-                    created: "2024-01-15T09:30:00Z",
-                    path: "path",
-                    api_key_id: "api_key_id",
-                    response: {
-                        key: "value",
-                    },
-                    code: 1.1,
-                    deployment: "deployment",
-                    callback: "callback",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -80,6 +63,7 @@ describe("RequestsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/requests")
@@ -114,6 +98,7 @@ describe("RequestsClient", () => {
                 callback: "callback",
             },
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/requests/123456-7890-1234-5678-901234")
@@ -126,21 +111,7 @@ describe("RequestsClient", () => {
             "123456-7890-1234-5678-901234",
             "123456-7890-1234-5678-901234",
         );
-        expect(response).toEqual({
-            request: {
-                request_id: "request_id",
-                project_uuid: "project_uuid",
-                created: "2024-01-15T09:30:00Z",
-                path: "path",
-                api_key_id: "api_key_id",
-                response: {
-                    key: "value",
-                },
-                code: 1.1,
-                deployment: "deployment",
-                callback: "callback",
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -152,6 +123,7 @@ describe("RequestsClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/requests/request_id")

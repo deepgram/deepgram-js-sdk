@@ -40,6 +40,7 @@ Current permanently frozen files:
 - `CLAUDE.md`, `AGENTS.md`, `.mcp.json`, `.claude/`, `.agents/` — agent files (`.agents/skills/` holds agent-agnostic skills discoverable via `npx skills`)
 - `.github/`, `docs/`, `examples/` — folders
 - `.npmignore`, `.gitignore`, `.npmrc` — package/repo config
+- `context7.json` — Context7 verification file; generator deletes it each regen
 
 #### Unfreeze for regen (temporarily frozen)
 
@@ -56,7 +57,7 @@ Current temporarily frozen files:
 
 ### Prepare repo for regeneration
 
-1. **Create a new branch** off `main` named `lo/sdk-gen-<YYYY-MM-DD>`.
+1. **Create a new branch** off `main` named `<YOUR_INITIALS>/sdk-gen-<YYYY-MM-DD>`.
 2. **Push the branch** and create a PR titled `chore: SDK regeneration <YYYY-MM-DD>` (empty commit if needed).
 3. **Read `.fernignore`** and classify each entry using the rules above.
 4. **For each temporarily frozen file only:**

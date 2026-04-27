@@ -31,6 +31,7 @@ describe("BreakdownClient", () => {
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/billing/breakdown")
@@ -46,28 +47,9 @@ describe("BreakdownClient", () => {
             deployment: "hosted",
             tag: "tag1",
             line_item: "streaming::nova-3",
+            grouping: ["deployment", "line_item"],
         });
-        expect(response).toEqual({
-            start: "2025-01-16",
-            end: "2025-01-23",
-            resolution: {
-                units: "day",
-                amount: 1,
-            },
-            results: [
-                {
-                    dollars: 0.25,
-                    grouping: {
-                        start: "2025-01-16",
-                        end: "2025-01-16",
-                        accessor: "123456789012345678901234",
-                        deployment: "hosted",
-                        line_item: "streaming::nova-3",
-                        tags: ["tag1", "tag2"],
-                    },
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -79,6 +61,7 @@ describe("BreakdownClient", () => {
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/billing/breakdown")
