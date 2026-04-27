@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.1.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.0.0...v5.1.0) (2026-04-27)
+
+
+### Features
+
+* sdk regeneration 2026-04-24 ([4466be0](https://github.com/deepgram/deepgram-js-sdk/commit/4466be0ebc5a28f3c24b1bb61e7298317b52f7af))
+
+
+### Bug Fixes
+
+* **ci:** pin JS tooling used by PR title and example checks ([7a1c1ea](https://github.com/deepgram/deepgram-js-sdk/commit/7a1c1ea4f52c61531606dfba6783e23fd769f688))
+
 ## [5.0.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.0.0-beta.4...v5.0.0) (2026-03-04)
 
 
