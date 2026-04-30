@@ -52,3 +52,21 @@ AGENTS.md
 .claude
 .agents
 .mcp.json
+
+# Unfreeze for regen (temporarily frozen — see AGENTS.md)
+# package.json: Fern's generator produces a minimal devDependencies set; we add
+# @commitlint/cli, @commitlint/config-conventional (PR title workflow), tsx (make
+# examples), playwright (make browser), vite + terser (pinned for the .npmrc
+# minimum-release-age + strict-peer-deps policy, not used directly), and bump
+# @types/node forward to ^20. Swap to package.json.bak before regen.
+package.json
+
+# src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts:
+# keep manage.v1.projects.keys.create(request?) source-compatible with older
+# callers that omit the request body. Swap to .bak before regen.
+src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts
+
+# src/api/types/CreateKeyV1Request.ts: preserve the old exported
+# CreateKeyV1RequestOne alias alongside CreateKeyV1Request. Swap to .bak before
+# regen.
+src/api/types/CreateKeyV1Request.ts

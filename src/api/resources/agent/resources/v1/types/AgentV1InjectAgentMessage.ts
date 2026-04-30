@@ -5,4 +5,25 @@ export interface AgentV1InjectAgentMessage {
     type: "InjectAgentMessage";
     /** The statement that the agent should say */
     message: string;
+    /**
+     * Controls how the injection interacts with any in-progress user or agent turn.
+     *
+     * * `default` — The agent speaks only if neither the user nor the agent is mid-turn. If a turn is in progress, the server replies with `InjectionRefused`.
+     * * `queue` — The message is appended after any already-queued `ConversationText` without interrupting the current agent turn or think response. If nothing is queued, the message plays immediately.
+     */
+    behavior?: AgentV1InjectAgentMessage.Behavior | undefined;
+}
+
+export namespace AgentV1InjectAgentMessage {
+    /**
+     * Controls how the injection interacts with any in-progress user or agent turn.
+     *
+     * * `default` — The agent speaks only if neither the user nor the agent is mid-turn. If a turn is in progress, the server replies with `InjectionRefused`.
+     * * `queue` — The message is appended after any already-queued `ConversationText` without interrupting the current agent turn or think response. If nothing is queued, the message plays immediately.
+     */
+    export const Behavior = {
+        Default: "default",
+        Queue: "queue",
+    } as const;
+    export type Behavior = (typeof Behavior)[keyof typeof Behavior] | string;
 }

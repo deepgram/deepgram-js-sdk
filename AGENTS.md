@@ -51,7 +51,16 @@ How to identify:
 - Our version is a **modified copy** of what Fern generates (e.g., fixed types, added optional defaults, broadened a union type)
 
 Current temporarily frozen files:
-- _(none currently — all `.fernignore` entries are permanently frozen)_
+- `package.json` — Fern's generator produces a minimal `devDependencies` set; we add the following:
+  - `@commitlint/cli`, `@commitlint/config-conventional` — used by `.github/workflows/pr-title-check.yml`
+  - `tsx` — used by `make examples` / `make example-N`
+  - `playwright` — used by `make browser`
+  - `vite`, `terser` — pinned not because we use them directly, but because `.npmrc` sets `minimum-release-age=14400` (10 days) + `strict-peer-dependencies=true`. Without an explicit pin, pnpm tries to satisfy `vitest`'s and `webpack`'s wide peer ranges by picking the latest, which is often too new and the install fails. Pinning forces mature versions. Update the pins (and bump comments below) when you want to move forward.
+  - `@types/node` pinned forward to `^20.17.57` to match the Node features the SDK uses (relax this if Fern's default ever advances past Node 20).
+
+  `pnpm-lock.yaml` is **not** frozen — let Fern regenerate it, then run `pnpm install` after re-applying the `package.json` patch and the lockfile rebuilds correctly.
+- `src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts` — keep `manage.v1.projects.keys.create(projectId, request?)` source-compatible with older callers that omit the request body, while still allowing the regenerated request form.
+- `src/api/types/CreateKeyV1Request.ts` — preserve the old exported `CreateKeyV1RequestOne` alias alongside `CreateKeyV1Request` so existing type imports keep compiling.
 
 **Note:** If you need to patch a Fern-generated file, add it to `.fernignore` with a comment describing the patch, and add it to the "temporarily frozen" list above.
 
