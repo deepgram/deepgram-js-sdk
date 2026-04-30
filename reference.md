@@ -875,7 +875,7 @@ await client.manage.v1.projects.keys.create("project_id", {
 <dl>
 <dd>
 
-**request:** `Deepgram.CreateKeyV1RequestOne` 
+**request:** `Deepgram.CreateKeyV1Request` 
     
 </dd>
 </dl>

@@ -1,7 +1,7 @@
 {
-    "cliVersion": "4.92.0",
+    "cliVersion": "4.107.0",
     "generatorName": "fernapi/fern-typescript-sdk",
-    "generatorVersion": "3.65.5",
+    "generatorVersion": "3.66.4",
     "generatorConfig": {
         "enableInlineTypes": true,
         "namespaceExport": "Deepgram",
@@ -11,10 +11,8 @@
         "shouldGenerateWebsocketClients": true,
         "enableForwardCompatibleEnums": true
     },
-    "originGitCommit": "0d16d3b0d2f3da69dc058ea78f235b2b11288371",
+    "originGitCommit": "05bd7add608b322a6278fa20da22f2ed501d50ef",
     "originGitCommitIsDirty": true,
     "invokedBy": "manual",
-    "requestedVersion": null,
-    "ciProvider": null,
-    "sdkVersion": "5.1.0"
+    "sdkVersion": "5.1.1"
 }
