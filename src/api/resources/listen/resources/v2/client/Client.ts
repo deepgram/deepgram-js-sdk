@@ -20,6 +20,7 @@ export declare namespace V2Client {
         eot_threshold?: Deepgram.ListenV2EotThreshold | undefined;
         eot_timeout_ms?: Deepgram.ListenV2EotTimeoutMs | undefined;
         keyterm?: Deepgram.ListenV2Keyterm;
+        language_hint?: Deepgram.ListenV2LanguageHint;
         mip_opt_out?: Deepgram.ListenV2MipOptOut | undefined;
         tag?: Deepgram.ListenV2Tag | undefined;
         Authorization: string;
@@ -56,6 +57,7 @@ export class V2Client {
             eot_threshold: eotThreshold,
             eot_timeout_ms: eotTimeoutMs,
             keyterm,
+            language_hint: languageHint,
             mip_opt_out: mipOptOut,
             tag,
             protocols,
@@ -89,7 +91,20 @@ export class V2Client {
                         ? eotTimeoutMs
                         : toJson(eotTimeoutMs)
                     : undefined,
-            keyterm: keyterm != null ? (typeof keyterm === "string" ? keyterm : toJson(keyterm)) : undefined,
+            keyterm: Array.isArray(keyterm)
+                ? keyterm.map((item) => (typeof item === "string" ? item : toJson(item)))
+                : keyterm != null
+                  ? typeof keyterm === "string"
+                      ? keyterm
+                      : toJson(keyterm)
+                  : undefined,
+            language_hint: Array.isArray(languageHint)
+                ? languageHint.map((item) => (typeof item === "string" ? item : toJson(item)))
+                : languageHint != null
+                  ? typeof languageHint === "string"
+                      ? languageHint
+                      : toJson(languageHint)
+                  : undefined,
             mip_opt_out:
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
             tag: tag != null ? (typeof tag === "string" ? tag : toJson(tag)) : undefined,
