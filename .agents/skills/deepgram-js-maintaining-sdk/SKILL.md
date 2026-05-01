@@ -27,6 +27,7 @@ Current permanently frozen entries from `.fernignore` / `AGENTS.md`:
 
 - `src/CustomClient.ts` — custom wrapper for auth prefixing, session ID propagation, browser/Node WebSocket handling, reconnect behavior, binary message fixes, and `createConnection()` aliases
 - `src/index.ts` — curated re-exports with backwards-compatible namespace behavior
+- `src/transport.ts` — hand-maintained pluggable transport interface for SageMaker and other custom streaming transports
 - `scripts/fix-wire-test-imports.js`, `scripts/revert-wire-test-imports.js` — post-generation import fixups
 - `scripts/proxy-server.js` — development proxy
 - `scripts/validate-esm-build.mjs` — ESM build validation
@@ -105,7 +106,7 @@ Relevant underlying commands today:
 ## JS-specific maintainer notes
 
 1. **Do not edit most generated files under `src/api/` directly.** Prefer Fern input changes or post-regen patch review.
-2. **`src/CustomClient.ts` is the highest-risk permanent wrapper.** It carries auth prefixing, browser subprotocol auth, custom websocket startup, binary handling, and the user-facing `createConnection()` aliases used by examples.
+2. **`src/CustomClient.ts` is the highest-risk permanent wrapper.** It carries auth prefixing, browser subprotocol auth, custom websocket startup, binary handling, the pluggable transport adapter used for SageMaker/custom transports, and the user-facing `createConnection()` aliases used by examples.
 3. **The repo ships both CJS and ESM.** Validate both outputs after generator changes.
 4. **Browser behavior matters.** The wrapper intentionally diverges for browser WebSocket auth because browsers cannot send arbitrary socket headers.
 5. **`.agents/` is permanently frozen in `.fernignore`.** Treat these skills as hand-written documentation during regeneration; Fern will not touch the folder. Keep this note aligned with `AGENTS.md` whenever the frozen-file list changes.

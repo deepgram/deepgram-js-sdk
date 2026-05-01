@@ -4,6 +4,7 @@ examples
 # Custom wrapper
 src/CustomClient.ts
 src/index.ts
+src/transport.ts
 
 # Custom Scripts
 scripts/fix-wire-test-imports.js
@@ -23,6 +24,7 @@ tests/unit/custom-client.test.ts
 tests/unit/error-handling.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
+tests/unit/transport-factory.test.ts
 tests/unit/websocket-reconnection.test.ts
 tests/unit/websocket-wrappers.test.ts
 tests/wire/websocket
