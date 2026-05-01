@@ -24,6 +24,7 @@ How to identify:
 Current permanently frozen files:
 - `src/CustomClient.ts` — entirely custom wrapper with WebSocket management, auth providers, and session ID handling; no Fern equivalent
 - `src/index.ts` — curated re-export file with custom namespace handling
+- `src/transport.ts` — hand-maintained pluggable transport interface for SageMaker and other custom streaming transports
 - `scripts/fix-wire-test-imports.js`, `scripts/revert-wire-test-imports.js` — post-generation import fixup scripts
 - `scripts/proxy-server.js` — development proxy server
 - `scripts/validate-esm-build.mjs` — ESM build validation
