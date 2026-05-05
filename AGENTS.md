@@ -30,7 +30,8 @@ Current permanently frozen files:
 - `webpack.config.js` — browser build configuration
 - `tests/browser` — browser-specific test suite
 - `tests/esm-build.test.ts` — ESM build validation test
-- `tests/unit/*` — hand-written unit tests
+- `tests/manual` — hand-written manual smoke scripts (e.g. `tests/manual/compat.ts` for the legacy `CreateKeyV1RequestOne` alias). Not picked up by vitest; run with `pnpm tsx`.
+- `tests/unit/*` — hand-written unit tests (includes `compat-aliases.test.ts`, the regression test that proves the legacy `CreateKeyV1RequestOne` type still resolves to `CreateKeyV1Request`)
 - `tests/wire/websocket` — hand-written WebSocket wire tests
 - `tests/wire/listen/v1/transcription.test.ts` — hand-written wire test
 - `vitest.config.mts` — test configuration

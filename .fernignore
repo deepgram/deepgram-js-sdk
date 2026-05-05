@@ -15,9 +15,11 @@ webpack.config.js
 # Tests
 tests/browser
 tests/esm-build.test.ts
+tests/manual
 tests/unit/agent-providers.test.ts
 tests/unit/async-send-finalize.test.ts
 tests/unit/baseurl-priority.test.ts
+tests/unit/compat-aliases.test.ts
 tests/unit/custom-baseurl.test.ts
 tests/unit/custom-client.test.ts
 tests/unit/error-handling.test.ts
