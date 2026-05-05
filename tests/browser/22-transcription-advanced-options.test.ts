@@ -30,13 +30,20 @@ describe("Browser Example: 22-transcription-advanced-options", () => {
 
     // Wait for output to appear (advanced transcription can take time)
     await waitForOutput(page, 30000);
-    
-    // Wait a bit more for transcription to complete
-    await page.waitForTimeout(2000);
 
-    // Check for success output
-    const hasSuccess = await hasSuccessOutput(page);
+    // The example logs a "starting" message immediately, so wait for the
+    // actual success output instead of checking right away.
+    const timeoutMs = 30000;
+    const startTime = Date.now();
+    let hasSuccess = false;
+    while (Date.now() - startTime < timeoutMs) {
+      if (await hasSuccessOutput(page)) {
+        hasSuccess = true;
+        break;
+      }
+      await page.waitForTimeout(250);
+    }
+
     expect(hasSuccess).toBe(true);
   }, 30000);
 });
-

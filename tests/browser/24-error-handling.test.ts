@@ -30,13 +30,20 @@ describe("Browser Example: 24-error-handling", () => {
 
     // Wait for output to appear (API call can take time)
     await waitForOutput(page, 30000);
-    
-    // Wait a bit more for response
-    await page.waitForTimeout(2000);
 
-    // Check for success output (error handling example shows proper error handling)
-    const hasSuccess = await hasSuccessOutput(page);
+    // The example logs a "starting" message immediately, so wait for the
+    // actual success output instead of checking right away.
+    const timeoutMs = 30000;
+    const startTime = Date.now();
+    let hasSuccess = false;
+    while (Date.now() - startTime < timeoutMs) {
+      if (await hasSuccessOutput(page)) {
+        hasSuccess = true;
+        break;
+      }
+      await page.waitForTimeout(250);
+    }
+
     expect(hasSuccess).toBe(true);
   }, 30000);
 });
-

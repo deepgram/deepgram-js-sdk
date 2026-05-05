@@ -53,7 +53,7 @@ async function voiceAgent() {
       console.error("Error:", error);
     });
 
-    let keepAliveInterval;
+    let keepAliveInterval: ReturnType<typeof setInterval> | undefined;
     deepgramConnection.on("close", () => {
       console.log("Connection closed");
       if (keepAliveInterval) {

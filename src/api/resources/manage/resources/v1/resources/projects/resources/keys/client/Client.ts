@@ -113,7 +113,7 @@ export class KeysClient {
      * Creates a new API key with specified settings for the project
      *
      * @param {string} project_id - The unique identifier of the project
-     * @param {Deepgram.CreateKeyV1RequestOne} request
+     * @param {Deepgram.CreateKeyV1Request} [request]
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
@@ -125,7 +125,7 @@ export class KeysClient {
      */
     public create(
         project_id: string,
-        request?: Deepgram.CreateKeyV1RequestOne,
+        request?: Deepgram.CreateKeyV1Request,
         requestOptions?: KeysClient.RequestOptions,
     ): core.HttpResponsePromise<Deepgram.CreateKeyV1Response> {
         return core.HttpResponsePromise.fromPromise(this.__create(project_id, request, requestOptions));
@@ -133,7 +133,7 @@ export class KeysClient {
 
     private async __create(
         project_id: string,
-        request?: Deepgram.CreateKeyV1RequestOne,
+        request?: Deepgram.CreateKeyV1Request,
         requestOptions?: KeysClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.CreateKeyV1Response>> {
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
