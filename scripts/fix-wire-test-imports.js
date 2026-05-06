@@ -49,8 +49,9 @@ async function updateFileContents(file) {
     // - from "@/src/Client"
     // - from "@deepgram/Client"
     // Only replaces if the import statement contains "DeepgramClient"
-    const clientImportRegex = /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)Client(?:\.(ts|js|mjs|mts))?(['"])/g;
-    
+    const clientImportRegex =
+        /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)Client(?:\.(ts|js|mjs|mts))?(['"])/g;
+
     newContent = newContent.replace(clientImportRegex, (match, importStart, pathPrefix, extension, quote) => {
         updated = true;
         const ext = extension ? `.${extension}` : "";
@@ -59,8 +60,9 @@ async function updateFileContents(file) {
 
     // Also handle cases where Client might be at the start (alias imports)
     // e.g., from "@/Client" or from "@deepgram/Client" (though less likely)
-    const clientImportRegexAlias = /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)?Client(?:\.(ts|js|mjs|mts))?(['"])/g;
-    
+    const clientImportRegexAlias =
+        /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)?Client(?:\.(ts|js|mjs|mts))?(['"])/g;
+
     // Only apply this if the first regex didn't match (to avoid double replacement)
     if (!updated) {
         newContent = newContent.replace(clientImportRegexAlias, (match, importStart, pathPrefix, extension, quote) => {
@@ -101,7 +103,7 @@ async function main() {
         // Default to tests/wire directory if no argument provided
         const targetDir = process.argv[2] || path.join(__dirname, "..", "tests", "wire");
         const targetPath = path.resolve(targetDir);
-        
+
         let targetStats;
         try {
             targetStats = await fs.stat(targetPath);
@@ -126,7 +128,7 @@ async function main() {
 
         console.log(`Found ${files.length} test files.`);
         const updatedCount = await updateFiles(files);
-        
+
         if (updatedCount > 0) {
             console.log("\n✅ Done! Wire test imports have been updated.");
         } else {
@@ -140,4 +142,3 @@ async function main() {
 }
 
 main();
-
