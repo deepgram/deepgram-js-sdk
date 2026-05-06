@@ -88,3 +88,7 @@ The `.bak` files are our manually-patched versions (protected by `.fernignore`).
 5. **Delete all `.bak` files** once review is complete.
 6. **Run checks** (`make build && make test && make lint`) to verify.
 7. **Commit** as `chore: re-apply manual patches after regen` and push.
+
+### Maintainer Notes
+
+- `biome.json` should continue honoring `.gitignore` so generated browser artifacts like `examples/browser/deepgram.js` stay out of lint when produced by `make browser-serve`.
