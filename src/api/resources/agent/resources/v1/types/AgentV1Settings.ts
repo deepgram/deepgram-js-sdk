@@ -132,4 +132,27 @@ export namespace AgentV1Settings {
         /**
          * The ID of an agent created using the agent builder */
         | string;
+
+    // Backward-compat alias shims for the AgentV1Settings.Agent namespace.
+    // Pre-2026-05-06 regen, `Agent` was an interface with named sub-types
+    // (`Agent.Context`, `Agent.Listen`, `Agent.Think`, `Agent.Speak`,
+    // `Agent.Context.Messages.Item`). The regen restructured `Agent` into a
+    // union with anonymous shapes. This namespace merges back into the new
+    // `Agent` type alias and re-publishes those sub-types as derived aliases
+    // so existing imports keep compiling. See tests/unit/compat-aliases.test.ts
+    // for regression coverage.
+    // biome-ignore lint/suspicious/noRedeclare: namespace merges with the type alias above
+    export namespace Agent {
+        type _Object = Exclude<AgentV1Settings.Agent, string>;
+        export type Context = NonNullable<_Object["context"]>;
+        export namespace Context {
+            export type Messages = NonNullable<Context["messages"]>;
+            export namespace Messages {
+                export type Item = NonNullable<Context["messages"]>[number];
+            }
+        }
+        export type Listen = NonNullable<_Object["listen"]>;
+        export type Think = NonNullable<_Object["think"]>;
+        export type Speak = NonNullable<_Object["speak"]>;
+    }
 }

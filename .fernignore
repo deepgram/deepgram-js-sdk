@@ -72,3 +72,13 @@ src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/C
 # CreateKeyV1RequestOne alias alongside CreateKeyV1Request. Swap to .bak before
 # regen.
 src/api/types/CreateKeyV1Request.ts
+
+# src/api/resources/agent/resources/v1/types/AgentV1Settings.ts: backward-compat
+# alias shims for the AgentV1Settings.Agent namespace. The 2026-05-06 regen
+# restructured Agent from interface-with-named-sub-types into a union with
+# anonymous shapes, removing Agent.Context, Agent.Listen, Agent.Think,
+# Agent.Speak, Agent.Context.Messages.Item. We re-publish those names via a
+# namespace that merges with the new type alias so existing imports keep
+# compiling. Mirrors the Python SDK's compat shims for the same regen.
+# Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
