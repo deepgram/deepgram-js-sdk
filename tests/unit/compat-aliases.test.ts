@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import type { AgentV1Settings, CreateKeyV1Request, CreateKeyV1RequestOne } from "../../src";
+import type {
+    AgentV1Settings,
+    AgentV1SettingsAgentContextListenProvider,
+    AgentV1SettingsAgentListenProvider,
+    CreateKeyV1Request,
+    CreateKeyV1RequestOne,
+} from "../../src";
 import { Deepgram } from "../../src";
 
 /**
@@ -53,9 +59,7 @@ describe("Backwards-compatibility aliases", () => {
     describe("AgentV1Settings.Agent namespace (restructured to union 2026-05-06)", () => {
         it("Agent.Context resolves to the inline context object shape", () => {
             const ctx: AgentV1Settings.Agent.Context = {
-                messages: [
-                    { type: "History", role: "user", content: "hello" },
-                ],
+                messages: [{ type: "History", role: "user", content: "hello" }],
             };
             expect(ctx.messages).toHaveLength(1);
         });
@@ -95,11 +99,62 @@ describe("Backwards-compatibility aliases", () => {
         });
 
         it("Deepgram namespace re-export preserves the same sub-types", () => {
-            const _equality: Equals<
-                Deepgram.agent.AgentV1Settings.Agent.Context,
-                AgentV1Settings.Agent.Context
-            > = true;
+            const _equality: Equals<Deepgram.agent.AgentV1Settings.Agent.Context, AgentV1Settings.Agent.Context> = true;
             expect(_equality).toBe(true);
+        });
+
+        it("settings.agent fields are directly readable without typeof narrowing", () => {
+            // Pre-regen, `Agent` was an interface so reads like `agent.greeting`
+            // and `agent.context?.messages` worked directly. The shim restores
+            // the interface form so this stays legal in TS strict mode without
+            // a `typeof settings.agent !== "string"` guard.
+            const settings: AgentV1Settings = {
+                type: "Settings",
+                audio: { input: { encoding: "linear16", sample_rate: 24000 } },
+                agent: {
+                    greeting: "Hello",
+                    context: {
+                        messages: [{ type: "History", role: "user", content: "hi" }],
+                    },
+                },
+            };
+            expect(settings.agent.greeting).toBe("Hello");
+            expect(settings.agent.context?.messages).toHaveLength(1);
+        });
+
+        it("AgentReference accepts both an Agent settings object and a string agent ID", () => {
+            const asObject: AgentV1Settings.AgentReference = { greeting: "Hello" };
+            const asId: AgentV1Settings.AgentReference = "agent_123";
+            expect((asObject as AgentV1Settings.Agent).greeting).toBe("Hello");
+            expect(asId).toBe("agent_123");
+        });
+    });
+
+    describe("AgentV1SettingsAgentListenProvider (renamed to *AgentContextListenProvider 2026-05-06)", () => {
+        it("old name still exists at the top-level export", () => {
+            // Sanity: the old type is still in the public surface even though
+            // generated code now uses the new context-prefixed name.
+            const _old: AgentV1SettingsAgentListenProvider = { version: "v1", type: "deepgram", model: "nova-3" };
+            expect(_old.type).toBe("deepgram");
+        });
+
+        it("old and new provider types are bidirectionally assignable (V2 added optional language_hint only)", () => {
+            // V1 of both unions is structurally identical; V2 of the new
+            // context-listen-provider only adds an optional `language_hint`
+            // field, so structural typing makes the two unions assignable in
+            // both directions for shared shapes.
+            const fromOld: AgentV1SettingsAgentContextListenProvider = {
+                version: "v1",
+                type: "deepgram",
+                model: "nova-3",
+            } as AgentV1SettingsAgentListenProvider;
+            const fromNew: AgentV1SettingsAgentListenProvider = {
+                version: "v2",
+                type: "deepgram",
+                model: "flux-general-en",
+            } as AgentV1SettingsAgentContextListenProvider;
+            expect(fromOld.version).toBe("v1");
+            expect(fromNew.version).toBe("v2");
         });
     });
 });
