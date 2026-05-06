@@ -7,6 +7,10 @@ export interface AgentV1ConversationText {
     role: AgentV1ConversationText.Role;
     /** The actual statement that was spoken */
     content: string;
+    /** The language hints that were active at the time of the turn. Only present on user-role messages when the listen model is flux-general-multi. */
+    languages_hinted?: string[] | undefined;
+    /** Languages detected in the user's speech, sorted by word count (descending). Only present on user-role messages when the listen model is flux-general-multi. */
+    languages?: string[] | undefined;
 }
 
 export namespace AgentV1ConversationText {

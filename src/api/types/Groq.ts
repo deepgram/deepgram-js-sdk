@@ -8,4 +8,18 @@ export interface Groq {
     model: "openai/gpt-oss-20b";
     /** Groq temperature (0-2) */
     temperature?: number | undefined;
+    /** OpenAI reasoning_effort */
+    reasoning_mode?: Groq.ReasoningMode | undefined;
+}
+
+export namespace Groq {
+    /** OpenAI reasoning_effort */
+    export const ReasoningMode = {
+        None: "none",
+        Minimal: "minimal",
+        Low: "low",
+        Medium: "medium",
+        High: "high",
+    } as const;
+    export type ReasoningMode = (typeof ReasoningMode)[keyof typeof ReasoningMode] | string;
 }

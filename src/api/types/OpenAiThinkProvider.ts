@@ -8,6 +8,8 @@ export interface OpenAiThinkProvider {
     model: OpenAiThinkProvider.Model;
     /** OpenAI temperature (0-2) */
     temperature?: number | undefined;
+    /** OpenAI reasoning_effort */
+    reasoning_mode?: OpenAiThinkProvider.ReasoningMode | undefined;
 }
 
 export namespace OpenAiThinkProvider {
@@ -23,4 +25,13 @@ export namespace OpenAiThinkProvider {
         Gpt4OMini: "gpt-4o-mini",
     } as const;
     export type Model = (typeof Model)[keyof typeof Model] | string;
+    /** OpenAI reasoning_effort */
+    export const ReasoningMode = {
+        None: "none",
+        Minimal: "minimal",
+        Low: "low",
+        Medium: "medium",
+        High: "high",
+    } as const;
+    export type ReasoningMode = (typeof ReasoningMode)[keyof typeof ReasoningMode] | string;
 }
