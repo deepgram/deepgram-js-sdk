@@ -1,19 +1,13 @@
 ---
 name: deepgram-js-text-intelligence
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Text Intelligence / Read (`/v1/read`) for sentiment, summarization, topic detection, and intent recognition on text input. Covers `client.read.v1.text.analyze(...)` with `body: { text }` or `body: { url }`. Use `deepgram-js-audio-intelligence` when the source is audio instead of text. Triggers include "read API", "text intelligence", "analyze text", "sentiment", "summarize text", "topics", "intents", and "read.v1".
+description: "Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Text Intelligence / Read (`/v1/read`) for sentiment, summarization, topic detection, and intent recognition on text input. Covers `client.read.v1.text.analyze(...)` with `body: { text }` or `body: { url }`. Use `deepgram-js-audio-intelligence` when the source is audio instead of text. Triggers: read API, text intelligence, analyze text, sentiment, summarize text, topics, intents, read.v1."
 ---
 
 # Using Deepgram Text Intelligence (JavaScript / TypeScript SDK)
 
 Analyze text or a hosted text URL for sentiment, summarization, topics, and intents via `/v1/read`.
 
-## When to use this product
-
-- You already have **text** (transcript, document, email, chat log) and want analytics.
-- You want a single REST call; there is no streaming Read API in this SDK.
-
-**Use a different skill when:**
-- Your source is audio and you want the analytics applied during transcription → `deepgram-js-audio-intelligence`.
+**Use a different skill when:** source is audio → `deepgram-js-audio-intelligence`. This API is REST-only; there is no streaming Read API in this SDK.
 
 ## Authentication
 
@@ -85,10 +79,4 @@ For broader coverage, `examples/28-text-intelligence-advanced.ts` also demonstra
 
 ## Central product skills
 
-For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
-
-```bash
-npx skills add deepgram/skills
-```
-
-This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).
+For cross-language Deepgram product knowledge, install `npx skills add deepgram/skills`.
