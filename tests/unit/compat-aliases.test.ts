@@ -5,8 +5,15 @@ import type {
     AgentV1SettingsAgentListenProvider,
     CreateKeyV1Request,
     CreateKeyV1RequestOne,
+    DeepgramClient,
 } from "../../src";
 import { Deepgram } from "../../src";
+
+// Type-only handle for compile-time call-site assertions. Never assigned at
+// runtime — the `declare` binding lets us write expressions like
+// `client.manage.v1.projects.keys.create("project_id")` purely for type
+// checking. Any closure that references it must not be invoked.
+declare const client: DeepgramClient;
 
 /**
  * Regression test for backward-compatibility aliases preserved across SDK
@@ -130,7 +137,28 @@ describe("Backwards-compatibility aliases", () => {
         });
     });
 
-    describe("AgentV1SettingsAgentListenProvider (renamed to *AgentContextListenProvider 2026-05-06)", () => {
+    describe("manage.v1.projects.keys.create (request? optionality patch)", () => {
+        it("accepts a project_id without a request body at the type level", () => {
+            // Type-only: if a future regen drops the `request?` optionality
+            // patch on KeysClient#create, this call site fails to compile and
+            // the test run fails before any test body executes. The arrow
+            // function is constructed but never invoked, so the unbound
+            // `client` reference is safe at runtime.
+            const _noArgIsCallable = (): unknown => client.manage.v1.projects.keys.create("project_id");
+            expect(typeof _noArgIsCallable).toBe("function");
+        });
+
+        it("still accepts a request body as the second argument", () => {
+            const _withBodyIsCallable = (): unknown =>
+                client.manage.v1.projects.keys.create("project_id", {
+                    comment: "compat check",
+                    scopes: ["usage:read"],
+                });
+            expect(typeof _withBodyIsCallable).toBe("function");
+        });
+    });
+
+    describe("AgentV1SettingsAgentListenProvider (aliased to *AgentContextListenProvider 2026-05-06)", () => {
         it("old name still exists at the top-level export", () => {
             // Sanity: the old type is still in the public surface even though
             // generated code now uses the new context-prefixed name.
@@ -138,23 +166,40 @@ describe("Backwards-compatibility aliases", () => {
             expect(_old.type).toBe("deepgram");
         });
 
-        it("old and new provider types are bidirectionally assignable (V2 added optional language_hint only)", () => {
-            // V1 of both unions is structurally identical; V2 of the new
-            // context-listen-provider only adds an optional `language_hint`
-            // field, so structural typing makes the two unions assignable in
-            // both directions for shared shapes.
-            const fromOld: AgentV1SettingsAgentContextListenProvider = {
-                version: "v1",
-                type: "deepgram",
-                model: "nova-3",
-            } as AgentV1SettingsAgentListenProvider;
-            const fromNew: AgentV1SettingsAgentListenProvider = {
+        it("old name is a type-identical alias for the new context-prefixed name", () => {
+            // The patched AgentV1SettingsAgentListenProvider.ts collapses the
+            // regenerated duplicate into a one-line alias, so the two names
+            // resolve to the exact same type. If a future regen blows away
+            // the alias, this Equals<X, Y> identity check fails to compile.
+            const _equality: Equals<
+                AgentV1SettingsAgentListenProvider,
+                AgentV1SettingsAgentContextListenProvider
+            > = true;
+            expect(_equality).toBe(true);
+        });
+
+        it("nested .V1 and .V2 namespaces resolve through the alias", () => {
+            const _v1Equality: Equals<
+                AgentV1SettingsAgentListenProvider.V1,
+                AgentV1SettingsAgentContextListenProvider.V1
+            > = true;
+            const _v2Equality: Equals<
+                AgentV1SettingsAgentListenProvider.V2,
+                AgentV1SettingsAgentContextListenProvider.V2
+            > = true;
+            expect(_v1Equality).toBe(true);
+            expect(_v2Equality).toBe(true);
+        });
+
+        it("legacy V2 literal (no language_hint) still compiles under the alias", () => {
+            // Pre-regen V2 had no `language_hint`. Because the new V2 adds it
+            // as optional, old literals continue to type-check unchanged.
+            const _legacy: AgentV1SettingsAgentListenProvider.V2 = {
                 version: "v2",
                 type: "deepgram",
                 model: "flux-general-en",
-            } as AgentV1SettingsAgentContextListenProvider;
-            expect(fromOld.version).toBe("v1");
-            expect(fromNew.version).toBe("v2");
+            };
+            expect(_legacy.version).toBe("v2");
         });
     });
 });

@@ -86,3 +86,13 @@ src/api/types/CreateKeyV1Request.ts
 # Regression coverage in tests/unit/compat-aliases.test.ts.
 # Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
+
+# src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts:
+# the 2026-05-06 regen renamed this type to AgentV1SettingsAgentContextListenProvider
+# (the new V2 adds an optional language_hint field). We replace the regenerated
+# duplicate with a one-line type alias to the new canonical name so pinned-name
+# callers (`const p: AgentV1SettingsAgentListenProvider = ...`) keep compiling
+# without a cast. Purely additive at the type level — the old V2 is a subset of
+# the new V2. Regression coverage in tests/unit/compat-aliases.test.ts.
+# Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts
