@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.2.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.1.0...v5.2.0) (2026-05-12)
+
+
+### Features
+
+* alias AgentV1SettingsAgentListenProvider to *AgentContextListenProvider ([150e663](https://github.com/deepgram/deepgram-js-sdk/commit/150e663f08d2e7dcfbf4e41b7046227b6401a1e3))
+* preserve AgentV1Settings.Agent sub-types after regen ([2efab2d](https://github.com/deepgram/deepgram-js-sdk/commit/2efab2db1a9f73a234be892abe41848c8f778292))
+* preserve SDK compatibility after regen ([d2b8d62](https://github.com/deepgram/deepgram-js-sdk/commit/d2b8d62f67e4ea31f01a3dd4e6a2c9686500a695))
+* restore Agent interface, add AgentReference for string-id flow ([4c72d31](https://github.com/deepgram/deepgram-js-sdk/commit/4c72d3160ff82ba61a1f0bf7ea1a06211ec2a913))
+* sdk regeneration 2026-04-30 ([#491](https://github.com/deepgram/deepgram-js-sdk/issues/491)) ([a618282](https://github.com/deepgram/deepgram-js-sdk/commit/a6182823fb5621982ada378167d185c13dc1a008))
+* sdk regeneration 2026-05-06 with backward-compat preserved ([#497](https://github.com/deepgram/deepgram-js-sdk/issues/497)) ([2aed53e](https://github.com/deepgram/deepgram-js-sdk/commit/2aed53e5543df6bb709d3943dfaac3977389c9ca))
+
 ## [5.1.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.0.0...v5.1.0) (2026-04-27)
 
 
