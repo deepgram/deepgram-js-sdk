@@ -67,8 +67,8 @@ export namespace AgentV1Settings {
             sample_rate?: number | undefined;
             /** Audio bitrate in bits per second */
             bitrate?: number | undefined;
-            /** Audio container format. If omitted, defaults to 'none' */
-            container?: string | undefined;
+            /** Audio container format. */
+            container?: Output.Container | undefined;
         }
 
         export namespace Output {
@@ -77,11 +77,32 @@ export namespace AgentV1Settings {
                 Linear16: "linear16",
                 Mulaw: "mulaw",
                 Alaw: "alaw",
+                Mp3: "mp3",
+                Opus: "opus",
+                Flac: "flac",
+                Aac: "aac",
             } as const;
             export type Encoding = (typeof Encoding)[keyof typeof Encoding] | string;
+            /** Audio container format. */
+            export const Container = {
+                None: "none",
+                Wav: "wav",
+                Ogg: "ogg",
+            } as const;
+            export type Container = (typeof Container)[keyof typeof Container] | string;
         }
     }
 
+    // Backward-compat: the 2026-05-06 regen restructured `Agent` from an
+    // interface with named sub-types into `{...} | string` (a union with the
+    // new agent-by-ID-string variant). Restoring the original interface form
+    // so consumer code that reads `settings.agent.context`, `.greeting`, etc.
+    // continues to type-check in TS strict mode without a `typeof` narrowing
+    // guard. The new agent-by-ID-string form is surfaced as the opt-in
+    // `AgentReference` alias below; consumers who want to pass a string ID
+    // can either cast to `AgentReference` or use it as their parameter type.
+    // Mirrors the Python SDK's compat shims for the same regen.
+    // See tests/unit/compat-aliases.test.ts for regression coverage.
     export interface Agent {
         /** Deprecated. Use `listen.provider.language` and `speak.provider.language` fields instead. */
         language?: string | undefined;
@@ -135,10 +156,19 @@ export namespace AgentV1Settings {
         }
 
         export interface Listen {
-            provider?: Deepgram.agent.AgentV1SettingsAgentListenProvider | undefined;
+            provider?: Deepgram.agent.AgentV1SettingsAgentContextListenProvider | undefined;
         }
 
         export type Think = Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[];
         export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
     }
+
+    /**
+     * Opt-in alias for the agent-by-ID-string variant added by the 2026-05-06
+     * regen. The canonical `Agent` type is restored to the object-only
+     * interface for back-compat; use `AgentReference` if your code needs to
+     * accept either an `Agent` settings object or a string agent ID at the
+     * type level (e.g. when targeting the agent-builder ID flow).
+     */
+    export type AgentReference = AgentV1Settings.Agent | string;
 }

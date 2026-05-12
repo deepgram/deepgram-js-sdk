@@ -72,3 +72,27 @@ src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/C
 # CreateKeyV1RequestOne alias alongside CreateKeyV1Request. Swap to .bak before
 # regen.
 src/api/types/CreateKeyV1Request.ts
+
+# src/api/resources/agent/resources/v1/types/AgentV1Settings.ts: backward-compat
+# patch for the AgentV1Settings.Agent namespace. The 2026-05-06 regen restructured
+# Agent from an interface with named sub-types (Agent.Context, Agent.Listen,
+# Agent.Think, Agent.Speak, Agent.Context.Messages.Item) into a union with
+# anonymous shapes plus a string variant ({...} | string) for the new
+# agent-by-ID-string flow. We restore the original interface form so existing
+# imports of the sub-types AND direct field reads (settings.agent.context, etc.)
+# keep compiling without typeof narrowing. The new agent-by-ID-string variant is
+# surfaced as the opt-in `AgentReference = Agent | string` alias for callers who
+# want it in types. Mirrors the Python SDK's compat shims for the same regen.
+# Regression coverage in tests/unit/compat-aliases.test.ts.
+# Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
+
+# src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts:
+# the 2026-05-06 regen renamed this type to AgentV1SettingsAgentContextListenProvider
+# (the new V2 adds an optional language_hint field). We replace the regenerated
+# duplicate with a one-line type alias to the new canonical name so pinned-name
+# callers (`const p: AgentV1SettingsAgentListenProvider = ...`) keep compiling
+# without a cast. Purely additive at the type level — the old V2 is a subset of
+# the new V2. Regression coverage in tests/unit/compat-aliases.test.ts.
+# Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts

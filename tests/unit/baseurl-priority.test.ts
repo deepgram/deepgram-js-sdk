@@ -15,99 +15,99 @@ import { DeepgramEnvironment } from "../../src/environments";
  */
 
 describe("baseUrl Priority Order", () => {
-	it("should use default Production environment when neither baseUrl nor environment is specified", () => {
-		const client = new DeepgramClient({
-			apiKey: "test_key",
-		});
+    it("should use default Production environment when neither baseUrl nor environment is specified", () => {
+        const client = new DeepgramClient({
+            apiKey: "test_key",
+        });
 
-		// baseUrl should not be set
-		expect(client._options.baseUrl).toBeUndefined();
+        // baseUrl should not be set
+        expect(client._options.baseUrl).toBeUndefined();
 
-		// environment should not be set (will use DeepgramEnvironment.Production)
-		expect(client._options.environment).toBeUndefined();
-	});
+        // environment should not be set (will use DeepgramEnvironment.Production)
+        expect(client._options.environment).toBeUndefined();
+    });
 
-	it("should use custom baseUrl when specified", () => {
-		const customBaseUrl = "https://api.eu.deepgram.com";
+    it("should use custom baseUrl when specified", () => {
+        const customBaseUrl = "https://api.eu.deepgram.com";
 
-		const client = new DeepgramClient({
-			apiKey: "test_key",
-			baseUrl: customBaseUrl,
-		});
+        const client = new DeepgramClient({
+            apiKey: "test_key",
+            baseUrl: customBaseUrl,
+        });
 
-		// baseUrl should be set to custom value
-		expect(client._options.baseUrl).toBe(customBaseUrl);
-	});
+        // baseUrl should be set to custom value
+        expect(client._options.baseUrl).toBe(customBaseUrl);
+    });
 
-	it("should use custom environment when specified without baseUrl", () => {
-		const customEnvironment = {
-			base: "https://custom.deepgram.com",
-			production: "wss://custom.deepgram.com",
-			agent: "wss://agent-custom.deepgram.com",
-		};
+    it("should use custom environment when specified without baseUrl", () => {
+        const customEnvironment = {
+            base: "https://custom.deepgram.com",
+            production: "wss://custom.deepgram.com",
+            agent: "wss://agent-custom.deepgram.com",
+        };
 
-		const client = new DeepgramClient({
-			apiKey: "test_key",
-			environment: customEnvironment,
-		});
+        const client = new DeepgramClient({
+            apiKey: "test_key",
+            environment: customEnvironment,
+        });
 
-		// baseUrl should not be set
-		expect(client._options.baseUrl).toBeUndefined();
+        // baseUrl should not be set
+        expect(client._options.baseUrl).toBeUndefined();
 
-		// environment should be set to custom value
-		expect(client._options.environment).toEqual(customEnvironment);
-	});
+        // environment should be set to custom value
+        expect(client._options.environment).toEqual(customEnvironment);
+    });
 
-	it("should prioritize baseUrl over environment when both are specified", () => {
-		const customBaseUrl = "https://api.eu.deepgram.com";
-		const customEnvironment = {
-			base: "https://api.us.deepgram.com",
-			production: "wss://api.us.deepgram.com",
-			agent: "wss://agent.us.deepgram.com",
-		};
+    it("should prioritize baseUrl over environment when both are specified", () => {
+        const customBaseUrl = "https://api.eu.deepgram.com";
+        const customEnvironment = {
+            base: "https://api.us.deepgram.com",
+            production: "wss://api.us.deepgram.com",
+            agent: "wss://agent.us.deepgram.com",
+        };
 
-		const client = new DeepgramClient({
-			apiKey: "test_key",
-			baseUrl: customBaseUrl,
-			environment: customEnvironment,
-		});
+        const client = new DeepgramClient({
+            apiKey: "test_key",
+            baseUrl: customBaseUrl,
+            environment: customEnvironment,
+        });
 
-		// Both should be set, but baseUrl takes priority in actual requests
-		expect(client._options.baseUrl).toBe(customBaseUrl);
-		expect(client._options.environment).toEqual(customEnvironment);
-	});
+        // Both should be set, but baseUrl takes priority in actual requests
+        expect(client._options.baseUrl).toBe(customBaseUrl);
+        expect(client._options.environment).toEqual(customEnvironment);
+    });
 
-	it("should accept localhost URLs for proxying", () => {
-		const proxyUrl = "http://localhost:8001";
+    it("should accept localhost URLs for proxying", () => {
+        const proxyUrl = "http://localhost:8001";
 
-		const client = new DeepgramClient({
-			apiKey: "proxy",
-			baseUrl: proxyUrl,
-		});
+        const client = new DeepgramClient({
+            apiKey: "proxy",
+            baseUrl: proxyUrl,
+        });
 
-		expect(client._options.baseUrl).toBe(proxyUrl);
-	});
+        expect(client._options.baseUrl).toBe(proxyUrl);
+    });
 
-	it("should accept custom domain URLs", () => {
-		const customUrl = "https://custom.example.com";
+    it("should accept custom domain URLs", () => {
+        const customUrl = "https://custom.example.com";
 
-		const client = new DeepgramClient({
-			apiKey: "test_key",
-			baseUrl: customUrl,
-		});
+        const client = new DeepgramClient({
+            apiKey: "test_key",
+            baseUrl: customUrl,
+        });
 
-		expect(client._options.baseUrl).toBe(customUrl);
-	});
+        expect(client._options.baseUrl).toBe(customUrl);
+    });
 
-	it("should use DeepgramEnvironment.Production by default", () => {
-		const client = new DeepgramClient({
-			apiKey: "test_key",
-		});
+    it("should use DeepgramEnvironment.Production by default", () => {
+        const client = new DeepgramClient({
+            apiKey: "test_key",
+        });
 
-		// Should use default environment
-		expect(client._options.environment).toBeUndefined();
+        // Should use default environment
+        expect(client._options.environment).toBeUndefined();
 
-		// The SDK will fall back to DeepgramEnvironment.Production internally
-		expect(DeepgramEnvironment.Production.base).toBe("https://api.deepgram.com");
-	});
+        // The SDK will fall back to DeepgramEnvironment.Production internally
+        expect(DeepgramEnvironment.Production.base).toBe("https://api.deepgram.com");
+    });
 });

@@ -49,8 +49,9 @@ async function updateFileContents(file) {
     // - from "@deepgram/index"
     // NOTE: Does NOT match api/index - that should remain unchanged
     // Matches both named imports with DeepgramClient and namespace imports (* as Deepgram)
-    const indexImportRegex = /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)index(?:\.(ts|js|mjs|mts))?(['"])/g;
-    
+    const indexImportRegex =
+        /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)index(?:\.(ts|js|mjs|mts))?(['"])/g;
+
     newContent = newContent.replace(indexImportRegex, (match, importStart, pathPrefix, extension, quote) => {
         // Skip if this is api/index - we don't want to revert those
         if (pathPrefix.endsWith("/api/")) {
@@ -63,8 +64,9 @@ async function updateFileContents(file) {
 
     // Also handle cases where index might be at the start (alias imports)
     // e.g., from "@/index" or from "@deepgram/index" (though less likely)
-    const indexImportRegexAlias = /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)?index(?:\.(ts|js|mjs|mts))?(['"])/g;
-    
+    const indexImportRegexAlias =
+        /(import\s+(?:\{[^}]*DeepgramClient[^}]*\}|\*\s+as\s+\w+)\s+from\s+['"])([^'"]*\/)?index(?:\.(ts|js|mjs|mts))?(['"])/g;
+
     // Only apply this if the first regex didn't match (to avoid double replacement)
     if (!updated) {
         newContent = newContent.replace(indexImportRegexAlias, (match, importStart, pathPrefix, extension, quote) => {
@@ -109,7 +111,7 @@ async function main() {
         // Default to tests/wire directory if no argument provided
         const targetDir = process.argv[2] || path.join(__dirname, "..", "tests", "wire");
         const targetPath = path.resolve(targetDir);
-        
+
         let targetStats;
         try {
             targetStats = await fs.stat(targetPath);
@@ -134,7 +136,7 @@ async function main() {
 
         console.log(`Found ${files.length} test files.`);
         const updatedCount = await updateFiles(files);
-        
+
         if (updatedCount > 0) {
             console.log("\n✅ Done! Wire test imports have been reverted.");
         } else {
@@ -148,4 +150,3 @@ async function main() {
 }
 
 main();
-
