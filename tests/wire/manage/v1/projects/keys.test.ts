@@ -10,7 +10,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -46,7 +51,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
@@ -69,7 +79,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { key: "value" };
         const rawResponseBody = {
@@ -101,7 +116,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { key: "value" };
         const rawResponseBody = { key: "value" };
@@ -127,7 +147,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -169,7 +194,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
@@ -192,7 +222,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { message: "message" };
@@ -217,7 +252,12 @@ describe("KeysClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };

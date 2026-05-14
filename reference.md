@@ -163,6 +163,7 @@ await client.listen.v1.media.transcribeUrl({
     detect_entities: true,
     detect_language: true,
     diarize: true,
+    diarize_model: "latest",
     dictation: true,
     encoding: "linear16",
     filler_words: true,

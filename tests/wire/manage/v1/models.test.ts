@@ -10,7 +10,12 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -61,7 +66,12 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
@@ -78,7 +88,12 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -110,7 +125,12 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };

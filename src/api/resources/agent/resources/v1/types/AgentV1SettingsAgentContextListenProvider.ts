@@ -7,36 +7,11 @@ export type AgentV1SettingsAgentContextListenProvider =
     | Deepgram.agent.AgentV1SettingsAgentContextListenProvider.V2;
 
 export namespace AgentV1SettingsAgentContextListenProvider {
-    export interface V1 {
+    export interface V1 extends Deepgram.DeepgramListenProviderV1 {
         version: "v1";
-        /** Provider type for speech-to-text */
-        type: "deepgram";
-        /** Model to use for speech to text using the V1 API (e.g. Nova-3, Nova-2) */
-        model?: string | undefined;
-        /** Language code to use for speech-to-text. Can be a BCP-47 language tag (e.g. `en`), or `multi` for code-switching transcription */
-        language?: string | undefined;
-        /** Prompt keyterm recognition to improve Keyword Recall Rate */
-        keyterms?: string[] | undefined;
-        /** Applies smart formatting to improve transcript readability */
-        smart_format?: boolean | undefined;
     }
 
-    export interface V2 {
+    export interface V2 extends Deepgram.DeepgramListenProviderV2 {
         version: "v2";
-        /** Provider type for speech-to-text */
-        type: "deepgram";
-        /** Model to use for speech to text using the V2 API (e.g. flux-general-en, flux-general-multi) */
-        model: string;
-        /** One or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details. */
-        language_hint?: AgentV1SettingsAgentContextListenProviderV2.LanguageHint | undefined;
-        /** Prompt keyterm recognition to improve Keyword Recall Rate */
-        keyterms?: string[] | undefined;
-    }
-
-    export namespace AgentV1SettingsAgentContextListenProviderV2 {
-        /**
-         * One or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details.
-         */
-        export type LanguageHint = string | string[];
     }
 }
