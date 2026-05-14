@@ -171,10 +171,8 @@ describe("Backwards-compatibility aliases", () => {
             // regenerated duplicate into a one-line alias, so the two names
             // resolve to the exact same type. If a future regen blows away
             // the alias, this Equals<X, Y> identity check fails to compile.
-            const _equality: Equals<
-                AgentV1SettingsAgentListenProvider,
-                AgentV1SettingsAgentContextListenProvider
-            > = true;
+            const _equality: Equals<AgentV1SettingsAgentListenProvider, AgentV1SettingsAgentContextListenProvider> =
+                true;
             expect(_equality).toBe(true);
         });
 
