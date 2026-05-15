@@ -109,7 +109,7 @@ biome.json
 # DeepgramListenProviderV1/V2 and dropped the nested
 # `AgentV1SettingsAgentContextListenProviderV2.LanguageHint` namespace path.
 # We restore the nested namespace as a one-line alias to
-# DeepgramListenProviderV2.LanguageHint so deep imports keep resolving. Mirrors
-# the Python SDK's compat shim added in deepgram-python-sdk#714. Regression
-# coverage in tests/unit/compat-aliases.test.ts. Swap to .bak before regen.
+# DeepgramListenProviderV2.LanguageHint so deep imports keep resolving.
+# Regression coverage in tests/unit/compat-aliases.test.ts.
+# Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts
