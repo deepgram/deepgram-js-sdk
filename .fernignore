@@ -113,3 +113,12 @@ biome.json
 # Regression coverage in tests/unit/compat-aliases.test.ts.
 # Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts
+
+# src/Client.ts: the 2026-05-14 regen switched the `client.fetch()` passthrough
+# helper's default baseUrl from `base` (api.deepgram.com) to `agentRest`
+# (agent.deepgram.com) after the upstream spec introduced the new agentRest
+# slot. The passthrough is documented as the catch-all for endpoints not yet
+# supported in the SDK and should default to the canonical Deepgram REST host.
+# Likely a Fern generator artifact — when the upstream fix lands, drop this
+# entry. Swap to .bak before regen.
+src/Client.ts
