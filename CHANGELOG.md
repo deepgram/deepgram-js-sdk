@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.3.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.2.0...v5.3.0) (2026-05-15)
+
+
+### Features
+
+* **listen:** Diarization v2 is now GA for batch transcription. New optional `diarize_model` field on `ListenV1RequestUrl` and `MediaTranscribeRequestOctetStream`, plus a new `MediaTranscribeRequestDiarizeModel` enum ([#499](https://github.com/deepgram/deepgram-js-sdk/issues/499)) ([b015e1f](https://github.com/deepgram/deepgram-js-sdk/commit/b015e1f9ae8292f9f1479da0341badb64c68b82a))
+* **agent:** introduce top-level `DeepgramListenProviderV1` and `DeepgramListenProviderV2` types that consolidate the previous per-resource provider types. The existing `AgentV1SettingsAgent[Context]ListenProvider*` paths continue to work, including the nested `AgentV1SettingsAgentContextListenProviderV2.LanguageHint` namespace path which is preserved as an alias for `DeepgramListenProviderV2.LanguageHint` ([#499](https://github.com/deepgram/deepgram-js-sdk/issues/499)) ([b015e1f](https://github.com/deepgram/deepgram-js-sdk/commit/b015e1f9ae8292f9f1479da0341badb64c68b82a)), ([ace680a](https://github.com/deepgram/deepgram-js-sdk/commit/ace680ae192d85dcb5f54268984ccf0866aa62e9))
+* **agent:** route `agent.v1.settings.think.models` over HTTPS instead of WSS. Previously this endpoint was misrouted and was unusable ([#499](https://github.com/deepgram/deepgram-js-sdk/issues/499)) ([b015e1f](https://github.com/deepgram/deepgram-js-sdk/commit/b015e1f9ae8292f9f1479da0341badb64c68b82a))
+* **environment:** replace `DeepgramEnvironment.Agent` with a new `agentRest` slot on the `Production` environment. Callers constructing a custom environment should pass `agentRest` instead of relying on the removed `Agent` value ([#499](https://github.com/deepgram/deepgram-js-sdk/issues/499)) ([b015e1f](https://github.com/deepgram/deepgram-js-sdk/commit/b015e1f9ae8292f9f1479da0341badb64c68b82a))
+
+
+### Bug Fixes
+
+* **client:** restore `client.fetch()` default `baseUrl` to `api.deepgram.com`. After the new `agentRest` environment slot was introduced, the passthrough helper was defaulting to `agent.deepgram.com`, which 404'd for canonical REST endpoints ([56b8ce5](https://github.com/deepgram/deepgram-js-sdk/commit/56b8ce555c09842e6021fcb889e4aff9e87b151d))
+
 ## [5.2.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.1.0...v5.2.0) (2026-05-12)
 
 
