@@ -10,7 +10,12 @@ describe("MediaClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { url: "https://dpgr.am/spacewalk.wav" };
         const rawResponseBody = {
@@ -125,6 +130,7 @@ describe("MediaClient", () => {
             detect_entities: true,
             detect_language: true,
             diarize: true,
+            diarize_model: "latest",
             dictation: true,
             encoding: "linear16",
             filler_words: true,
@@ -156,7 +162,12 @@ describe("MediaClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = { key: "value" };

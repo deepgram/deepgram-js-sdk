@@ -12,6 +12,8 @@ export * from "./CreateKeyV1Response.js";
 export * from "./CreateProjectDistributionCredentialsV1Response.js";
 export * from "./CreateProjectInviteV1Response.js";
 export * from "./Deepgram.js";
+export * from "./DeepgramListenProviderV1.js";
+export * from "./DeepgramListenProviderV2.js";
 export * from "./DeleteAgentConfigurationV1Response.js";
 export * from "./DeleteAgentVariableV1Response.js";
 export * from "./DeleteProjectInviteV1Response.js";

@@ -6,6 +6,7 @@ import type {
     CreateKeyV1Request,
     CreateKeyV1RequestOne,
     DeepgramClient,
+    DeepgramListenProviderV2,
 } from "../../src";
 import { Deepgram } from "../../src";
 
@@ -171,10 +172,8 @@ describe("Backwards-compatibility aliases", () => {
             // regenerated duplicate into a one-line alias, so the two names
             // resolve to the exact same type. If a future regen blows away
             // the alias, this Equals<X, Y> identity check fails to compile.
-            const _equality: Equals<
-                AgentV1SettingsAgentListenProvider,
-                AgentV1SettingsAgentContextListenProvider
-            > = true;
+            const _equality: Equals<AgentV1SettingsAgentListenProvider, AgentV1SettingsAgentContextListenProvider> =
+                true;
             expect(_equality).toBe(true);
         });
 
@@ -200,6 +199,30 @@ describe("Backwards-compatibility aliases", () => {
                 model: "flux-general-en",
             };
             expect(_legacy.version).toBe("v2");
+        });
+    });
+
+    describe("AgentV1SettingsAgentContextListenProviderV2.LanguageHint (nested namespace shim 2026-05-14)", () => {
+        it("legacy nested namespace path still resolves to the canonical DeepgramListenProviderV2.LanguageHint", () => {
+            // The 2026-05-14 regen consolidated listen-provider types into
+            // top-level DeepgramListenProviderV1/V2 and dropped the deep
+            // nested `AgentV1SettingsAgentContextListenProvider.AgentV1SettingsAgentContextListenProviderV2.LanguageHint`
+            // path. Our patch re-adds the nested namespace as an alias so
+            // legacy imports keep resolving.
+            const _equality: Equals<
+                AgentV1SettingsAgentContextListenProvider.AgentV1SettingsAgentContextListenProviderV2.LanguageHint,
+                DeepgramListenProviderV2.LanguageHint
+            > = true;
+            expect(_equality).toBe(true);
+        });
+
+        it("legacy literal values still satisfy the aliased type", () => {
+            const _single: AgentV1SettingsAgentContextListenProvider.AgentV1SettingsAgentContextListenProviderV2.LanguageHint =
+                "en";
+            const _multi: AgentV1SettingsAgentContextListenProvider.AgentV1SettingsAgentContextListenProviderV2.LanguageHint =
+                ["en", "es"];
+            expect(_single).toBe("en");
+            expect(_multi).toEqual(["en", "es"]);
         });
     });
 });

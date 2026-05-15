@@ -85,6 +85,12 @@ export class DeepgramClient {
             input,
             init,
             {
+                // Patch: the 2026-05-14 regen switched this default from `base`
+                // (api.deepgram.com) to `agentRest` (agent.deepgram.com) after
+                // the new agentRest slot was introduced upstream. The passthrough
+                // helper is documented as the catch-all for endpoints not yet
+                // supported in the SDK — it should default to the canonical
+                // Deepgram REST host, not the agent host. Restoring `base`.
                 baseUrl:
                     this._options.baseUrl ??
                     (async () => {

@@ -37,6 +37,8 @@ export interface MediaTranscribeRequestOctetStream {
     detect_language?: boolean;
     /** Recognize speaker changes. Each word in the transcript will be assigned a speaker number starting at 0 */
     diarize?: boolean;
+    /** Select and enable a specific batch diarization model version. If specifying this parameter, you should not set the deprecated `diarize=true` parameter. Not accepted on streaming requests. */
+    diarize_model?: Deepgram.listen.v1.MediaTranscribeRequestDiarizeModel;
     /** Dictation mode for controlling formatting with dictated speech */
     dictation?: boolean;
     /** Specify the expected encoding of your submitted audio */
