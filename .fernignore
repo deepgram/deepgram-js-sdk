@@ -103,3 +103,13 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts
 # is .gitignored but not biome-ignored. We restore `useIgnoreFile: true` so the
 # generated browser artifact stays out of lint. Swap to .bak before regen.
 biome.json
+
+# src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts:
+# the 2026-05-14 regen consolidated listen-provider sub-types into top-level
+# DeepgramListenProviderV1/V2 and dropped the nested
+# `AgentV1SettingsAgentContextListenProviderV2.LanguageHint` namespace path.
+# We restore the nested namespace as a one-line alias to
+# DeepgramListenProviderV2.LanguageHint so deep imports keep resolving. Mirrors
+# the Python SDK's compat shim added in deepgram-python-sdk#714. Regression
+# coverage in tests/unit/compat-aliases.test.ts. Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts
