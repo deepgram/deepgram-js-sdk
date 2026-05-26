@@ -209,6 +209,16 @@ export interface SpeakClientWithWebSockets extends SpeakClient {
 export interface CustomDeepgramClientOptions extends DeepgramClient.Options {
     accessToken?: core.Supplier<string | undefined>;
     transportFactory?: DeepgramTransportFactory;
+    /**
+     * Whether the SDK should retry streaming connections at the wrapper level
+     * after a transport failure. Defaults to `true` for native websocket
+     * connections. When a `transportFactory` is provided, this is auto-set to
+     * `false` because custom transports own their own retry/reconnect lifecycle
+     * — wrapping a self-retrying transport in another retry layer creates
+     * double-retry storms under burst load. Pass `reconnect: true` together
+     * with `transportFactory` to opt back into wrapper-level retries.
+     */
+    reconnect?: boolean;
 }
 
 export class CustomDeepgramClient extends DeepgramClient {
@@ -216,22 +226,30 @@ export class CustomDeepgramClient extends DeepgramClient {
     private _customListen: ListenClientWithWebSockets | undefined;
     private _customSpeak: SpeakClientWithWebSockets | undefined;
     private readonly _sessionId: string;
+    private readonly _reconnect: boolean;
 
     constructor(options: CustomDeepgramClientOptions = {}) {
         // Generate a UUID for the session ID
         const sessionId = generateUUID();
-        
+
         // Add the session ID to headers so it's included in all REST requests
+        // Auto-disable wrapper-level reconnect when a custom transportFactory
+        // is in use: those transports own their retry lifecycle, and stacking
+        // a second retry layer on top causes storm-on-storm under burst load.
+        // Callers can still opt back in by explicitly passing reconnect: true.
+        const reconnect = options.reconnect ?? (options.transportFactory == null);
         const optionsWithSessionId: CustomDeepgramClientOptions = {
             ...options,
+            reconnect,
             headers: {
                 ...options.headers,
                 "x-deepgram-session-id": sessionId,
             },
         };
-        
+
         super(optionsWithSessionId);
         this._sessionId = sessionId;
+        this._reconnect = reconnect;
 
         // Always wrap the auth provider to add "Token " prefix to API keys
         // The auto-generated HeaderAuthProvider doesn't add the prefix
@@ -252,6 +270,17 @@ export class CustomDeepgramClient extends DeepgramClient {
      */
     public get sessionId(): string {
         return this._sessionId;
+    }
+
+    /**
+     * Whether the SDK will retry streaming connections at the wrapper level
+     * after a transport-side failure. Returns `false` when a `transportFactory`
+     * was supplied without an explicit `reconnect: true` override, signalling
+     * that the custom transport is expected to manage its own reconnect
+     * lifecycle.
+     */
+    public get reconnect(): boolean {
+        return this._reconnect;
     }
 
     /**
@@ -401,6 +430,10 @@ function getTransportFactory(options: DeepgramClient.Options): DeepgramTransport
     return (options as CustomDeepgramClientOptions).transportFactory;
 }
 
+function getReconnect(options: DeepgramClient.Options): boolean {
+    return (options as CustomDeepgramClientOptions).reconnect !== false;
+}
+
 class TransportWebSocketAdapter {
     private _listeners: ReconnectingWebSocket.ListenersMap = {
         error: [],
@@ -427,10 +460,20 @@ class TransportWebSocketAdapter {
 
     private readonly _factory: DeepgramTransportFactory;
     private readonly _request: DeepgramTransportRequest;
+    // Whether the wrapper should retry after a transport-side failure. False
+    // signals that the underlying transport owns reconnect — the wrapper
+    // attempts the connect once and surfaces any error without re-attempting.
+    private readonly _reconnect: boolean;
 
-    constructor(args: { factory: DeepgramTransportFactory; request: DeepgramTransportRequest; startClosed?: boolean }) {
+    constructor(args: {
+        factory: DeepgramTransportFactory;
+        request: DeepgramTransportRequest;
+        startClosed?: boolean;
+        reconnect?: boolean;
+    }) {
         this._factory = args.factory;
         this._request = args.request;
+        this._reconnect = args.reconnect !== false;
         this._readyState = args.startClosed ? ReconnectingWebSocket.ReadyState.CLOSED : ReconnectingWebSocket.ReadyState.CONNECTING;
 
         if (this._request.abortSignal) {
@@ -603,6 +646,15 @@ class TransportWebSocketAdapter {
 
     private async _connect(): Promise<void> {
         if (this._connectLock || !this._shouldReconnect || this._request.abortSignal?.aborted) {
+            return;
+        }
+
+        // When wrapper-level reconnect is disabled, allow only the initial
+        // attempt (_retryCount starts at -1 and increments to 0 on first
+        // _connect). Any subsequent re-entry from _handleError must short out
+        // so the transport's own retry logic is the single source of truth.
+        if (!this._reconnect && this._retryCount >= 0) {
+            this._debug("reconnect disabled, skipping retry");
             return;
         }
 
@@ -1019,6 +1071,7 @@ async function createWebSocketConnection({
     const url = core.url.join(baseUrl, urlPath);
     const fullUrl = buildWebSocketUrl(url, queryParams);
     const transportFactory = getTransportFactory(options);
+    const reconnect = getReconnect(options);
 
     if (transportFactory) {
         const request: DeepgramTransportRequest = {
@@ -1038,6 +1091,7 @@ async function createWebSocketConnection({
             factory: transportFactory,
             request,
             startClosed: true,
+            reconnect,
         }) as unknown as ReconnectingWebSocket;
     }
 

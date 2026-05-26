@@ -126,3 +126,105 @@ describe("transportFactory", () => {
         expect(transport.pingPayloads).toEqual(["keepalive"]);
     });
 });
+
+describe("reconnect flag", () => {
+    it("defaults to true for native websocket clients", () => {
+        const client = new DeepgramClient({ apiKey: "test-api-key" });
+        expect(client.reconnect).toBe(true);
+    });
+
+    it("honors explicit reconnect: false", () => {
+        const client = new DeepgramClient({ apiKey: "test-api-key", reconnect: false });
+        expect(client.reconnect).toBe(false);
+    });
+
+    it("auto-disables reconnect when a transportFactory is supplied", () => {
+        const transport = new FakeTransport();
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory: () => transport,
+        });
+        expect(client.reconnect).toBe(false);
+    });
+
+    it("respects an explicit reconnect: true override even with transportFactory", () => {
+        const transport = new FakeTransport();
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory: () => transport,
+            reconnect: true,
+        });
+        expect(client.reconnect).toBe(true);
+    });
+
+    it("does not retry the factory after a transport error when reconnect is disabled", async () => {
+        let callCount = 0;
+        const transport = new FakeTransport();
+
+        const transportFactory: DeepgramTransportFactory = () => {
+            callCount += 1;
+            return transport;
+        };
+
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory,
+            // explicit for clarity; auto-disabled either way
+            reconnect: false,
+        });
+
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.on("error", () => {
+            // listener kept so the error event doesn't bubble out of the test
+        });
+        socket.connect();
+        await Promise.resolve();
+
+        expect(callCount).toBe(1);
+
+        // Simulate a transport-side failure mid-stream
+        transport.listeners.error?.(new Error("simulated failure"));
+        await Promise.resolve();
+        await Promise.resolve();
+
+        // The wrapper must not have re-invoked the factory.
+        expect(callCount).toBe(1);
+    });
+
+    it("retries the factory after a transport error when reconnect is enabled", async () => {
+        let callCount = 0;
+        const transports: FakeTransport[] = [];
+
+        const transportFactory: DeepgramTransportFactory = () => {
+            callCount += 1;
+            const t = new FakeTransport();
+            transports.push(t);
+            return t;
+        };
+
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory,
+            // opt back in to wrapper retries
+            reconnect: true,
+        });
+
+        const socket = await client.listen.v1.createConnection({
+            model: "nova-3",
+            reconnectAttempts: 3,
+        });
+        socket.on("error", () => {
+            // swallow errors so the test runner doesn't fail on them
+        });
+        socket.connect();
+        await Promise.resolve();
+
+        expect(callCount).toBe(1);
+
+        transports[0]!.listeners.error?.(new Error("simulated failure"));
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(callCount).toBe(2);
+    });
+});
