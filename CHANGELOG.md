@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.4.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.3.0...v5.4.0) (2026-06-01)
+
+
+### Features
+
+* **transport:** add pluggable streaming-transport interface for SageMaker support. New `DeepgramTransport` / `DeepgramTransportFactory` interface (`src/transport.ts`) and a `transportFactory` option on `DeepgramClient`; when set, the `listen.v1`, `listen.v2`, `speak.v1`, and `agent.v1` `createConnection` paths route through a custom transport via a `TransportWebSocketAdapter` instead of the default WebSocket. REST behaviour is unchanged. This is the seam the `@deepgram/sagemaker` package plugs into ([#492](https://github.com/deepgram/deepgram-js-sdk/issues/492)) ([4d43b1b](https://github.com/deepgram/deepgram-js-sdk/commit/4d43b1b7d09d5d138a68d55bf4ab0b10d00712d1))
+* **transport:** add `reconnect` flag with auto-disable for custom transports. New optional `reconnect?: boolean` on `DeepgramClient` (default `true`, exposed read-only as `client.reconnect`) controlling wrapper-level retry of streaming connections; auto-disabled to `false` when a `transportFactory` is supplied so self-retrying transports aren't double-stacked with a second retry layer ([8dec8c9](https://github.com/deepgram/deepgram-js-sdk/commit/8dec8c9a2234a391b5fdb30a3b9ce63e5179c40d))
+
+
+### Bug Fixes
+
+* **types:** expose WebSocket helper types so `client.listen.v1.createConnection({ model })` type-checks and `Authorization` is optional on the `agent` / `listen` / `speak` connect helpers. Runtime behaviour is unchanged (types-only fix); fixes [#489](https://github.com/deepgram/deepgram-js-sdk/issues/489) ([#501](https://github.com/deepgram/deepgram-js-sdk/issues/501)) ([ac71def](https://github.com/deepgram/deepgram-js-sdk/commit/ac71def46ea87a2f399ddaf129ace387890e8beb))
+
 ## [5.3.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.2.0...v5.3.0) (2026-05-15)
 
 
