@@ -22,8 +22,9 @@ How to identify:
 - The file lives **outside `src/api/`** in a hand-maintained location (e.g., `.claude/`, `docs/`, `scripts/`)
 
 Current permanently frozen files:
-- `src/CustomClient.ts` — entirely custom wrapper with WebSocket management, auth providers, and session ID handling; no Fern equivalent
+- `src/CustomClient.ts` — entirely custom wrapper with WebSocket management, auth providers, session ID handling, `transportFactory` plumbing, and the `reconnect` flag (auto-disabled when a custom transport is in use); no Fern equivalent
 - `src/index.ts` — curated re-export file with custom namespace handling
+- `src/transport.ts` — hand-maintained pluggable transport interface for SageMaker and other custom streaming transports
 - `scripts/fix-wire-test-imports.js`, `scripts/revert-wire-test-imports.js` — post-generation import fixup scripts
 - `scripts/proxy-server.js` — development proxy server
 - `scripts/validate-esm-build.mjs` — ESM build validation
