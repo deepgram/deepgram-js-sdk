@@ -157,14 +157,55 @@ class AccessTokenAuthProviderWrapper implements core.AuthProvider {
     }
 }
 
+export type AgentV1ConnectionArgs = Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+export type ListenV1ConnectionArgs = Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+export type ListenV2ConnectionArgs = Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
+    Authorization?: string;
+    keyterm?: string | string[];
+};
+export type SpeakV1ConnectionArgs = Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+
+export interface AgentV1ClientWithWebSocket extends AgentV1Client {
+    connect(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
+    createConnection(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
+}
+
+export interface ListenV1ClientWithWebSocket extends ListenV1Client {
+    connect(args: ListenV1ConnectionArgs): Promise<ListenV1Socket>;
+    createConnection(args: ListenV1ConnectionArgs): Promise<ListenV1Socket>;
+}
+
+export interface ListenV2ClientWithWebSocket extends ListenV2Client {
+    connect(args: ListenV2ConnectionArgs): Promise<ListenV2Socket>;
+    createConnection(args: ListenV2ConnectionArgs): Promise<ListenV2Socket>;
+}
+
+export interface SpeakV1ClientWithWebSocket extends SpeakV1Client {
+    connect(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket>;
+    createConnection(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket>;
+}
+
+export interface AgentClientWithWebSockets extends AgentClient {
+    readonly v1: AgentV1ClientWithWebSocket;
+}
+
+export interface ListenClientWithWebSockets extends ListenClient {
+    readonly v1: ListenV1ClientWithWebSocket;
+    readonly v2: ListenV2ClientWithWebSocket;
+}
+
+export interface SpeakClientWithWebSockets extends SpeakClient {
+    readonly v1: SpeakV1ClientWithWebSocket;
+}
+
 /**
  * Custom wrapper around DeepgramClient that ensures the custom websocket implementation
  * from ws.ts is always used, even if the auto-generated code changes.
  */
 export class CustomDeepgramClient extends DeepgramClient {
-    private _customAgent: AgentClient | undefined;
-    private _customListen: ListenClient | undefined;
-    private _customSpeak: SpeakClient | undefined;
+    private _customAgent: AgentClientWithWebSockets | undefined;
+    private _customListen: ListenClientWithWebSockets | undefined;
+    private _customSpeak: SpeakClientWithWebSockets | undefined;
     private readonly _sessionId: string;
 
     constructor(options: DeepgramClient.Options & { accessToken?: core.Supplier<string | undefined> } = {}) {
@@ -208,7 +249,7 @@ export class CustomDeepgramClient extends DeepgramClient {
      * Override the agent getter to return a wrapped client that ensures
      * the custom websocket implementation is used.
      */
-    public get agent(): AgentClient {
+    public get agent(): AgentClientWithWebSockets {
         if (!this._customAgent) {
             // Create a wrapper that ensures custom websocket is used
             this._customAgent = new WrappedAgentClient(this._options);
@@ -220,7 +261,7 @@ export class CustomDeepgramClient extends DeepgramClient {
      * Override the listen getter to return a wrapped client that ensures
      * the custom websocket implementation is used.
      */
-    public get listen(): ListenClient {
+    public get listen(): ListenClientWithWebSockets {
         if (!this._customListen) {
             // Create a wrapper that ensures custom websocket is used
             this._customListen = new WrappedListenClient(this._options);
@@ -232,7 +273,7 @@ export class CustomDeepgramClient extends DeepgramClient {
      * Override the speak getter to return a wrapped client that ensures
      * the custom websocket implementation is used.
      */
-    public get speak(): SpeakClient {
+    public get speak(): SpeakClientWithWebSockets {
         if (!this._customSpeak) {
             // Create a wrapper that ensures custom websocket is used
             this._customSpeak = new WrappedSpeakClient(this._options);
