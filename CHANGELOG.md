@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.4.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.3.0...v5.4.0) (2026-06-01)
+
+
+### Features
+
+* add pluggable transport interface for SageMaker support ([4f27b6f](https://github.com/deepgram/deepgram-js-sdk/commit/4f27b6f867787acb2899a3dd2adafcc76e9b7c83))
+* add pluggable transport interface for sagemaker support ([#492](https://github.com/deepgram/deepgram-js-sdk/issues/492)) ([4d43b1b](https://github.com/deepgram/deepgram-js-sdk/commit/4d43b1b7d09d5d138a68d55bf4ab0b10d00712d1))
+* add reconnect flag with auto-disable for custom transports ([8dec8c9](https://github.com/deepgram/deepgram-js-sdk/commit/8dec8c9a2234a391b5fdb30a3b9ce63e5179c40d))
+
+
+### Bug Fixes
+
+* expose websocket helper types ([60688b8](https://github.com/deepgram/deepgram-js-sdk/commit/60688b8da2eeff1280ebec994f5ddda5783b6d40))
+* expose websocket helper types ([#501](https://github.com/deepgram/deepgram-js-sdk/issues/501)) ([ac71def](https://github.com/deepgram/deepgram-js-sdk/commit/ac71def46ea87a2f399ddaf129ace387890e8beb))
+
 ## [5.3.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.2.0...v5.3.0) (2026-05-15)
 
 
