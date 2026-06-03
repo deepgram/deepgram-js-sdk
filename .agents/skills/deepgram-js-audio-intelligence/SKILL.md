@@ -9,6 +9,18 @@ Analytics overlays applied to `/v1/listen`: summaries, topics, intents, sentimen
 
 **Use a different skill when:** plain transcription → `deepgram-js-speech-to-text`; analytics on text → `deepgram-js-text-intelligence`; Flux turn-taking → `deepgram-js-conversational-stt`; full-duplex agent → `deepgram-js-voice-agent`.
 
+## Authentication
+
+```js
+require("dotenv").config();
+
+const { DeepgramClient } = require("@deepgram/sdk");
+
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
+```
+
 ## Feature availability: REST vs WSS
 
 | Feature | REST | WSS |
@@ -98,6 +110,7 @@ const deepgramConnection = await deepgramClient.listen.v1.createConnection({
 2. **`redact` accepts arrays** like `["pci", "ssn"]` despite `ListenV1Redact` being a string alias.
 3. **Use `keyterm`, not `keywords`, for Nova-3 biasing.**
 4. **Prefer `nova-3`** when mixing many overlays -- broadest feature support.
+5. **Diarization quality depends on audio quality and duration.** Short or noisy clips churn speakers.
 
 ## Example files in this repo
 
