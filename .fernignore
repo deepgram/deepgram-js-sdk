@@ -35,6 +35,7 @@ tests/unit/regen-constraints.test.ts
 tests/unit/socket-close-idempotent.test.ts
 tests/unit/speak-v2-batch.test.ts
 tests/unit/transport-factory.test.ts
+tests/unit/websocket-agent.test.ts
 tests/unit/websocket-reconnection.test.ts
 tests/unit/websocket-wrappers.test.ts
 tests/wire/websocket
