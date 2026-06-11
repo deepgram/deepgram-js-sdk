@@ -16,6 +16,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 - **07-transcription-live-websocket.js** - Live transcription via WebSocket
 - **08-transcription-captions.js** - Convert transcriptions to WebVTT/SRT captions
 - **22-transcription-advanced-options.js** - Advanced transcription options
+- **37-abortsignal-cancellation.js** - Safely cancel a WebSocket connection with AbortSignal
 
 ### Voice Agent
 - **09-voice-agent.js** - Voice Agent configuration and usage

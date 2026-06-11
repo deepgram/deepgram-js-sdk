@@ -66,6 +66,8 @@ await connection.waitForOpen();
 connection.socket.send(audioData);
 ```
 
+Pass an `abortSignal` to `connect()` to safely cancel a session, even one that hasn't finished connecting yet, and tear down all listeners. See [Canceling a WebSocket Connection (AbortSignal)](#canceling-a-websocket-connection-abortsignal).
+
 #### File Transcription
 
 Transcribe pre-recorded audio files ([API Reference](./reference.md)):
@@ -294,6 +296,42 @@ const response = await client.listen.v1.media.transcribeFile(audioData, {
   maxRetries: 3,
 });
 ```
+
+### Canceling a WebSocket Connection (AbortSignal)
+
+All real-time `connect()` methods — `listen.v1.connect()`, `agent.v1.connect()`, and
+`speak.v1.connect()` — accept an `abortSignal`. This is the recommended way to cancel a
+connection, especially in apps that start and stop sessions rapidly (Electron, Node.js
+backends, etc.).
+
+When the signal aborts, the SDK closes the underlying WebSocket, disables automatic
+reconnection, and removes its internal event listeners so no `open` / `close` / `error`
+handlers fire afterwards and no dangling reconnect loop is left behind. It is also the only
+safe way to cancel a connection that is still opening, before the socket has finished
+connecting.
+
+```typescript
+import { DeepgramClient } from "@deepgram/sdk";
+
+const client = new DeepgramClient();
+const controller = new AbortController();
+
+const connection = await client.listen.v1.connect({
+  model: "nova-3",
+  language: "en",
+  abortSignal: controller.signal,
+});
+
+connection.on("open", () => console.log("Connection opened"));
+connection.on("message", (data) => console.log(data));
+
+connection.connect();
+
+// Cancel the session later, e.g. when the user stops it or before it finishes connecting
+controller.abort();
+```
+
+An aborted signal is terminal: it tears the connection down for good. To start a new session, create a fresh `AbortController` and call `connect()` again.
 
 ### Access Raw Response Data
 

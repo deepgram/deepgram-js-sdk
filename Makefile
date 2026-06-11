@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 test test-esm lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 test test-esm lint build browser browser-serve
 
 # Default target
 help:
@@ -11,7 +11,7 @@ help:
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
-	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-32) sequentially\n"
+	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-37) sequentially\n"
 	@printf "  \033[1;32mmake example-N\033[0m         - Run a specific example by number (e.g., make example-1)\n"
 	@printf "  \033[1;32mmake browser\033[0m           - Run browser tests\n"
 	@printf "  \033[1;32mmake browser-serve\033[0m     - Serve the browser examples for manual testing\n"
@@ -53,6 +53,7 @@ help:
 	@printf "  \033[36m34\033[0m - Agent Custom Providers\n"
 	@printf "  \033[36m35\033[0m - Agent Provider Combinations\n"
 	@printf "  \033[36m36\033[0m - Agent Inject Message\n"
+	@printf "  \033[36m37\033[0m - AbortSignal Cancellation\n"
 
 # Run all examples
 examples:
@@ -136,6 +137,7 @@ examples:
 	run_example 34 "examples/34-agent-custom-providers.ts" "Agent Custom Providers"; \
 	run_example 35 "examples/35-agent-provider-combinations.ts" "Agent Provider Combinations"; \
 	run_example 36 "examples/36-agent-inject-message.ts" "Agent Inject Message"; \
+	run_example 37 "examples/37-abortsignal-cancellation.ts" "AbortSignal Cancellation"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -279,6 +281,9 @@ example-35:
 
 example-36:
 	pnpm exec tsx examples/36-agent-inject-message.ts
+
+example-37:
+	pnpm exec tsx examples/37-abortsignal-cancellation.ts
 
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
