@@ -95,8 +95,18 @@ src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
 # AgentV1SettingsAgentContextListenProviderV2.LanguageHint alias and the
 # compat-aliases regression test still reference it, so we recreate the namespace
 # (declaration merge) in this generated file and freeze it. Mirrors the Python
-# SDK's DeepgramListenProviderV2LanguageHint shim. Swap to .bak before regen.
+# SDK's DeepgramListenProviderV2LanguageHint shim. Also re-adds the deprecated
+# `language_hint` field (renamed to `language_hints` by the regen) as an optional
+# compat field so existing call sites keep compiling. Swap to .bak before regen.
 src/api/types/DeepgramListenProviderV2.ts
+
+# src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts: the 2026-06-16
+# regen corrected the `type` field to the literal "CloseStream" and dropped the
+# `ListenV2CloseStream.Type` namespace (which wrongly included "Finalize"/"KeepAlive"
+# copied from v1's control-message enum). We restore the `Type` namespace with ONLY
+# the valid "CloseStream" value so existing `ListenV2CloseStream.Type` references keep
+# compiling without resurrecting the invalid values. Swap to .bak before regen.
+src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts
 
 # NOTE: AgentV1SettingsAgentListenProvider.ts was UNFROZEN in the 2026-06-16 regen.
 # The generator now emits a type structurally equal to

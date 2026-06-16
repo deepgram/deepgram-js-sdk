@@ -9,6 +9,12 @@ export interface DeepgramListenProviderV2 {
     model: string;
     /** An array of one or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details. */
     language_hints?: string[] | undefined;
+    /**
+     * @deprecated Use `language_hints` instead. Backward-compat shim: the 2026-06-16 regen
+     * renamed this field to `language_hints`. The singular `language_hint` was never honored
+     * by the API, so this is kept only so existing call sites keep compiling; prefer `language_hints`.
+     */
+    language_hint?: DeepgramListenProviderV2.LanguageHint | undefined;
     /** Prompt keyterm recognition to improve Keyword Recall Rate */
     keyterms?: string[] | undefined;
 }
