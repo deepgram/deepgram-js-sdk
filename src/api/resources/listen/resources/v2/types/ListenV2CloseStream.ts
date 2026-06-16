@@ -15,5 +15,8 @@ export namespace ListenV2CloseStream {
     export const Type = {
         CloseStream: "CloseStream",
     } as const;
-    export type Type = (typeof Type)[keyof typeof Type];
+    // Keep the `| string` openness the original generated type had, so any existing
+    // assignment to `ListenV2CloseStream.Type` keeps compiling (no narrowing break).
+    // Only the bogus `Finalize`/`KeepAlive` const members are dropped.
+    export type Type = (typeof Type)[keyof typeof Type] | string;
 }
