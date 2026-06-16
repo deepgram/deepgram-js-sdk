@@ -140,13 +140,16 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProv
 # entry. Swap to .bak before regen.
 src/Client.ts
 
-# src/version.ts and src/BaseClient.ts carry the SDK version string that
-# release-please bumps on release (both are declared as generic extra-files in
-# .github/release-please-config.json). The generic updater needs an inline
-# `// x-release-please-version` marker to know which line to bump; Fern's output
-# has no marker and re-stamps an arbitrary version each regen, which made
-# release-please unable to track/update them (version drifted on main). We add the
-# markers (pinned to the released version) and freeze the files so the markers
-# survive regen. Swap to .bak before regen.
+# src/version.ts is the single source of truth for the SDK version. It carries the
+# inline `// x-release-please-version` marker and is the only file release-please
+# updates for the version (see .github/release-please-config.json extra-files).
+# Fern emits it without the marker, so we freeze it to preserve the marker.
+# Swap to .bak before regen.
 src/version.ts
+
+# src/BaseClient.ts is frozen only to keep its one-line patch deriving the SDK
+# version from src/version.ts (`import { SDK_VERSION }` + ``@deepgram/sdk/${SDK_VERSION}``)
+# instead of Fern's hardcoded version string — so the User-Agent never drifts and
+# the version lives in exactly one place. Re-apply that import patch after regen;
+# take all of Fern's other BaseClient changes. Swap to .bak before regen.
 src/BaseClient.ts
