@@ -70,6 +70,10 @@ export namespace ListenV2TurnInfo {
             word: string;
             /** Confidence that this word was transcribed correctly */
             confidence: number;
+            /** The start time of the word */
+            start: number;
+            /** The end time of the word */
+            end: number;
         }
     }
 }

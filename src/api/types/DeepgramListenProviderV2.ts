@@ -7,15 +7,8 @@ export interface DeepgramListenProviderV2 {
     version?: "v2" | undefined;
     /** Model to use for speech to text using the V2 API (e.g. flux-general-en, flux-general-multi) */
     model: string;
-    /** One or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details. */
-    language_hint?: DeepgramListenProviderV2.LanguageHint | undefined;
+    /** An array of one or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details. */
+    language_hints?: string[] | undefined;
     /** Prompt keyterm recognition to improve Keyword Recall Rate */
     keyterms?: string[] | undefined;
-}
-
-export namespace DeepgramListenProviderV2 {
-    /**
-     * One or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details.
-     */
-    export type LanguageHint = string | string[];
 }
