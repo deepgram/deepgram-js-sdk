@@ -16,6 +16,7 @@ import { V2Socket as ListenV2Socket } from "./api/resources/listen/resources/v2/
 import { V1Socket as SpeakV1Socket } from "./api/resources/speak/resources/v1/client/Socket.js";
 import { mergeHeaders } from "./core/headers.js";
 import { fromJson } from "./core/json.js";
+import { BadRequestError } from "./api/errors/index.js";
 import * as core from "./core/index.js";
 import * as websocketEvents from "./core/websocket/events.js";
 import * as environments from "./environments.js";
@@ -401,6 +402,31 @@ function buildQueryParams(args: Record<string, unknown>): Record<string, unknown
         Object.assign(result, args.queryParams);
     }
     return result;
+}
+
+/**
+ * Nova-3 dropped the legacy `keywords` parameter in favor of `keyterm`, and the API rejects the
+ * combination with a 400. REST surfaces that error, but the streaming endpoint just closes the
+ * socket cleanly (code 1000, no reason, no error event) — so it fails silently and the socket
+ * never opens. Detecting the combination up front lets the client throw the same error REST
+ * already does, in both Node and the browser.
+ *
+ * Exported for unit testing; not part of the public API.
+ */
+export function isUnsupportedNova3Keywords(model: unknown, keywords: unknown): boolean {
+    if (typeof model !== "string" || !model.startsWith("nova-3")) {
+        return false;
+    }
+    if (keywords == null) {
+        return false;
+    }
+    if (typeof keywords === "string" && keywords.length === 0) {
+        return false;
+    }
+    if (Array.isArray(keywords) && keywords.length === 0) {
+        return false;
+    }
+    return true;
 }
 
 function normalizeProtocols(protocols?: string | string[]): string[] {
@@ -1210,6 +1236,15 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  */
 class WrappedListenV1Client extends ListenV1Client {
     public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
+        // Surface the same 400 the REST path throws for nova-3 + keywords, instead of letting the
+        // streaming handshake fail silently with a socket that never opens.
+        if (isUnsupportedNova3Keywords(args.model, args.keywords)) {
+            throw new BadRequestError({
+                err_code: "INVALID_QUERY_PARAMETER",
+                err_msg: "Keywords are not supported for Nova-3. Please use `keyterm` instead.",
+            });
+        }
+
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
 
         const socket = await createWebSocketConnection({

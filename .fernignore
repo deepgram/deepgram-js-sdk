@@ -24,6 +24,7 @@ tests/unit/compat-aliases.test.ts
 tests/unit/custom-baseurl.test.ts
 tests/unit/custom-client.test.ts
 tests/unit/error-handling.test.ts
+tests/unit/keywords-nova3-guard.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
 tests/unit/transport-factory.test.ts
