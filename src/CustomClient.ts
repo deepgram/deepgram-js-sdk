@@ -41,6 +41,7 @@ const WEBSOCKET_OPTION_KEYS = new Set([
     "connectionTimeoutInSeconds",
     "abortSignal",
     "queryParams",
+    "agent",
 ]);
 
 // ws for Node.js - loaded lazily to support CJS, ESM, and browser builds.
@@ -161,13 +162,32 @@ class AccessTokenAuthProviderWrapper implements core.AuthProvider {
     }
 }
 
-export type AgentV1ConnectionArgs = Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
-export type ListenV1ConnectionArgs = Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+// Node `http`/`https` agent type, referenced through an inline import so no
+// top-level node import leaks into the browser bundle (kept consistent with the
+// rest of this file, which never imports node builtins at module scope).
+type HttpAgent = import("http").Agent;
+
+/**
+ * Optional Node.js `http`/`https` agent for a streaming WebSocket connection —
+ * e.g. an `HttpsProxyAgent` to tunnel through an HTTP/HTTPS proxy. A per-connection
+ * `agent` overrides the client-level `agent` on {@link CustomDeepgramClientOptions}.
+ * Node-only; ignored in browser/web-worker runtimes that use the native `WebSocket`.
+ */
+export type WebSocketAgentArg = { agent?: HttpAgent };
+
+export type AgentV1ConnectionArgs = Omit<AgentV1Client.ConnectArgs, "Authorization"> & {
+    Authorization?: string;
+} & WebSocketAgentArg;
+export type ListenV1ConnectionArgs = Omit<ListenV1Client.ConnectArgs, "Authorization"> & {
+    Authorization?: string;
+} & WebSocketAgentArg;
 export type ListenV2ConnectionArgs = Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
     Authorization?: string;
     keyterm?: string | string[];
-};
-export type SpeakV1ConnectionArgs = Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+} & WebSocketAgentArg;
+export type SpeakV1ConnectionArgs = Omit<SpeakV1Client.ConnectArgs, "Authorization"> & {
+    Authorization?: string;
+} & WebSocketAgentArg;
 
 export interface AgentV1ClientWithWebSocket extends AgentV1Client {
     connect(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
@@ -209,6 +229,13 @@ export interface SpeakClientWithWebSockets extends SpeakClient {
 export interface CustomDeepgramClientOptions extends DeepgramClient.Options {
     accessToken?: core.Supplier<string | undefined>;
     transportFactory?: DeepgramTransportFactory;
+    /**
+     * Node.js `http`/`https` agent applied to every streaming WebSocket
+     * connection — e.g. an `HttpsProxyAgent` to route traffic through a proxy.
+     * A per-connection `agent` passed to `connect()` / `createConnection()`
+     * overrides this default. Node-only; ignored in the browser. See {@link WebSocketAgentArg}.
+     */
+    agent?: HttpAgent;
     /**
      * Whether the SDK should retry streaming connections at the wrapper level
      * after a transport failure. Defaults to `true` for native websocket
@@ -432,6 +459,26 @@ function getTransportFactory(options: DeepgramClient.Options): DeepgramTransport
 
 function getReconnect(options: DeepgramClient.Options): boolean {
     return (options as CustomDeepgramClientOptions).reconnect !== false;
+}
+
+function getAgent(options: DeepgramClient.Options): HttpAgent | undefined {
+    return (options as CustomDeepgramClientOptions).agent;
+}
+
+/**
+ * Returns a `ws` WebSocket subclass that injects `agent` into the options the
+ * underlying `ws` constructor receives. {@link ReconnectingWebSocket} only ever
+ * sets `headers` on that object, so wrapping the class here is how we route the
+ * connection through a proxy without patching generated code.
+ *
+ * @internal Exported only for unit testing; not part of the public API.
+ */
+export function createAgentInjectingWebSocket(Base: any, agent: HttpAgent): any {
+    return class AgentInjectingWebSocket extends Base {
+        constructor(url: string, protocols?: string | string[], wsOptions?: Record<string, unknown>) {
+            super(url, protocols, { ...wsOptions, agent });
+        }
+    };
 }
 
 class TransportWebSocketAdapter {
@@ -864,22 +911,28 @@ class TransportWebSocketAdapter {
  * In Node.js, use the 'ws' library which supports headers.
  * In browser, use Sec-WebSocket-Protocol for authentication since headers aren't supported.
  */
-function getWebSocketOptions(headers: Record<string, unknown>, requestedProtocols: string[]): { 
-    WebSocket?: any; 
-    headers?: Record<string, unknown>; 
+function getWebSocketOptions(
+    headers: Record<string, unknown>,
+    requestedProtocols: string[],
+    agent?: HttpAgent,
+): {
+    WebSocket?: any;
+    headers?: Record<string, unknown>;
     protocols?: string[];
 } {
     const options: { WebSocket?: any; headers?: Record<string, unknown>; protocols?: string[] } = {};
-    
+
     // Check if we're in a browser environment (browser or web-worker)
     const isBrowser = RUNTIME.type === "browser" || RUNTIME.type === "web-worker";
-    
+
     // Extract session ID header
     const sessionIdHeader = headers["x-deepgram-session-id"] || headers["X-Deepgram-Session-Id"];
-    
+
     // In Node.js, ensure we use the 'ws' library which supports headers
     if (RUNTIME.type === "node" && NodeWebSocket) {
-        options.WebSocket = NodeWebSocket;
+        // When an agent is supplied (e.g. an HttpsProxyAgent), wrap ws so it is
+        // injected into the connection. The browser branch below ignores it.
+        options.WebSocket = agent ? createAgentInjectingWebSocket(NodeWebSocket, agent) : NodeWebSocket;
         options.headers = headers;
         if (requestedProtocols.length > 0) {
             options.protocols = requestedProtocols;
@@ -1031,6 +1084,7 @@ async function createWebSocketConnection({
     reconnectAttempts,
     connectionTimeoutInSeconds,
     abortSignal,
+    agent,
 }: {
     options: DeepgramClient.Options;
     urlPath: string;
@@ -1043,6 +1097,7 @@ async function createWebSocketConnection({
     reconnectAttempts?: number;
     connectionTimeoutInSeconds?: number;
     abortSignal?: AbortSignal;
+    agent?: HttpAgent;
 }): Promise<ReconnectingWebSocket> {
     // Ensure ws is loaded for Node.js environments (no-op after first call)
     await loadNodeWebSocket();
@@ -1095,8 +1150,10 @@ async function createWebSocketConnection({
         }) as unknown as ReconnectingWebSocket;
     }
 
-    // Get WebSocket options with proper header handling
-    const wsOptions = getWebSocketOptions(_headers, normalizedProtocols);
+    // Get WebSocket options with proper header handling. A per-connection agent
+    // overrides the client-level agent; both are Node-only and ignored elsewhere.
+    const effectiveAgent = agent ?? getAgent(options);
+    const wsOptions = getWebSocketOptions(_headers, normalizedProtocols, effectiveAgent);
 
     // Create and return the ReconnectingWebSocket
     return new ReconnectingWebSocket({
@@ -1124,8 +1181,8 @@ async function createWebSocketConnection({
  * connection setup, authentication, and header handling.
  */
 class WrappedAgentV1Client extends AgentV1Client {
-    public async connect(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+    public async connect(args: AgentV1ConnectionArgs = {}): Promise<AgentV1Socket> {
+        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1139,6 +1196,7 @@ class WrappedAgentV1Client extends AgentV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            agent,
         });
 
         return new WrappedAgentV1Socket({ socket });
@@ -1157,7 +1215,7 @@ class WrappedAgentV1Client extends AgentV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
+    public async createConnection(args: AgentV1ConnectionArgs = {}): Promise<AgentV1Socket> {
         return this.connect(args);
     }
 }
@@ -1209,8 +1267,8 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedListenV1Client extends ListenV1Client {
-    public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+    public async connect(args: ListenV1ConnectionArgs): Promise<ListenV1Socket> {
+        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1224,6 +1282,7 @@ class WrappedListenV1Client extends ListenV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            agent,
         });
 
         return new WrappedListenV1Socket({ socket });
@@ -1242,7 +1301,7 @@ class WrappedListenV1Client extends ListenV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
+    public async createConnection(args: ListenV1ConnectionArgs): Promise<ListenV1Socket> {
         return this.connect(args);
     }
 }
@@ -1293,13 +1352,8 @@ class WrappedListenV1Socket extends ListenV1Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedListenV2Client extends ListenV2Client {
-    public async connect(
-        args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
-            Authorization?: string;
-            keyterm?: string | string[];
-        }
-    ): Promise<ListenV2Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+    public async connect(args: ListenV2ConnectionArgs): Promise<ListenV2Socket> {
+        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1313,6 +1367,7 @@ class WrappedListenV2Client extends ListenV2Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            agent,
         });
 
         return new WrappedListenV2Socket({ socket });
@@ -1331,7 +1386,7 @@ class WrappedListenV2Client extends ListenV2Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & { Authorization?: string; keyterm?: string | string[] }): Promise<ListenV2Socket> {
+    public async createConnection(args: ListenV2ConnectionArgs): Promise<ListenV2Socket> {
         return this.connect(args);
     }
 }
@@ -1418,8 +1473,8 @@ class WrappedListenV2Socket extends ListenV2Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
-    public async connect(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+    public async connect(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket> {
+        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1433,6 +1488,7 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            agent,
         });
 
         return new WrappedSpeakV1Socket({ socket });
@@ -1451,7 +1507,7 @@ class WrappedSpeakV1Client extends SpeakV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
+    public async createConnection(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket> {
         return this.connect(args);
     }
 }

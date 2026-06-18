@@ -3,3 +3,6 @@ node_modules
 /dist
 *.wav
 examples/browser/deepgram.js
+.env
+.env.*
+!.env.example
