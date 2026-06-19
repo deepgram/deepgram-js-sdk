@@ -4,9 +4,6 @@ import { HeaderAuthProvider } from "./auth/HeaderAuthProvider.js";
 import { mergeHeaders } from "./core/headers.js";
 import * as core from "./core/index.js";
 import type * as environments from "./environments.js";
-// Derive the SDK version from the single source of truth (src/version.ts), which
-// carries the release-please marker. Avoids a second hardcoded version that drifts.
-import { SDK_VERSION } from "./version.js";
 
 export type AuthOption =
     | false
@@ -63,8 +60,8 @@ export function normalizeClientOptions<T extends BaseClientOptions = BaseClientO
         {
             "X-Fern-Language": "JavaScript",
             "X-Fern-SDK-Name": "@deepgram/sdk",
-            "X-Fern-SDK-Version": SDK_VERSION,
-            "User-Agent": `@deepgram/sdk/${SDK_VERSION}`,
+            "X-Fern-SDK-Version": "5.4.1",
+            "User-Agent": "@deepgram/sdk/5.4.1",
             "X-Fern-Runtime": core.RUNTIME.type,
             "X-Fern-Runtime-Version": core.RUNTIME.version,
         },

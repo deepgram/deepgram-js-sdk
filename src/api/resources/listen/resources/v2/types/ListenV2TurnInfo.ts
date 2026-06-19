@@ -71,9 +71,9 @@ export namespace ListenV2TurnInfo {
             /** Confidence that this word was transcribed correctly */
             confidence: number;
             /** The start time of the word */
-            start: number;
+            start?: number | undefined;
             /** The end time of the word */
-            end: number;
+            end?: number | undefined;
         }
     }
 }
