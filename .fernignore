@@ -63,17 +63,17 @@ AGENTS.md
 # examples), playwright (make browser), vite + terser (pinned for the .npmrc
 # minimum-release-age + strict-peer-deps policy, not used directly), and bump
 # @types/node forward to ^20. Swap to package.json.bak before regen.
-package.json.bak
+package.json
 
 # src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts:
 # keep manage.v1.projects.keys.create(request?) source-compatible with older
 # callers that omit the request body. Swap to .bak before regen.
-src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts.bak
+src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts
 
 # src/api/types/CreateKeyV1Request.ts: preserve the old exported
 # CreateKeyV1RequestOne alias alongside CreateKeyV1Request. Swap to .bak before
 # regen.
-src/api/types/CreateKeyV1Request.ts.bak
+src/api/types/CreateKeyV1Request.ts
 
 # src/api/resources/agent/resources/v1/types/AgentV1Settings.ts: backward-compat
 # patch for the AgentV1Settings.Agent namespace. The 2026-05-06 regen restructured
@@ -87,7 +87,7 @@ src/api/types/CreateKeyV1Request.ts.bak
 # want it in types. Mirrors the Python SDK's compat shims for the same regen.
 # Regression coverage in tests/unit/compat-aliases.test.ts.
 # Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1Settings.ts.bak
+src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
 
 # src/api/types/DeepgramListenProviderV2.ts: the 2026-06-16 regen replaced the
 # `language_hint` (string | string[]) field with `language_hints?: string[]` and
@@ -98,7 +98,7 @@ src/api/resources/agent/resources/v1/types/AgentV1Settings.ts.bak
 # SDK's DeepgramListenProviderV2LanguageHint shim. Also re-adds the deprecated
 # `language_hint` field (renamed to `language_hints` by the regen) as an optional
 # compat field so existing call sites keep compiling. Swap to .bak before regen.
-src/api/types/DeepgramListenProviderV2.ts.bak
+src/api/types/DeepgramListenProviderV2.ts
 
 # src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts: the 2026-06-16
 # regen corrected the `type` field to the literal "CloseStream" and dropped the
@@ -106,7 +106,7 @@ src/api/types/DeepgramListenProviderV2.ts.bak
 # copied from v1's control-message enum). We restore the `Type` namespace with ONLY
 # the valid "CloseStream" value so existing `ListenV2CloseStream.Type` references keep
 # compiling without resurrecting the invalid values. Swap to .bak before regen.
-src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts.bak
+src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts
 
 # NOTE: AgentV1SettingsAgentListenProvider.ts was UNFROZEN in the 2026-06-16 regen.
 # The generator now emits a type structurally equal to
@@ -119,7 +119,7 @@ src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts.bak
 # `examples/browser/deepgram.js` bundle produced by `make browser-serve`, which
 # is .gitignored but not biome-ignored. We restore `useIgnoreFile: true` so the
 # generated browser artifact stays out of lint. Swap to .bak before regen.
-biome.json.bak
+biome.json
 
 # src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts:
 # the 2026-05-14 regen consolidated listen-provider sub-types into top-level
@@ -129,7 +129,7 @@ biome.json.bak
 # DeepgramListenProviderV2.LanguageHint so deep imports keep resolving.
 # Regression coverage in tests/unit/compat-aliases.test.ts.
 # Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts.bak
+src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts
 
 # src/Client.ts: the 2026-05-14 regen switched the `client.fetch()` passthrough
 # helper's default baseUrl from `base` (api.deepgram.com) to `agentRest`
@@ -138,18 +138,18 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProv
 # supported in the SDK and should default to the canonical Deepgram REST host.
 # Likely a Fern generator artifact — when the upstream fix lands, drop this
 # entry. Swap to .bak before regen.
-src/Client.ts.bak
+src/Client.ts
 
 # src/version.ts is the single source of truth for the SDK version. It carries the
 # inline `// x-release-please-version` marker and is the only file release-please
 # updates for the version (see .github/release-please-config.json extra-files).
 # Fern emits it without the marker, so we freeze it to preserve the marker.
 # Swap to .bak before regen.
-src/version.ts.bak
+src/version.ts
 
 # src/BaseClient.ts is frozen only to keep its one-line patch deriving the SDK
 # version from src/version.ts (`import { SDK_VERSION }` + ``@deepgram/sdk/${SDK_VERSION}``)
 # instead of Fern's hardcoded version string — so the User-Agent never drifts and
 # the version lives in exactly one place. Re-apply that import patch after regen;
 # take all of Fern's other BaseClient changes. Swap to .bak before regen.
-src/BaseClient.ts.bak
+src/BaseClient.ts
