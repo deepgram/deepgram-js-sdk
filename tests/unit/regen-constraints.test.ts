@@ -22,16 +22,13 @@ describe("2026-06-16 regen constraints & compat shims", () => {
             expect(JSON.parse(JSON.stringify(msg))).toEqual({ type: "CloseStream" });
         });
 
-        it("Type shim exposes only CloseStream (Finalize/KeepAlive were dropped)", () => {
+        it("Type shim keeps Finalize/KeepAlive for backward compatibility (deprecated)", () => {
             expect(Deepgram.listen.v2.ListenV2CloseStream.Type.CloseStream).toBe("CloseStream");
-            expect(Object.keys(Deepgram.listen.v2.ListenV2CloseStream.Type)).toEqual(["CloseStream"]);
 
-            // @ts-expect-error `Finalize` was a bogus v1-copied member, removed from the v2 Type shim.
-            const _noFinalize = Deepgram.listen.v2.ListenV2CloseStream.Type.Finalize;
-            // @ts-expect-error `KeepAlive` was a bogus v1-copied member, removed from the v2 Type shim.
-            const _noKeepAlive = Deepgram.listen.v2.ListenV2CloseStream.Type.KeepAlive;
-            expect(_noFinalize).toBeUndefined();
-            expect(_noKeepAlive).toBeUndefined();
+            // Finalize/KeepAlive are deprecated but retained so existing references still
+            // compile — removing them would be a breaking change.
+            expect(Deepgram.listen.v2.ListenV2CloseStream.Type.Finalize).toBe("Finalize");
+            expect(Deepgram.listen.v2.ListenV2CloseStream.Type.KeepAlive).toBe("KeepAlive");
         });
     });
 

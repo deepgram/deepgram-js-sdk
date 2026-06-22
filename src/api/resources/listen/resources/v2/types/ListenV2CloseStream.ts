@@ -6,17 +6,17 @@ export interface ListenV2CloseStream {
 }
 
 export namespace ListenV2CloseStream {
-    // Backward-compat shim: the original generated `Type` enum erroneously included
-    // "Finalize"/"KeepAlive" (copied from v1's control-message enum). The 2026-06-16
-    // regen corrected the field to the literal "CloseStream" and dropped the `Type`
-    // namespace entirely. We restore the namespace with ONLY the valid "CloseStream"
-    // value so existing `ListenV2CloseStream.Type` references keep compiling, without
-    // resurrecting the invalid values. Frozen in .fernignore.
+    // A CloseStream message's `type` is always "CloseStream". `Finalize`/`KeepAlive` are
+    // deprecated and retained only for backward compatibility; they will be removed in the
+    // next major. Frozen in .fernignore.
     export const Type = {
+        /** @deprecated Use "CloseStream". Retained for backward compatibility. */
+        Finalize: "Finalize",
         CloseStream: "CloseStream",
+        /** @deprecated Use "CloseStream". Retained for backward compatibility. */
+        KeepAlive: "KeepAlive",
     } as const;
     // Keep the `| string` openness the original generated type had, so any existing
     // assignment to `ListenV2CloseStream.Type` keeps compiling (no narrowing break).
-    // Only the bogus `Finalize`/`KeepAlive` const members are dropped.
     export type Type = (typeof Type)[keyof typeof Type] | string;
 }
