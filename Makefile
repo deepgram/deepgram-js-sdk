@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 test test-esm lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 test test-esm typecheck-tests lint build browser browser-serve
 
 # Default target
 help:
@@ -283,6 +283,14 @@ example-36:
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
 	pnpm exec biome format --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
+	$(MAKE) typecheck-tests
+
+# Type-check the backward-compat / regen type-assertion safety nets.
+# vitest strips types at runtime and `make build` only covers `src`, so the
+# Equals<>/@ts-expect-error assertions in these tests would otherwise never gate
+# a build. See tsconfig.typecheck.json for the (intentionally focused) scope.
+typecheck-tests:
+	pnpm exec tsc --noEmit -p tsconfig.typecheck.json
 
 build:
 	pnpm --package=typescript --package=tsup dlx tsup src/index.ts --out-dir dist/browser --format iife --global-name Deepgram --clean --platform browser

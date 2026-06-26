@@ -1,3 +1,4 @@
+export * from "./DiarizeModel.js";
 export * from "./ListenV1CloseStream.js";
 export * from "./ListenV1Finalize.js";
 export * from "./ListenV1KeepAlive.js";

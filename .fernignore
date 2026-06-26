@@ -89,15 +89,30 @@ src/api/types/CreateKeyV1Request.ts
 # Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
 
-# src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts:
-# the 2026-05-06 regen renamed this type to AgentV1SettingsAgentContextListenProvider
-# (the new V2 adds an optional language_hint field). We replace the regenerated
-# duplicate with a one-line type alias to the new canonical name so pinned-name
-# callers (`const p: AgentV1SettingsAgentListenProvider = ...`) keep compiling
-# without a cast. Purely additive at the type level — the old V2 is a subset of
-# the new V2. Regression coverage in tests/unit/compat-aliases.test.ts.
-# Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentListenProvider.ts
+# src/api/types/DeepgramListenProviderV2.ts: the 2026-06-16 regen replaced the
+# `language_hint` (string | string[]) field with `language_hints?: string[]` and
+# dropped the `DeepgramListenProviderV2.LanguageHint` namespace type. The nested
+# AgentV1SettingsAgentContextListenProviderV2.LanguageHint alias and the
+# compat-aliases regression test still reference it, so we recreate the namespace
+# (declaration merge) in this generated file and freeze it. Mirrors the Python
+# SDK's DeepgramListenProviderV2LanguageHint shim. Also re-adds the deprecated
+# `language_hint` field (renamed to `language_hints` by the regen) as an optional
+# compat field so existing call sites keep compiling. Swap to .bak before regen.
+src/api/types/DeepgramListenProviderV2.ts
+
+# src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts: the 2026-06-16
+# regen corrected the `type` field to the literal "CloseStream" and dropped the
+# `ListenV2CloseStream.Type` namespace (which wrongly included "Finalize"/"KeepAlive"
+# copied from v1's control-message enum). We restore the `Type` namespace with ONLY
+# the valid "CloseStream" value so existing `ListenV2CloseStream.Type` references keep
+# compiling without resurrecting the invalid values. Swap to .bak before regen.
+src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts
+
+# NOTE: AgentV1SettingsAgentListenProvider.ts was UNFROZEN in the 2026-06-16 regen.
+# The generator now emits a type structurally equal to
+# AgentV1SettingsAgentContextListenProvider (verified by the Equals<> assertion in
+# tests/unit/compat-aliases.test.ts), so the hand-written alias is no longer needed
+# and Fern owns the file again.
 
 # biome.json: Fern's generator emits `"vcs": { "enabled": false }`, which makes
 # biome lint every tracked-or-untracked file under the repo — including the
@@ -124,3 +139,17 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProv
 # Likely a Fern generator artifact — when the upstream fix lands, drop this
 # entry. Swap to .bak before regen.
 src/Client.ts
+
+# src/version.ts is the single source of truth for the SDK version. It carries the
+# inline `// x-release-please-version` marker and is the only file release-please
+# updates for the version (see .github/release-please-config.json extra-files).
+# Fern emits it without the marker, so we freeze it to preserve the marker.
+# Swap to .bak before regen.
+src/version.ts
+
+# src/BaseClient.ts is frozen only to keep its one-line patch deriving the SDK
+# version from src/version.ts (`import { SDK_VERSION }` + ``@deepgram/sdk/${SDK_VERSION}``)
+# instead of Fern's hardcoded version string — so the User-Agent never drifts and
+# the version lives in exactly one place. Re-apply that import patch after regen;
+# take all of Fern's other BaseClient changes. Swap to .bak before regen.
+src/BaseClient.ts

@@ -1,14 +1,15 @@
 import { describe, it, expect } from "vitest";
-import type {
-    AgentV1Settings,
-    AgentV1SettingsAgentContextListenProvider,
-    AgentV1SettingsAgentListenProvider,
-    CreateKeyV1Request,
-    CreateKeyV1RequestOne,
-    DeepgramClient,
-    DeepgramListenProviderV2,
-} from "../../src";
+import type { CreateKeyV1Request, CreateKeyV1RequestOne, DeepgramClient, DeepgramListenProviderV2 } from "../../src";
 import { Deepgram } from "../../src";
+
+// The Agent* compat types are exported only under the `Deepgram.agent.*`
+// namespace, not the top-level barrel. Alias them via TS import-equals (not
+// `type` aliases) so the nested namespace paths exercised below — e.g.
+// `AgentV1Settings.Agent.Context` — keep resolving. These are erased at
+// compile time exactly like the named type imports they replace.
+import AgentV1Settings = Deepgram.agent.AgentV1Settings;
+import AgentV1SettingsAgentContextListenProvider = Deepgram.agent.AgentV1SettingsAgentContextListenProvider;
+import AgentV1SettingsAgentListenProvider = Deepgram.agent.AgentV1SettingsAgentListenProvider;
 
 // Type-only handle for compile-time call-site assertions. Never assigned at
 // runtime — the `declare` binding lets us write expressions like

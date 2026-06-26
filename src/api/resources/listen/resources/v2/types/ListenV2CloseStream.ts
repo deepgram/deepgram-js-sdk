@@ -6,11 +6,17 @@ export interface ListenV2CloseStream {
 }
 
 export namespace ListenV2CloseStream {
-    /** Message type identifier */
+    // A CloseStream message's `type` is always "CloseStream". `Finalize`/`KeepAlive` are
+    // deprecated and retained only for backward compatibility; they will be removed in the
+    // next major. Frozen in .fernignore.
     export const Type = {
+        /** @deprecated Use "CloseStream". Retained for backward compatibility. */
         Finalize: "Finalize",
         CloseStream: "CloseStream",
+        /** @deprecated Use "CloseStream". Retained for backward compatibility. */
         KeepAlive: "KeepAlive",
     } as const;
+    // Keep the `| string` openness the original generated type had, so any existing
+    // assignment to `ListenV2CloseStream.Type` keeps compiling (no narrowing break).
     export type Type = (typeof Type)[keyof typeof Type] | string;
 }
