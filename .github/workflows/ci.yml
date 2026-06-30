@@ -77,9 +77,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --no-optional=false
 
-      - name: Install coverage provider
-        run: pnpm add -D @vitest/coverage-v8@4
-
       - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
