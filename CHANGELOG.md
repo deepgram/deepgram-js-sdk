@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.5.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.4.0...v5.5.0) (2026-06-26)
+
+
+### Features
+
+* **regen:** flux word timings, diarize_model, profanity_filter ([#509](https://github.com/deepgram/deepgram-js-sdk/issues/509)) ([e8be8ca](https://github.com/deepgram/deepgram-js-sdk/commit/e8be8caee204776919ad8f6f6b6986b430fa39c2))
+
 ## [5.4.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.3.0...v5.4.0) (2026-06-01)
 
 

@@ -6,6 +6,7 @@ import * as errors from "../errors/index.js";
 const PARAM_KEY = "apiKey" as const;
 const ENV_HEADER_KEY = "DEEPGRAM_API_KEY" as const;
 const HEADER_NAME = "Authorization" as const;
+const HEADER_PREFIX = "Token " as const;
 
 export class HeaderAuthProvider implements core.AuthProvider {
     private readonly options: HeaderAuthProvider.Options;
@@ -31,7 +32,7 @@ export class HeaderAuthProvider implements core.AuthProvider {
         }
 
         return {
-            headers: { [HEADER_NAME]: headerValue },
+            headers: { [HEADER_NAME]: `${HEADER_PREFIX}${headerValue}` },
         };
     }
 }

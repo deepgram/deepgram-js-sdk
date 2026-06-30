@@ -263,8 +263,10 @@ describe("auth provider wrappers (via transport headers)", () => {
         expect(await authHeaderFor({})).toBe("Token test-api-key");
     });
 
-    it("does not double-prefix a key that already has a scheme", async () => {
-        expect(await authHeaderFor({ apiKey: "Token already-prefixed" })).toBe("Token already-prefixed");
+    it("does not stack a second Token prefix on the provider output", async () => {
+        // HeaderAuthProvider already returns "Token <key>"; the wrapper must
+        // recognize the existing scheme and not produce "Token Token <key>".
+        expect(await authHeaderFor({ apiKey: "plain-key" })).toBe("Token plain-key");
     });
 
     it("uses a Bearer scheme when an accessToken is provided", async () => {

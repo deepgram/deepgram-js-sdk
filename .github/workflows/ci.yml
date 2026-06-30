@@ -83,12 +83,11 @@ jobs:
           name: dist
           path: dist/
 
+      - name: Typecheck tests (compat-alias / regen safety nets)
+        run: make typecheck-tests
+
       - name: Test with coverage
-        run: |
-          node scripts/fix-wire-test-imports.js
-          pnpm exec vitest run --project unit --project wire \
-            --coverage --coverage.provider=v8 \
-            --coverage.reporter=cobertura --coverage.reporter=text
+        run: make test-coverage
 
       - name: Test ESM
         run: make test-esm
