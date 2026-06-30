@@ -9,10 +9,10 @@ export default defineConfig({
                     globals: true,
                     name: "unit",
                     environment: "node",
-                    root: "./tests",
-                    include: ["**/*.test.{js,ts,jsx,tsx}"],
-                    exclude: ["wire/**", "browser/**"],
-                    setupFiles: ["./setup.ts"],
+                    root: ".",
+                    include: ["tests/**/*.test.{js,ts,jsx,tsx}"],
+                    exclude: ["tests/wire/**", "tests/browser/**"],
+                    setupFiles: ["./tests/setup.ts"],
                 },
             },
             {
@@ -20,8 +20,9 @@ export default defineConfig({
                     globals: true,
                     name: "wire",
                     environment: "node",
-                    root: "./tests/wire",
-                    setupFiles: ["../setup.ts", "../mock-server/setup.ts"],
+                    root: ".",
+                    include: ["tests/wire/**/*.test.{js,ts,jsx,tsx}"],
+                    setupFiles: ["./tests/setup.ts", "./tests/mock-server/setup.ts"],
                 },
             },
             {
@@ -38,6 +39,11 @@ export default defineConfig({
             },
         ],
         passWithNoTests: true,
+        coverage: {
+            provider: "v8",
+            include: ["src/**/*.ts"],
+            reportsDirectory: "./coverage",
+        },
     },
     resolve: {
         alias: {
