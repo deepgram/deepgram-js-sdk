@@ -244,6 +244,49 @@ describe("ReconnectingWebSocket listener management", () => {
         expect(rws.url).toBe("");
         expect(rws.binaryType).toBe("blob");
     });
+
+    it("ignores add/remove/dispatch for unknown event types", async () => {
+        const rws = makeRws({ startClosed: true });
+        rws.addEventListener("bogus" as never, (() => {}) as never);
+        rws.removeEventListener("bogus" as never, (() => {}) as never);
+        expect(rws.dispatchEvent({ type: "bogus", target: rws } as never)).toBe(true);
+    });
+});
+
+describe("ReconnectingWebSocket reconnect and retry limits", () => {
+    it("reconnect() disconnects an open socket and connects again", async () => {
+        const rws = makeRws();
+        await settle();
+        MockWebSocket.instances[0]!.emitOpen();
+        rws.reconnect(1000, "cycling");
+        await settle();
+        expect(MockWebSocket.instances[0]!.closeArgs.length).toBeGreaterThan(0);
+    });
+
+    it("stops after maxRetries consecutive abnormal closes", async () => {
+        const rws = makeRws({ maxRetries: 1 });
+        await settle();
+        rws.onerror = () => {};
+        MockWebSocket.instances[0]!.emitOpen();
+        // retryCount is 0; first abnormal close reconnects (retryCount -> 1)
+        MockWebSocket.instances[0]!.emit("close", { type: "close", code: 1006, target: null });
+        await settle();
+        const afterFirst = MockWebSocket.instances.length;
+        // second abnormal close hits retryCount >= maxRetries and stops
+        MockWebSocket.instances.at(-1)!.emit("close", { type: "close", code: 1006, target: null });
+        await settle();
+        expect(MockWebSocket.instances.length).toBe(afterFirst);
+    });
+
+    it("throws synchronously when no valid WebSocket class is available", () => {
+        expect(
+            () =>
+                new ReconnectingWebSocket({
+                    url: "wss://x",
+                    options: { WebSocket: {} as never },
+                }),
+        ).toThrow("No valid WebSocket class provided");
+    });
 });
 
 describe("ReconnectingWebSocket url providers", () => {

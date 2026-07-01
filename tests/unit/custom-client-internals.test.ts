@@ -278,6 +278,213 @@ describe("auth provider wrappers (via transport headers)", () => {
     });
 });
 
+describe("TransportWebSocketAdapter branch edges", () => {
+    it("sends directly once the transport is open", async () => {
+        const { adapter, transports } = await makeAdapter();
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        adapter.send("direct");
+        expect(transports[0]!.sent).toContain("direct");
+    });
+
+    it("emits debug logging when debug is enabled", async () => {
+        const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+        const { adapter, transports } = await makeAdapter({}, { debug: true });
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        adapter.send("x");
+        expect(spy).toHaveBeenCalled();
+        spy.mockRestore();
+    });
+
+    it("normalizes a single (non-array) protocol", async () => {
+        const { adapter } = await makeAdapter({}, { protocols: "solo" });
+        expect(adapter.protocol).toBe("solo");
+    });
+
+    it("reconnect() closes an active transport before reconnecting", async () => {
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        adapter.reconnect();
+        await flush();
+        expect(transports[0]!.closed).toBe(true);
+        expect(transports.length).toBe(2);
+    });
+
+    it("ignores events from a stale transport after reconnecting", async () => {
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        const messages: unknown[] = [];
+        adapter.onmessage = (e: MessageEvent) => messages.push(e.data);
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        // abnormal close triggers a reconnect; transports[1] becomes active
+        transports[0]!.listeners.close?.({ code: 1006 });
+        await flush();
+        expect(transports.length).toBe(2);
+        // events from the now-stale first transport must be ignored
+        transports[0]!.listeners.open?.();
+        transports[0]!.emitMessage("stale");
+        transports[0]!.listeners.error?.(new Error("stale"));
+        transports[0]!.listeners.close?.({ code: 1006 });
+        expect(messages).not.toContain("stale");
+    });
+
+    it("emits close with default code/reason when the transport omits them", async () => {
+        const { adapter, transports } = await makeAdapter();
+        let closeEvent: { code: number; reason: string } | undefined;
+        adapter.onclose = (e: { code: number; reason: string }) => {
+            closeEvent = e;
+        };
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.listeners.close?.({});
+        expect(closeEvent?.code).toBe(1000);
+        expect(closeEvent?.reason).toBe("");
+    });
+
+    it("ignores a duplicate open event", async () => {
+        const { adapter, transports } = await makeAdapter();
+        let opens = 0;
+        adapter.onopen = () => {
+            opens += 1;
+        };
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.emitOpen();
+        expect(opens).toBe(1);
+    });
+
+    it("abort after close() is a no-op", async () => {
+        const controller = new AbortController();
+        const { adapter } = await makeAdapter({}, { abortSignal: controller.signal });
+        adapter.close(1000, "done");
+        controller.abort();
+        expect(adapter.readyState).toBe(adapter.CLOSED);
+    });
+
+    it("dispatchEvent with no registered listeners of that type still returns true", async () => {
+        const { adapter } = await makeAdapter();
+        expect(adapter.dispatchEvent({ type: "close", target: adapter })).toBe(true);
+    });
+
+    it("handles a transport that does not expose ping()", async () => {
+        const created: Array<Record<string, unknown>> = [];
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            reconnect: true,
+            transportFactory: () => {
+                // deliberately no `ping` method
+                const t = new FakeTransport() as unknown as Record<string, unknown>;
+                delete t.ping;
+                created.push(t);
+                return t as unknown as DeepgramTransport;
+            },
+        });
+        const wrapped = await client.listen.v2.createConnection({ model: "flux-general-en" });
+        const adapter = (wrapped as unknown as { socket: { reconnect: () => void } }).socket;
+        adapter.reconnect();
+        await flush();
+        (created[0] as unknown as FakeTransport).emitOpen();
+        // pinging when the transport has no ping is a no-op that must not throw
+        expect(() => (wrapped as unknown as { ping: (d?: string) => void }).ping("x")).not.toThrow();
+    });
+});
+
+describe("WrappedListenV2Socket.ping error paths", () => {
+    it("throws when the socket is not connected yet", async () => {
+        const { client } = makeClient();
+        const socket = await client.listen.v2.createConnection({ model: "flux-general-en" });
+        expect(() => (socket as unknown as { ping: () => void }).ping()).toThrow("not connected");
+    });
+});
+
+describe("ApiKeyAuthProviderWrapper header normalization", () => {
+    // The wrapper sits on the top-level client's authProvider; call it directly.
+    async function wrappedAuthHeader(authImpl: () => Promise<{ headers: Record<string, string> }>) {
+        const client = new DeepgramClient({ auth: authImpl } as never);
+        // biome-ignore lint/suspicious/noExplicitAny: reaching the internal wrapped provider
+        const request = await (client as any)._options.authProvider.getAuthRequest();
+        return request.headers?.Authorization ?? request.headers?.authorization;
+    }
+
+    it("adds a Token prefix to a scheme-less header", async () => {
+        expect(await wrappedAuthHeader(async () => ({ headers: { Authorization: "rawkey" } }))).toBe("Token rawkey");
+    });
+
+    it("reads a lowercase authorization header and prefixes it", async () => {
+        expect(await wrappedAuthHeader(async () => ({ headers: { authorization: "rawlower" } }))).toBe(
+            "Token rawlower",
+        );
+    });
+
+    it("leaves an already-Bearer header untouched", async () => {
+        expect(await wrappedAuthHeader(async () => ({ headers: { Authorization: "Bearer xyz" } }))).toBe("Bearer xyz");
+    });
+
+    it("passes through when the provider yields no auth header", async () => {
+        expect(await wrappedAuthHeader(async () => ({ headers: {} }))).toBeUndefined();
+    });
+});
+
+describe("createWebSocketConnection helper branches", () => {
+    it("skips null header values and ignores non-object queryParams", async () => {
+        const { adapter, created } = await makeAdapter(
+            {},
+            { headers: { "x-null": null, "x-real": "1" }, queryParams: "not-an-object" as never },
+        );
+        adapter.reconnect();
+        await flush();
+        expect(created[0]?.headers["x-real"]).toBe("1");
+        expect(created[0]?.headers["x-null"]).toBeUndefined();
+    });
+
+    it("merges an explicit queryParams object into the query string", async () => {
+        const { adapter } = await makeAdapter({}, { queryParams: { extra: "yes" } });
+        expect(adapter.url).toContain("extra=yes");
+    });
+});
+
+describe("TransportWebSocketAdapter debug + abort lifecycle", () => {
+    it("logs every lifecycle step when debug is enabled", async () => {
+        const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+        const { adapter, transports } = await makeAdapter({}, { debug: true, reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.send("queued");
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.emitMessage("hi");
+        transports[0]!.listeners.error?.(new Error("boom"));
+        await flush();
+        expect(spy).toHaveBeenCalled();
+        spy.mockRestore();
+    });
+
+    it("closes the active transport and emits close when aborted mid-stream", async () => {
+        const controller = new AbortController();
+        const { adapter, transports } = await makeAdapter({}, { abortSignal: controller.signal, debug: true });
+        let closed = false;
+        adapter.onclose = () => {
+            closed = true;
+        };
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        controller.abort();
+        expect(closed).toBe(true);
+        expect(transports[0]!.closed).toBe(true);
+    });
+});
+
 describe("CustomDeepgramClient surface", () => {
     it("exposes a stable session id and reconnect flag", () => {
         const client = new DeepgramClient({
