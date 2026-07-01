@@ -56,6 +56,18 @@ describe("runtime detection", () => {
         expect(runtime.type).toBe("web-worker");
     });
 
+    it("detects service and shared worker global scopes", async () => {
+        class ServiceWorkerGlobalScope {
+            importScripts() {}
+        }
+        expect((await detectWith({ self: new ServiceWorkerGlobalScope() })).type).toBe("web-worker");
+
+        class SharedWorkerGlobalScope {
+            importScripts() {}
+        }
+        expect((await detectWith({ self: new SharedWorkerGlobalScope() })).type).toBe("web-worker");
+    });
+
     it("detects Deno", async () => {
         const runtime = await detectWith({ Deno: { version: { deno: "1.40.0" } } });
         expect(runtime.type).toBe("deno");
