@@ -515,6 +515,7 @@
         "ts-loader": "^9.5.4",
         "@types/ws": "^8.18.1",
         "vitest": "^4.1.1",
+        "@vitest/coverage-v8": "^4.1.1",
         "msw": "2.11.2",
         "@types/node": "^20.17.57",
         "typescript": "~5.9.3",
