@@ -36,6 +36,17 @@ describe("browser websocket connection (getWebSocketOptions)", () => {
         expect(protocols).toContain("access-tok");
     });
 
+    it("uses a scheme-less auth header verbatim as a protocol", async () => {
+        const client = new DeepgramClient({ apiKey: "secret" });
+        // A connect-level Authorization header overrides the wrapped one; when it
+        // has no Token/Bearer scheme it is pushed as a protocol as-is.
+        const socket = await client.listen.v1.connect({
+            model: "nova-3",
+            headers: { Authorization: "custombare" },
+        });
+        expect(protocolsOf(socket)).toContain("custombare");
+    });
+
     it("carries the session id as a protocol pair", async () => {
         const client = new DeepgramClient({ apiKey: "secret-key" });
         const socket = await client.agent.v1.connect();
