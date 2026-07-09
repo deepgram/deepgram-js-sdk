@@ -32,9 +32,10 @@ Current permanently frozen files:
 - `tests/browser` — browser-specific test suite
 - `tests/esm-build.test.ts` — ESM build validation test
 - `tests/manual` — hand-written manual smoke scripts (e.g. `tests/manual/compat.ts` for the legacy `CreateKeyV1RequestOne` alias). Not picked up by vitest; run with `pnpm tsx`.
-- `tests/unit/*` — hand-written unit tests (includes `compat-aliases.test.ts`, the regression test that proves the legacy `CreateKeyV1RequestOne` type still resolves to `CreateKeyV1Request`)
+- `tests/unit/*` — hand-written unit tests (includes `compat-aliases.test.ts`, the regression test that proves the legacy `CreateKeyV1RequestOne` type still resolves to `CreateKeyV1Request`, and `regen-constraints.test.ts`, which exercises the runtime behavior of the compat shims — both must be listed explicitly in `.fernignore` or the generator deletes them). **Each `tests/unit/*.test.ts` file must have its own explicit `.fernignore` entry** — the glob here is descriptive, not literal; the generator honors only the exact paths listed.
 - `tests/wire/websocket` — hand-written WebSocket wire tests
 - `tests/wire/listen/v1/transcription.test.ts` — hand-written wire test
+- `tsconfig.typecheck.json` — hand-written type-check gate that compiles the compat/regen type-assertion tests (`compat-aliases.test.ts`, `regen-constraints.test.ts`) against `src` so a drifted shim fails `make typecheck-tests`. Not emitted by Fern; the generator deletes it each regen.
 - `vitest.config.mts` — test configuration
 - `Makefile` — development commands
 - `MIGRATION_GUIDE_V4_TO_V5.md` — migration documentation

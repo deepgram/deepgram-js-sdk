@@ -1,0 +1,23 @@
+{
+    // Focused type-check gate for the backward-compat / regen type-assertion
+    // safety nets. `pnpm build` only type-checks `src`, and vitest strips types
+    // at runtime, so the `Equals<>` / `satisfies` assertions in these files would
+    // otherwise never fail a build. This config compiles those specific test
+    // files against `src` so a drifted compat shim breaks `make typecheck-tests`.
+    //
+    // It intentionally does NOT cover the whole `tests/` tree: several unit tests
+    // use deliberate type-loose patterns (protected-field access, excess-property
+    // probes, mock shapes) that are not meant to type-check under strict rules.
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "declaration": false,
+        "isolatedDeclarations": false,
+        "rootDir": ".",
+        "types": ["vitest/globals", "node"]
+    },
+    "include": ["src", "tests/unit/compat-aliases.test.ts", "tests/unit/regen-constraints.test.ts"],
+    "exclude": ["node_modules", "dist"]
+}
