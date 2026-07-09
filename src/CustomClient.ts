@@ -10,10 +10,12 @@ import { V1Client as AgentV1Client } from "./api/resources/agent/resources/v1/cl
 import { V1Client as ListenV1Client } from "./api/resources/listen/resources/v1/client/Client.js";
 import { V2Client as ListenV2Client } from "./api/resources/listen/resources/v2/client/Client.js";
 import { V1Client as SpeakV1Client } from "./api/resources/speak/resources/v1/client/Client.js";
+import { V2Client as SpeakV2Client } from "./api/resources/speak/resources/v2/client/Client.js";
 import { V1Socket as AgentV1Socket } from "./api/resources/agent/resources/v1/client/Socket.js";
 import { V1Socket as ListenV1Socket } from "./api/resources/listen/resources/v1/client/Socket.js";
 import { V2Socket as ListenV2Socket } from "./api/resources/listen/resources/v2/client/Socket.js";
 import { V1Socket as SpeakV1Socket } from "./api/resources/speak/resources/v1/client/Socket.js";
+import { V2Socket as SpeakV2Socket } from "./api/resources/speak/resources/v2/client/Socket.js";
 import { mergeHeaders } from "./core/headers.js";
 import { fromJson } from "./core/json.js";
 import * as core from "./core/index.js";
@@ -172,6 +174,7 @@ export type ListenV2ConnectionArgs = Omit<ListenV2Client.ConnectArgs, "Authoriza
     keyterm?: string | string[];
 };
 export type SpeakV1ConnectionArgs = Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+export type SpeakV2ConnectionArgs = Omit<SpeakV2Client.ConnectArgs, "Authorization"> & { Authorization?: string };
 
 export interface AgentV1ClientWithWebSocket extends AgentV1Client {
     connect(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
@@ -193,6 +196,11 @@ export interface SpeakV1ClientWithWebSocket extends SpeakV1Client {
     createConnection(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket>;
 }
 
+export interface SpeakV2ClientWithWebSocket extends SpeakV2Client {
+    connect(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket>;
+    createConnection(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket>;
+}
+
 export interface AgentClientWithWebSockets extends AgentClient {
     readonly v1: AgentV1ClientWithWebSocket;
 }
@@ -204,6 +212,7 @@ export interface ListenClientWithWebSockets extends ListenClient {
 
 export interface SpeakClientWithWebSockets extends SpeakClient {
     readonly v1: SpeakV1ClientWithWebSocket;
+    readonly v2: SpeakV2ClientWithWebSocket;
 }
 
 /**
@@ -367,6 +376,10 @@ class WrappedListenClient extends ListenClientImpl {
 class WrappedSpeakClient extends SpeakClientImpl {
     public get v1() {
         return new WrappedSpeakV1Client(this._options);
+    }
+
+    public get v2() {
+        return new WrappedSpeakV2Client(this._options);
     }
 }
 
@@ -1511,6 +1524,102 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
     }
 
     public connect(): WrappedSpeakV1Socket {
+        // Remove duplicate listeners before calling super.connect()
+        const socketAny = this as any;
+        preventDuplicateEventListeners(this.socket, {
+            handleOpen: socketAny.handleOpen,
+            handleMessage: socketAny.handleMessage,
+            handleClose: socketAny.handleClose,
+            handleError: socketAny.handleError,
+        });
+
+        resetSocketConnectionState(this.socket);
+        super.connect();
+        this.setupBinaryHandling();
+        return this;
+    }
+}
+
+/**
+ * Wrapper for Speak V2Client (Flux streaming TTS) that ensures the custom
+ * websocket implementation is used.
+ *
+ * Mirrors WrappedSpeakV1Client: routes the connection through
+ * createWebSocketConnection so the auth provider, session headers, custom
+ * transports and wrapper-level reconnect all apply, instead of the raw
+ * generated client's ReconnectingWebSocket.
+ */
+class WrappedSpeakV2Client extends SpeakV2Client {
+    public async connect(
+        args: Omit<SpeakV2Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<SpeakV2Socket> {
+        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+
+        const socket = await createWebSocketConnection({
+            options: this._options,
+            urlPath: "/v2/speak",
+            environmentKey: "production",
+            queryParams: buildQueryParams(args as Record<string, unknown>),
+            protocols,
+            service: "speak.v2",
+            headers,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+        });
+
+        return new WrappedSpeakV2Socket({ socket });
+    }
+
+    /**
+     * Creates a WebSocket connection object without actually connecting.
+     * This is an alias for connect() with clearer naming - the returned socket
+     * is not connected until you call socket.connect().
+     *
+     * Usage:
+     * ```typescript
+     * const socket = await client.speak.v2.createConnection({ model: 'flux-alexis-en' });
+     * socket.on('open', () => console.log('Connected!'));
+     * socket.on('message', (audioData) => console.log('Audio received'));
+     * socket.connect(); // Actually initiates the connection
+     * ```
+     */
+    public async createConnection(
+        args: Omit<SpeakV2Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<SpeakV2Socket> {
+        return this.connect(args);
+    }
+}
+
+/**
+ * Wrapper for Speak V2Socket that handles binary messages correctly.
+ *
+ * Like WrappedSpeakV1Socket, the autogenerated V2 socket parses every message as
+ * JSON, but Flux TTS streams binary audio frames. We remove the broken JSON-only
+ * handler and install a binary-aware one so both audio (binary) and control
+ * messages (JSON) are delivered to `on("message")`.
+ */
+class WrappedSpeakV2Socket extends SpeakV2Socket {
+    private binaryAwareHandler?: (event: MessageEvent) => void;
+
+    constructor(args: SpeakV2Socket.Args) {
+        super(args);
+        // CRITICAL: Remove the autogenerated handleMessage that tries to parse EVERYTHING as JSON!
+        // The autogenerated Socket class assumes all messages are text/JSON, but Flux TTS sends binary audio.
+        // We must remove that broken handler immediately after the parent constructor runs.
+        const socketAny = this as any;
+        if (socketAny.handleMessage) {
+            this.socket.removeEventListener("message", socketAny.handleMessage);
+        }
+        this.setupBinaryHandling();
+    }
+
+    private setupBinaryHandling() {
+        this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
+    }
+
+    public connect(): WrappedSpeakV2Socket {
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
