@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { DeepgramClient } from "../../../src";
+import type { Deepgram } from "../../../src";
 import { mockServerPool } from "../../mock-server/MockServerPool";
 import { MockServer } from "../../mock-server/MockServer";
+import { WebSocketEventTracker, waitForEventCount } from "./helpers";
 import type { Server } from "ws";
 
 /**
@@ -13,12 +15,15 @@ import type { Server } from "ws";
  *   - AgentV1ListenUpdated (server -> client, "ListenUpdated" confirmation)
  *
  * This verifies the message serializes correctly over the wire and the
- * confirmation is delivered back through on("message").
+ * confirmation is delivered back through on("message"). The UpdateListen payload
+ * is typed so a schema drift surfaces as a compile error; the wait uses
+ * waitForEventCount rather than a fixed sleep.
  */
 describe("Agent UpdateListen / ListenUpdated", () => {
     let server: MockServer;
     let wsServer: Server;
     let wsPort: number;
+    const openSockets: Array<{ close: () => void }> = [];
 
     beforeEach(async () => {
         server = mockServerPool.createServer();
@@ -47,12 +52,21 @@ describe("Agent UpdateListen / ListenUpdated", () => {
     });
 
     afterEach(() => {
+        // Close any sockets a test created, even if it threw before its own cleanup.
+        for (const socket of openSockets) {
+            try {
+                socket.close();
+            } catch {
+                // already closed
+            }
+        }
+        openSockets.length = 0;
         wsServer?.close();
     });
 
     it("should send UpdateListen (with a v2 provider) and receive ListenUpdated", async () => {
         const sentToServer: any[] = [];
-        const receivedMessages: any[] = [];
+        const tracker = new WebSocketEventTracker();
 
         const client = new DeepgramClient({
             maxRetries: 0,
@@ -65,8 +79,9 @@ describe("Agent UpdateListen / ListenUpdated", () => {
         });
 
         const socket = await client.agent.v1.createConnection();
+        openSockets.push(socket);
 
-        socket.on("message", (data) => receivedMessages.push(data));
+        socket.on("message", (data) => tracker.track((data as { type?: string })?.type ?? "binary", data));
 
         wsServer.on("connection", (ws) => {
             ws.send(JSON.stringify({ type: "Welcome" }));
@@ -74,15 +89,17 @@ describe("Agent UpdateListen / ListenUpdated", () => {
                 const parsed = JSON.parse(data.toString());
                 sentToServer.push(parsed);
                 if (parsed.type === "UpdateListen") {
-                    ws.send(JSON.stringify({ type: "ListenUpdated" }));
+                    const updated: Deepgram.agent.AgentV1ListenUpdated = { type: "ListenUpdated" };
+                    ws.send(JSON.stringify(updated));
                 }
             });
         });
 
         socket.connect();
         await socket.waitForOpen();
+        await waitForEventCount(tracker, "Welcome", 1);
 
-        socket.sendUpdateListen({
+        const updateListen: Deepgram.agent.AgentV1UpdateListen = {
             type: "UpdateListen",
             listen: {
                 provider: {
@@ -95,9 +112,10 @@ describe("Agent UpdateListen / ListenUpdated", () => {
                     eot_timeout_ms: 4000,
                 },
             },
-        });
+        };
+        socket.sendUpdateListen(updateListen);
 
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        await waitForEventCount(tracker, "ListenUpdated", 1);
 
         // The UpdateListen message serialized with its full provider payload
         const update = sentToServer.find((m) => m.type === "UpdateListen");
@@ -115,9 +133,8 @@ describe("Agent UpdateListen / ListenUpdated", () => {
         });
 
         // The server confirmation is delivered back
-        expect(receivedMessages.find((m) => m?.type === "ListenUpdated")).toMatchObject({
-            type: "ListenUpdated",
-        });
+        const confirmation = tracker.getHistory().find((e) => e.event === "ListenUpdated");
+        expect(confirmation?.data).toMatchObject({ type: "ListenUpdated" });
 
         socket.close();
     });

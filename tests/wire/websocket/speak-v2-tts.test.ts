@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { DeepgramClient } from "../../../src";
+import type { Deepgram } from "../../../src";
 import { mockServerPool } from "../../mock-server/MockServerPool";
 import { MockServer } from "../../mock-server/MockServer";
-import { generateMockAudioData, WebSocketEventTracker } from "./helpers";
+import { generateMockAudioData, WebSocketEventTracker, waitForEventCount } from "./helpers";
 import type { Server } from "ws";
 
 /**
@@ -17,11 +18,16 @@ import type { Server } from "ws";
  * The last point is the key regression guard: the auto-generated V2 socket
  * parses every message as JSON; WrappedSpeakV2Socket replaces that with a
  * binary-aware handler so Flux audio frames survive.
+ *
+ * Server-sent payloads are typed with the real SpeakV2* types so a schema drift
+ * (renamed/removed field) surfaces as a compile error rather than silently
+ * passing. Waits use waitForEventCount (not fixed sleeps) to avoid CI flakiness.
  */
 describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
     let server: MockServer;
     let wsServer: Server;
     let wsPort: number;
+    const openSockets: Array<{ close: () => void }> = [];
 
     beforeEach(async () => {
         server = mockServerPool.createServer();
@@ -51,6 +57,16 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
     });
 
     afterEach(() => {
+        // Close any sockets a test created, even if it threw before its own cleanup,
+        // so leaked ReconnectingWebSockets don't retry against the dead port.
+        for (const socket of openSockets) {
+            try {
+                socket.close();
+            } catch {
+                // already closed
+            }
+        }
+        openSockets.length = 0;
         wsServer?.close();
     });
 
@@ -69,6 +85,7 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
         it("should send Speak text and receive binary audio + control messages", async () => {
             const receivedMessages: any[] = [];
             const sentToServer: any[] = [];
+            const tracker = new WebSocketEventTracker();
 
             const client = makeClient();
 
@@ -77,29 +94,35 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
                 encoding: "linear16",
                 sample_rate: "24000",
             });
+            openSockets.push(socket);
 
             socket.on("message", (data) => {
                 receivedMessages.push(data);
+                const isBinary = data instanceof ArrayBuffer || data instanceof Blob;
+                tracker.track(isBinary ? "binary" : ((data as { type?: string })?.type ?? "unknown"));
             });
 
             wsServer.on("connection", (ws) => {
                 // Server greets with Connected on open
-                ws.send(
-                    JSON.stringify({
-                        type: "Connected",
-                        request_id: "req-123",
-                        model_name: "flux-alexis-en",
-                        model_version: "2025-01-01",
-                        model_uuids: ["uuid-1"],
-                    }),
-                );
+                const connected: Deepgram.speak.SpeakV2Connected = {
+                    type: "Connected",
+                    request_id: "req-123",
+                    model_name: "flux-alexis-en",
+                    model_version: "2025-01-01",
+                    model_uuids: ["uuid-1"],
+                };
+                ws.send(JSON.stringify(connected));
 
                 ws.on("message", (data) => {
                     const parsed = JSON.parse(data.toString());
                     sentToServer.push(parsed);
 
                     if (parsed.type === "Speak") {
-                        ws.send(JSON.stringify({ type: "SpeechStarted", speech_id: "dg_sp_abcdef012345" }));
+                        const speechStarted: Deepgram.speak.SpeakV2SpeechStarted = {
+                            type: "SpeechStarted",
+                            speech_id: "dg_sp_abcdef012345",
+                        };
+                        ws.send(JSON.stringify(speechStarted));
                         // Binary audio frames — MUST NOT be parsed as JSON by the client
                         ws.send(generateMockAudioData(1024));
                         ws.send(generateMockAudioData(2048));
@@ -107,32 +130,38 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
 
                     if (parsed.type === "Flush") {
                         ws.send(generateMockAudioData(512));
-                        ws.send(
-                            JSON.stringify({
-                                type: "SpeechMetadata",
-                                speech_id: "dg_sp_abcdef012345",
-                                audio_duration_ms: 1234,
-                                input_character_count: 22,
-                                billable_character_count: 22,
-                                controls_applied: {
-                                    pronunciations_applied: 0,
-                                    pronunciation_warnings: 0,
-                                },
-                            }),
-                        );
-                        ws.send(JSON.stringify({ type: "Flushed", speech_id: "dg_sp_abcdef012345" }));
+                        const speechMetadata: Deepgram.speak.SpeakV2SpeechMetadata = {
+                            type: "SpeechMetadata",
+                            speech_id: "dg_sp_abcdef012345",
+                            audio_duration_ms: 1234,
+                            input_character_count: 22,
+                            billable_character_count: 22,
+                            controls_applied: {
+                                pronunciations_applied: 0,
+                                pronunciation_warnings: 0,
+                            },
+                        };
+                        ws.send(JSON.stringify(speechMetadata));
+                        const flushed: Deepgram.speak.SpeakV2Flushed = {
+                            type: "Flushed",
+                            speech_id: "dg_sp_abcdef012345",
+                        };
+                        ws.send(JSON.stringify(flushed));
                     }
                 });
             });
 
             socket.connect();
             await socket.waitForOpen();
+            await waitForEventCount(tracker, "Connected", 1);
 
             socket.sendSpeak({ type: "Speak", text: "Hello from Flux." });
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await waitForEventCount(tracker, "SpeechStarted", 1);
+            await waitForEventCount(tracker, "binary", 2);
 
             socket.sendFlush({ type: "Flush" });
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await waitForEventCount(tracker, "Flushed", 1);
+            await waitForEventCount(tracker, "binary", 3);
 
             // Verify messages sent to the server
             expect(sentToServer).toEqual([{ type: "Speak", text: "Hello from Flux." }, { type: "Flush" }]);
@@ -141,10 +170,11 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             const connected = receivedMessages.find((m) => m?.type === "Connected");
             expect(connected).toMatchObject({ type: "Connected", request_id: "req-123" });
 
-            // Binary audio frames arrived as binary (NOT parsed/dropped as JSON)
+            // Exactly 3 binary audio frames arrived as binary (NOT parsed/dropped as JSON,
+            // and NOT duplicated by a listener bug).
             const isBinary = (d: any) => d instanceof ArrayBuffer || d instanceof Blob;
             const binaryFrames = receivedMessages.filter(isBinary);
-            expect(binaryFrames.length).toBeGreaterThanOrEqual(3);
+            expect(binaryFrames).toHaveLength(3);
 
             // Control messages parsed correctly
             expect(receivedMessages.find((m) => m?.type === "SpeechStarted")).toMatchObject({
@@ -165,13 +195,14 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
     });
 
     describe("Close command", () => {
-        it("should send Close and receive the close event", async () => {
+        it("should send Close and receive a 1000 close with the server's reason", async () => {
             const sentToServer: any[] = [];
             const tracker = new WebSocketEventTracker();
 
             const client = makeClient();
 
             const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
 
             socket.on("close", (event) => tracker.track("close", event));
 
@@ -189,10 +220,13 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             await socket.waitForOpen();
 
             socket.sendClose({ type: "Close" });
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await waitForEventCount(tracker, "close", 1, 5000);
 
+            // The server only closes in response to receiving Close, so a close event
+            // with code 1000 + the server's reason proves the round-trip completed.
             expect(sentToServer).toEqual([{ type: "Close" }]);
-            expect(tracker.getCount("close")).toBeGreaterThanOrEqual(1);
+            const closeEvent = tracker.getHistory().find((e) => e.event === "close");
+            expect(closeEvent?.data).toMatchObject({ code: 1000, reason: "Closing as requested" });
 
             socket.close();
         });
@@ -201,39 +235,44 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
     describe("Warning and Error handling", () => {
         it("should deliver Warning and Error control messages", async () => {
             const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
 
             const client = makeClient();
 
             const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
 
-            socket.on("message", (data) => receivedMessages.push(data));
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                tracker.track((data as { type?: string })?.type ?? "binary");
+            });
 
             wsServer.on("connection", (ws) => {
-                ws.send(
-                    JSON.stringify({
-                        type: "Warning",
-                        code: "NO_ACTIVE_SPEECH",
-                        description: "A speech-scoped message arrived with no active turn.",
-                    }),
-                );
+                const warning: Deepgram.speak.SpeakV2Warning = {
+                    type: "Warning",
+                    code: "NO_ACTIVE_SPEECH",
+                    description: "A speech-scoped message arrived with no active turn.",
+                };
+                ws.send(JSON.stringify(warning));
                 ws.on("message", (data) => {
                     const parsed = JSON.parse(data.toString());
                     if (parsed.type === "Speak") {
-                        ws.send(
-                            JSON.stringify({
-                                type: "Error",
-                                code: "NET-0000",
-                                description: "Synthesis failed.",
-                            }),
-                        );
+                        const error: Deepgram.speak.SpeakV2Error = {
+                            type: "Error",
+                            code: "NET-0000",
+                            description: "Synthesis failed.",
+                        };
+                        ws.send(JSON.stringify(error));
                     }
                 });
             });
 
             socket.connect();
             await socket.waitForOpen();
+            await waitForEventCount(tracker, "Warning", 1);
+
             socket.sendSpeak({ type: "Speak", text: "Test" });
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await waitForEventCount(tracker, "Error", 1);
 
             expect(receivedMessages.find((m) => m?.type === "Warning")).toMatchObject({
                 type: "Warning",
@@ -249,15 +288,16 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
     });
 
     describe("Guard rails", () => {
-        it("should throw when sending before the connection is open", async () => {
+        it("should throw 'Socket is not open' when sending before the connection is open", async () => {
             const client = makeClient();
 
             const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
 
-            // Not connected — sending must throw
+            // Not connected — sending must throw with the specific not-open error
             expect(() => {
                 socket.sendSpeak({ type: "Speak", text: "Test" });
-            }).toThrow();
+            }).toThrow("Socket is not open");
 
             socket.close();
         });
