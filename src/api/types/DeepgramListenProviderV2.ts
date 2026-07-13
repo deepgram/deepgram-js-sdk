@@ -15,6 +15,12 @@ export interface DeepgramListenProviderV2 {
      * by the API, so this is kept only so existing call sites keep compiling; prefer `language_hints`.
      */
     language_hint?: DeepgramListenProviderV2.LanguageHint | undefined;
+    /** End-of-turn confidence required to finish a turn. Valid range: 0.5 - 0.9. Defaults to 0.7. */
+    eot_threshold?: number | undefined;
+    /** End-of-turn confidence required to fire an eager end-of-turn event. When set, enables EagerEndOfTurn and TurnResumed events. Valid range: 0.3 - 0.9. */
+    eager_eot_threshold?: number | undefined;
+    /** A turn will be finished when this much time in milliseconds has passed after speech, regardless of EOT confidence. Defaults to 5000. */
+    eot_timeout_ms?: number | undefined;
     /** Prompt keyterm recognition to improve Keyword Recall Rate */
     keyterms?: string[] | undefined;
 }

@@ -4,30 +4,20 @@ import * as core from "../../../../../../core/index.js";
 import { fromJson, toJson } from "../../../../../../core/json.js";
 import type * as Deepgram from "../../../../../index.js";
 
-export declare namespace V1Socket {
+export declare namespace V2Socket {
     export interface Args {
         socket: core.ReconnectingWebSocket;
     }
 
     export type Response =
-        | Deepgram.agent.AgentV1ListenUpdated
-        | Deepgram.agent.AgentV1ThinkUpdated
-        | Deepgram.agent.AgentV1ReceiveFunctionCallResponse
-        | Deepgram.agent.AgentV1PromptUpdated
-        | Deepgram.agent.AgentV1SpeakUpdated
-        | Deepgram.agent.AgentV1InjectionRefused
-        | Deepgram.agent.AgentV1Welcome
-        | Deepgram.agent.AgentV1SettingsApplied
-        | Deepgram.agent.AgentV1ConversationText
-        | Deepgram.agent.AgentV1UserStartedSpeaking
-        | Deepgram.agent.AgentV1AgentThinking
-        | Deepgram.agent.AgentV1FunctionCallRequest
-        | Deepgram.agent.AgentV1AgentStartedSpeaking
-        | Deepgram.agent.AgentV1AgentAudioDone
-        | Deepgram.agent.AgentV1Error
-        | Deepgram.agent.AgentV1Warning
-        | Deepgram.agent.AgentV1History
-        | string;
+        | string
+        | Deepgram.speak.SpeakV2Connected
+        | Deepgram.speak.SpeakV2SpeechStarted
+        | Deepgram.speak.SpeakV2SpeechMetadata
+        | Deepgram.speak.SpeakV2Flushed
+        | Deepgram.speak.SpeakV2SessionMetadata
+        | Deepgram.speak.SpeakV2Warning
+        | Deepgram.speak.SpeakV2Error;
     type EventHandlers = {
         open?: () => void;
         message?: (message: Response) => void;
@@ -36,16 +26,16 @@ export declare namespace V1Socket {
     };
 }
 
-export class V1Socket {
+export class V2Socket {
     public readonly socket: core.ReconnectingWebSocket;
-    protected readonly eventHandlers: V1Socket.EventHandlers = {};
+    protected readonly eventHandlers: V2Socket.EventHandlers = {};
     private handleOpen: () => void = () => {
         this.eventHandlers.open?.();
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
-        this.eventHandlers.message?.(data as V1Socket.Response);
+        this.eventHandlers.message?.(data as V2Socket.Response);
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
         this.eventHandlers.close?.(event);
@@ -55,7 +45,7 @@ export class V1Socket {
         this.eventHandlers.error?.(new Error(message));
     };
 
-    constructor(args: V1Socket.Args) {
+    constructor(args: V2Socket.Args) {
         this.socket = args.socket;
         this.socket.addEventListener("open", this.handleOpen);
         this.socket.addEventListener("message", this.handleMessage);
@@ -78,62 +68,27 @@ export class V1Socket {
      * });
      * ```
      */
-    public on<T extends keyof V1Socket.EventHandlers>(event: T, callback: V1Socket.EventHandlers[T]): void {
+    public on<T extends keyof V2Socket.EventHandlers>(event: T, callback: V2Socket.EventHandlers[T]): void {
         this.eventHandlers[event] = callback;
     }
 
-    public sendSettings(message: Deepgram.agent.AgentV1Settings): void {
+    public sendSpeak(message: Deepgram.speak.SpeakV2Speak): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendUpdateListen(message: Deepgram.agent.AgentV1UpdateListen): void {
+    public sendFlush(message: Deepgram.speak.SpeakV2Flush): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
 
-    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
+    public sendClose(message: Deepgram.speak.SpeakV2Close): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
-    }
-
-    public sendUpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendInjectUserMessage(message: Deepgram.agent.AgentV1InjectUserMessage): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendInjectAgentMessage(message: Deepgram.agent.AgentV1InjectAgentMessage): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendFunctionCallResponse(message: Deepgram.agent.AgentV1SendFunctionCallResponse): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendKeepAlive(message: Deepgram.agent.AgentV1KeepAlive): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendUpdatePrompt(message: Deepgram.agent.AgentV1UpdatePrompt): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
-        this.assertSocketIsOpen();
-        this.sendBinary(message);
     }
 
     /** Connect to the websocket and register event handlers. */
-    public connect(): V1Socket {
+    public connect(): V2Socket {
         this.socket.reconnect();
 
         this.socket.addEventListener("open", this.handleOpen);
@@ -191,17 +146,7 @@ export class V1Socket {
 
     /** Send a JSON payload to the websocket. */
     protected sendJson(
-        payload:
-            | Deepgram.agent.AgentV1Settings
-            | Deepgram.agent.AgentV1UpdateListen
-            | Deepgram.agent.AgentV1UpdateThink
-            | Deepgram.agent.AgentV1UpdateSpeak
-            | Deepgram.agent.AgentV1InjectUserMessage
-            | Deepgram.agent.AgentV1InjectAgentMessage
-            | Deepgram.agent.AgentV1SendFunctionCallResponse
-            | Deepgram.agent.AgentV1KeepAlive
-            | Deepgram.agent.AgentV1UpdatePrompt
-            | string,
+        payload: Deepgram.speak.SpeakV2Speak | Deepgram.speak.SpeakV2Flush | Deepgram.speak.SpeakV2Close,
     ): void {
         const jsonPayload = toJson(payload);
         this.socket.send(jsonPayload);

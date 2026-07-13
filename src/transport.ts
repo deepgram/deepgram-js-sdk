@@ -29,7 +29,7 @@ export interface DeepgramTransportRequest {
     /** Deepgram websocket path (for example `/v1/listen`). */
     path: string;
     /** Streaming API being targeted. */
-    service: "agent.v1" | "listen.v1" | "listen.v2" | "speak.v1";
+    service: "agent.v1" | "listen.v1" | "listen.v2" | "speak.v1" | "speak.v2";
     /** Query parameters before they are encoded into the URL. */
     queryParams: Record<string, unknown>;
     /** Whether debug logging was requested for the connection. */

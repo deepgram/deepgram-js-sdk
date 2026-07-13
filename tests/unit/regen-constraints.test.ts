@@ -22,13 +22,14 @@ describe("2026-06-16 regen constraints & compat shims", () => {
             expect(JSON.parse(JSON.stringify(msg))).toEqual({ type: "CloseStream" });
         });
 
-        it("Type shim keeps Finalize/KeepAlive for backward compatibility (deprecated)", () => {
+        it('Type namespace exposes ONLY "CloseStream" (the only valid v2 value)', () => {
             expect(Deepgram.listen.v2.ListenV2CloseStream.Type.CloseStream).toBe("CloseStream");
 
-            // Finalize/KeepAlive are deprecated but retained so existing references still
-            // compile — removing them would be a breaking change.
-            expect(Deepgram.listen.v2.ListenV2CloseStream.Type.Finalize).toBe("Finalize");
-            expect(Deepgram.listen.v2.ListenV2CloseStream.Type.KeepAlive).toBe("KeepAlive");
+            // Finalize/KeepAlive are v1 control messages and were never valid on v2. An
+            // earlier shim wrongly copied them from v1; they must NOT be present here.
+            expect(Object.keys(Deepgram.listen.v2.ListenV2CloseStream.Type)).toEqual(["CloseStream"]);
+            expect((Deepgram.listen.v2.ListenV2CloseStream.Type as Record<string, string>).Finalize).toBeUndefined();
+            expect((Deepgram.listen.v2.ListenV2CloseStream.Type as Record<string, string>).KeepAlive).toBeUndefined();
         });
     });
 
@@ -98,6 +99,85 @@ describe("2026-06-16 regen constraints & compat shims", () => {
             ) as Deepgram.listen.v2.ListenV2TurnInfo.Words.Item;
             expect(parsed.word).toBe("hi");
             expect(parsed.start).toBeUndefined();
+        });
+    });
+});
+
+/**
+ * Coverage for the surface added by the 2026-07-09 regeneration:
+ *   - Flux end-of-turn tuning fields on `DeepgramListenProviderV2`
+ *     (`eot_threshold`, `eager_eot_threshold`, `eot_timeout_ms`)
+ *   - the agent `UpdateListen` / `ListenUpdated` message types
+ *   - the new Speak v2 (Flux streaming TTS) message + option types
+ *
+ * As above, the typed literals double as compile-time assertions under
+ * `make typecheck-tests`.
+ */
+describe("2026-07-09 regen constraints", () => {
+    describe("DeepgramListenProviderV2 end-of-turn fields", () => {
+        it("accepts eot_threshold / eager_eot_threshold / eot_timeout_ms and round-trips", () => {
+            const provider: DeepgramListenProviderV2 = {
+                type: "deepgram",
+                version: "v2",
+                model: "flux-general-en",
+                eot_threshold: 0.8,
+                eager_eot_threshold: 0.5,
+                eot_timeout_ms: 4000,
+            };
+            const roundTripped = JSON.parse(JSON.stringify(provider)) as DeepgramListenProviderV2;
+            expect(roundTripped.eot_threshold).toBe(0.8);
+            expect(roundTripped.eager_eot_threshold).toBe(0.5);
+            expect(roundTripped.eot_timeout_ms).toBe(4000);
+        });
+    });
+
+    describe("Agent UpdateListen / ListenUpdated", () => {
+        it("UpdateListen carries a v2 listen provider and serializes", () => {
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: {
+                    provider: {
+                        type: "deepgram",
+                        version: "v2",
+                        model: "flux-general-en",
+                        eot_threshold: 0.7,
+                    },
+                },
+            };
+            const parsed = JSON.parse(JSON.stringify(msg)) as Deepgram.agent.AgentV1UpdateListen;
+            expect(parsed.type).toBe("UpdateListen");
+            expect(parsed.listen.provider.model).toBe("flux-general-en");
+        });
+
+        it("ListenUpdated is a plain confirmation message", () => {
+            const msg: Deepgram.agent.AgentV1ListenUpdated = { type: "ListenUpdated" };
+            expect(msg.type).toBe("ListenUpdated");
+        });
+    });
+
+    describe("Speak v2 (Flux streaming TTS) types", () => {
+        it("client messages have the expected literal `type` fields", () => {
+            const speak: Deepgram.speak.SpeakV2Speak = { type: "Speak", text: "hi" };
+            const flush: Deepgram.speak.SpeakV2Flush = { type: "Flush" };
+            const close: Deepgram.speak.SpeakV2Close = { type: "Close" };
+            expect([speak.type, flush.type, close.type]).toEqual(["Speak", "Flush", "Close"]);
+        });
+
+        it("option enums expose members and stay open to arbitrary strings", () => {
+            const encoding: Deepgram.SpeakV2Encoding = Deepgram.SpeakV2Encoding.Linear16;
+            const sampleRate: Deepgram.SpeakV2SampleRate = Deepgram.SpeakV2SampleRate.TwentyFourThousand;
+            // SpeakV2Model is an open string type
+            const model: Deepgram.SpeakV2Model = "flux-alexis-en";
+            expect(encoding).toBe("linear16");
+            expect(sampleRate).toBe("24000");
+            expect(model).toBe("flux-alexis-en");
+        });
+
+        it("SpeakV2Error.Code enum is open-ended", () => {
+            const known: Deepgram.speak.SpeakV2Error.Code = Deepgram.speak.SpeakV2Error.Code.Net0000;
+            const open: Deepgram.speak.SpeakV2Error.Code = "SOME-CUSTOM-CODE";
+            expect(known).toBe("NET-0000");
+            expect(open).toBe("SOME-CUSTOM-CODE");
         });
     });
 });
