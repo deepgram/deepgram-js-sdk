@@ -12,8 +12,20 @@
 
 const { DeepgramClient } = require("../dist/cjs/index.js");
 
+// TEST ONLY: target a non-prod host (e.g. staging) by setting DEEPGRAM_BASE_URL
+// (wss://... or https://...). Defaults to production when unset.
+const baseUrl = process.env.DEEPGRAM_BASE_URL;
 const deepgramClient = new DeepgramClient({
     apiKey: process.env.DEEPGRAM_API_KEY,
+    ...(baseUrl
+        ? {
+              environment: {
+                  base: baseUrl.replace(/^wss:\/\//, "https://").replace(/^ws:\/\//, "http://"),
+                  production: baseUrl,
+                  agent: baseUrl,
+              },
+          }
+        : {}),
 });
 
 async function textToSpeechStreamingFlux() {
