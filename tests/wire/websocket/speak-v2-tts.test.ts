@@ -14,6 +14,7 @@ import type { Server } from "ws";
  * - Connected, SpeechStarted, SpeechMetadata, Flushed, SessionMetadata,
  *   Warning, Error control messages
  * - binary audio frames delivered as ArrayBuffer/Blob (NOT parsed as JSON)
+ * - unknown/future control messages pass through without breaking the connection
  *
  * The last point is the key regression guard: the auto-generated V2 socket
  * parses every message as JSON; WrappedSpeakV2Socket replaces that with a
@@ -298,6 +299,105 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             expect(() => {
                 socket.sendSpeak({ type: "Speak", text: "Test" });
             }).toThrow("Socket is not open");
+
+            socket.close();
+        });
+    });
+
+    describe("SessionMetadata", () => {
+        it("should deliver a SessionMetadata control message", async () => {
+            const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
+
+            const client = makeClient();
+
+            const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                tracker.track((data as { type?: string })?.type ?? "binary");
+            });
+
+            wsServer.on("connection", (ws) => {
+                ws.on("message", (data) => {
+                    const parsed = JSON.parse(data.toString());
+                    if (parsed.type === "Close") {
+                        // Cumulative session totals are emitted as the session winds down.
+                        const sessionMetadata: Deepgram.speak.SpeakV2SessionMetadata = {
+                            type: "SessionMetadata",
+                            total_audio_duration_ms: 4321,
+                            total_input_character_count: 40,
+                            total_billable_character_count: 40,
+                        };
+                        ws.send(JSON.stringify(sessionMetadata));
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+
+            socket.sendClose({ type: "Close" });
+            await waitForEventCount(tracker, "SessionMetadata", 1);
+
+            expect(receivedMessages.find((m) => m?.type === "SessionMetadata")).toMatchObject({
+                type: "SessionMetadata",
+                total_audio_duration_ms: 4321,
+                total_billable_character_count: 40,
+            });
+
+            socket.close();
+        });
+    });
+
+    describe("Forward compatibility", () => {
+        it("should deliver an unknown server message and keep the connection open", async () => {
+            const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
+
+            const client = makeClient();
+
+            const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                const isBinary = data instanceof ArrayBuffer || data instanceof Blob;
+                tracker.track(isBinary ? "binary" : ((data as { type?: string })?.type ?? "unknown"));
+            });
+
+            wsServer.on("connection", (ws) => {
+                // A message type this SDK version has never seen. GA adds new control
+                // messages (e.g. SpeechInterrupted) to this endpoint, and a deployed EA
+                // client must pass the frame through untouched rather than throw or drop
+                // the connection (the Mar 2026 precedent).
+                ws.send(JSON.stringify({ type: "FutureMessage", brand_new_field: 123 }));
+                ws.on("message", (data) => {
+                    const parsed = JSON.parse(data.toString());
+                    if (parsed.type === "Speak") {
+                        const speechStarted: Deepgram.speak.SpeakV2SpeechStarted = {
+                            type: "SpeechStarted",
+                            speech_id: "dg_sp_forward_compat",
+                        };
+                        ws.send(JSON.stringify(speechStarted));
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+            await waitForEventCount(tracker, "FutureMessage", 1);
+
+            // The connection survived the unknown frame: a normal send/receive still works.
+            socket.sendSpeak({ type: "Speak", text: "Still alive?" });
+            await waitForEventCount(tracker, "SpeechStarted", 1);
+
+            // The unknown message was delivered as parsed JSON, not dropped and not thrown.
+            expect(receivedMessages.find((m) => m?.type === "FutureMessage")).toMatchObject({
+                type: "FutureMessage",
+                brand_new_field: 123,
+            });
 
             socket.close();
         });
