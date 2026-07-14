@@ -463,6 +463,17 @@
             },
             "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
         },
+        "./speak/v2/audio": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/resources/v2/resources/audio/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/resources/v2/resources/audio/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.js"
+        },
         "./voiceAgent": {
             "import": {
                 "types": "./dist/esm/api/resources/voiceAgent/exports.d.mts",

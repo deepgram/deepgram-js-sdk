@@ -9,6 +9,7 @@ export * from "./AgentV1InjectAgentMessage.js";
 export * from "./AgentV1InjectionRefused.js";
 export * from "./AgentV1InjectUserMessage.js";
 export * from "./AgentV1KeepAlive.js";
+export * from "./AgentV1LatencyReport.js";
 export * from "./AgentV1ListenUpdated.js";
 export * from "./AgentV1PromptUpdated.js";
 export * from "./AgentV1ReceiveFunctionCallResponse.js";

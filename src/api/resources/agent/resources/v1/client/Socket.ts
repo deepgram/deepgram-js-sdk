@@ -21,6 +21,7 @@ export declare namespace V1Socket {
         | Deepgram.agent.AgentV1ConversationText
         | Deepgram.agent.AgentV1UserStartedSpeaking
         | Deepgram.agent.AgentV1AgentThinking
+        | Deepgram.agent.AgentV1LatencyReport
         | Deepgram.agent.AgentV1FunctionCallRequest
         | Deepgram.agent.AgentV1AgentStartedSpeaking
         | Deepgram.agent.AgentV1AgentAudioDone
