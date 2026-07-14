@@ -1,6 +1,6 @@
 {
     "name": "@deepgram/sdk",
-    "version": "5.5.0",
+    "version": "5.5.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -463,6 +463,17 @@
             },
             "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
         },
+        "./speak/v2/audio": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/resources/v2/resources/audio/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/resources/v2/resources/audio/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.js"
+        },
         "./voiceAgent": {
             "import": {
                 "types": "./dist/esm/api/resources/voiceAgent/exports.d.mts",
@@ -527,15 +538,9 @@
         "@types/ws": "^8.18.1",
         "vitest": "^4.1.1",
         "msw": "2.11.2",
-        "@types/node": "^20.17.57",
+        "@types/node": "^20.0.0",
         "typescript": "~5.9.3",
-        "@biomejs/biome": "2.4.10",
-        "@commitlint/cli": "20.5.0",
-        "@commitlint/config-conventional": "20.0.0",
-        "tsx": "4.20.6",
-        "playwright": "1.59.1",
-        "vite": "6.4.2",
-        "terser": "5.46.1"
+        "@biomejs/biome": "2.4.10"
     },
     "browser": {
         "fs": false,
