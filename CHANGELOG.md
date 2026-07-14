@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.6.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.5.0...v5.6.0) (2026-07-14)
+
+
+### Features
+
+* **regen:** add Flux TTS batch (REST) endpoint and agent latency report ([#519](https://github.com/deepgram/deepgram-js-sdk/issues/519)) ([a27336e](https://github.com/deepgram/deepgram-js-sdk/commit/a27336e242572b97e9dd29134d49e17175b45dca))
+* **regen:** add Speak V2 streaming, agent update-listen, and Flux EOT tuning ([#515](https://github.com/deepgram/deepgram-js-sdk/issues/515)) ([7bba2d2](https://github.com/deepgram/deepgram-js-sdk/commit/7bba2d2d59e320a3294178da03d9847a5a6ca686))
+
 ## [5.5.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.4.0...v5.5.0) (2026-06-26)
 
 
