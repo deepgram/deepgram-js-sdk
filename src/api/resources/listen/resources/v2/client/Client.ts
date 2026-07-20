@@ -22,6 +22,7 @@ export declare namespace V2Client {
         keyterm?: Deepgram.ListenV2Keyterm;
         language_hint?: Deepgram.ListenV2LanguageHint;
         profanity_filter?: Deepgram.ListenV2ProfanityFilter;
+        numerals?: Deepgram.ListenV2Numerals;
         mip_opt_out?: Deepgram.ListenV2MipOptOut | undefined;
         tag?: Deepgram.ListenV2Tag | undefined;
         Authorization: string;
@@ -60,6 +61,7 @@ export class V2Client {
             keyterm,
             language_hint: languageHint,
             profanity_filter: profanityFilter,
+            numerals,
             mip_opt_out: mipOptOut,
             tag,
             protocols,
@@ -108,6 +110,7 @@ export class V2Client {
                       : toJson(languageHint)
                   : undefined,
             profanity_filter: profanityFilter != null ? profanityFilter : undefined,
+            numerals: numerals != null ? numerals : undefined,
             mip_opt_out:
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
             tag: tag != null ? (typeof tag === "string" ? tag : toJson(tag)) : undefined,

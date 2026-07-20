@@ -93,82 +93,43 @@ export namespace AgentV1Settings {
         }
     }
 
-    // Backward-compat: the 2026-05-06 regen restructured `Agent` from an
-    // interface with named sub-types into `{...} | string` (a union with the
-    // new agent-by-ID-string variant). Restoring the original interface form
-    // so consumer code that reads `settings.agent.context`, `.greeting`, etc.
-    // continues to type-check in TS strict mode without a `typeof` narrowing
-    // guard. The new agent-by-ID-string form is surfaced as the opt-in
-    // `AgentReference` alias below; consumers who want to pass a string ID
-    // can either cast to `AgentReference` or use it as their parameter type.
-    // Mirrors the Python SDK's compat shims for the same regen.
-    // See tests/unit/compat-aliases.test.ts for regression coverage.
-    export interface Agent {
-        /** Deprecated. Use `listen.provider.language` and `speak.provider.language` fields instead. */
-        language?: string | undefined;
-        /** Conversation context including the history of messages and function calls */
-        context?: Agent.Context | undefined;
-        listen?: Agent.Listen | undefined;
-        think?: Agent.Think | undefined;
-        speak?: Agent.Speak | undefined;
-        /** Optional message that agent will speak at the start */
-        greeting?: string | undefined;
-    }
-
-    export namespace Agent {
+    export type Agent =
+        | {
+              language?: string | undefined;
+              context?:
+                  | {
+                        messages?:
+                            | (
+                                  | {
+                                        type: "History";
+                                        role: "user" | "assistant" | string;
+                                        content: string;
+                                    }
+                                  | {
+                                        type: "History";
+                                        function_calls: {
+                                            id: string;
+                                            name: string;
+                                            client_side: boolean;
+                                            arguments: string;
+                                            response: string;
+                                            thought_signature?: string | undefined;
+                                        }[];
+                                    }
+                              )[]
+                            | undefined;
+                    }
+                  | undefined;
+              listen?:
+                  | {
+                        provider?: Deepgram.agent.AgentV1SettingsAgentContextListenProvider | undefined;
+                    }
+                  | undefined;
+              think?: (Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[]) | undefined;
+              speak?: (Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[]) | undefined;
+              greeting?: string | undefined;
+          }
         /**
-         * Conversation context including the history of messages and function calls
-         */
-        export interface Context {
-            /** Conversation history as a list of messages and function calls */
-            messages?: Context.Messages.Item[] | undefined;
-        }
-
-        export namespace Context {
-            export type Messages = Messages.Item[];
-
-            export namespace Messages {
-                /**
-                 * A history message is either a conversational message or a function call
-                 */
-                export type Item =
-                    /**
-                     * Conversation text as part of the conversation history */
-                    | {
-                          type: "History";
-                          role: "user" | "assistant" | string;
-                          content: string;
-                      }
-                    /**
-                     * Client-side or server-side function call request and response as part of the conversation history */
-                    | {
-                          type: "History";
-                          function_calls: {
-                              id: string;
-                              name: string;
-                              client_side: boolean;
-                              arguments: string;
-                              response: string;
-                              thought_signature?: string | undefined;
-                          }[];
-                      };
-            }
-        }
-
-        export interface Listen {
-            provider?: Deepgram.agent.AgentV1SettingsAgentContextListenProvider | undefined;
-        }
-
-        export type Think = Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[];
-        export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
-    }
-
-    /**
-     * Opt-in alias for the agent-by-ID-string variant added by the 2026-05-06
-     * regen. The canonical `Agent` type is restored to the object-only
-     * interface for back-compat; use `AgentReference` if your code needs to
-     * accept either an `Agent` settings object or a string agent ID at the
-     * type level (e.g. when targeting the agent-builder ID flow).
-     */
-    export type AgentReference = AgentV1Settings.Agent | string;
+         * The ID of an agent created using the agent builder */
+        | string;
 }

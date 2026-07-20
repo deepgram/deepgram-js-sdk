@@ -3,8 +3,6 @@
 export interface AgentV1LatencyReport {
     /** Message type identifier for the latency report */
     type: "LatencyReport";
-    /** Speech-to-text: time from audio received to transcript produced, in seconds */
-    stt_latency?: number | undefined;
     /** Time to first token of any type (text, tool call, or thinking), in seconds */
     ttt_token_latency?: number | undefined;
     /** Time to first text token from the LLM, in seconds */
