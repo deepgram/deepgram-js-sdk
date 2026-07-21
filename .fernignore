@@ -26,6 +26,7 @@ tests/unit/custom-client.test.ts
 tests/unit/error-handling.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
+tests/unit/latency-report-stt-compat.test.ts
 tests/unit/regen-constraints.test.ts
 tests/unit/socket-close-idempotent.test.ts
 tests/unit/speak-v2-batch.test.ts
@@ -160,3 +161,15 @@ src/version.ts
 # the version lives in exactly one place. Re-apply that import patch after regen;
 # take all of Fern's other BaseClient changes. Swap to .bak before regen.
 src/BaseClient.ts
+
+# src/api/resources/agent/resources/v1/types/AgentV1LatencyReport.ts: the
+# 2026-07-20 regen removed `stt_latency` from the LatencyReport schema
+# (deepgram-docs #1006). AgentV1LatencyReport is a server-emitted (read-only)
+# message, so we re-add the optional `stt_latency?: number` field by hand — no
+# request/wire impact, it just keeps `report.stt_latency` resolving (to undefined)
+# instead of breaking existing readers at compile time, avoiding a major-version
+# break. Mirrors the Python SDK's read-side shim (deepgram-python-sdk #746).
+# Regression coverage in tests/unit/latency-report-stt-compat.test.ts (also gated
+# by make typecheck-tests). Drop this entry when the field is retired in a future
+# major. Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1LatencyReport.ts
