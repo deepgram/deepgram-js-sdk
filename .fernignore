@@ -27,6 +27,7 @@ tests/unit/error-handling.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
 tests/unit/regen-constraints.test.ts
+tests/unit/socket-close-idempotent.test.ts
 tests/unit/speak-v2-batch.test.ts
 tests/unit/transport-factory.test.ts
 tests/unit/websocket-reconnection.test.ts
