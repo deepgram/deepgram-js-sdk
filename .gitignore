@@ -3,3 +3,6 @@ node_modules
 /dist
 *.wav
 examples/browser/deepgram.js
+
+# Local Claude Code settings (per-machine permissions; not shared)
+.claude/settings.local.json
