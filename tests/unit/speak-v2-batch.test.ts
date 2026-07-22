@@ -2,8 +2,8 @@
  * Hand-written coverage for the Flux TTS batch (REST) endpoint: `speak.v2.audio.generate()`
  * (POST /v2/speak).
  *
- * The Fern generator did NOT emit a REST wire test for this endpoint (unlike the Python SDK),
- * so this fills that gap. A local http server captures the outgoing request and returns binary
+ * The Fern generator did NOT emit a REST wire test for this endpoint, so this fills that
+ * gap. A local http server captures the outgoing request and returns binary
  * audio, letting us assert:
  *   - the request shape (POST /v2/speak, `model`/`encoding` in the query, `text` in the JSON body);
  *   - that the binary audio response is surfaced via `arrayBuffer()`;

@@ -9,11 +9,10 @@ import AgentV1LatencyReport = Deepgram.agent.AgentV1LatencyReport;
  * Regression test for the `stt_latency` backward-compat shim on
  * AgentV1LatencyReport.
  *
- * The API spec removed `stt_latency` from the LatencyReport schema
- * (deepgram-docs #1006). AgentV1LatencyReport is a server-emitted (read-only)
- * message, so we re-add the optional field by hand (frozen in .fernignore) to
- * keep `report.stt_latency` resolving instead of breaking existing readers at
- * compile time. Mirrors the Python SDK shim (deepgram-python-sdk#746).
+ * The API spec removed `stt_latency` from the LatencyReport schema.
+ * AgentV1LatencyReport is a server-emitted (read-only) message, so we re-add the
+ * optional field by hand (frozen in .fernignore) to keep `report.stt_latency`
+ * resolving instead of breaking existing readers at compile time.
  *
  * TypeScript types are erased at runtime, so the compile-time assertions below
  * are the real guard — this file is compiled against `src` by
