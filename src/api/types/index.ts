@@ -84,6 +84,7 @@ export * from "./ListenV2Keyterm.js";
 export * from "./ListenV2LanguageHint.js";
 export * from "./ListenV2MipOptOut.js";
 export * from "./ListenV2Model.js";
+export * from "./ListenV2Numerals.js";
 export * from "./ListenV2ProfanityFilter.js";
 export * from "./ListenV2SampleRate.js";
 export * from "./ListenV2Tag.js";

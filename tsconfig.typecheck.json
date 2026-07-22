@@ -18,6 +18,11 @@
         "rootDir": ".",
         "types": ["vitest/globals", "node"]
     },
-    "include": ["src", "tests/unit/compat-aliases.test.ts", "tests/unit/regen-constraints.test.ts"],
+    "include": [
+        "src",
+        "tests/unit/compat-aliases.test.ts",
+        "tests/unit/regen-constraints.test.ts",
+        "tests/unit/latency-report-stt-compat.test.ts"
+    ],
     "exclude": ["node_modules", "dist"]
 }

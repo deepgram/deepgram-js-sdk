@@ -15,8 +15,8 @@ export interface DeepgramTransportCloseEvent {
 /**
  * Metadata passed to a transport factory when a streaming connection is created.
  *
- * The first two factory arguments intentionally match the Python and Java SDKs:
- * `factory(url, headers)`. JavaScript also passes this third metadata object so
+ * The first two factory arguments are intentionally `factory(url, headers)` for
+ * cross-language parity. JavaScript also passes this third metadata object so
  * custom transports can inspect the target streaming API and connection settings.
  */
 export interface DeepgramTransportRequest {
@@ -71,8 +71,8 @@ export interface DeepgramTransport {
 /**
  * Factory for creating custom streaming transports.
  *
- * The first two arguments mirror the Python and Java SDKs. JavaScript also passes
- * a third metadata argument for transports that need more connection context.
+ * The first two arguments are fixed for cross-language parity. JavaScript also
+ * passes a third metadata argument for transports that need more connection context.
  */
 export type DeepgramTransportFactory = (
     url: string,

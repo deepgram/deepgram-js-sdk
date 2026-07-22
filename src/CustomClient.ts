@@ -1043,6 +1043,35 @@ function resetSocketConnectionState(socket: ReconnectingWebSocket): void {
 }
 
 /**
+ * Idempotency guard for the wrapped sockets' close().
+ *
+ * The generated `Socket.close()` synchronously re-fires the registered `close`
+ * event handler (via `handleClose({ code: 1000 })`). A `close` handler that
+ * calls `close()` again — an idiomatic cleanup pattern — would otherwise recurse
+ * infinitely and throw `RangeError: Maximum call stack size exceeded`, which
+ * surfaces as an unhandled promise rejection Node's own tracker cannot format
+ * ("Exception in PromiseRejectCallback"). This affects every streaming socket.
+ *
+ * We fix it at the wrapper layer (rather than freezing all 5 generated
+ * `Socket.ts` files): tracking closed instances in a WeakSet lets each
+ * `Wrapped…Socket` share one guard with no per-class field. `closeOnce()`
+ * no-ops on re-entry so the recursive cycle terminates after a single close
+ * notification, and each wrapper's `connect()` calls `armCloseGuard()` so a
+ * reconnected socket can be closed again.
+ */
+const closedSockets = new WeakSet<object>();
+function closeOnce(self: object, doClose: () => void): void {
+    if (closedSockets.has(self)) {
+        return;
+    }
+    closedSockets.add(self);
+    doClose();
+}
+function armCloseGuard(self: object): void {
+    closedSockets.delete(self);
+}
+
+/**
  * Helper function to create a WebSocket connection with common setup logic.
  * Handles authentication, header merging, and WebSocket configuration.
  * This reduces duplication across all Wrapped*Client classes.
@@ -1209,7 +1238,16 @@ class WrappedAgentV1Socket extends AgentV1Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedAgentV1Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
@@ -1298,7 +1336,16 @@ class WrappedListenV1Socket extends ListenV1Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedListenV1Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
@@ -1393,7 +1440,16 @@ class WrappedListenV2Socket extends ListenV2Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedListenV2Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
@@ -1523,7 +1579,16 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedSpeakV1Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
@@ -1619,7 +1684,16 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedSpeakV2Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
