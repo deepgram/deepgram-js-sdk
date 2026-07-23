@@ -2934,6 +2934,73 @@ await client.speak.v1.audio.generate({
 </dl>
 </details>
 
+## Speak V2 Audio
+<details><summary><code>client.speak.v2.audio.<a href="/src/api/resources/speak/resources/v2/resources/audio/client/Client.ts">generate</a>({ ...params }) -> core.BinaryResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Synthesize a complete block of text into a single audio response using Deepgram's Flux TTS batch (REST) API. Use this for pre-rendering fixed audio (IVR prompts, notifications, narration) where the whole text is known up front and you don't need incremental playback or interruption.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.speak.v2.audio.generate({
+    model: "model",
+    text: "text"
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `Deepgram.speak.v2.SpeakV2Request` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `AudioClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## VoiceAgent Configurations
 <details><summary><code>client.voiceAgent.configurations.<a href="/src/api/resources/voiceAgent/resources/configurations/client/Client.ts">list</a>(project_id) -> Deepgram.ListAgentConfigurationsV1Response</code></summary>
 <dl>

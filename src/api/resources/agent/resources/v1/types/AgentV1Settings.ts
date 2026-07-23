@@ -101,7 +101,6 @@ export namespace AgentV1Settings {
     // guard. The new agent-by-ID-string form is surfaced as the opt-in
     // `AgentReference` alias below; consumers who want to pass a string ID
     // can either cast to `AgentReference` or use it as their parameter type.
-    // Mirrors the Python SDK's compat shims for the same regen.
     // See tests/unit/compat-aliases.test.ts for regression coverage.
     export interface Agent {
         /** Deprecated. Use `listen.provider.language` and `speak.provider.language` fields instead. */

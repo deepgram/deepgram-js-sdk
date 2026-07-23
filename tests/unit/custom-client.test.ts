@@ -48,6 +48,16 @@ describe("CustomDeepgramClient", () => {
 
             expect(client.speak).toBeDefined();
             expect(client.speak.v1).toBeDefined();
+            expect(client.speak.v2).toBeDefined();
+        });
+
+        it("should expose websocket helpers on speak.v2 (Flux streaming)", () => {
+            const client = new DeepgramClient({ apiKey: "test-key" });
+
+            // WrappedSpeakV2Client adds connect()/createConnection() on top of the
+            // generated V2Client — the raw generated client only has connect().
+            expect(typeof client.speak.v2.connect).toBe("function");
+            expect(typeof client.speak.v2.createConnection).toBe("function");
         });
 
         it("should provide access to agent client", () => {

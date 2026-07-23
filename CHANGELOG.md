@@ -1,5 +1,26 @@
 # Changelog
 
+## [5.7.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.6.0...v5.7.0) (2026-07-22)
+
+
+### Features
+
+* **regen:** listen v2 numerals, multilingual Aura-2 voices, and streaming close() fix ([#522](https://github.com/deepgram/deepgram-js-sdk/issues/522)) ([7f0b9e0](https://github.com/deepgram/deepgram-js-sdk/commit/7f0b9e02fec34044060d93e5cebf2bd893ddc6ac))
+
+
+### Bug Fixes
+
+* **agent:** re-add deprecated stt_latency to AgentV1LatencyReport (back-compat shim) ([007c7e4](https://github.com/deepgram/deepgram-js-sdk/commit/007c7e4f644afb6bb1d4f6f920fc04e7c6d42aa1))
+* **socket:** make streaming close() idempotent to prevent close-handler recursion ([bf3d1df](https://github.com/deepgram/deepgram-js-sdk/commit/bf3d1dfdfe9f6a54034906b63589d66c7108111e))
+
+## [5.6.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.5.0...v5.6.0) (2026-07-14)
+
+
+### Features
+
+* **Streaming text-to-speech (Flux) via `speak.v2`** — new WebSocket TTS: `client.speak.v2.connect(...)` streams `Speak`/`Flush`/`Close` and returns audio frames plus control messages. Also adds **agent `UpdateListen`/`ListenUpdated`** (swap the listen provider mid-session) and **Flux end-of-turn tuning** (`eot_threshold`, `eager_eot_threshold`, `eot_timeout_ms`). ([#515](https://github.com/deepgram/deepgram-js-sdk/issues/515)) ([7bba2d2](https://github.com/deepgram/deepgram-js-sdk/commit/7bba2d2d59e320a3294178da03d9847a5a6ca686))
+* **Flux text-to-speech batch (REST)** endpoint and agent latency report. ([#519](https://github.com/deepgram/deepgram-js-sdk/issues/519)) ([a27336e](https://github.com/deepgram/deepgram-js-sdk/commit/a27336e242572b97e9dd29134d49e17175b45dca))
+
 ## [5.5.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.4.0...v5.5.0) (2026-06-26)
 
 

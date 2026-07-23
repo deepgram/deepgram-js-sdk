@@ -10,16 +10,18 @@ export declare namespace V1Socket {
     }
 
     export type Response =
+        | Deepgram.agent.AgentV1ListenUpdated
+        | Deepgram.agent.AgentV1ThinkUpdated
         | Deepgram.agent.AgentV1ReceiveFunctionCallResponse
         | Deepgram.agent.AgentV1PromptUpdated
         | Deepgram.agent.AgentV1SpeakUpdated
-        | Deepgram.agent.AgentV1ThinkUpdated
         | Deepgram.agent.AgentV1InjectionRefused
         | Deepgram.agent.AgentV1Welcome
         | Deepgram.agent.AgentV1SettingsApplied
         | Deepgram.agent.AgentV1ConversationText
         | Deepgram.agent.AgentV1UserStartedSpeaking
         | Deepgram.agent.AgentV1AgentThinking
+        | Deepgram.agent.AgentV1LatencyReport
         | Deepgram.agent.AgentV1FunctionCallRequest
         | Deepgram.agent.AgentV1AgentStartedSpeaking
         | Deepgram.agent.AgentV1AgentAudioDone
@@ -86,6 +88,16 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    public sendUpdateListen(message: Deepgram.agent.AgentV1UpdateListen): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     public sendUpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -112,11 +124,6 @@ export class V1Socket {
     }
 
     public sendUpdatePrompt(message: Deepgram.agent.AgentV1UpdatePrompt): void {
-        this.assertSocketIsOpen();
-        this.sendJson(message);
-    }
-
-    public sendUpdateThink(message: Deepgram.agent.AgentV1UpdateThink): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -187,13 +194,14 @@ export class V1Socket {
     protected sendJson(
         payload:
             | Deepgram.agent.AgentV1Settings
+            | Deepgram.agent.AgentV1UpdateListen
+            | Deepgram.agent.AgentV1UpdateThink
             | Deepgram.agent.AgentV1UpdateSpeak
             | Deepgram.agent.AgentV1InjectUserMessage
             | Deepgram.agent.AgentV1InjectAgentMessage
             | Deepgram.agent.AgentV1SendFunctionCallResponse
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
-            | Deepgram.agent.AgentV1UpdateThink
             | string,
     ): void {
         const jsonPayload = toJson(payload);
