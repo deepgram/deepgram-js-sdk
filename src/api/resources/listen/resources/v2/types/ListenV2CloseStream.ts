@@ -2,5 +2,20 @@
 
 export interface ListenV2CloseStream {
     /** Message type identifier */
-    type: "CloseStream";
+    type: ListenV2CloseStream.Type;
+}
+
+export namespace ListenV2CloseStream {
+    // A v2 CloseStream message's `type` is ALWAYS "CloseStream" — that is the only value
+    // this control message has ever had. `Finalize`/`KeepAlive` are v1 control messages
+    // and were never valid on v2; an earlier copy of this shim wrongly carried them (a
+    // copy-paste from v1's Type enum), so they are intentionally absent here. The Type
+    // namespace is restored (Fern emits only the bare `"CloseStream"` literal) so existing
+    // `ListenV2CloseStream.Type` references keep compiling. Frozen in .fernignore.
+    export const Type = {
+        CloseStream: "CloseStream",
+    } as const;
+    // Keep the `| string` openness the original generated type had, so any existing
+    // assignment to `ListenV2CloseStream.Type` keeps compiling (no narrowing break).
+    export type Type = (typeof Type)[keyof typeof Type] | string;
 }
