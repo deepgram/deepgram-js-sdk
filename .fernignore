@@ -162,14 +162,20 @@ src/version.ts
 # take all of Fern's other BaseClient changes. Swap to .bak before regen.
 src/BaseClient.ts
 
-# src/api/resources/agent/resources/v1/types/AgentV1LatencyReport.ts: the
-# 2026-07-20 regen removed `stt_latency` from the LatencyReport schema
-# (deepgram-docs #1006). AgentV1LatencyReport is a server-emitted (read-only)
-# message, so we re-add the optional `stt_latency?: number` field by hand — no
-# request/wire impact, it just keeps `report.stt_latency` resolving (to undefined)
-# instead of breaking existing readers at compile time, avoiding a major-version
-# break. Mirrors the Python SDK's read-side shim (deepgram-python-sdk #746).
-# Regression coverage in tests/unit/latency-report-stt-compat.test.ts (also gated
-# by make typecheck-tests). Drop this entry when the field is retired in a future
-# major. Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1LatencyReport.ts
+# src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts: the 2026-07-31
+# regen repointed `Listen.provider` from `DeepgramListenProviderV2` to the new
+# `AgentV1UpdateListenListenProvider` union, whose V1/V2 variants both redeclare
+# `version` as REQUIRED. `DeepgramListenProviderV2.version` is optional, so callers
+# that omitted it (`{ type: "deepgram", model: "flux-general-en" }`) stopped compiling
+# (TS2322) — a breaking change on a published send path (agent.v1 sendUpdateListen).
+# We replace the field with a single merged shape that never references the generated
+# union: `Omit<DeepgramListenProviderV2, "version"> & { version?; language?; smart_format? }`.
+# A union can't work here — property access on a union requires the field on EVERY arm,
+# so V2-only reads (`eot_threshold`, `language_hints`, ...) would break with TS2339 on the
+# V1 arm. The merged shape keeps every previously-readable V2 field readable and `model`
+# required, widens `version` to open `string`, and adds the two V1-only fields as optional.
+# Compile-compat only, no wire change. The spec's
+# own docs RELAXED this field, so the required discriminant looks like a generator
+# artifact — drop this entry if a later generator stops requiring it. Regression
+# coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts

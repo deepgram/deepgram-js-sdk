@@ -181,3 +181,120 @@ describe("2026-07-09 regen constraints", () => {
         });
     });
 });
+
+/**
+ * Coverage for the surface added by the 2026-07-31 regeneration:
+ *   - `AgentV1UpdateListen.Listen.provider` back-compat shim (the regen repointed it
+ *     at a union whose variants REQUIRE the `version` discriminant, which broke
+ *     callers that omitted it)
+ *   - the new listen-v2 `ForceEndTurn` message and `redact` option
+ *   - `ListenV2TurnInfo.trigger` (open enum, optional)
+ *   - `diarize_info` on the listen-v1 response metadata
+ *
+ * As above, the typed literals double as compile-time assertions under
+ * `make typecheck-tests`.
+ */
+describe("2026-07-31 regen constraints", () => {
+    describe("AgentV1UpdateListen provider back-compat", () => {
+        it("accepts a v2 provider WITHOUT the `version` discriminant (the shim)", () => {
+            // This is the exact shape that regressed: on the raw generator output both
+            // union variants require `version`, so omitting it failed with TS2322.
+            // The pre-existing `AgentV1UpdateListen` test below passes `version: "v2"`
+            // explicitly, which is why it did not catch the break.
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
+            };
+            const parsed = JSON.parse(JSON.stringify(msg)) as Deepgram.agent.AgentV1UpdateListen;
+            expect(parsed.listen.provider).toEqual({ type: "deepgram", model: "flux-general-en" });
+            // No `version` key is injected — the shim is compile-compat only.
+            expect("version" in parsed.listen.provider).toBe(false);
+        });
+
+        it("still accepts the explicit v1 and v2 discriminated forms", () => {
+            const v1: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", version: "v1", model: "nova-3", language: "en" } },
+            };
+            const v2: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", version: "v2", model: "flux-general-en" } },
+            };
+            expect(v1.listen.provider.model).toBe("nova-3");
+            expect(v2.listen.provider.model).toBe("flux-general-en");
+        });
+
+        it("keeps `model` reading as a required string (not string | undefined)", () => {
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
+            };
+            // Compile-time assertion: the V1 arm of the generated union declares
+            // `model?`, which would widen this to `string | undefined`.
+            const model: string = msg.listen.provider.model;
+            expect(model).toBe("flux-general-en");
+        });
+
+        it("keeps the V2-only tuning fields READABLE off provider", () => {
+            // Property access on a union requires the property on every arm, so these
+            // reads broke with TS2339 once the V1 arm (which lacks them) was introduced.
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: {
+                    provider: {
+                        type: "deepgram",
+                        model: "flux-general-multi",
+                        eot_threshold: 0.7,
+                        eager_eot_threshold: 0.4,
+                        eot_timeout_ms: 4000,
+                        language_hints: ["en", "es"],
+                        keyterms: ["Deepgram"],
+                    },
+                },
+            };
+            const p = msg.listen.provider;
+            expect([p.eot_threshold, p.eager_eot_threshold, p.eot_timeout_ms]).toEqual([0.7, 0.4, 4000]);
+            expect(p.language_hints).toEqual(["en", "es"]);
+            expect(p.keyterms).toEqual(["Deepgram"]);
+        });
+    });
+
+    describe("listen v2 ForceEndTurn", () => {
+        it('has the literal "ForceEndTurn" type and serializes', () => {
+            const msg: Deepgram.listen.v2.ListenV2ForceEndTurn = { type: "ForceEndTurn" };
+            expect(JSON.parse(JSON.stringify(msg))).toEqual({ type: "ForceEndTurn" });
+        });
+    });
+
+    describe("ListenV2Redact", () => {
+        it("exposes numbers/aggressive_numbers and stays open to arbitrary strings", () => {
+            const numbers: Deepgram.ListenV2Redact = Deepgram.ListenV2Redact.Numbers;
+            const aggressive: Deepgram.ListenV2Redact = Deepgram.ListenV2Redact.AggressiveNumbers;
+            const open: Deepgram.ListenV2Redact = "something-new";
+            expect([numbers, aggressive, open]).toEqual(["numbers", "aggressive_numbers", "something-new"]);
+        });
+    });
+
+    describe("ListenV2TurnInfo.trigger", () => {
+        it("is optional and open to unrecognized values", () => {
+            const withTrigger: Pick<Deepgram.listen.v2.ListenV2TurnInfo, "trigger"> = { trigger: "manual" };
+            const withoutTrigger: Pick<Deepgram.listen.v2.ListenV2TurnInfo, "trigger"> = {};
+            // Documented as an open enum: clients must tolerate unknown values.
+            const future: Pick<Deepgram.listen.v2.ListenV2TurnInfo, "trigger"> = { trigger: "some-future-trigger" };
+            expect(withTrigger.trigger).toBe("manual");
+            expect(withoutTrigger.trigger).toBeUndefined();
+            expect(future.trigger).toBe("some-future-trigger");
+        });
+    });
+
+    describe("listen v1 diarize_info", () => {
+        it("is optional on the response metadata and carries an open `arch` enum", () => {
+            const meta: Pick<Deepgram.ListenV1ResponseMetadata, "diarize_info"> = {
+                diarize_info: { model_uuid: "uuid-1", arch: "v2" },
+            };
+            const omitted: Pick<Deepgram.ListenV1ResponseMetadata, "diarize_info"> = {};
+            expect(meta.diarize_info?.arch).toBe("v2");
+            expect(omitted.diarize_info).toBeUndefined();
+        });
+    });
+});

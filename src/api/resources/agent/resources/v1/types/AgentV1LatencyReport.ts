@@ -3,17 +3,7 @@
 export interface AgentV1LatencyReport {
     /** Message type identifier for the latency report */
     type: "LatencyReport";
-    /**
-     * Speech-to-text: time from audio received to transcript produced, in seconds.
-     *
-     * @deprecated The API spec removed `stt_latency` from the LatencyReport schema.
-     * `AgentV1LatencyReport` is a server-emitted (read-only) message, so re-adding
-     * this optional field by hand has no request/wire impact — it keeps
-     * `report.stt_latency` resolving (to `undefined`, since the server no longer
-     * emits it) instead of breaking existing readers at compile time, avoiding a
-     * major-version break. Remove this and unfreeze the file when the field is
-     * intentionally retired in a future major.
-     */
+    /** Speech-to-text: time from audio received to transcript produced, in seconds */
     stt_latency?: number | undefined;
     /** Time to first token of any type (text, tool call, or thinking), in seconds */
     ttt_token_latency?: number | undefined;
