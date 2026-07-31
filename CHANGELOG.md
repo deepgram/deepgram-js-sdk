@@ -5,7 +5,7 @@
 
 ### Features
 
-* **regen:** listen v2 ForceEndTurn + redact, diarization info, Flux TTS voices ([#526](https://github.com/deepgram/deepgram-js-sdk/issues/526)) ([5b8de76](https://github.com/deepgram/deepgram-js-sdk/commit/5b8de762c87ed633aed494274fc493d6c0bf46ad))
+* **Listen v2 streaming: turn control & redaction** — new `ForceEndTurn` client message (`connection.sendForceEndTurn(...)`) forces the model to finalize the current turn on demand, plus a `redact` connect parameter (`numbers` / `aggressive_numbers`) that removes sensitive information from live transcripts; `TurnInfo` also gains a `trigger` field indicating what ended the turn. Also adds **Listen v1 diarization metadata** (`diarize_info` on response metadata plus per-word `speaker` / `speaker_confidence`) and **12 new Flux (`flux-*-en`) text-to-speech voices**. ([#526](https://github.com/deepgram/deepgram-js-sdk/issues/526)) ([5b8de76](https://github.com/deepgram/deepgram-js-sdk/commit/5b8de762c87ed633aed494274fc493d6c0bf46ad))
 
 
 ### Bug Fixes
