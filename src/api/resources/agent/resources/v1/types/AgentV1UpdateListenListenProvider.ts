@@ -2,11 +2,11 @@
 
 import type * as Deepgram from "../../../../../index.js";
 
-export type AgentV1SettingsAgentContextListenProvider =
-    | Deepgram.agent.AgentV1SettingsAgentContextListenProvider.V1
-    | Deepgram.agent.AgentV1SettingsAgentContextListenProvider.V2;
+export type AgentV1UpdateListenListenProvider =
+    | Deepgram.agent.AgentV1UpdateListenListenProvider.V1
+    | Deepgram.agent.AgentV1UpdateListenListenProvider.V2;
 
-export namespace AgentV1SettingsAgentContextListenProvider {
+export namespace AgentV1UpdateListenListenProvider {
     export interface V1 extends Deepgram.DeepgramListenProviderV1 {
         version: "v1";
     }

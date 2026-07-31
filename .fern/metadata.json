@@ -1,5 +1,5 @@
 {
-    "cliVersion": "5.44.6",
+    "cliVersion": "5.89.0",
     "generatorName": "fernapi/fern-typescript-sdk",
     "generatorVersion": "3.72.4",
     "generatorConfig": {
@@ -11,8 +11,8 @@
         "shouldGenerateWebsocketClients": true,
         "enableForwardCompatibleEnums": true
     },
-    "originGitCommit": "ff8fd2b74fdd5c081e9f111d59d3619f7e286dd8",
+    "originGitCommit": "9e641c9fb92e1e0398c79c196f6a71c70b4fdbf6",
     "originGitCommitIsDirty": true,
     "invokedBy": "manual",
-    "sdkVersion": "5.7.0"
+    "sdkVersion": "5.7.1"
 }
