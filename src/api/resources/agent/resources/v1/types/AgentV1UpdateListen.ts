@@ -14,6 +14,34 @@ export namespace AgentV1UpdateListen {
      * Listen configuration to update. Contains a provider object with the same schema as Settings. The model and language can be changed mid-session.
      */
     export interface Listen {
-        provider: Deepgram.agent.AgentV1UpdateListenListenProvider;
+        /**
+         * Backward-compat shim: the 2026-07-31 regen repointed this field from
+         * `DeepgramListenProviderV2` to the new `AgentV1UpdateListenListenProvider`
+         * union, whose `V1`/`V2` variants both redeclare the `version` discriminant as
+         * REQUIRED. `DeepgramListenProviderV2.version` is optional, so pre-existing
+         * callers that omitted it — `{ type: "deepgram", model: "flux-general-en" }` —
+         * stopped compiling (TS2322).
+         *
+         * We union the bare `DeepgramListenProviderV2` back in so those call sites keep
+         * working, while the generated union still offers the new explicit v1/v2
+         * selection. Compile-compat only: the serialized payload is unchanged, and the
+         * spec actually RELAXED this field (its own docs dropped "the provider identity
+         * (type, version, model) is required and must match the current session"), so
+         * requiring `version` looks like a generator modeling artifact rather than
+         * intent. Drop this shim if the generator stops requiring the discriminant.
+         *
+         * The `& { model: string }` intersection pins the second half of the same
+         * regression: the generated union's `V1` arm declares `model?`, which widened
+         * reads of `provider.model` from `string` to `string | undefined`. `model` was
+         * required here before the regen, so re-requiring it restores the previous
+         * contract on both construction and reads, and only tightens the brand-new
+         * (never-released) v1 arm.
+         *
+         * Regression coverage in tests/unit/regen-constraints.test.ts (also gated by
+         * `make typecheck-tests`).
+         */
+        provider: (Deepgram.agent.AgentV1UpdateListenListenProvider | Deepgram.DeepgramListenProviderV2) & {
+            model: string;
+        };
     }
 }

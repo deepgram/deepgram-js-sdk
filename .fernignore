@@ -161,3 +161,16 @@ src/version.ts
 # the version lives in exactly one place. Re-apply that import patch after regen;
 # take all of Fern's other BaseClient changes. Swap to .bak before regen.
 src/BaseClient.ts
+
+# src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts: the 2026-07-31
+# regen repointed `Listen.provider` from `DeepgramListenProviderV2` to the new
+# `AgentV1UpdateListenListenProvider` union, whose V1/V2 variants both redeclare
+# `version` as REQUIRED. `DeepgramListenProviderV2.version` is optional, so callers
+# that omitted it (`{ type: "deepgram", model: "flux-general-en" }`) stopped compiling
+# (TS2322) — a breaking change on a published send path (agent.v1 sendUpdateListen).
+# We union the bare `DeepgramListenProviderV2` back in; the generated union still
+# provides the explicit v1/v2 forms. Compile-compat only, no wire change. The spec's
+# own docs RELAXED this field, so the required discriminant looks like a generator
+# artifact — drop this entry if a later generator stops requiring it. Regression
+# coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
