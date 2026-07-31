@@ -223,6 +223,40 @@ describe("2026-07-31 regen constraints", () => {
             expect(v1.listen.provider.model).toBe("nova-3");
             expect(v2.listen.provider.model).toBe("flux-general-en");
         });
+
+        it("keeps `model` reading as a required string (not string | undefined)", () => {
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
+            };
+            // Compile-time assertion: the V1 arm of the generated union declares
+            // `model?`, which would widen this to `string | undefined`.
+            const model: string = msg.listen.provider.model;
+            expect(model).toBe("flux-general-en");
+        });
+
+        it("keeps the V2-only tuning fields READABLE off provider", () => {
+            // Property access on a union requires the property on every arm, so these
+            // reads broke with TS2339 once the V1 arm (which lacks them) was introduced.
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: {
+                    provider: {
+                        type: "deepgram",
+                        model: "flux-general-multi",
+                        eot_threshold: 0.7,
+                        eager_eot_threshold: 0.4,
+                        eot_timeout_ms: 4000,
+                        language_hints: ["en", "es"],
+                        keyterms: ["Deepgram"],
+                    },
+                },
+            };
+            const p = msg.listen.provider;
+            expect([p.eot_threshold, p.eager_eot_threshold, p.eot_timeout_ms]).toEqual([0.7, 0.4, 4000]);
+            expect(p.language_hints).toEqual(["en", "es"]);
+            expect(p.keyterms).toEqual(["Deepgram"]);
+        });
     });
 
     describe("listen v2 ForceEndTurn", () => {
