@@ -6,18 +6,19 @@ import { Deepgram } from "../../src";
 import AgentV1LatencyReport = Deepgram.agent.AgentV1LatencyReport;
 
 /**
- * Regression test for the `stt_latency` backward-compat shim on
- * AgentV1LatencyReport.
+ * Regression test for the `stt_latency` field on AgentV1LatencyReport.
  *
- * The API spec removed `stt_latency` from the LatencyReport schema.
- * AgentV1LatencyReport is a server-emitted (read-only) message, so we re-add the
- * optional field by hand (frozen in .fernignore) to keep `report.stt_latency`
- * resolving instead of breaking existing readers at compile time.
+ * The 2026-07-20 spec removal of `stt_latency` was reverted upstream: the
+ * 2026-07-31 regen emits `stt_latency?: number` natively again, so the hand-added
+ * back-compat shim (and its .fernignore freeze) was dropped — Fern owns the field.
+ * This test stays as a guard: if a future regen removes the field or narrows its
+ * type, the assertions below break and flag the back-compat regression before it
+ * ships.
  *
  * TypeScript types are erased at runtime, so the compile-time assertions below
  * are the real guard — this file is compiled against `src` by
- * `make typecheck-tests` (tsconfig.typecheck.json), so if the shim ever drifts
- * (field dropped, or its type narrowed) the type-check gate fails.
+ * `make typecheck-tests` (tsconfig.typecheck.json), so any drift (field dropped,
+ * or its type narrowed) fails the type-check gate.
  */
 
 // Compile-time identity check: `stt_latency` remains an optional `number` field.

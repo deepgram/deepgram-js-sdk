@@ -4,18 +4,7 @@ import type * as Deepgram from "../../../../../../../../../../index.js";
 
 /**
  * @example
- *     {
- *         start: "2024-01-15T09:30:00Z",
- *         end: "2024-01-15T09:30:00Z",
- *         limit: 1.1,
- *         page: 1.1,
- *         accessor: "12345678-1234-1234-1234-123456789012",
- *         request_id: "12345678-1234-1234-1234-123456789012",
- *         deployment: "hosted",
- *         endpoint: "listen",
- *         method: "sync",
- *         status: "succeeded"
- *     }
+ *     {}
  */
 export interface RequestsListRequest {
     /** Start date of the requested date range. Formats accepted are YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS, or YYYY-MM-DDTHH:MM:SS+HH:MM */
