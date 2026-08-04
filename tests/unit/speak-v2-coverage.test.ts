@@ -14,6 +14,11 @@
  *   - `resources/audio/client/Client.ts` — the error branches of `generate()`
  *     (400 -> BadRequestError, other status -> DeepgramError, transport failure ->
  *     handleNonStatusCodeError). `speak-v2-batch.test.ts` only drives the 2xx path.
+ *     Plus the default-host fallback (the `DeepgramEnvironment.Production.base`
+ *     branch the local-server tests can't reach because they always set
+ *     `environment`) and the `requestOptions` passthrough (headers, query params,
+ *     timeout, retries, abort signal), asserted through an injected capturing
+ *     fetcher so no network is required.
  *
  * No network for the websocket paths (a fake socket / already-aborted signal is
  * used); the batch REST error paths use a local http server, matching
@@ -119,6 +124,17 @@ describe("Speak V2Client.connect", () => {
         expect(audio).toBeDefined();
         // Second access hits the `??=` cached branch.
         expect(client.audio).toBe(audio);
+    });
+
+    it("defaults to the production websocket host when no environment is set", async () => {
+        const socket = await client.connect({
+            model: "flux-alexis-en",
+            Authorization: "Token abc",
+            abortSignal: abortedSignal(),
+        } as any);
+        // Exercises the `environments.DeepgramEnvironment.Production.production`
+        // fallback in connect() — no baseUrl / environment supplied.
+        expect((socket as any).socket._url).toBe("wss://api.deepgram.com/v2/speak");
     });
 });
 
@@ -375,5 +391,86 @@ describe("Speak V2 audio.generate error branches", () => {
             },
         });
         await expect(client.speak.v2.audio.generate({ model: "m", text: "t" })).rejects.toBeInstanceOf(DeepgramError);
+    });
+});
+
+// --------------------------------------------------------------------------- //
+// resources/audio/client/Client.ts — default host + requestOptions passthrough
+// --------------------------------------------------------------------------- //
+
+describe("Speak V2 audio.generate host + request options", () => {
+    /**
+     * A capturing fetcher lets us assert the resolved request URL and every
+     * `requestOptions` passthrough without a network round-trip. It returns a
+     * minimal successful BinaryResponse so `generate()` resolves normally.
+     */
+    function capturingClient() {
+        const calls: Array<Record<string, any>> = [];
+        const fetcher = async (args: Record<string, any>) => {
+            calls.push(args);
+            return {
+                ok: true,
+                body: {
+                    bodyUsed: false,
+                    stream: () => null,
+                    arrayBuffer: async () => new ArrayBuffer(0),
+                    blob: async () => new Blob(),
+                },
+                rawResponse: {
+                    headers: new Headers(),
+                    redirected: false,
+                    status: 200,
+                    statusText: "OK",
+                    type: "basic",
+                    url: args.url,
+                },
+            };
+        };
+        const client = new DeepgramClient({ apiKey: "test", fetcher: fetcher as any });
+        return { client, calls };
+    }
+
+    it("defaults to the production REST host when no environment is set", async () => {
+        const { client, calls } = capturingClient();
+        await (await client.speak.v2.audio.generate({ model: "flux-alexis-en", text: "hi" })).arrayBuffer();
+        // The only branch the local-server tests can't reach: they always pass an
+        // explicit `environment`, so the `DeepgramEnvironment.Production.base`
+        // fallback (Client.ts:79) stays uncovered until we omit it here.
+        expect(calls[0].url).toBe("https://api.deepgram.com/v2/speak");
+    });
+
+    it("forwards requestOptions headers, query params, timeout, retries, and abort signal", async () => {
+        const { client, calls } = capturingClient();
+        const abort = new AbortController();
+        await (
+            await client.speak.v2.audio.generate(
+                { model: "flux-alexis-en", text: "hi" },
+                {
+                    headers: { "x-trace-id": "trace-42" },
+                    queryParams: { extra: "1" },
+                    timeoutInSeconds: 7,
+                    maxRetries: 4,
+                    abortSignal: abort.signal,
+                },
+            )
+        ).arrayBuffer();
+        const args = calls[0];
+        // mergeHeaders lowercases keys; the caller header survives the merge.
+        expect(args.headers["x-trace-id"]).toBe("trace-42");
+        // Additional query params merge alongside the request's own params.
+        expect(args.queryString).toContain("extra=1");
+        expect(args.queryString).toContain("model=flux-alexis-en");
+        // timeoutInSeconds is converted to milliseconds; maxRetries/abortSignal pass through verbatim.
+        expect(args.timeoutMs).toBe(7000);
+        expect(args.maxRetries).toBe(4);
+        expect(args.abortSignal).toBe(abort.signal);
+    });
+
+    it("falls back to the 60s default timeout when none is supplied", async () => {
+        const { client, calls } = capturingClient();
+        await (await client.speak.v2.audio.generate({ model: "flux-alexis-en", text: "hi" })).arrayBuffer();
+        // Neither requestOptions.timeoutInSeconds nor a client-level timeout is set,
+        // so the `?? 60` default (× 1000) applies.
+        expect(calls[0].timeoutMs).toBe(60000);
     });
 });
