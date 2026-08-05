@@ -193,8 +193,8 @@ describe("Speak V2Socket", () => {
         fake.emit("open", { type: "open" });
         expect(seen.open).toBe(true);
 
-        fake.emit("message", { data: '{"type":"Flushed","sequence_id":1}' });
-        expect(seen.message).toEqual({ type: "Flushed", sequence_id: 1 });
+        fake.emit("message", { data: '{"type":"Flushed","speech_id":1}' });
+        expect(seen.message).toEqual({ type: "Flushed", speech_id: 1 });
 
         fake.emit("error", { message: "socket failure" });
         expect(seen.error).toBeInstanceOf(Error);
