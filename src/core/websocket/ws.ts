@@ -83,7 +83,9 @@ export class ReconnectingWebSocket {
     private _connectTimeout: any;
     private _shouldReconnect = true;
     private _connectLock = false;
-    private _binaryType: BinaryType = "blob";
+    // Prefer ArrayBuffer: Bun's `ws` rejects `binaryType = "blob"`, while
+    // ArrayBuffer is accepted by browsers, Node `ws`, and Bun.
+    private _binaryType: BinaryType = "arraybuffer";
     private _closeCalled = false;
     private _messageQueue: ReconnectingWebSocket.Message[] = [];
 

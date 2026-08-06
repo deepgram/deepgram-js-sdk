@@ -461,7 +461,7 @@ class TransportWebSocketAdapter {
     private _retryCount = -1;
     private _shouldReconnect = true;
     private _connectLock = false;
-    private _binaryType: BinaryType = "blob";
+    private _binaryType: BinaryType = "arraybuffer";
     private _closeCalled = false;
     private _messageQueue: DeepgramTransportMessage[] = [];
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
