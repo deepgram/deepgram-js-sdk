@@ -8,6 +8,7 @@ help:
 	@printf "  \033[1;32mmake lint\033[0m              - Run Biome linter and formatter to check code quality\n"
 	@printf "  \033[1;32mmake build\033[0m             - Compile TypeScript to both CommonJS and ESM formats\n"
 	@printf "  \033[1;32mmake test\033[0m              - Fix wire test imports and run the test suite\n"
+	@printf "  \033[1;32mmake test-coverage\033[0m     - Run the test suite with V8 code coverage (CI test gate)\n"
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
