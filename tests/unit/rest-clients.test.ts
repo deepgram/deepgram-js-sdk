@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { DeepgramClient } from "../../src";
+import { DeepgramClient, DeepgramError } from "../../src";
+import { BadRequestError } from "../../src/api/errors/index.js";
 
 /**
  * Exercises the error-handling branches of every generated REST client:
@@ -103,13 +104,33 @@ const invocations: Array<[string, Invoke]> = [
     ["agent.v1.settings.think.models.list", (c) => c.agent.v1.settings.think.models.list()],
 ];
 
-const okJson =
-    (body: unknown = {}): FetchImpl =>
-    async () =>
+/**
+ * A URL-capturing stub. Asserting on the resolved query string is the whole point
+ * of the full-request tests below — without it the SDK could drop every optional
+ * param and they would still pass. Query-param serialization is also one of the
+ * things a regen churns most.
+ */
+const capturing = (response: () => Response) => {
+    const urls: string[] = [];
+    const impl: FetchImpl = async (input) => {
+        urls.push(typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url);
+        return response();
+    };
+    return { impl, urls };
+};
+
+const jsonResponse =
+    (body: unknown = {}) =>
+    () =>
         new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } });
 
-const okBinary = (): FetchImpl => async () =>
+const binaryResponse = () => () =>
     new Response(new Uint8Array([1, 2, 3]), { status: 200, headers: { "content-type": "audio/wav" } });
+
+const okJson = (body: unknown = {}): FetchImpl => capturing(jsonResponse(body)).impl;
+
+/** Parses the query string of the most recent captured request. */
+const queryOf = (urls: string[]): URLSearchParams => new URLSearchParams(urls.at(-1)?.split("?")[1] ?? "");
 
 // Every optional field set, so the "param != null" side of each query-string
 // ternary is exercised (the error-path suite covers the "undefined" side).
@@ -155,21 +176,47 @@ const fullTranscribeRequest = {
 
 describe("REST client success paths with full query params", () => {
     it("transcribeUrl serializes every optional query param", async () => {
-        const c = client(okJson({ results: {} }));
+        const { impl, urls } = capturing(jsonResponse({ results: {} }));
+        const c = client(impl);
         await expect(
             c.listen.v1.media.transcribeUrl({ url: "https://dpgr.am/x.wav", ...fullTranscribeRequest }),
         ).resolves.toBeDefined();
+
+        const q = queryOf(urls);
+        expect(q.get("model")).toBe("nova-3");
+        expect(q.get("language")).toBe("en");
+        expect(q.get("smart_format")).toBe("true");
+        expect(q.get("utt_split")).toBe("0.8");
+        expect(q.get("summarize")).toBe("v2");
+        expect(q.get("callback")).toBe("https://cb");
+        // Repeated-array params are the format most likely to regress silently.
+        expect(q.getAll("keyterm")).toEqual(["kt"]);
+        expect(q.getAll("keywords")).toEqual(["kw"]);
+        expect(q.getAll("redact")).toEqual(["pci"]);
+        expect(q.getAll("replace")).toEqual(["a:b"]);
+        expect(q.getAll("search")).toEqual(["hi"]);
+        expect(q.getAll("tag")).toEqual(["t"]);
     });
 
     it("transcribeFile serializes every optional query param", async () => {
-        const c = client(okJson({ results: {} }));
+        const { impl, urls } = capturing(jsonResponse({ results: {} }));
+        const c = client(impl);
         await expect(
             c.listen.v1.media.transcribeFile(Buffer.from("audio"), fullTranscribeRequest as never),
         ).resolves.toBeDefined();
+
+        const q = queryOf(urls);
+        expect(q.get("model")).toBe("nova-3");
+        expect(q.get("encoding")).toBe("linear16");
+        expect(q.get("diarize")).toBe("true");
+        expect(q.get("diarize_model")).toBe("v2");
+        expect(q.getAll("keyterm")).toEqual(["kt"]);
+        expect(q.getAll("custom_topic")).toEqual(["ct"]);
     });
 
     it("speak audio generate serializes every optional query param and returns binary", async () => {
-        const c = client(okBinary());
+        const { impl, urls } = capturing(binaryResponse());
+        const c = client(impl);
         await expect(
             c.speak.v1.audio.generate({
                 text: "hello",
@@ -185,22 +232,42 @@ describe("REST client success paths with full query params", () => {
                 speed: 1,
             } as never),
         ).resolves.toBeDefined();
+
+        const q = queryOf(urls);
+        expect(q.get("model")).toBe("aura-2-thalia-en");
+        expect(q.get("container")).toBe("wav");
+        expect(q.get("encoding")).toBe("linear16");
+        expect(q.get("sample_rate")).toBe("24000");
+        expect(q.get("bit_rate")).toBe("48000");
+        expect(q.get("speed")).toBe("1");
+        expect(q.get("mip_opt_out")).toBe("true");
+        expect(q.getAll("tag")).toEqual(["t"]);
     });
 
     it("manage list endpoints serialize pagination query params", async () => {
-        const c = client(okJson({ projects: [] }));
+        const { impl, urls } = capturing(jsonResponse({ projects: [] }));
+        const c = client(impl);
+
         await expect(c.manage.v1.projects.keys.list("proj", { status: "active" } as never)).resolves.toBeDefined();
+        expect(queryOf(urls).get("status")).toBe("active");
+
         await expect(c.manage.v1.models.list({ include_outdated: true } as never)).resolves.toBeDefined();
+        expect(queryOf(urls).get("include_outdated")).toBe("true");
     });
 });
 
 describe("REST client error handling", () => {
+    // Bare `rejects.toThrow()` passes for any rejection, so it cannot tell a
+    // BadRequestError from a generic DeepgramError — assert the classes instead.
     it.each(invocations)("%s throws a BadRequestError on HTTP 400", async (_name, invoke) => {
-        await expect(invoke(client(errStatus(400)))).rejects.toThrow();
+        await expect(invoke(client(errStatus(400)))).rejects.toBeInstanceOf(BadRequestError);
     });
 
     it.each(invocations)("%s throws a DeepgramError on HTTP 500", async (_name, invoke) => {
-        await expect(invoke(client(errStatus(500)))).rejects.toThrow();
+        const error = await invoke(client(errStatus(500))).catch((e) => e);
+        expect(error).toBeInstanceOf(DeepgramError);
+        expect(error).not.toBeInstanceOf(BadRequestError);
+        expect(error.statusCode).toBe(500);
     });
 
     it.each(invocations)("%s surfaces a non-status transport error", async (_name, invoke) => {

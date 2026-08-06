@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { DeepgramClient } from "../../src";
 import { normalizeClientOptionsWithAuth } from "../../src/BaseClient.js";
 import { isAuthProvider } from "../../src/core/auth/AuthProvider.js";
@@ -18,9 +18,12 @@ describe("isAuthProvider", () => {
 });
 
 describe("normalizeClientOptionsWithAuth", () => {
-    it("uses a NoOpAuthProvider when auth is disabled", () => {
+    it("uses a NoOpAuthProvider when auth is disabled", async () => {
         const normalized = normalizeClientOptionsWithAuth({ auth: false });
-        expect(normalized.authProvider).toBeDefined();
+        // `auth: false` is the opt-out for callers supplying their own credentials
+        // (proxy, pre-signed URL). The contract is that the SDK attaches nothing —
+        // asserting only that a provider exists would also accept one holding the key.
+        expect(await normalized.authProvider.getAuthRequest()).toEqual({ headers: {} });
     });
 
     it("wraps an auth function", async () => {
@@ -81,18 +84,34 @@ describe("getErrorResponseBody", () => {
 });
 
 describe("client.fetch passthrough baseUrl resolution", () => {
-    const okFetch: typeof fetch = async () => new Response("{}", { status: 200 });
+    // The request URL has to be captured, not just the status: `src/Client.ts`
+    // carries a hand-maintained patch restoring `env.base` (api.deepgram.com) as
+    // the passthrough default after a regen flipped it to `env.agentRest`. Only an
+    // assertion on the resolved host stops the next regen undoing that silently.
+    const calls: string[] = [];
+    const okFetch: typeof fetch = async (input) => {
+        calls.push(typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url);
+        return new Response("{}", { status: 200 });
+    };
+
+    beforeEach(() => {
+        calls.length = 0;
+    });
 
     it("uses an explicit baseUrl when provided", async () => {
         const client = new DeepgramClient({ apiKey: "k", baseUrl: "https://custom.example.com", fetch: okFetch });
         const res = await client.fetch("/v1/anything");
         expect(res.status).toBe(200);
+        expect(calls.at(-1)).toBe("https://custom.example.com/v1/anything");
     });
 
     it("resolves the base host from the default environment object", async () => {
         const client = new DeepgramClient({ apiKey: "k", fetch: okFetch });
         const res = await client.fetch("/v1/anything");
         expect(res.status).toBe(200);
+        // Guards the `src/Client.ts` baseUrl patch: `agentRest` would send this to
+        // agent.deepgram.com.
+        expect(calls.at(-1)).toBe("https://api.deepgram.com/v1/anything");
     });
 
     it("resolves a string environment", async () => {
@@ -103,6 +122,7 @@ describe("client.fetch passthrough baseUrl resolution", () => {
         });
         const res = await client.fetch(new URL("https://env.example.com/v1/anything"));
         expect(res.status).toBe(200);
+        expect(calls.at(-1)).toBe("https://env.example.com/v1/anything");
     });
 
     it("accepts a Request object and Headers-instance init headers", async () => {
@@ -111,6 +131,8 @@ describe("client.fetch passthrough baseUrl resolution", () => {
             headers: new Headers({ "x-a": "1" }),
         });
         expect(res.status).toBe(200);
+        // An absolute URL bypasses base resolution and is used verbatim.
+        expect(calls.at(-1)).toBe("https://api.deepgram.com/v1/anything");
     });
 
     it("accepts array-shaped and plain-object init headers", async () => {
@@ -119,5 +141,6 @@ describe("client.fetch passthrough baseUrl resolution", () => {
         expect(arrayHeaders.status).toBe(200);
         const objectHeaders = await client.fetch("/v1/anything", { headers: { "x-obj": "1" } });
         expect(objectHeaders.status).toBe(200);
+        expect(calls).toEqual(["https://api.deepgram.com/v1/anything", "https://api.deepgram.com/v1/anything"]);
     });
 });
