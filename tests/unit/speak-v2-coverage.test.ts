@@ -47,7 +47,14 @@ function abortedSignal(): AbortSignal {
 }
 
 function queryParamsOf(socket: unknown): Record<string, unknown> {
-    return (socket as any).socket._queryParameters ?? {};
+    const params = (socket as any).socket?._queryParameters;
+    // No `?? {}` fallback: a regen renaming this private must fail loudly rather
+    // than silently hand back an empty object, which would satisfy every
+    // `toBeUndefined()` assertion in the omission test below.
+    if (params === undefined) {
+        throw new Error("socket._queryParameters not found — generated internals may have changed");
+    }
+    return params;
 }
 
 // --------------------------------------------------------------------------- //
@@ -97,6 +104,8 @@ describe("Speak V2Client.connect", () => {
             abortSignal: abortedSignal(),
         } as any);
         const qp = queryParamsOf(socket);
+        // Positive anchor: without it every assertion below is trivially true of `{}`.
+        expect(qp.model).toBe("flux-alexis-en");
         expect(qp.encoding).toBeUndefined();
         expect(qp.sample_rate).toBeUndefined();
         expect(qp.mip_opt_out).toBeUndefined();
@@ -119,7 +128,7 @@ describe("Speak V2Client.connect", () => {
         expect(socket).toBeInstanceOf(V2Socket);
     });
 
-    it("returns a V2Socket and exposes a cached audio getter", () => {
+    it("exposes a cached audio getter", () => {
         const audio = client.audio;
         expect(audio).toBeDefined();
         // Second access hits the `??=` cached branch.
@@ -282,9 +291,11 @@ describe("Speak V2Socket", () => {
         const fake = new FakeSocket();
         const socket = make(fake);
         const promise = socket.waitForOpen();
-        const handled = promise.catch((e) => e);
         fake.emit("error", { message: "nope" });
-        await expect(Promise.resolve(handled)).resolves.toBeDefined();
+        // waitForOpen rejects with the raw event, not an Error, so `.rejects.toThrow()`
+        // would not match — compare the value. Converting the rejection to a resolution
+        // before asserting would make this test pass even if waitForOpen resolved.
+        await expect(promise).rejects.toEqual({ message: "nope" });
     });
 });
 

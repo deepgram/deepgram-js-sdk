@@ -4,5 +4,9 @@ node_modules
 *.wav
 examples/browser/deepgram.js
 
+# V8 coverage reports (vitest.config.mts reportsDirectory). Also keeps the
+# generated report out of biome's lint set, which honors .gitignore.
+coverage
+
 # Local Claude Code settings (per-machine permissions; not shared)
 .claude/settings.local.json
