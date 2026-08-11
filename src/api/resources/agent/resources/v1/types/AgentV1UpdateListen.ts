@@ -5,15 +5,15 @@ import type * as Deepgram from "../../../../../index.js";
 export interface AgentV1UpdateListen {
     /** Message type identifier for updating the listen configuration */
     type: "UpdateListen";
-    /** Listen configuration to update. Contains a provider object with the same schema as Settings. The provider identity (type, version, model) is required and must match the current session. */
+    /** Listen configuration to update. Contains a provider object with the same schema as Settings. The model and language can be changed mid-session. Keyterms can only be updated mid-session for Flux models. */
     listen: AgentV1UpdateListen.Listen;
 }
 
 export namespace AgentV1UpdateListen {
     /**
-     * Listen configuration to update. Contains a provider object with the same schema as Settings. The provider identity (type, version, model) is required and must match the current session.
+     * Listen configuration to update. Contains a provider object with the same schema as Settings. The model and language can be changed mid-session. Keyterms can only be updated mid-session for Flux models.
      */
     export interface Listen {
-        provider: Deepgram.DeepgramListenProviderV2;
+        provider: Deepgram.agent.AgentV1UpdateListenListenProvider;
     }
 }

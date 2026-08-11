@@ -14,8 +14,11 @@ export declare namespace V2Socket {
         | Deepgram.speak.SpeakV2Connected
         | Deepgram.speak.SpeakV2SpeechStarted
         | Deepgram.speak.SpeakV2SpeechMetadata
+        | Deepgram.speak.SpeakV2SpeechInterrupted
         | Deepgram.speak.SpeakV2Flushed
         | Deepgram.speak.SpeakV2SessionMetadata
+        | Deepgram.speak.SpeakV2ConfigureSuccess
+        | Deepgram.speak.SpeakV2ConfigureFailure
         | Deepgram.speak.SpeakV2Warning
         | Deepgram.speak.SpeakV2Error;
     type EventHandlers = {
@@ -78,6 +81,16 @@ export class V2Socket {
     }
 
     public sendFlush(message: Deepgram.speak.SpeakV2Flush): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendInterrupt(message: Deepgram.speak.SpeakV2Interrupt): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendConfigure(message: Deepgram.speak.SpeakV2Configure): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -146,7 +159,12 @@ export class V2Socket {
 
     /** Send a JSON payload to the websocket. */
     protected sendJson(
-        payload: Deepgram.speak.SpeakV2Speak | Deepgram.speak.SpeakV2Flush | Deepgram.speak.SpeakV2Close,
+        payload:
+            | Deepgram.speak.SpeakV2Speak
+            | Deepgram.speak.SpeakV2Flush
+            | Deepgram.speak.SpeakV2Interrupt
+            | Deepgram.speak.SpeakV2Configure
+            | Deepgram.speak.SpeakV2Close,
     ): void {
         const jsonPayload = toJson(payload);
         this.socket.send(jsonPayload);

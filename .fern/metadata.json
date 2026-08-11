@@ -11,8 +11,8 @@
         "shouldGenerateWebsocketClients": true,
         "enableForwardCompatibleEnums": true
     },
-    "originGitCommit": "ff8fd2b74fdd5c081e9f111d59d3619f7e286dd8",
+    "originGitCommit": "03f06776bbb692c49f8d76c4230bca7f4bc4bca7",
     "originGitCommitIsDirty": true,
     "invokedBy": "manual",
-    "sdkVersion": "5.7.0"
+    "sdkVersion": "5.7.1"
 }

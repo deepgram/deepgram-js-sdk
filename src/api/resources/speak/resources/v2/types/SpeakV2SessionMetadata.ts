@@ -3,7 +3,7 @@
 export interface SpeakV2SessionMetadata {
     /** Message type identifier */
     type: "SessionMetadata";
-    /** Cumulative audio duration produced across the session, in milliseconds */
+    /** Cumulative audio duration produced across the session, in milliseconds. An `Interrupt` rebases this onto the audio the client actually played. */
     total_audio_duration_ms: number;
     /** Cumulative raw input character count across the session */
     total_input_character_count: number;

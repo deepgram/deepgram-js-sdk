@@ -11,18 +11,20 @@ export interface SpeakV2SpeechMetadata {
     input_character_count: number;
     /** Billable character count for this turn — the input character count with stripped control characters removed. Always less than or equal to `input_character_count`. */
     billable_character_count: number;
-    /** Controls applied during the turn. Inline pronunciation and pause controls are not available during Early Access, so every count is currently `0`. */
+    /** Counts of the inline controls the server acted on during the turn. A control that was rejected or ignored is reported through a `Warning` and does not count here. */
     controls_applied: SpeakV2SpeechMetadata.ControlsApplied;
 }
 
 export namespace SpeakV2SpeechMetadata {
     /**
-     * Controls applied during the turn. Inline pronunciation and pause controls are not available during Early Access, so every count is currently `0`.
+     * Counts of the inline controls the server acted on during the turn. A control that was rejected or ignored is reported through a `Warning` and does not count here.
      */
     export interface ControlsApplied {
-        /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. Always `0` during Early Access. */
+        /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. */
         pronunciations_applied: number;
-        /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. Always `0` during Early Access. */
+        /** Pause (break) controls successfully applied. Mirrors the Aura-2 `dg-breaks-applied` REST header. A pause whose duration was out of range or off the supported increment is stripped rather than applied, so it is excluded from this count. */
+        breaks_applied: number;
+        /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. */
         pronunciation_warnings: number;
     }
 }

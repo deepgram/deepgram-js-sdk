@@ -14,6 +14,7 @@ export namespace SpeakV2Error {
     export const Code = {
         Message0000: "MESSAGE-0000",
         Data0000: "DATA-0000",
+        Data0002: "DATA-0002",
         Big0000: "BIG-0000",
         Net0000: "NET-0000",
         Net0001: "NET-0001",
