@@ -21,7 +21,6 @@ export * from "./AgentV1SettingsApplied.js";
 export * from "./AgentV1SpeakUpdated.js";
 export * from "./AgentV1ThinkUpdated.js";
 export * from "./AgentV1UpdateListen.js";
-export * from "./AgentV1UpdateListenListenProvider.js";
 export * from "./AgentV1UpdatePrompt.js";
 export * from "./AgentV1UpdateSpeak.js";
 export * from "./AgentV1UpdateThink.js";

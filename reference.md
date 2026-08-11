@@ -148,6 +148,43 @@ Transcribe audio and video using Deepgram's speech-to-text REST API
 
 ```typescript
 await client.listen.v1.media.transcribeUrl({
+    callback: "callback",
+    callback_method: "POST",
+    extra: "extra",
+    sentiment: true,
+    summarize: "v2",
+    tag: "tag",
+    topics: true,
+    custom_topic: "custom_topic",
+    custom_topic_mode: "extended",
+    intents: true,
+    custom_intent: "custom_intent",
+    custom_intent_mode: "extended",
+    detect_entities: true,
+    detect_language: true,
+    diarize: true,
+    diarize_model: "latest",
+    dictation: true,
+    encoding: "linear16",
+    filler_words: true,
+    keyterm: ["keyterm"],
+    keywords: "keywords",
+    language: "language",
+    measurements: true,
+    model: "nova-3",
+    multichannel: true,
+    numerals: true,
+    paragraphs: true,
+    profanity_filter: true,
+    punctuate: true,
+    redact: "redact",
+    replace: "replace",
+    search: "search",
+    smart_format: true,
+    utterances: true,
+    utt_split: 1.1,
+    version: "latest",
+    mip_opt_out: true,
     url: "https://dpgr.am/spacewalk.wav"
 });
 
@@ -1309,7 +1346,18 @@ Generates a list of requests for a specific project
 <dd>
 
 ```typescript
-await client.manage.v1.projects.requests.list("12345678-90ab-cdef-1234-567890abcdef");
+await client.manage.v1.projects.requests.list("123456-7890-1234-5678-901234", {
+    start: "2024-01-15T09:30:00Z",
+    end: "2024-01-15T09:30:00Z",
+    limit: 1.1,
+    page: 1.1,
+    accessor: "12345678-1234-1234-1234-123456789012",
+    request_id: "12345678-1234-1234-1234-123456789012",
+    deployment: "hosted",
+    endpoint: "listen",
+    method: "sync",
+    status: "succeeded"
+});
 
 ```
 </dd>
@@ -1380,7 +1428,7 @@ Retrieves a specific request for a specific project
 <dd>
 
 ```typescript
-await client.manage.v1.projects.requests.get("12345678-90ab-cdef-1234-567890abcdef", "a3f1c9d2-4b7e-4f9a-8c3d-2e5f7b9a1c0d");
+await client.manage.v1.projects.requests.get("123456-7890-1234-5678-901234", "123456-7890-1234-5678-901234");
 
 ```
 </dd>

@@ -32,18 +32,6 @@ export interface ListenV2TurnInfo {
     /** Confidence that no more speech is coming in this turn */
     end_of_turn_confidence: number;
     /**
-     * The cause of the turn ending. Present on every `EndOfTurn` event and only there.
-     *
-     * - **model** - the turn ended by Flux's native end-of-turn detection
-     *
-     * - **manual** - the turn ended because a `ForceEndTurn` message was sent
-     *
-     * - **timeout** - the turn ended because `eot_timeout_ms` elapsed
-     *
-     * This is an open enum. New values may be added over time, so clients must tolerate values they do not recognize.
-     */
-    trigger?: string | undefined;
-    /**
      * Detected languages sorted by descending frequency in the
      * transcript. Only present when the flux-general-multi model
      * detects languages in the audio.

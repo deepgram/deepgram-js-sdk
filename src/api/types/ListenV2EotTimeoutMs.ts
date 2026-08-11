@@ -2,6 +2,6 @@
 
 /**
  * A turn will be finished when this much time has passed after speech,
- * regardless of EOT confidence. Valid Values 500 - 60000.
+ * regardless of EOT confidence.
  */
 export type ListenV2EotTimeoutMs = unknown;

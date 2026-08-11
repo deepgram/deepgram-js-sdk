@@ -9,8 +9,6 @@ export interface ListenV1ResponseMetadata {
     channels: number;
     models: string[];
     model_info: Record<string, unknown>;
-    /** The diarizer that produced the speaker labels. Present only when a diarizer ran. */
-    diarize_info?: ListenV1ResponseMetadata.DiarizeInfo | undefined;
     summary_info?: ListenV1ResponseMetadata.SummaryInfo | undefined;
     sentiment_info?: ListenV1ResponseMetadata.SentimentInfo | undefined;
     topics_info?: ListenV1ResponseMetadata.TopicsInfo | undefined;
@@ -19,25 +17,6 @@ export interface ListenV1ResponseMetadata {
 }
 
 export namespace ListenV1ResponseMetadata {
-    /**
-     * The diarizer that produced the speaker labels. Present only when a diarizer ran.
-     */
-    export interface DiarizeInfo {
-        /** The diarizer model UUID */
-        model_uuid: string;
-        /** The diarizer arch */
-        arch: DiarizeInfo.Arch;
-    }
-
-    export namespace DiarizeInfo {
-        /** The diarizer arch */
-        export const Arch = {
-            V1: "v1",
-            V2: "v2",
-        } as const;
-        export type Arch = (typeof Arch)[keyof typeof Arch] | string;
-    }
-
     export interface SummaryInfo {
         model_uuid?: string | undefined;
         input_tokens?: number | undefined;
