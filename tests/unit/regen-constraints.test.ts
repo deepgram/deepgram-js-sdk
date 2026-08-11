@@ -180,4 +180,126 @@ describe("2026-07-09 regen constraints", () => {
             expect(open).toBe("SOME-CUSTOM-CODE");
         });
     });
+    describe("2026-08-11 regen: Speak v2 barge-in + reconfigure", () => {
+        it("Interrupt is a bare control message, optionally carrying a playback offset", () => {
+            const bare: Deepgram.speak.SpeakV2Interrupt = { type: "Interrupt" };
+            const withOffset: Deepgram.speak.SpeakV2Interrupt = {
+                type: "Interrupt",
+                playback_offset: { type: "time_ms", value: 1500 },
+            };
+            expect(bare.type).toBe("Interrupt");
+            expect(withOffset.playback_offset).toEqual({ type: "time_ms", value: 1500 });
+        });
+
+        it("Configure carries the mid-stream speed change", () => {
+            const configure: Deepgram.speak.SpeakV2Configure = { type: "Configure", speed: 1.1 };
+            expect(JSON.parse(JSON.stringify(configure))).toEqual({ type: "Configure", speed: 1.1 });
+        });
+
+        it("ConfigureSuccess echoes what the server applied", () => {
+            const ok: Deepgram.speak.SpeakV2ConfigureSuccess = {
+                type: "ConfigureSuccess",
+                applied: { speed: 1.1 },
+            };
+            expect(ok.applied.speed).toBe(1.1);
+        });
+
+        it("ConfigureFailure reports the rejected field, and its Code enum stays open", () => {
+            const known: Deepgram.speak.SpeakV2ConfigureFailure.Code =
+                Deepgram.speak.SpeakV2ConfigureFailure.Code.SpeedOutOfRange;
+            const open: Deepgram.speak.SpeakV2ConfigureFailure.Code = "SOME-FUTURE-CODE";
+            const fail: Deepgram.speak.SpeakV2ConfigureFailure = {
+                type: "ConfigureFailure",
+                code: known,
+                field: "speed",
+                value: 9,
+                description: "speed must be between 0.85 and 1.15",
+            };
+            expect(known).toBe("SPEED_OUT_OF_RANGE");
+            expect(open).toBe("SOME-FUTURE-CODE");
+            expect(fail.field).toBe("speed");
+        });
+
+        it("SpeechInterrupted reports what was played, including the breaks_applied counter", () => {
+            const interrupted: Deepgram.speak.SpeakV2SpeechInterrupted = {
+                type: "SpeechInterrupted",
+                audio_played_ms: 1200,
+                text_spoken: "Hello there",
+                text_remaining: "how are you?",
+                metadata: {
+                    speech_id: "dg_sp_abc",
+                    audio_duration_ms: 4000,
+                    input_character_count: 24,
+                    billable_character_count: 24,
+                    // breaks_applied is new in this regen and REQUIRED -- omitting it
+                    // must fail typecheck (this literal is gated by tsconfig.typecheck.json).
+                    controls_applied: {
+                        pronunciations_applied: 2,
+                        breaks_applied: 1,
+                        pronunciation_warnings: 0,
+                    },
+                },
+            };
+            expect(interrupted.audio_played_ms).toBe(1200);
+            expect(interrupted.metadata.controls_applied.breaks_applied).toBe(1);
+        });
+
+        it("speed/expressivity are numeric (spec enums are NOT enforced in codegen)", () => {
+            // The spec constrains speed to 0.85..1.15 (0.05 steps) and expressivity to
+            // -2..2, but numeric enums generate as bare number, so out-of-range values
+            // type-check and are only rejected server-side. Pinned so a future generator
+            // that DOES narrow these is noticed here.
+            const speed: Deepgram.SpeakV2Speed = 3.7;
+            const expressivity: Deepgram.SpeakV2Expressivity = 99;
+            expect([speed, expressivity]).toEqual([3.7, 99]);
+        });
+
+        it("ListenV2Redact accepts the documented values and stays open", () => {
+            const numbers: Deepgram.ListenV2Redact = "numbers";
+            const aggressive: Deepgram.ListenV2Redact = "aggressive_numbers";
+            expect([numbers, aggressive]).toEqual(["numbers", "aggressive_numbers"]);
+        });
+    });
+
+    describe("2026-08-11 regen: AgentV1UpdateListen provider back-compat", () => {
+        // This shim was silently lost once (the file was missing from .fernignore, so a
+        // regen overwrote it). These are the three ways the raw generated union broke
+        // existing callers -- pinned so it cannot regress unnoticed.
+        it("accepts the legacy provider shape with no version discriminant", () => {
+            const legacy: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
+            };
+            expect(legacy.listen.provider.model).toBe("flux-general-en");
+        });
+
+        it("keeps provider.model as string (not string | undefined)", () => {
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
+            };
+            const model: string = msg.listen.provider.model;
+            expect(model).toBe("flux-general-en");
+        });
+
+        it("keeps the V2-only fields readable", () => {
+            const msg: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: {
+                    provider: {
+                        type: "deepgram",
+                        version: "v2",
+                        model: "flux-general-en",
+                        eot_threshold: 0.7,
+                        eot_timeout_ms: 4000,
+                        language_hints: ["en"],
+                    },
+                },
+            };
+            const eot: number | undefined = msg.listen.provider.eot_threshold;
+            const hints = msg.listen.provider.language_hints;
+            expect(eot).toBe(0.7);
+            expect(hints).toEqual(["en"]);
+        });
+    });
 });

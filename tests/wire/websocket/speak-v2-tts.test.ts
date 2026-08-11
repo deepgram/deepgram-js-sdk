@@ -139,6 +139,7 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
                             billable_character_count: 22,
                             controls_applied: {
                                 pronunciations_applied: 0,
+                                breaks_applied: 0,
                                 pronunciation_warnings: 0,
                             },
                         };
@@ -397,6 +398,144 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             expect(receivedMessages.find((m) => m?.type === "FutureMessage")).toMatchObject({
                 type: "FutureMessage",
                 brand_new_field: 123,
+            });
+
+            socket.close();
+        });
+    });
+    describe("Barge-in and mid-stream reconfigure (2026-08-11 regen)", () => {
+        it("should send Interrupt and Configure and receive SpeechInterrupted / ConfigureSuccess", async () => {
+            const receivedMessages: any[] = [];
+            const sentToServer: any[] = [];
+            const tracker = new WebSocketEventTracker();
+
+            const client = makeClient();
+            const socket = await client.speak.v2.createConnection({
+                model: "flux-alexis-en",
+                encoding: "linear16",
+                sample_rate: "24000",
+                speed: 1.1,
+            });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                const isBinary = data instanceof ArrayBuffer || data instanceof Blob;
+                tracker.track(isBinary ? "binary" : ((data as { type?: string })?.type ?? "unknown"));
+            });
+
+            wsServer.on("connection", (ws) => {
+                const connected: Deepgram.speak.SpeakV2Connected = {
+                    type: "Connected",
+                    request_id: "req-int-1",
+                    model_name: "flux-alexis-en",
+                    model_version: "2025-01-01",
+                    model_uuids: ["uuid-1"],
+                };
+                ws.send(JSON.stringify(connected));
+
+                ws.on("message", (data) => {
+                    const parsed = JSON.parse(data.toString());
+                    sentToServer.push(parsed);
+
+                    if (parsed.type === "Configure") {
+                        const ok: Deepgram.speak.SpeakV2ConfigureSuccess = {
+                            type: "ConfigureSuccess",
+                            applied: { speed: parsed.speed },
+                        };
+                        ws.send(JSON.stringify(ok));
+                    }
+
+                    if (parsed.type === "Interrupt") {
+                        const interrupted: Deepgram.speak.SpeakV2SpeechInterrupted = {
+                            type: "SpeechInterrupted",
+                            audio_played_ms: 1200,
+                            text_spoken: "Hello there",
+                            text_remaining: "how are you?",
+                            metadata: {
+                                speech_id: "dg_sp_abc",
+                                audio_duration_ms: 4000,
+                                input_character_count: 24,
+                                billable_character_count: 24,
+                                controls_applied: {
+                                    pronunciations_applied: 0,
+                                    breaks_applied: 1,
+                                    pronunciation_warnings: 0,
+                                },
+                            },
+                        };
+                        ws.send(JSON.stringify(interrupted));
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+            await waitForEventCount(tracker, "Connected", 1);
+
+            socket.sendConfigure({ type: "Configure", speed: 1.1 });
+            await waitForEventCount(tracker, "ConfigureSuccess", 1);
+
+            socket.sendInterrupt({ type: "Interrupt", playback_offset: { type: "time_ms", value: 1500 } });
+            await waitForEventCount(tracker, "SpeechInterrupted", 1);
+
+            expect(sentToServer).toEqual([
+                { type: "Configure", speed: 1.1 },
+                { type: "Interrupt", playback_offset: { type: "time_ms", value: 1500 } },
+            ]);
+            expect(receivedMessages.find((m) => m?.type === "ConfigureSuccess")).toMatchObject({
+                applied: { speed: 1.1 },
+            });
+            expect(receivedMessages.find((m) => m?.type === "SpeechInterrupted")).toMatchObject({
+                audio_played_ms: 1200,
+                metadata: { controls_applied: { breaks_applied: 1 } },
+            });
+
+            socket.close();
+        });
+
+        it("should deliver a ConfigureFailure for a rejected speed", async () => {
+            const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
+
+            const client = makeClient();
+            const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                tracker.track((data as { type?: string })?.type ?? "unknown");
+            });
+
+            wsServer.on("connection", (ws) => {
+                ws.on("message", (data) => {
+                    const parsed = JSON.parse(data.toString());
+                    if (parsed.type === "Configure") {
+                        const fail: Deepgram.speak.SpeakV2ConfigureFailure = {
+                            type: "ConfigureFailure",
+                            // string literal, not the enum value: this file uses a type-only
+                            // import of Deepgram, so there is no runtime binding to read.
+                            code: "SPEED_OUT_OF_RANGE",
+                            field: "speed",
+                            value: parsed.speed,
+                            description: "speed must be between 0.85 and 1.15",
+                        };
+                        ws.send(JSON.stringify(fail));
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+
+            // 9 is outside the spec range; the SDK does not narrow it (numeric spec
+            // enums generate as bare number), so the server is what rejects it.
+            socket.sendConfigure({ type: "Configure", speed: 9 });
+            await waitForEventCount(tracker, "ConfigureFailure", 1);
+
+            expect(receivedMessages.find((m) => m?.type === "ConfigureFailure")).toMatchObject({
+                code: "SPEED_OUT_OF_RANGE",
+                field: "speed",
             });
 
             socket.close();
