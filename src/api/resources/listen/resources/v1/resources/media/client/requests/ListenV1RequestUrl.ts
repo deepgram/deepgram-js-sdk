@@ -5,11 +5,45 @@ import type * as Deepgram from "../../../../../../../../index.js";
 /**
  * @example
  *     {
+ *         callback: "callback",
+ *         callback_method: "POST",
+ *         extra: "extra",
+ *         sentiment: true,
+ *         summarize: "v2",
+ *         tag: "tag",
+ *         topics: true,
+ *         custom_topic: "custom_topic",
+ *         custom_topic_mode: "extended",
+ *         intents: true,
+ *         custom_intent: "custom_intent",
+ *         custom_intent_mode: "extended",
+ *         detect_entities: true,
+ *         detect_language: true,
+ *         diarize: true,
+ *         diarize_model: "latest",
+ *         dictation: true,
+ *         encoding: "linear16",
+ *         filler_words: true,
+ *         keyterm: ["keyterm"],
+ *         keywords: "keywords",
+ *         language: "language",
+ *         measurements: true,
+ *         model: "nova-3",
+ *         multichannel: true,
+ *         numerals: true,
+ *         paragraphs: true,
+ *         profanity_filter: true,
+ *         punctuate: true,
+ *         redact: "redact",
+ *         replace: "replace",
+ *         search: "search",
+ *         smart_format: true,
+ *         utterances: true,
+ *         utt_split: 1.1,
+ *         version: "latest",
+ *         mip_opt_out: true,
  *         url: "https://dpgr.am/spacewalk.wav"
  *     }
- *
- * @example
- *     {}
  */
 export interface ListenV1RequestUrl {
     /** URL to which we'll make the callback request */
@@ -50,13 +84,7 @@ export interface ListenV1RequestUrl {
     encoding?: Deepgram.listen.v1.MediaTranscribeRequestEncoding;
     /** Filler Words can help transcribe interruptions in your audio, like "uh" and "um" */
     filler_words?: boolean;
-    /**
-     * Key term prompting improves recognition of specialized terminology and brands. Only compatible with Nova-3.
-     *
-     * `keyterm` accepts plain terms only. Unlike the legacy `keywords` feature, it does not support weights or intensifiers. Appending one (for example, `keyterm=term:0.15`) is not rejected—the weight is silently ignored and the entire value is treated as a literal keyterm.
-     *
-     * To boost multiple separate keyterms, repeat the `keyterm` parameter (for example, `keyterm=term1&keyterm=term2`). To boost one multi-word phrase as a single keyterm, join the words with `%20` or `+` (for example, `keyterm=customer%20service`). Do not separate keyterms with commas, semicolons, or line breaks.
-     */
+    /** Key term prompting can boost or suppress specialized terminology and brands. Only compatible with Nova-3 */
     keyterm?: string | string[];
     /** Keywords can boost or suppress specialized terminology and brands */
     keywords?: string | string[];
