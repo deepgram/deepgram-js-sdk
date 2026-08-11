@@ -14,6 +14,49 @@ export namespace AgentV1UpdateListen {
      * Listen configuration to update. Contains a provider object with the same schema as Settings. The model and language can be changed mid-session. Keyterms can only be updated mid-session for Flux models.
      */
     export interface Listen {
-        provider: Deepgram.agent.AgentV1UpdateListenListenProvider;
+        provider: AgentV1UpdateListen.Provider;
     }
+
+    /**
+     * Backward-compat shim for `AgentV1UpdateListen.Listen.provider`.
+     *
+     * Before the 2026-07-31 regen this field was plain `DeepgramListenProviderV2`. The
+     * regen repointed it at the new `AgentV1UpdateListenListenProvider` union
+     * (`V1 | V2`), which broke three things at once for existing callers:
+     *
+     *   1. Both union arms redeclare the `version` discriminant as REQUIRED, while
+     *      `DeepgramListenProviderV2.version` is optional — so
+     *      `{ type: "deepgram", model: "flux-general-en" }` stopped compiling (TS2322).
+     *   2. The `V1` arm declares `model?`, widening reads of `provider.model` from
+     *      `string` to `string | undefined`.
+     *   3. Property access on a union requires the property on EVERY arm, so reads of
+     *      the V2-only fields (`eot_threshold`, `eager_eot_threshold`, `eot_timeout_ms`,
+     *      `language_hints`) started failing with TS2339 — the `V1` arm lacks them.
+     *
+     * No union can fix (3), so we model the field as a single merged shape instead:
+     * the V2 provider (which keeps every previously-readable field readable, and keeps
+     * `model` required) with `version` widened to `string` for the new v1/v2 selection,
+     * plus the two V1-only fields as optional additions. Deriving from
+     * `DeepgramListenProviderV2` means future V2 field changes flow through
+     * automatically; only the V1-only extras are hand-listed.
+     *
+     * Compile-compat only — the serialized payload is unchanged. The trade-off is that
+     * nonsensical mixtures (`version: "v1"` alongside `eot_threshold`) type-check; the
+     * API ignores what does not apply. Note the spec itself RELAXED this field (its docs
+     * dropped "the provider identity (type, version, model) is required and must match
+     * the current session"), so the required discriminant looks like a Fern modeling
+     * artifact — replace this shim with the generated union once the generator stops
+     * requiring `version`.
+     *
+     * Regression coverage in tests/unit/regen-constraints.test.ts (also gated by
+     * `make typecheck-tests`).
+     */
+    export type Provider = Omit<Deepgram.DeepgramListenProviderV2, "version"> & {
+        /** `v1` selects the legacy Listen API; `v2` (the default) selects Flux. Open per the spec. */
+        version?: string | undefined;
+        /** v1 only: language code to switch to mid-session. */
+        language?: string | undefined;
+        /** v1 only: applies smart formatting to improve transcript readability. */
+        smart_format?: boolean | undefined;
+    };
 }
