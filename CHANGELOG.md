@@ -1,5 +1,24 @@
 # Changelog
 
+## [5.8.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.7.0...v5.8.0) (2026-08-12)
+
+
+### Features
+
+* **regen:** listen v2 ForceEndTurn + redact, diarization info, Flux TTS voices ([#526](https://github.com/deepgram/deepgram-js-sdk/issues/526)) ([5b8de76](https://github.com/deepgram/deepgram-js-sdk/commit/5b8de762c87ed633aed494274fc493d6c0bf46ad))
+* **regen:** speak v2 barge-in and speed/expressivity controls, listen v2 redaction ([#532](https://github.com/deepgram/deepgram-js-sdk/issues/532)) ([e851496](https://github.com/deepgram/deepgram-js-sdk/commit/e8514964d58f948728afd4c97c7f265430c2fccb))
+
+
+### Bug Fixes
+
+* **agent:** make UpdateListen provider shim a merged shape, not a union ([a65d1aa](https://github.com/deepgram/deepgram-js-sdk/commit/a65d1aa42323f4c92036c26ff289736c15f0dde5))
+* **agent:** preserve AgentV1UpdateListen provider back-compat after regen ([a6e3c79](https://github.com/deepgram/deepgram-js-sdk/commit/a6e3c7947ac41f294f02dbeb2bf9e1cdeff95cd5))
+
+
+### Reverts
+
+* listen v2 ForceEndTurn + redact, diarization info, Flux TTS voices ([#526](https://github.com/deepgram/deepgram-js-sdk/issues/526)) ([#531](https://github.com/deepgram/deepgram-js-sdk/issues/531)) ([f5264de](https://github.com/deepgram/deepgram-js-sdk/commit/f5264dee49d4451271f813d3a5f3b17d9060305e))
+
 ## [5.7.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.6.0...v5.7.0) (2026-07-22)
 
 
