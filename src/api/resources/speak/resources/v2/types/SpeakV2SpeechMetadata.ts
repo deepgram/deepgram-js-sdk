@@ -11,18 +11,20 @@ export interface SpeakV2SpeechMetadata {
     input_character_count: number;
     /** Billable character count for this turn — the input character count with stripped control characters removed. Always less than or equal to `input_character_count`. */
     billable_character_count: number;
-    /** Controls applied during the turn. Inline pronunciation and pause controls are not available during Early Access, so every count is currently `0`. */
+    /** Counts of the inline controls the server acted on during the turn. Inline pause and pronunciation controls are not applied at launch — support is coming soon — so every count is currently `0`. */
     controls_applied: SpeakV2SpeechMetadata.ControlsApplied;
 }
 
 export namespace SpeakV2SpeechMetadata {
     /**
-     * Controls applied during the turn. Inline pronunciation and pause controls are not available during Early Access, so every count is currently `0`.
+     * Counts of the inline controls the server acted on during the turn. Inline pause and pronunciation controls are not applied at launch — support is coming soon — so every count is currently `0`.
      */
     export interface ControlsApplied {
-        /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. Always `0` during Early Access. */
+        /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. Currently always `0`. */
         pronunciations_applied: number;
-        /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. Always `0` during Early Access. */
+        /** Pause (break) controls successfully applied. Mirrors the Aura-2 `dg-breaks-applied` REST header. Currently always `0`. */
+        breaks_applied: number;
+        /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. Currently always `0`. */
         pronunciation_warnings: number;
     }
 }

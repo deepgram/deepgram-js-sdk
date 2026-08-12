@@ -162,14 +162,17 @@ src/version.ts
 # take all of Fern's other BaseClient changes. Swap to .bak before regen.
 src/BaseClient.ts
 
-# src/api/resources/agent/resources/v1/types/AgentV1LatencyReport.ts: the
-# 2026-07-20 regen removed `stt_latency` from the LatencyReport schema
-# (deepgram-docs #1006). AgentV1LatencyReport is a server-emitted (read-only)
-# message, so we re-add the optional `stt_latency?: number` field by hand — no
-# request/wire impact, it just keeps `report.stt_latency` resolving (to undefined)
-# instead of breaking existing readers at compile time, avoiding a major-version
-# break. Mirrors the Python SDK's read-side shim (deepgram-python-sdk #746).
-# Regression coverage in tests/unit/latency-report-stt-compat.test.ts (also gated
-# by make typecheck-tests). Drop this entry when the field is retired in a future
-# major. Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1LatencyReport.ts
+# src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts: the 2026-07-31
+# regen repointed `Listen.provider` from `DeepgramListenProviderV2` to the new
+# `AgentV1UpdateListenListenProvider` union. In TypeScript that union breaks existing
+# callers three ways: (1) both arms redeclare `version` as REQUIRED while
+# `DeepgramListenProviderV2.version` is optional, so `{ type, model }` stops compiling
+# (TS2322); (2) the V1 arm declares `model?`, widening reads of `provider.model` to
+# `string | undefined`; (3) property access on a union requires the property on EVERY
+# arm, so reads of the V2-only fields (`eot_threshold`, `eager_eot_threshold`,
+# `eot_timeout_ms`, `language_hints`) fail with TS2339. No union can fix (3), so the
+# field is modelled as a single merged shape derived from DeepgramListenProviderV2.
+# Compile-compat only — the serialized payload is unchanged. Mirrors the Python SDK's
+# provider-coercion shim. Regression coverage in tests/unit/regen-constraints.test.ts.
+# Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts

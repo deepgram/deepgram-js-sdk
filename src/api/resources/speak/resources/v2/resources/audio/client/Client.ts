@@ -49,8 +49,10 @@ export class AudioClient {
             bit_rate: bitRate,
             container,
             encoding,
+            expressivity,
             model,
             sample_rate: sampleRate,
+            speed,
             priority,
             ..._body
         } = request;
@@ -62,8 +64,10 @@ export class AudioClient {
             bit_rate: bitRate,
             container: container != null ? container : undefined,
             encoding: encoding != null ? encoding : undefined,
+            expressivity,
             model,
             sample_rate: sampleRate,
+            speed,
             priority: priority != null ? priority : undefined,
         };
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
