@@ -8,7 +8,8 @@
  * SessionMetadata control messages alongside binary audio frames.
  *
  * This example also demonstrates two Flux-only capabilities:
- *   - Mid-stream `Configure` to change the speaking rate (`sendConfigure`), and
+ *   - `Configure` to set the speaking rate (`sendConfigure`) before the first
+ *     Speak, and again between turns if needed, and
  *   - Barge-in via `Interrupt` (`sendInterrupt`): the client reports how much
  *     audio it had played (`playback_offset`) so the server can split the turn
  *     and return `text_spoken` / `text_remaining` on `SpeechInterrupted`.
@@ -20,8 +21,12 @@
 const { DeepgramClient } = require("../dist/cjs/index.js");
 
 // linear16 @ 24 kHz mono = 2 bytes/sample * 24000 samples/sec = 48 bytes per ms.
-// Used to estimate how much audio we have "played" so the barge-in Interrupt can
-// report a realistic playback_offset.
+// linear16 @ 24 kHz mono = 2 bytes/sample * 24000 samples/sec = 48 bytes per ms.
+// NOTE: this counts audio *received*, which arrives much faster than realtime.
+// It stands in for playback position so this example is self-contained. A real
+// client MUST report its audio player's actual position instead -- playback_offset
+// is what makes text_spoken/text_remaining accurate, so a generation-based offset
+// will confidently report the wrong split.
 const BYTES_PER_MS = 48;
 
 // TEST ONLY: target a non-prod host (e.g. staging) by setting DEEPGRAM_BASE_URL
@@ -102,7 +107,7 @@ async function textToSpeechStreamingFlux() {
                     console.log("Speech metadata:", data);
                     break;
                 case "ConfigureSuccess":
-                    // Mid-stream Configure was accepted; `applied` echoes the live config.
+                    // Configure was accepted; `applied` echoes the live config.
                     console.log("Configure applied:", data.applied);
                     break;
                 case "ConfigureFailure":
@@ -153,9 +158,10 @@ async function textToSpeechStreamingFlux() {
         try {
             await deepgramConnection.waitForOpen();
 
-            // Set the speaking rate mid-stream before we start speaking. Accepted
-            // multipliers are 0.85–1.15 in 0.05 steps; anything else comes back as a
-            // ConfigureFailure (handled above) rather than throwing here.
+            // Set the speaking rate before the first Speak (Configure can also be sent
+            // again between turns to change it). Accepted multipliers are 0.85–1.15 in
+            // 0.05 steps; anything else comes back as a ConfigureFailure (handled above)
+            // rather than throwing here.
             deepgramConnection.sendConfigure({ type: "Configure", speed: 1.05 });
 
             // A longer passage so there is enough audio in flight to barge in on.

@@ -244,6 +244,25 @@ describe("2026-07-09 regen constraints", () => {
             expect(interrupted.metadata.controls_applied.breaks_applied).toBe(1);
         });
 
+        it("SpeechMetadata carries the same required breaks_applied counter", () => {
+            // Twin of SpeechInterrupted.metadata. This counter is referenced only from
+            // tests/wire (which the typecheck gate does not compile), so pin it here too
+            // -- otherwise dropping breaks_applied from this twin passes make typecheck-tests.
+            const meta: Deepgram.speak.SpeakV2SpeechMetadata = {
+                type: "SpeechMetadata",
+                speech_id: "dg_sp_abc",
+                audio_duration_ms: 4000,
+                input_character_count: 24,
+                billable_character_count: 24,
+                controls_applied: {
+                    pronunciations_applied: 0,
+                    breaks_applied: 0,
+                    pronunciation_warnings: 0,
+                },
+            };
+            expect(meta.controls_applied.breaks_applied).toBe(0);
+        });
+
         it("speed/expressivity are numeric (spec enums are NOT enforced in codegen)", () => {
             // The spec constrains speed to 0.85..1.15 (0.05 steps) and expressivity to
             // -2..2, but numeric enums generate as bare number, so out-of-range values
