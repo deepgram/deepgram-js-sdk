@@ -26,20 +26,20 @@ export namespace SpeakV2SpeechInterrupted {
         input_character_count: number;
         /** Billable character count for this turn — the input character count with stripped control characters removed. Always less than or equal to `input_character_count`. */
         billable_character_count: number;
-        /** Counts of the inline controls the server acted on during the turn. A control that was rejected or ignored is reported through a `Warning` and does not count here. */
+        /** Counts of the inline controls the server acted on during the turn. Inline pause and pronunciation controls are not applied at launch — support is coming soon — so every count is currently `0`. */
         controls_applied: Metadata.ControlsApplied;
     }
 
     export namespace Metadata {
         /**
-         * Counts of the inline controls the server acted on during the turn. A control that was rejected or ignored is reported through a `Warning` and does not count here.
+         * Counts of the inline controls the server acted on during the turn. Inline pause and pronunciation controls are not applied at launch — support is coming soon — so every count is currently `0`.
          */
         export interface ControlsApplied {
-            /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. */
+            /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. Currently always `0`. */
             pronunciations_applied: number;
-            /** Pause (break) controls successfully applied. Mirrors the Aura-2 `dg-breaks-applied` REST header. A pause whose duration was out of range or off the supported increment is stripped rather than applied, so it is excluded from this count. */
+            /** Pause (break) controls successfully applied. Mirrors the Aura-2 `dg-breaks-applied` REST header. Currently always `0`. */
             breaks_applied: number;
-            /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. */
+            /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. Currently always `0`. */
             pronunciation_warnings: number;
         }
     }

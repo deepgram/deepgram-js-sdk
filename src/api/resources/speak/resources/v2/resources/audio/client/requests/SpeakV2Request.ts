@@ -34,6 +34,6 @@ export interface SpeakV2Request {
     speed?: number;
     /** Processing priority for asynchronous (callback) requests. The only supported value is low. */
     priority?: "low";
-    /** The text content to be converted to speech. The server normalizes and preprocesses the text before synthesis. May carry inline pause and pronunciation controls; see the TTS Voice Controls guide for their syntax and limits. Unlike the streaming transport, which drops an unusable pause control and warns, batch rejects the whole request with a 400. */
+    /** The text content to be converted to speech. The server normalizes and preprocesses the text before synthesis. Inline pause and pronunciation controls are not yet applied; they are stripped from the text before synthesis. */
     text: string;
 }
