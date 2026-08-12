@@ -7,18 +7,7 @@ description: Use when writing or reviewing JavaScript/TypeScript in this repo th
 
 Administrative REST endpoints under `/v1/projects`, `/v1/models`, and related project subresources.
 
-## When to use this product
-
-- **Projects**: list, get, update, delete, leave.
-- **Keys**: list, get, create, delete API keys.
-- **Members + invites**: inspect members, update scopes, create/delete invites.
-- **Usage + billing**: inspect requests, usage, usage breakdown, balances, purchases, billing breakdown.
-- **Models**: list global models and project-scoped models.
-- **Agent think models**: discover available model providers for Voice Agent `think` settings.
-
-**Use a different skill when:**
-- You want to run a live websocket agent session → `deepgram-js-voice-agent`.
-- You want transcription or synthesis calls rather than project/admin APIs → product-specific skills.
+**Use a different skill when:** live agent session → `deepgram-js-voice-agent`; transcription or synthesis → product-specific skills.
 
 ## Authentication
 
@@ -80,6 +69,13 @@ Think-model discovery for Voice Agent:
 await deepgramClient.agent.v1.settings.think.models.list();
 ```
 
+## Workflow for destructive operations
+
+1. **List** the resources first (e.g., `projects.keys.list(projectId)`).
+2. **Confirm** the target ID with the user before proceeding.
+3. **Execute** the delete/leave/remove call.
+4. **Verify** by listing again to confirm deletion.
+
 ## Key parameters / API surface
 
 - Projects: `client.manage.v1.projects.list/get/update/delete/leave`.
@@ -119,24 +115,8 @@ The current JS SDK does **not** expose persisted Voice Agent configuration CRUD 
 
 ## Example files in this repo
 
-- `examples/13-management-projects.ts`
-- `examples/14-management-keys.ts`
-- `examples/15-management-members.ts`
-- `examples/16-management-invites.ts`
-- `examples/17-management-usage.ts`
-- `examples/18-management-billing.ts`
-- `examples/19-management-models.ts`
-- `examples/29-management-usage-breakdown.ts`
-- `examples/30-management-billing-detailed.ts`
-- `examples/31-management-member-permissions.ts`
-- `examples/32-management-project-models.ts`
+`examples/13-management-projects.ts` through `examples/19-management-models.ts`, plus `examples/29-32-*` for usage breakdown, billing details, member permissions, and project models.
 
 ## Central product skills
 
-For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
-
-```bash
-npx skills add deepgram/skills
-```
-
-This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).
+For cross-language Deepgram product knowledge, install `npx skills add deepgram/skills`.

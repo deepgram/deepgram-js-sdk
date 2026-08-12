@@ -7,13 +7,9 @@ description: Use when writing or reviewing JavaScript/TypeScript in this repo th
 
 Convert text to audio with one-shot REST generation or low-latency streaming synthesis via `/v1/speak`.
 
-## When to use this product
+Two modes: **REST** (`client.speak.v1.audio.generate`) for one-shot synthesis, **WebSocket** (`client.speak.v1.createConnection()`) for low-latency streaming.
 
-- **REST (`client.speak.v1.audio.generate`)** — render finished text into an audio response. Best for downloadable files, pre-generated prompts, batch synthesis.
-- **WebSocket (`client.speak.v1.createConnection()` / `connect()`)** — stream text in and receive audio out with lower latency. Best when an LLM is still producing tokens.
-
-**Use a different skill when:**
-- You need the agent to also listen, think, and handle barge-in → `deepgram-js-voice-agent`.
+**Use a different skill when:** full-duplex agent with STT + LLM + TTS → `deepgram-js-voice-agent`.
 
 ## Authentication
 
@@ -71,6 +67,8 @@ deepgramConnection.sendText({ type: "Speak", text: "Hello from streaming TTS." }
 deepgramConnection.sendFlush({ type: "Flush" });
 ```
 
+**Error handling:** Listen for `Warning` events in the message handler. If the connection drops, create a new connection and re-register handlers; the SDK does not auto-reconnect.
+
 ## Key parameters / API surface
 
 - REST & WSS: `model`, `encoding`, `sample_rate`, `container`, `bit_rate`, `callback`, `callback_method`, `tag`, `mip_opt_out`.
@@ -111,10 +109,4 @@ Unlike the Python SDK, this repo does **not** include a hand-written `TextBuilde
 
 ## Central product skills
 
-For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
-
-```bash
-npx skills add deepgram/skills
-```
-
-This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).
+For cross-language Deepgram product knowledge, install `npx skills add deepgram/skills`.

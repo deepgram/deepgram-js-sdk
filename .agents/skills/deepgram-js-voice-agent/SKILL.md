@@ -7,16 +7,7 @@ description: Use when writing or reviewing JavaScript/TypeScript in this repo th
 
 Full-duplex voice agent runtime over `wss://agent.deepgram.com/v1/agent/converse`: audio in, LLM orchestration, audio out, plus function calling and prompt/runtime updates.
 
-## When to use this product
-
-- You want an **interactive voice assistant** where the user speaks, the agent thinks, and the agent responds with speech.
-- You need **function / tool calling** inside the conversation loop.
-- You want Deepgram to host the STT + think + TTS orchestration.
-
-**Use a different skill when:**
-- You only need transcription → `deepgram-js-speech-to-text` or `deepgram-js-conversational-stt`.
-- You only need synthesis → `deepgram-js-text-to-speech`.
-- You want project keys, usage, models, or other admin APIs → `deepgram-js-management-api`.
+**Use a different skill when:** transcription only → `deepgram-js-speech-to-text` or `deepgram-js-conversational-stt`; synthesis only → `deepgram-js-text-to-speech`; admin APIs → `deepgram-js-management-api`.
 
 ## Authentication
 
@@ -72,6 +63,17 @@ deepgramConnection.sendSettings({
 
 The same example also shows `client.agent.v1.settings.think.models.list()` for discovering supported think models.
 
+## Workflow
+
+1. `createConnection()` — returns a lazy socket; no network call yet.
+2. Register `on("message", ...)` handlers for `SettingsApplied`, `ConversationText`, `FunctionCallRequest`, `Error`, and audio payloads.
+3. `connect()` then `await waitForOpen()`.
+4. `sendSettings({ type: "Settings", ... })` — **must be the first message**. Wait for `SettingsApplied` before proceeding.
+5. `sendMedia(chunk)` to stream user audio. Send `sendKeepAlive(...)` every ~5 s during silence.
+6. Handle `FunctionCallRequest` with `sendFunctionCallResponse({ type: "FunctionCallResponse", id, name, content })`.
+7. Use `sendUpdatePrompt(...)`, `sendUpdateThink(...)`, `sendUpdateSpeak(...)` for runtime changes.
+8. On `Error` event, log the error and close/reconnect as appropriate.
+
 ## Key parameters / API surface
 
 - Connection setup: `client.agent.v1.createConnection()` / `connect()`.
@@ -114,10 +116,4 @@ This SDK exposes the **live agent runtime** plus `settings.think.models.list()`,
 
 ## Central product skills
 
-For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
-
-```bash
-npx skills add deepgram/skills
-```
-
-This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).
+For cross-language Deepgram product knowledge, install `npx skills add deepgram/skills`.

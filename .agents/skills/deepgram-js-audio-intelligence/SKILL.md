@@ -7,16 +7,19 @@ description: Use when writing or reviewing JavaScript/TypeScript in this repo th
 
 Analytics overlays applied to `/v1/listen`: summaries, topics, intents, sentiment, language detection, diarization, redaction, entities. Same client surface as STT; turn features on with parameters.
 
-## When to use this product
+**Use a different skill when:** plain transcription → `deepgram-js-speech-to-text`; analytics on text → `deepgram-js-text-intelligence`; Flux turn-taking → `deepgram-js-conversational-stt`; full-duplex agent → `deepgram-js-voice-agent`.
 
-- You have **audio** and want analytics returned alongside the transcript.
-- REST is the primary path; the WebSocket path supports only a subset of intelligence features.
+## Authentication
 
-**Use a different skill when:**
-- You just want transcript output → `deepgram-js-speech-to-text`.
-- You already have text and want analytics on that text → `deepgram-js-text-intelligence`.
-- You need Flux turn-taking → `deepgram-js-conversational-stt`.
-- You need a full interactive voice agent → `deepgram-js-voice-agent`.
+```js
+require("dotenv").config();
+
+const { DeepgramClient } = require("@deepgram/sdk");
+
+const deepgramClient = new DeepgramClient({
+  apiKey: process.env.DEEPGRAM_API_KEY,
+});
+```
 
 ## Feature availability: REST vs WSS
 
@@ -31,18 +34,6 @@ Analytics overlays applied to `/v1/listen`: summaries, topics, intents, sentimen
 | `intents` | yes | no |
 | `sentiment` | yes | no |
 | `detect_language` | yes | no |
-
-## Authentication
-
-```js
-require("dotenv").config();
-
-const { DeepgramClient } = require("@deepgram/sdk");
-
-const deepgramClient = new DeepgramClient({
-  apiKey: process.env.DEEPGRAM_API_KEY,
-});
-```
 
 ## Quick start — REST with analytics
 
@@ -70,6 +61,14 @@ const data = await deepgramClient.listen.v1.media.transcribeUrl({
   keyterm: ["keyword1", "keyword2"],
   redact: ["pci", "ssn"],
 });
+
+// Verify intelligence results are present
+const summary = data.results?.summary?.short;
+const topics = data.results?.topics?.segments;
+const sentiments = data.results?.sentiments?.segments;
+if (!summary && !topics && !sentiments) {
+  console.warn("No intelligence results — check feature/model/language support.");
+}
 ```
 
 ## Quick start — WSS subset
@@ -85,6 +84,13 @@ const deepgramConnection = await deepgramClient.listen.v1.createConnection({
 });
 ```
 
+## Workflow
+
+1. **Select features** from the REST vs WSS table. WSS lacks `summarize`, `topics`, `intents`, `sentiment`, `detect_language`.
+2. **Call** `transcribeUrl` / `transcribeFile` with chosen flags and `model: "nova-3"`.
+3. **Validate response**: check `data.results?.summary`, `data.results?.topics?.segments`, `data.results?.sentiments?.segments`. Fields are absent (not errored) when the model/language combo does not support the feature.
+4. **On missing results**: confirm the feature/model/language combination at https://developers.deepgram.com/docs/stt-intelligence-feature-overview, then retry with corrected params.
+
 ## Key parameters / API surface
 
 - Analytics flags: `summarize`, `topics`, `intents`, `sentiment`, `detect_language`, `detect_entities`, `diarize`, `redact`, `custom_topic`, `custom_topic_mode`, `custom_intent`, `custom_intent_mode`.
@@ -93,28 +99,18 @@ const deepgramConnection = await deepgramClient.listen.v1.createConnection({
 
 ## API reference (layered)
 
-1. **In-repo reference**: `reference.md` → `Listen V1 Media`; WSS subset behavior lives in `src/CustomClient.ts` and `src/api/resources/listen/resources/v1/client/{Client,Socket}.ts`.
-2. **Canonical OpenAPI (REST)**: https://developers.deepgram.com/openapi.yaml
-3. **Canonical AsyncAPI (WSS)**: https://developers.deepgram.com/asyncapi.yaml
-4. **Context7**: library ID `/llmstxt/developers_deepgram_llms_txt`
-5. **Product docs**:
-   - https://developers.deepgram.com/docs/stt-intelligence-feature-overview
-   - https://developers.deepgram.com/docs/summarization
-   - https://developers.deepgram.com/docs/topic-detection
-   - https://developers.deepgram.com/docs/intent-recognition
-   - https://developers.deepgram.com/docs/sentiment-analysis
-   - https://developers.deepgram.com/docs/language-detection
-   - https://developers.deepgram.com/docs/redaction
-   - https://developers.deepgram.com/docs/diarization
+1. **In-repo**: `reference.md` → `Listen V1 Media`; WSS subset in `src/api/resources/listen/resources/v1/client/{Client,Socket}.ts`.
+2. **OpenAPI / AsyncAPI**: https://developers.deepgram.com/openapi.yaml | https://developers.deepgram.com/asyncapi.yaml
+3. **Context7**: library ID `/llmstxt/developers_deepgram_llms_txt`
+4. **Product docs**: https://developers.deepgram.com/docs/stt-intelligence-feature-overview (links to summarization, topic detection, intent recognition, sentiment, language detection, redaction, diarization).
 
 ## Gotchas
 
-1. **`summarize` on `/v1/listen` is versioned, not plain boolean.** The generated REST surface and examples point at `"v2"`.
-2. **Most intelligence flags are REST-only.** Current WSS connect args do not expose `topics`, `intents`, `sentiment`, `summarize`, or `detect_language`.
-3. **`redact` typing is looser in practice than in the generated alias.** Examples pass arrays like `["pci", "ssn"]`, even though `ListenV1Redact` itself is just a string alias.
-4. **Use `keyterm` for Nova-3 biasing.** `examples/22-transcription-advanced-options.ts` explicitly notes keywords are not supported for Nova-3.
-5. **Model/feature support is product-side.** `nova-3` is the safest choice when mixing many overlays.
-6. **Diarization quality depends on audio quality and duration.** Short or noisy clips churn speakers.
+1. **`summarize` is `"v2"`, not boolean.** The generated REST surface and examples use the string value.
+2. **`redact` accepts arrays** like `["pci", "ssn"]` despite `ListenV1Redact` being a string alias.
+3. **Use `keyterm`, not `keywords`, for Nova-3 biasing.**
+4. **Prefer `nova-3`** when mixing many overlays -- broadest feature support.
+5. **Diarization quality depends on audio quality and duration.** Short or noisy clips churn speakers.
 
 ## Example files in this repo
 
@@ -125,10 +121,4 @@ const deepgramConnection = await deepgramClient.listen.v1.createConnection({
 
 ## Central product skills
 
-For cross-language Deepgram product knowledge — the consolidated API reference, documentation finder, focused runnable recipes, third-party integration examples, and MCP setup — install the central skills:
-
-```bash
-npx skills add deepgram/skills
-```
-
-This SDK ships language-idiomatic code skills; `deepgram/skills` ships cross-language product knowledge (see `api`, `docs`, `recipes`, `examples`, `starters`, `setup-mcp`).
+For cross-language Deepgram product knowledge, install `npx skills add deepgram/skills`.
