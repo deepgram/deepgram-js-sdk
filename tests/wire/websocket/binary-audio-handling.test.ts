@@ -52,7 +52,7 @@ describe("WebSocket binary audio data handling", () => {
                 .build();
         });
 
-        it("should receive binary audio data as ArrayBuffer, not empty object", async () => {
+        it("should receive binary audio data as a Blob, not empty object", async () => {
             const tracker = new WebSocketEventTracker();
             const receivedData: any[] = [];
 
@@ -120,19 +120,16 @@ describe("WebSocket binary audio data handling", () => {
             // Check each message type
             expect(receivedData[0]).toMatchObject({ type: "Metadata" });
 
-            // Binary audio should be ArrayBuffer or Blob (depending on environment), NOT empty object {}
-            // In Node.js with the ws library, binary data comes as Blob by default
-            const isBinaryType = (data: any) => data instanceof ArrayBuffer || data instanceof Blob;
-            const getBinarySize = (data: any) => (data instanceof ArrayBuffer ? data.byteLength : data?.size);
+            // The wrapped socket normalizes inbound binary to a Blob before delivery, so
+            // consumers receive a Blob on every runtime (never an empty object {}).
+            expect(receivedData[1]).toBeInstanceOf(Blob);
+            expect((receivedData[1] as Blob).size).toBe(1024);
 
-            expect(isBinaryType(receivedData[1])).toBe(true);
-            expect(getBinarySize(receivedData[1])).toBe(1024);
+            expect(receivedData[2]).toBeInstanceOf(Blob);
+            expect((receivedData[2] as Blob).size).toBe(2048);
 
-            expect(isBinaryType(receivedData[2])).toBe(true);
-            expect(getBinarySize(receivedData[2])).toBe(2048);
-
-            expect(isBinaryType(receivedData[3])).toBe(true);
-            expect(getBinarySize(receivedData[3])).toBe(512);
+            expect(receivedData[3]).toBeInstanceOf(Blob);
+            expect((receivedData[3] as Blob).size).toBe(512);
 
             expect(receivedData[4]).toMatchObject({ type: "Flushed" });
 

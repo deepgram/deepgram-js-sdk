@@ -980,9 +980,13 @@ function setupBinaryHandling(
                 // If JSON parsing fails, pass the raw string
                 eventHandlers.message?.(event.data);
             }
-        } else {
-            // Binary data - pass through as-is
+        } else if (event.data instanceof Blob) {
+            // Already a Blob - pass through as-is.
             eventHandlers.message?.(event.data);
+        } else {
+            // Binary arrives as an ArrayBuffer (the socket uses binaryType "arraybuffer").
+            // Wrap it in a Blob so consumers always receive a Blob, regardless of runtime.
+            eventHandlers.message?.(new Blob([event.data as BlobPart]));
         }
     };
 
@@ -1150,7 +1154,7 @@ async function createWebSocketConnection({
     const wsOptions = getWebSocketOptions(_headers, normalizedProtocols);
 
     // Create and return the ReconnectingWebSocket
-    return new ReconnectingWebSocket({
+    const socket = new ReconnectingWebSocket({
         url,
         protocols: wsOptions.protocols ?? [],
         queryParameters: queryParams,
@@ -1165,6 +1169,14 @@ async function createWebSocketConnection({
         },
         abortSignal,
     });
+
+    // Use the "arraybuffer" binaryType: some runtimes reject "blob" and throw when the socket
+    // opens. Set here (not in the generated core socket) so it survives regeneration; the
+    // socket is startClosed, so this applies before the underlying socket is created. Inbound
+    // binary is wrapped back into a Blob in setupBinaryHandling to keep the payload type
+    // consistent for consumers.
+    socket.binaryType = "arraybuffer";
+    return socket;
 }
 
 /**
