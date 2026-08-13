@@ -364,4 +364,18 @@ describe("WebSocket binaryType default", () => {
         expect(connection.socket.binaryType).toBe("arraybuffer");
         connection.close();
     });
+
+    it("listen.v2 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v2.createConnection({ model: "flux-general-en" });
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
+    });
+
+    it("speak.v2 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
+    });
 });
