@@ -173,9 +173,9 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             expect(connected).toMatchObject({ type: "Connected", request_id: "req-123" });
 
             // Exactly 3 binary audio frames arrived as binary (NOT parsed/dropped as JSON,
-            // and NOT duplicated by a listener bug).
-            const isBinary = (d: any) => d instanceof ArrayBuffer || d instanceof Blob;
-            const binaryFrames = receivedMessages.filter(isBinary);
+            // and NOT duplicated by a listener bug). The wrapped socket normalizes inbound
+            // binary to a Blob before delivery, so each frame is a Blob on every runtime.
+            const binaryFrames = receivedMessages.filter((d) => d instanceof Blob);
             expect(binaryFrames).toHaveLength(3);
 
             // Control messages parsed correctly
