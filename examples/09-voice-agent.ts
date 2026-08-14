@@ -41,9 +41,9 @@ async function voiceAgent() {
             // Check message type
             if (data.type === "ConversationText") {
                 console.log("Conversation text:", data);
-            } else if (typeof data === "string") {
-                // Audio data comes as string
-                console.log("Audio received (length):", data.length);
+            } else if (data instanceof Blob) {
+                // Audio data is delivered as a Blob
+                console.log("Audio received (bytes):", data.size);
             } else {
                 console.log("Message:", data);
             }
