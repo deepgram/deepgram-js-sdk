@@ -3,6 +3,6 @@
 export interface SpeakV2Speak {
     /** Message type identifier */
     type: "Speak";
-    /** The input text to synthesize */
+    /** The input text to synthesize. Inline pause and pronunciation controls are not yet applied; they are stripped from the text before synthesis. */
     text: string;
 }

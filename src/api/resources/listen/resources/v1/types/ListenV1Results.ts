@@ -56,7 +56,7 @@ export namespace ListenV1Results {
                         language?: string | undefined;
                         /** The punctuated word of the word */
                         punctuated_word?: string | undefined;
-                        /** The speaker of the word, present when diarization is enabled */
+                        /** The speaker of the word */
                         speaker?: number | undefined;
                     }
                 }
@@ -70,8 +70,6 @@ export namespace ListenV1Results {
         model_info: Metadata.ModelInfo;
         /** The model UUID */
         model_uuid: string;
-        /** The diarizer that produced the speaker labels. Present only when a diarizer ran. */
-        diarize_info?: Metadata.DiarizeInfo | undefined;
     }
 
     export namespace Metadata {
@@ -82,25 +80,6 @@ export namespace ListenV1Results {
             version: string;
             /** The arch of the model */
             arch: string;
-        }
-
-        /**
-         * The diarizer that produced the speaker labels. Present only when a diarizer ran.
-         */
-        export interface DiarizeInfo {
-            /** The diarizer model UUID */
-            model_uuid: string;
-            /** The diarizer arch */
-            arch: DiarizeInfo.Arch;
-        }
-
-        export namespace DiarizeInfo {
-            /** The diarizer arch */
-            export const Arch = {
-                V1: "v1",
-                V2: "v2",
-            } as const;
-            export type Arch = (typeof Arch)[keyof typeof Arch] | string;
         }
     }
 

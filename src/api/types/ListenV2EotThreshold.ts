@@ -2,7 +2,6 @@
 
 /**
  * End-of-turn confidence required to finish a turn. Valid Values 0.5 -
- * 1.0. Set to 1.0 to fully suppress natural end-of-turn detection and
- * drive turn endings yourself with the `ForceEndTurn` message.
+ * 0.9.
  */
 export type ListenV2EotThreshold = unknown;

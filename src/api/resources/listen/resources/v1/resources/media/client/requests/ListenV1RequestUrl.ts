@@ -5,11 +5,45 @@ import type * as Deepgram from "../../../../../../../../index.js";
 /**
  * @example
  *     {
+ *         callback: "callback",
+ *         callback_method: "POST",
+ *         extra: "extra",
+ *         sentiment: true,
+ *         summarize: "v2",
+ *         tag: "tag",
+ *         topics: true,
+ *         custom_topic: "custom_topic",
+ *         custom_topic_mode: "extended",
+ *         intents: true,
+ *         custom_intent: "custom_intent",
+ *         custom_intent_mode: "extended",
+ *         detect_entities: true,
+ *         detect_language: true,
+ *         diarize: true,
+ *         diarize_model: "latest",
+ *         dictation: true,
+ *         encoding: "linear16",
+ *         filler_words: true,
+ *         keyterm: ["keyterm"],
+ *         keywords: "keywords",
+ *         language: "language",
+ *         measurements: true,
+ *         model: "nova-3",
+ *         multichannel: true,
+ *         numerals: true,
+ *         paragraphs: true,
+ *         profanity_filter: true,
+ *         punctuate: true,
+ *         redact: "redact",
+ *         replace: "replace",
+ *         search: "search",
+ *         smart_format: true,
+ *         utterances: true,
+ *         utt_split: 1.1,
+ *         version: "latest",
+ *         mip_opt_out: true,
  *         url: "https://dpgr.am/spacewalk.wav"
  *     }
- *
- * @example
- *     {}
  */
 export interface ListenV1RequestUrl {
     /** URL to which we'll make the callback request */

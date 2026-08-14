@@ -208,121 +208,145 @@ describe("2026-07-09 regen constraints", () => {
             expect(open).toBe("SOME-CUSTOM-CODE");
         });
     });
-});
+    describe("2026-08-11 regen: Speak v2 barge-in + reconfigure", () => {
+        it("Interrupt is a bare control message, optionally carrying a playback offset", () => {
+            const bare: Deepgram.speak.SpeakV2Interrupt = { type: "Interrupt" };
+            const withOffset: Deepgram.speak.SpeakV2Interrupt = {
+                type: "Interrupt",
+                playback_offset: { type: "time_ms", value: 1500 },
+            };
+            expect(bare.type).toBe("Interrupt");
+            expect(withOffset.playback_offset).toEqual({ type: "time_ms", value: 1500 });
+        });
 
-/**
- * Coverage for the surface added by the 2026-07-31 regeneration:
- *   - `AgentV1UpdateListen.Listen.provider` back-compat shim (the regen repointed it
- *     at a union whose variants REQUIRE the `version` discriminant, which broke
- *     callers that omitted it)
- *   - the new listen-v2 `ForceEndTurn` message and `redact` option
- *   - `ListenV2TurnInfo.trigger` (open enum, optional)
- *   - `diarize_info` on the listen-v1 response metadata
- *
- * As above, the typed literals double as compile-time assertions under
- * `make typecheck-tests`.
- */
-describe("2026-07-31 regen constraints", () => {
-    describe("AgentV1UpdateListen provider back-compat", () => {
-        it("accepts a v2 provider WITHOUT the `version` discriminant (the shim)", () => {
-            // This is the exact shape that regressed: on the raw generator output both
-            // union variants require `version`, so omitting it failed with TS2322.
-            // The pre-existing `AgentV1UpdateListen` test below passes `version: "v2"`
-            // explicitly, which is why it did not catch the break.
+        it("Configure carries the mid-stream speed change", () => {
+            const configure: Deepgram.speak.SpeakV2Configure = { type: "Configure", speed: 1.1 };
+            expect(JSON.parse(JSON.stringify(configure))).toEqual({ type: "Configure", speed: 1.1 });
+        });
+
+        it("ConfigureSuccess echoes what the server applied", () => {
+            const ok: Deepgram.speak.SpeakV2ConfigureSuccess = {
+                type: "ConfigureSuccess",
+                applied: { speed: 1.1 },
+            };
+            expect(ok.applied.speed).toBe(1.1);
+        });
+
+        it("ConfigureFailure reports the rejected field, and its Code enum stays open", () => {
+            const known: Deepgram.speak.SpeakV2ConfigureFailure.Code =
+                Deepgram.speak.SpeakV2ConfigureFailure.Code.SpeedOutOfRange;
+            const open: Deepgram.speak.SpeakV2ConfigureFailure.Code = "SOME-FUTURE-CODE";
+            const fail: Deepgram.speak.SpeakV2ConfigureFailure = {
+                type: "ConfigureFailure",
+                code: known,
+                field: "speed",
+                value: 9,
+                description: "speed must be between 0.85 and 1.15",
+            };
+            expect(known).toBe("SPEED_OUT_OF_RANGE");
+            expect(open).toBe("SOME-FUTURE-CODE");
+            expect(fail.field).toBe("speed");
+        });
+
+        it("SpeechInterrupted reports what was played, including the breaks_applied counter", () => {
+            const interrupted: Deepgram.speak.SpeakV2SpeechInterrupted = {
+                type: "SpeechInterrupted",
+                audio_played_ms: 1200,
+                text_spoken: "Hello there",
+                text_remaining: "how are you?",
+                metadata: {
+                    speech_id: "dg_sp_abc",
+                    audio_duration_ms: 4000,
+                    input_character_count: 24,
+                    billable_character_count: 24,
+                    // breaks_applied is new in this regen and REQUIRED -- omitting it
+                    // must fail typecheck (this literal is gated by tsconfig.typecheck.json).
+                    controls_applied: {
+                        pronunciations_applied: 2,
+                        breaks_applied: 1,
+                        pronunciation_warnings: 0,
+                    },
+                },
+            };
+            expect(interrupted.audio_played_ms).toBe(1200);
+            expect(interrupted.metadata.controls_applied.breaks_applied).toBe(1);
+        });
+
+        it("SpeechMetadata carries the same required breaks_applied counter", () => {
+            // Twin of SpeechInterrupted.metadata. This counter is referenced only from
+            // tests/wire (which the typecheck gate does not compile), so pin it here too
+            // -- otherwise dropping breaks_applied from this twin passes make typecheck-tests.
+            const meta: Deepgram.speak.SpeakV2SpeechMetadata = {
+                type: "SpeechMetadata",
+                speech_id: "dg_sp_abc",
+                audio_duration_ms: 4000,
+                input_character_count: 24,
+                billable_character_count: 24,
+                controls_applied: {
+                    pronunciations_applied: 0,
+                    breaks_applied: 0,
+                    pronunciation_warnings: 0,
+                },
+            };
+            expect(meta.controls_applied.breaks_applied).toBe(0);
+        });
+
+        it("speed/expressivity are numeric (spec enums are NOT enforced in codegen)", () => {
+            // The spec constrains speed to 0.85..1.15 (0.05 steps) and expressivity to
+            // -2..2, but numeric enums generate as bare number, so out-of-range values
+            // type-check and are only rejected server-side. Pinned so a future generator
+            // that DOES narrow these is noticed here.
+            const speed: Deepgram.SpeakV2Speed = 3.7;
+            const expressivity: Deepgram.SpeakV2Expressivity = 99;
+            expect([speed, expressivity]).toEqual([3.7, 99]);
+        });
+
+        it("ListenV2Redact accepts the documented values and stays open", () => {
+            const numbers: Deepgram.ListenV2Redact = "numbers";
+            const aggressive: Deepgram.ListenV2Redact = "aggressive_numbers";
+            expect([numbers, aggressive]).toEqual(["numbers", "aggressive_numbers"]);
+        });
+    });
+
+    describe("2026-08-11 regen: AgentV1UpdateListen provider back-compat", () => {
+        // This shim was silently lost once (the file was missing from .fernignore, so a
+        // regen overwrote it). These are the three ways the raw generated union broke
+        // existing callers -- pinned so it cannot regress unnoticed.
+        it("accepts the legacy provider shape with no version discriminant", () => {
+            const legacy: Deepgram.agent.AgentV1UpdateListen = {
+                type: "UpdateListen",
+                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
+            };
+            expect(legacy.listen.provider.model).toBe("flux-general-en");
+        });
+
+        it("keeps provider.model as string (not string | undefined)", () => {
             const msg: Deepgram.agent.AgentV1UpdateListen = {
                 type: "UpdateListen",
                 listen: { provider: { type: "deepgram", model: "flux-general-en" } },
             };
-            const parsed = JSON.parse(JSON.stringify(msg)) as Deepgram.agent.AgentV1UpdateListen;
-            expect(parsed.listen.provider).toEqual({ type: "deepgram", model: "flux-general-en" });
-            // No `version` key is injected — the shim is compile-compat only.
-            expect("version" in parsed.listen.provider).toBe(false);
-        });
-
-        it("still accepts the explicit v1 and v2 discriminated forms", () => {
-            const v1: Deepgram.agent.AgentV1UpdateListen = {
-                type: "UpdateListen",
-                listen: { provider: { type: "deepgram", version: "v1", model: "nova-3", language: "en" } },
-            };
-            const v2: Deepgram.agent.AgentV1UpdateListen = {
-                type: "UpdateListen",
-                listen: { provider: { type: "deepgram", version: "v2", model: "flux-general-en" } },
-            };
-            expect(v1.listen.provider.model).toBe("nova-3");
-            expect(v2.listen.provider.model).toBe("flux-general-en");
-        });
-
-        it("keeps `model` reading as a required string (not string | undefined)", () => {
-            const msg: Deepgram.agent.AgentV1UpdateListen = {
-                type: "UpdateListen",
-                listen: { provider: { type: "deepgram", model: "flux-general-en" } },
-            };
-            // Compile-time assertion: the V1 arm of the generated union declares
-            // `model?`, which would widen this to `string | undefined`.
             const model: string = msg.listen.provider.model;
             expect(model).toBe("flux-general-en");
         });
 
-        it("keeps the V2-only tuning fields READABLE off provider", () => {
-            // Property access on a union requires the property on every arm, so these
-            // reads broke with TS2339 once the V1 arm (which lacks them) was introduced.
+        it("keeps the V2-only fields readable", () => {
             const msg: Deepgram.agent.AgentV1UpdateListen = {
                 type: "UpdateListen",
                 listen: {
                     provider: {
                         type: "deepgram",
-                        model: "flux-general-multi",
+                        version: "v2",
+                        model: "flux-general-en",
                         eot_threshold: 0.7,
-                        eager_eot_threshold: 0.4,
                         eot_timeout_ms: 4000,
-                        language_hints: ["en", "es"],
-                        keyterms: ["Deepgram"],
+                        language_hints: ["en"],
                     },
                 },
             };
-            const p = msg.listen.provider;
-            expect([p.eot_threshold, p.eager_eot_threshold, p.eot_timeout_ms]).toEqual([0.7, 0.4, 4000]);
-            expect(p.language_hints).toEqual(["en", "es"]);
-            expect(p.keyterms).toEqual(["Deepgram"]);
-        });
-    });
-
-    describe("listen v2 ForceEndTurn", () => {
-        it('has the literal "ForceEndTurn" type and serializes', () => {
-            const msg: Deepgram.listen.v2.ListenV2ForceEndTurn = { type: "ForceEndTurn" };
-            expect(JSON.parse(JSON.stringify(msg))).toEqual({ type: "ForceEndTurn" });
-        });
-    });
-
-    describe("ListenV2Redact", () => {
-        it("exposes numbers/aggressive_numbers and stays open to arbitrary strings", () => {
-            const numbers: Deepgram.ListenV2Redact = Deepgram.ListenV2Redact.Numbers;
-            const aggressive: Deepgram.ListenV2Redact = Deepgram.ListenV2Redact.AggressiveNumbers;
-            const open: Deepgram.ListenV2Redact = "something-new";
-            expect([numbers, aggressive, open]).toEqual(["numbers", "aggressive_numbers", "something-new"]);
-        });
-    });
-
-    describe("ListenV2TurnInfo.trigger", () => {
-        it("is optional and open to unrecognized values", () => {
-            const withTrigger: Pick<Deepgram.listen.v2.ListenV2TurnInfo, "trigger"> = { trigger: "manual" };
-            const withoutTrigger: Pick<Deepgram.listen.v2.ListenV2TurnInfo, "trigger"> = {};
-            // Documented as an open enum: clients must tolerate unknown values.
-            const future: Pick<Deepgram.listen.v2.ListenV2TurnInfo, "trigger"> = { trigger: "some-future-trigger" };
-            expect(withTrigger.trigger).toBe("manual");
-            expect(withoutTrigger.trigger).toBeUndefined();
-            expect(future.trigger).toBe("some-future-trigger");
-        });
-    });
-
-    describe("listen v1 diarize_info", () => {
-        it("is optional on the response metadata and carries an open `arch` enum", () => {
-            const meta: Pick<Deepgram.ListenV1ResponseMetadata, "diarize_info"> = {
-                diarize_info: { model_uuid: "uuid-1", arch: "v2" },
-            };
-            const omitted: Pick<Deepgram.ListenV1ResponseMetadata, "diarize_info"> = {};
-            expect(meta.diarize_info?.arch).toBe("v2");
-            expect(omitted.diarize_info).toBeUndefined();
+            const eot: number | undefined = msg.listen.provider.eot_threshold;
+            const hints = msg.listen.provider.language_hints;
+            expect(eot).toBe(0.7);
+            expect(hints).toEqual(["en"]);
         });
     });
 });

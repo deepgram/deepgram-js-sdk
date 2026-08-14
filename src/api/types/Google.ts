@@ -2,8 +2,8 @@
 
 export interface Google {
     type: "google";
-    /** The REST API version for the Google generative language API */
-    version?: "v1beta" | undefined;
+    /** The Google API used for the request: ai-studio-v1beta for the AI Studio API, or gemini-enterprise-agent-v1 for the Gemini Enterprise Agent (GEA) API. v1beta is accepted as an alias for ai-studio-v1beta. Defaults based on the Deepgram Voice Agent endpoint you connect to. */
+    version?: Google.Version | undefined;
     /** Google model to use */
     model: Google.Model;
     /** Google temperature (0-2) */
@@ -11,6 +11,13 @@ export interface Google {
 }
 
 export namespace Google {
+    /** The Google API used for the request: ai-studio-v1beta for the AI Studio API, or gemini-enterprise-agent-v1 for the Gemini Enterprise Agent (GEA) API. v1beta is accepted as an alias for ai-studio-v1beta. Defaults based on the Deepgram Voice Agent endpoint you connect to. */
+    export const Version = {
+        AiStudioV1Beta: "ai-studio-v1beta",
+        GeminiEnterpriseAgentV1: "gemini-enterprise-agent-v1",
+        V1Beta: "v1beta",
+    } as const;
+    export type Version = (typeof Version)[keyof typeof Version] | string;
     /** Google model to use */
     export const Model = {
         Gemini20Flash: "gemini-2.0-flash",

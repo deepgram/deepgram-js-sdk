@@ -51,10 +51,6 @@ export namespace ListenV1ResponseResultsChannelsItem {
                     start?: number | undefined;
                     end?: number | undefined;
                     confidence?: number | undefined;
-                    /** The speaker of the word, present when diarization is enabled */
-                    speaker?: number | undefined;
-                    /** Confidence in the speaker assignment. Returned only for pre-recorded diarization; not available for streaming */
-                    speaker_confidence?: number | undefined;
                 }
             }
 

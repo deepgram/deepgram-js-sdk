@@ -6,19 +6,18 @@ import { Deepgram } from "../../src";
 import AgentV1LatencyReport = Deepgram.agent.AgentV1LatencyReport;
 
 /**
- * Regression test for the `stt_latency` field on AgentV1LatencyReport.
+ * Regression test for `AgentV1LatencyReport.stt_latency`.
  *
- * The 2026-07-20 spec removal of `stt_latency` was reverted upstream: the
- * 2026-07-31 regen emits `stt_latency?: number` natively again, so the hand-added
- * back-compat shim (and its .fernignore freeze) was dropped — Fern owns the field.
- * This test stays as a guard: if a future regen removes the field or narrows its
- * type, the assertions below break and flag the back-compat regression before it
- * ships.
+ * The 2026-07-20 spec removal of `stt_latency` was reverted upstream, so the
+ * field is generated natively again. The hand-applied shim and its `.fernignore`
+ * freeze were dropped in the 2026-08-11 regen — this file is no longer guarding a
+ * manual patch and Fern owns AgentV1LatencyReport again.
  *
- * TypeScript types are erased at runtime, so the compile-time assertions below
- * are the real guard — this file is compiled against `src` by
- * `make typecheck-tests` (tsconfig.typecheck.json), so any drift (field dropped,
- * or its type narrowed) fails the type-check gate.
+ * This test stays as the guard against a future re-removal: if a later spec change
+ * drops the field again (or narrows its type), `make typecheck-tests` fails here
+ * rather than breaking existing readers silently. TypeScript types are erased at
+ * runtime, so the compile-time assertions below are the real guard — this file is
+ * compiled against `src` by `make typecheck-tests` (tsconfig.typecheck.json).
  */
 
 // Compile-time identity check: `stt_latency` remains an optional `number` field.
@@ -26,12 +25,12 @@ type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y 
 type SttLatencyType = AgentV1LatencyReport["stt_latency"];
 const _sttStillOptionalNumber: Equals<SttLatencyType, number | undefined> = true;
 
-describe("AgentV1LatencyReport.stt_latency backward-compat shim", () => {
+describe("AgentV1LatencyReport.stt_latency native field guard", () => {
     it("compiles: stt_latency is a readable optional number field", () => {
         expect(_sttStillOptionalNumber).toBe(true);
     });
 
-    it("reads as undefined when the server omits it (spec removal)", () => {
+    it("reads as undefined when the server omits it (optional field)", () => {
         const report: AgentV1LatencyReport = { type: "LatencyReport" };
         expect(report.stt_latency).toBeUndefined();
     });

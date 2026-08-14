@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.8.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.7.0...v5.8.0) (2026-08-12)
+
+Flux TTS streaming controls, Listen v2 redaction, and an agent provider back-compat fix.
+
+
+### Features
+
+* **Speak v2 (Flux TTS streaming, `/v2/speak`):** barge-in via `sendInterrupt()` (`SpeakV2Interrupt`, optional `playback_offset`), answered by `SpeakV2SpeechInterrupted` with `text_spoken` / `text_remaining`; mid-session `Configure` via `sendConfigure()` with `ConfigureSuccess` / `ConfigureFailure` responses; new `speed` (`0.85`–`1.15` in `0.05` increments) and `expressivity` (`-2`–`2`; `0` is the voice's nominal delivery) connect params. Inline pause and pronunciation controls are not applied at launch — they are stripped before synthesis, the related warning codes are reserved and not currently emitted, and `controls_applied` counts are currently `0`; support is coming soon. ([#532](https://github.com/deepgram/deepgram-js-sdk/issues/532)) ([e851496](https://github.com/deepgram/deepgram-js-sdk/commit/e8514964d58f948728afd4c97c7f265430c2fccb))
+* **Listen v2:** `ListenV2Redact` (`numbers`, `aggressive_numbers`). ([#532](https://github.com/deepgram/deepgram-js-sdk/issues/532)) ([e851496](https://github.com/deepgram/deepgram-js-sdk/commit/e8514964d58f948728afd4c97c7f265430c2fccb))
+
+
+### Bug Fixes
+
+* **agent:** model the `AgentV1UpdateListen` provider as a merged shape rather than a union, preserving back-compat for existing callers (the regenerated union broke reads of V2-only fields and required `version`). Compile-compat only; the wire payload is unchanged. ([a65d1aa](https://github.com/deepgram/deepgram-js-sdk/commit/a65d1aa42323f4c92036c26ff289736c15f0dde5), [a6e3c79](https://github.com/deepgram/deepgram-js-sdk/commit/a6e3c7947ac41f294f02dbeb2bf9e1cdeff95cd5))
+
+
+### Compatibility
+
+* No `optional → required` field changes on request types.
+* Two existing fields widen on the read path: `Deepgram.version` (`"v1"` → `string`) and `Google.version` (`"v1beta"` → open `Google.Version`). Safe for callers setting the field; a consumer assigning them into a narrowed literal binding must widen the annotation.
+* `SpeakV2SpeechMetadata.ControlsApplied` / `SpeakV2SpeechInterrupted` gain a required `breaks_applied` counter — server-emitted (read-only), so it is safe on the read path.
+
 ## [5.7.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.6.0...v5.7.0) (2026-07-22)
 
 

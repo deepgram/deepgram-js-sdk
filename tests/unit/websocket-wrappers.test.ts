@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from "vitest";
 import { ReconnectingWebSocket } from "../../src/core/websocket/ws";
+import { DeepgramClient } from "../../src";
 
 // Global cleanup to ensure no lingering timeouts
 afterAll(() => {
@@ -246,9 +247,11 @@ describe("WebSocket wrapper functionality", () => {
                     } catch (error) {
                         eventHandlers.message?.(event.data);
                     }
-                } else {
-                    // Binary data - pass through as-is
+                } else if (event.data instanceof Blob) {
                     eventHandlers.message?.(event.data);
+                } else {
+                    // Binary is normalized to a Blob before delivery.
+                    eventHandlers.message?.(new Blob([event.data]));
                 }
             };
 
@@ -266,12 +269,12 @@ describe("WebSocket wrapper functionality", () => {
             binaryAwareHandler(invalidEvent);
             expect(eventHandlers.message).toHaveBeenCalledWith("invalid");
 
-            // Test with binary data
+            // Test with binary data - delivered as a Blob regardless of the inbound type
             const binaryEvent = new MessageEvent("message", {
                 data: new ArrayBuffer(10),
             });
             binaryAwareHandler(binaryEvent);
-            expect(eventHandlers.message).toHaveBeenCalledWith(expect.any(ArrayBuffer));
+            expect(eventHandlers.message).toHaveBeenCalledWith(expect.any(Blob));
         });
 
         it("should correctly implement preventDuplicateEventListeners pattern", () => {
@@ -319,5 +322,60 @@ describe("WebSocket wrapper functionality", () => {
             socketAny._closeCalled = true;
             socket.close();
         });
+    });
+});
+
+/**
+ * The socket must default to binaryType "arraybuffer": some runtimes (e.g. Bun's bundled
+ * `ws`) throw on binaryType "blob" and take down the connection on open. These tests use the
+ * real client factory (no fake timers, no network — the sockets are created startClosed) so a
+ * regression that reintroduces the "blob" default is caught.
+ */
+describe("WebSocket binaryType default", () => {
+    function makeClient() {
+        return new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: "https://example.com",
+                production: "ws://localhost:1",
+                agent: "ws://localhost:1",
+            },
+        });
+    }
+
+    it("speak.v1 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.speak.v1.createConnection({ model: "aura-2-thalia-en" });
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
+    });
+
+    it("listen.v1 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v1.createConnection({ model: "nova-3" });
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
+    });
+
+    it("agent.v1 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.agent.v1.createConnection();
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
+    });
+
+    it("listen.v2 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v2.createConnection({ model: "flux-general-en" });
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
+    });
+
+    it("speak.v2 connection defaults binaryType to arraybuffer", async () => {
+        const client = makeClient();
+        const connection = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+        expect(connection.socket.binaryType).toBe("arraybuffer");
+        connection.close();
     });
 });
