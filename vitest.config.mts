@@ -9,10 +9,10 @@ export default defineConfig({
                     globals: true,
                     name: "unit",
                     environment: "node",
-                    root: "./tests",
-                    include: ["**/*.test.{js,ts,jsx,tsx}"],
-                    exclude: ["wire/**", "browser/**"],
-                    setupFiles: ["./setup.ts"],
+                    root: ".",
+                    include: ["tests/**/*.test.{js,ts,jsx,tsx}"],
+                    exclude: ["tests/wire/**", "tests/browser/**"],
+                    setupFiles: ["./tests/setup.ts"],
                 },
             },
             {
@@ -20,8 +20,9 @@ export default defineConfig({
                     globals: true,
                     name: "wire",
                     environment: "node",
-                    root: "./tests/wire",
-                    setupFiles: ["../setup.ts", "../mock-server/setup.ts"],
+                    root: ".",
+                    include: ["tests/wire/**/*.test.{js,ts,jsx,tsx}"],
+                    setupFiles: ["./tests/setup.ts", "./tests/mock-server/setup.ts"],
                 },
             },
             {
@@ -38,6 +39,22 @@ export default defineConfig({
             },
         ],
         passWithNoTests: true,
+        coverage: {
+            provider: "v8",
+            include: ["src/**/*.ts"],
+            reportsDirectory: "./coverage",
+            // A floor, not a target. The CodeCoverageSummary action renders ✔/❌ marks
+            // but never fails the build, so without these the number is a dashboard
+            // rather than a ratchet. Set a few points under the measured baseline
+            // (97.77 statements / 94.92 branches / 97.54 functions / 97.85 lines) so
+            // normal churn doesn't turn CI red. Raise them as coverage climbs.
+            thresholds: {
+                statements: 95,
+                branches: 92,
+                functions: 95,
+                lines: 95,
+            },
+        },
     },
     resolve: {
         alias: {
