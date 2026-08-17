@@ -343,7 +343,7 @@ connection.connect();
 await connection.waitForOpen();
 
 // Send text to synthesize
-connection.sendSpeakV1Text({ type: "Text", text: "Hello, world!" });
+connection.sendText({ type: "Text", text: "Hello, world!" });
 ```
 
 ### Agent V1
@@ -385,7 +385,7 @@ connection.connect();
 await connection.waitForOpen();
 
 // Configure agent settings
-connection.sendAgentV1Settings({
+connection.sendSettings({
   type: "Settings",
   audio: {
     input: {
