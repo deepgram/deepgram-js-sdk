@@ -300,6 +300,28 @@ describe("2026-07-09 regen constraints", () => {
             expect([viaConst, viaString]).toEqual(["1.00", "1.05"]);
         });
 
+        it("keeps the deprecated flux-renee-en voice constant", () => {
+            // The GA catalog cutover (deepgram-docs #1096) dropped this one voice from the
+            // spec while the service kept serving it. Fern emits named members, so losing
+            // it is a compile break for callers whose code still works. Pinned so a future
+            // regen cannot silently drop it again.
+            const renee: Deepgram.Deepgram.Model = Deepgram.Deepgram.Model.FluxReneeEn;
+            expect(renee).toBe("flux-renee-en");
+        });
+
+        it("keeps every voice the GA catalog added", () => {
+            // The other half of the patch: re-adding Renee must not cost us the ~24 new
+            // GA voices. Spot-check the ones that bracket her alphabetically plus the new
+            // default, so a botched merge that reverts to the EA roster fails here.
+            const model = Deepgram.Deepgram.Model;
+            expect([model.FluxKitEn, model.FluxPriyaEn, model.FluxRufusEn, model.FluxWesEn]).toEqual([
+                "flux-kit-en",
+                "flux-priya-en",
+                "flux-rufus-en",
+                "flux-wes-en",
+            ]);
+        });
+
         it("SpeakV2Configure.speed remains numeric", () => {
             // The regen repointed Configure at the numeric SpeakV2SpeedValue while making
             // the connect param a string enum. Pinned so the split is noticed if it moves.

@@ -188,3 +188,16 @@ src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
 # generator ever settles on one representation. Regression coverage in
 # tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
 src/api/types/SpeakV2Speed.ts
+
+# src/api/types/Deepgram.ts: the 2026-08-19 regen replaced the Early Access Flux TTS
+# voice roster with the GA catalog (deepgram-docs #1096, 2026-08-12). That added ~24
+# voices and dropped exactly one — `flux-renee-en`. Because Fern emits this enum as a
+# const object of NAMED members, the removal deletes the `Deepgram.Model.FluxReneeEn`
+# symbol, which is a compile break — and the voice was verified still synthesizing
+# normally on 2026-08-19 (`POST /v2/speak?model=flux-renee-en` -> 200 + audio; the
+# service never enumerated voices, so the GA cutover was docs/spec only with no
+# server-side change). We re-add the single member with an @deprecated tag and take
+# ALL of the generator's other voice additions unchanged. Drop this entry once the
+# voice is actually withdrawn server-side, or if the catalog re-lists it. Regression
+# coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
+src/api/types/Deepgram.ts
