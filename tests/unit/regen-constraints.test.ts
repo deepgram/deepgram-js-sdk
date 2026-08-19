@@ -265,9 +265,14 @@ describe("2026-07-09 regen constraints", () => {
 
         it("speed/expressivity are numeric (spec enums are NOT enforced in codegen)", () => {
             // The spec constrains speed to 0.85..1.15 (0.05 steps) and expressivity to
-            // -2..2, but numeric enums generate as bare number, so out-of-range values
+            // -2..2, but these generate without runtime narrowing, so out-of-range values
             // type-check and are only rejected server-side. Pinned so a future generator
             // that DOES narrow these is noticed here.
+            //
+            // The 2026-08-19 regen narrowed SpeakV2Speed to a string enum, which broke the
+            // numeric `speak.v2.connect({ speed })` call sites that shipped in 5.8.0. The
+            // shim in src/api/types/SpeakV2Speed.ts widens it back to admit `number`; this
+            // numeric assignment is what proves the shim is still in place.
             const speed: Deepgram.SpeakV2Speed = 3.7;
             const expressivity: Deepgram.SpeakV2Expressivity = 99;
             expect([speed, expressivity]).toEqual([3.7, 99]);
@@ -277,6 +282,29 @@ describe("2026-07-09 regen constraints", () => {
             const numbers: Deepgram.ListenV2Redact = "numbers";
             const aggressive: Deepgram.ListenV2Redact = "aggressive_numbers";
             expect([numbers, aggressive]).toEqual(["numbers", "aggressive_numbers"]);
+        });
+    });
+
+    describe("2026-08-19 regen: SpeakV2Speed back-compat", () => {
+        it("still accepts the documented numeric multipliers", () => {
+            // The form callers actually wrote before the regen: a bare number.
+            const nominal: Deepgram.SpeakV2Speed = 1.0;
+            const slower: Deepgram.SpeakV2Speed = 0.85;
+            expect([nominal, slower]).toEqual([1.0, 0.85]);
+        });
+
+        it("also accepts the generated string constants and stays open", () => {
+            // The shim keeps Fern's new named constants usable rather than discarding them.
+            const viaConst: Deepgram.SpeakV2Speed = Deepgram.SpeakV2Speed.One;
+            const viaString: Deepgram.SpeakV2Speed = "1.05";
+            expect([viaConst, viaString]).toEqual(["1.00", "1.05"]);
+        });
+
+        it("SpeakV2Configure.speed remains numeric", () => {
+            // The regen repointed Configure at the numeric SpeakV2SpeedValue while making
+            // the connect param a string enum. Pinned so the split is noticed if it moves.
+            const configure: Deepgram.speak.SpeakV2Configure = { type: "Configure", speed: 1.1 };
+            expect(configure.speed).toBe(1.1);
         });
     });
 

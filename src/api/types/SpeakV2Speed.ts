@@ -10,4 +10,13 @@ export const SpeakV2Speed = {
     OnePointOne: "1.10",
     OnePointOneFive: "1.15",
 } as const;
-export type SpeakV2Speed = (typeof SpeakV2Speed)[keyof typeof SpeakV2Speed] | string;
+// Backward-compat shim: before the 2026-08-19 regen this type was plain `number`,
+// and `speed` shipped as a numeric connect param in 5.8.0 — so `speak.v2.connect({
+// speed: 1.0 })` is live in caller code. The regen narrowed it to a string enum
+// (while repointing `SpeakV2Configure.speed` at the new numeric `SpeakV2SpeedValue`,
+// leaving the same concept typed two ways). We keep the generated constants but
+// widen the type back to admit `number` so numeric call sites keep compiling.
+// `speed` is a query param on the websocket connect, so numbers and the equivalent
+// strings serialize identically — this is compile-compat only, no wire change.
+// Regression coverage in tests/unit/regen-constraints.test.ts.
+export type SpeakV2Speed = (typeof SpeakV2Speed)[keyof typeof SpeakV2Speed] | string | number;
