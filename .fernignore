@@ -201,3 +201,16 @@ src/api/types/SpeakV2Speed.ts
 # voice is actually withdrawn server-side, or if the catalog re-lists it. Regression
 # coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
 src/api/types/Deepgram.ts
+
+# src/errors/DeepgramTimeoutError.ts: the 2026-08-19 regen re-parented this class from
+# `Error` to `DeepgramError`. That is arguably the better hierarchy — a timeout IS a
+# Deepgram error, and it is currently the one error type the SDK's own base class fails
+# to catch — but it is a SILENT breaking change: an ordered catch of the form
+# `if (e instanceof DeepgramError) {...} else if (e instanceof DeepgramTimeoutError) {...}`
+# stops reaching the timeout branch, and the timeout instead surfaces as an API error
+# with an undefined `statusCode`. Nothing fails at compile time. Reverted to
+# `extends Error` to keep this regen non-breaking. Drop this entry and take the
+# generator's version at the next major, where the change can be documented in the
+# migration guide. Regression coverage in tests/unit/error-handling.test.ts.
+# Swap to .bak before regen.
+src/errors/DeepgramTimeoutError.ts
