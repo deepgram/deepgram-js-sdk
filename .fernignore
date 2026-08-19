@@ -26,6 +26,7 @@ tests/unit/custom-client.test.ts
 tests/unit/error-handling.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
+tests/unit/passthrough-auth.test.ts
 tests/unit/latency-report-stt-compat.test.ts
 tests/unit/regen-constraints.test.ts
 tests/unit/socket-close-idempotent.test.ts
@@ -214,3 +215,15 @@ src/api/types/Deepgram.ts
 # migration guide. Regression coverage in tests/unit/error-handling.test.ts.
 # Swap to .bak before regen.
 src/errors/DeepgramTimeoutError.ts
+
+# src/core/fetcher/makePassthroughRequest.ts: the 2026-08-19 regen added an origin check
+# so `client.fetch()` stops sending credentials to an arbitrary host — a genuine
+# credential-leak fix we KEEP. But the generator compares the target against the resolved
+# base URL ONLY, and Deepgram serves REST from two hosts (`base` = api.deepgram.com,
+# `agentRest` = agent.deepgram.com), so an absolute URL to the agent host silently lost
+# its auth header and failed with an unexplained 401 — a runtime break with no
+# compile-time signal. We widen `targetsBaseUrl` to allow the caller's base URL plus every
+# origin in DeepgramEnvironment; an unrelated host still receives no credentials. Report
+# upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
+# tests/unit/passthrough-auth.test.ts. Swap to .bak before regen.
+src/core/fetcher/makePassthroughRequest.ts
