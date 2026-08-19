@@ -4,9 +4,6 @@ import { HeaderAuthProvider } from "./auth/HeaderAuthProvider.js";
 import { mergeHeaders } from "./core/headers.js";
 import * as core from "./core/index.js";
 import type * as environments from "./environments.js";
-// Derive the SDK version from the single source of truth (src/version.ts), which
-// carries the release-please marker. Avoids a second hardcoded version that drifts.
-import { SDK_VERSION } from "./version.js";
 
 export type AuthOption =
     | false
@@ -29,6 +26,8 @@ export type BaseClientOptions = {
     fetcher?: core.FetchFunction;
     /** Configure logging for the client. */
     logging?: core.logging.LogConfig | core.logging.Logger;
+    /** Default options for SSE stream reconnection behavior. Has no effect on non-resumable endpoints. */
+    stream?: { reconnectionEnabled?: boolean; maxReconnectionAttempts?: number };
     /** Override auth. Pass false to disable, a function returning auth headers, an AuthProvider, or auth options. */
     auth?: AuthOption;
 } & HeaderAuthProvider.AuthOptions;
@@ -42,8 +41,12 @@ export interface BaseRequestOptions {
     abortSignal?: AbortSignal;
     /** Additional query string parameters to include in the request. */
     queryParams?: Record<string, unknown>;
+    /** A dictionary containing additional parameters to spread into the request's body. */
+    additionalBodyParameters?: Record<string, unknown>;
     /** Additional headers to include in the request. */
     headers?: Record<string, string | core.Supplier<string | null | undefined> | null | undefined>;
+    /** Options for SSE stream reconnection behavior. Has no effect on non-resumable endpoints. */
+    stream?: { reconnectionEnabled?: boolean; maxReconnectionAttempts?: number };
 }
 
 export type NormalizedClientOptions<T extends BaseClientOptions = BaseClientOptions> = T & {
@@ -63,8 +66,8 @@ export function normalizeClientOptions<T extends BaseClientOptions = BaseClientO
         {
             "X-Fern-Language": "JavaScript",
             "X-Fern-SDK-Name": "@deepgram/sdk",
-            "X-Fern-SDK-Version": SDK_VERSION,
-            "User-Agent": `@deepgram/sdk/${SDK_VERSION}`,
+            "X-Fern-SDK-Version": "5.8.1",
+            "User-Agent": "@deepgram/sdk/5.8.1",
             "X-Fern-Runtime": core.RUNTIME.type,
             "X-Fern-Runtime-Version": core.RUNTIME.version,
         },

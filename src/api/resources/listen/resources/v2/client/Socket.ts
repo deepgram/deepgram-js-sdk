@@ -79,6 +79,11 @@ export class V2Socket {
         this.sendJson(message);
     }
 
+    public sendForceEndTurn(message: Deepgram.listen.ListenV2ForceEndTurn): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     public sendConfigure(message: Deepgram.listen.ListenV2Configure): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -143,7 +148,11 @@ export class V2Socket {
 
     /** Send a JSON payload to the websocket. */
     protected sendJson(
-        payload: string | Deepgram.listen.ListenV2CloseStream | Deepgram.listen.ListenV2Configure,
+        payload:
+            | string
+            | Deepgram.listen.ListenV2CloseStream
+            | Deepgram.listen.ListenV2ForceEndTurn
+            | Deepgram.listen.ListenV2Configure,
     ): void {
         const jsonPayload = toJson(payload);
         this.socket.send(jsonPayload);

@@ -5,5 +5,5 @@ import type * as Deepgram from "../../../../../index.js";
 export interface SpeakV2Configure {
     /** Message type identifier */
     type: "Configure";
-    speed?: Deepgram.SpeakV2Speed | undefined;
+    speed?: Deepgram.SpeakV2SpeedValue | undefined;
 }

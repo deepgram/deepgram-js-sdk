@@ -72,7 +72,7 @@ export class V2Client {
             model,
             encoding: encoding != null ? encoding : undefined,
             sample_rate: sampleRate != null ? sampleRate : undefined,
-            speed,
+            speed: speed != null ? speed : undefined,
             expressivity,
             mip_opt_out:
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,

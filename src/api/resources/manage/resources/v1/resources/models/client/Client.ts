@@ -32,6 +32,8 @@ export class ModelsClient {
      * @param {ModelsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.models.list({
@@ -108,6 +110,8 @@ export class ModelsClient {
      * @param {ModelsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.models.get("af6e9977-99f6-4d8f-b6f5-dfdf6fb6e291")

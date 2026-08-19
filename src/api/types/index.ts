@@ -130,6 +130,7 @@ export * from "./SpeakV2Model.js";
 export * from "./SpeakV2Response.js";
 export * from "./SpeakV2SampleRate.js";
 export * from "./SpeakV2Speed.js";
+export * from "./SpeakV2SpeedValue.js";
 export * from "./SpeakV2Tag.js";
 export * from "./ThinkSettingsV1.js";
 export * from "./ThinkSettingsV1Provider.js";
