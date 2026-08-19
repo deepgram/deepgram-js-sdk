@@ -27,6 +27,9 @@ tests/unit/error-handling.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
 tests/unit/passthrough-auth.test.ts
+tests/unit/listen-v2-control-messages.test.ts
+tests/unit/request-body.test.ts
+tests/unit/sdk-version-header.test.ts
 tests/unit/latency-report-stt-compat.test.ts
 tests/unit/regen-constraints.test.ts
 tests/unit/socket-close-idempotent.test.ts

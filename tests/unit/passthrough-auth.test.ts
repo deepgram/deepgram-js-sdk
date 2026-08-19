@@ -59,6 +59,28 @@ describe("passthrough auth origin gate", () => {
         expect(await authHeaderFor("http://agent.deepgram.com/v1/agent", "https://api.deepgram.com")).toBeUndefined();
     });
 
+    it("authenticates a first-party host even with no base URL configured", async () => {
+        // Deliberate divergence from the generator, which early-returns false when there is
+        // no base URL. A first-party origin is trustworthy either way, and on `main` (before
+        // the origin check existed) this case received auth. Pinned so reconciling a future
+        // regen does not silently reinstate the early return.
+        await makePassthroughRequest("https://api.deepgram.com/v1/projects", undefined, {
+            getAuthHeaders,
+            fetch: mockFetch,
+        });
+        const [, calledOptions] = mockFetch.mock.calls[0];
+        expect(calledOptions.headers.authorization).toBe(AUTH.Authorization);
+    });
+
+    it("still refuses an unrelated host with no base URL configured", async () => {
+        await makePassthroughRequest("https://evil.example.com/steal", undefined, {
+            getAuthHeaders,
+            fetch: mockFetch,
+        });
+        const [, calledOptions] = mockFetch.mock.calls[0];
+        expect(calledOptions.headers.authorization).toBeUndefined();
+    });
+
     it("still authenticates a custom base URL (self-hosted)", async () => {
         expect(await authHeaderFor("https://self-hosted.internal/v1/listen", "https://self-hosted.internal")).toBe(
             AUTH.Authorization,
