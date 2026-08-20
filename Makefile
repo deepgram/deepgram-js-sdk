@@ -57,7 +57,7 @@ help:
 # Run all examples
 examples:
 	@printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
-	TOTAL=38; \
+	TOTAL=39; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
 	PASSED_LIST=""; \
@@ -138,6 +138,7 @@ examples:
 	run_example 36 "examples/36-agent-inject-message.ts" "Agent Inject Message"; \
 		run_example 37 "examples/37-text-to-speech-streaming-flux.ts" "Text-to-Speech Streaming Flux (v2)"; \
 		run_example 38 "examples/38-transcription-flux-eot.ts" "Transcription Flux End-of-Turn"; \
+		run_example 39 "examples/39-transcription-flux-force-end-turn.ts" "Transcription Flux Force-End-Turn"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \

@@ -5,11 +5,11 @@ import { DeepgramClient, type DeepgramTransport, type DeepgramTransportFactory }
  * Wire-level coverage for the listen v2 control messages, driven through a fake transport
  * so the assertions are on the actual frames the SDK emits — no network.
  *
- * `ForceEndTurn` arrived in the 2026-08-19 regen with no test of its own. It is also not
- * yet enabled server-side (sending it to production returns `UNPARSABLE_CLIENT_MESSAGE`
- * — "not enabled on this deployment" — and closes the socket), so it cannot be covered by
- * an example or an e2e test until that gate lifts. Pinning the serialization here is the
- * only coverage available, and it is what proves the SDK is correct once the gate opens.
+ * `ForceEndTurn` arrived in the 2026-08-19 regen with no test of its own. It is gated per
+ * deployment — where it is not enabled the server returns `UNPARSABLE_CLIENT_MESSAGE`
+ * ("not enabled on this deployment") and closes the socket. `tests/manual/force-end-turn.ts`
+ * covers the live path where the feature is enabled, but it is a manual script that skips
+ * when the gate is closed, so pinning the serialization here is what runs on every build.
  *
  * `CloseStream` is included because `ListenV2CloseStream` is a frozen compat shim: the
  * shim widens the `type` field to a namespace type, and this asserts that widening did not

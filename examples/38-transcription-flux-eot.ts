@@ -4,7 +4,10 @@
  * Flux exposes end-of-turn (EOT) controls on the /v2/listen websocket that let
  * you tune how eagerly a turn is finalized:
  *
- *   - eot_threshold:       EOT confidence required to finish a turn (0.5 - 0.9, default 0.7)
+ *   - eot_threshold:       EOT confidence required to finish a turn (0.5 - 1.0, default 0.7).
+ *                          1.0 fully suppresses natural end-of-turn detection, leaving the
+ *                          ForceEndTurn message as the only way to close a turn — see
+ *                          example 39.
  *   - eager_eot_threshold: EOT confidence to fire an *eager* end-of-turn event, enabling
  *                          EagerEndOfTurn / TurnResumed events (0.3 - 0.9)
  *   - eot_timeout_ms:      a turn is finished this many ms after speech regardless of
