@@ -3,15 +3,20 @@
  *
  * `ForceEndTurn` ends the current turn on demand instead of waiting for Flux to decide.
  * Paired with `eot_threshold: 1.0` — which this regen widened the valid range to admit —
- * it lets the caller own turn boundaries completely.
+ * and a long `eot_timeout_ms`, it lets the caller own turn boundaries completely.
  *
  * Neither half can be proven by the unit tests, which drive a fake transport: those pin
  * the frame the SDK emits, not what the server does with it. This script covers the rest:
  *
  *   1. ForceEndTurn ends an in-progress turn, and the resulting EndOfTurn reports
  *      trigger="manual" while the socket stays open for the next turn
- *   2. eot_threshold=1.0 suppresses natural end-of-turn entirely, so ForceEndTurn becomes
- *      the only thing that can close a turn
+ *   2. eot_threshold=1.0 together with a long eot_timeout_ms leaves nothing able to end a
+ *      turn on its own, so ForceEndTurn becomes the only thing that can close one
+ *
+ * Two mechanisms end turns naturally, and they are independent: eot_threshold governs
+ * Flux's confidence-based detection (trigger="model"), while eot_timeout_ms ends a turn
+ * after a pause regardless of confidence (trigger="timeout"). Setting the threshold alone
+ * suppresses only the first — the `trigger` field is what makes the difference visible.
  *
  * `ForceEndTurn` is gated per deployment. Where it is not enabled the server replies
  * `UNPARSABLE_CLIENT_MESSAGE` ("not enabled on this deployment") and closes the socket;
@@ -58,7 +63,12 @@ interface RunResult {
  */
 async function run(
     client: DeepgramClient,
-    { force, eotThreshold, maxChunks }: { force: boolean; eotThreshold?: number; maxChunks: number },
+    {
+        force,
+        eotThreshold,
+        eotTimeoutMs,
+        maxChunks,
+    }: { force: boolean; eotThreshold?: number; eotTimeoutMs?: number; maxChunks: number },
 ): Promise<RunResult> {
     const pcm = await readFile(AUDIO_PATH);
     const turns: TurnInfo[] = [];
@@ -73,6 +83,7 @@ async function run(
         encoding: "linear16",
         sample_rate: SAMPLE_RATE,
         ...(eotThreshold !== undefined ? { eot_threshold: eotThreshold } : {}),
+        ...(eotTimeoutMs !== undefined ? { eot_timeout_ms: eotTimeoutMs } : {}),
     });
 
     socket.on("close", () => {
@@ -186,19 +197,29 @@ async function main(): Promise<void> {
     }
     console.log(`  PASS: stream continued into turn ${laterTurns[0].turn_index} (${laterTurns.length} later events)`);
 
-    console.log("\n[2/2] eot_threshold=1.0 suppresses natural end-of-turn");
-    const suppressed = await run(client, { force: false, eotThreshold: 1.0, maxChunks: 300 });
+    // eot_threshold alone is not enough to own turn boundaries: it suppresses Flux's
+    // confidence-based detection, but eot_timeout_ms (default 5000) is a separate
+    // mechanism that still ends a turn after a pause — it reports trigger="timeout"
+    // rather than "model". Both have to be set before ForceEndTurn is the only thing
+    // that can close a turn.
+    console.log("\n[2/2] eot_threshold=1.0 + long eot_timeout_ms leaves nothing to end the turn");
+    const suppressed = await run(client, {
+        force: false,
+        eotThreshold: 1.0,
+        eotTimeoutMs: 60000,
+        maxChunks: 300,
+    });
     if (suppressed.error) {
         throw new Error(suppressed.error);
     }
     if (suppressed.endOfTurns.length > 0) {
         throw new Error(
-            `expected no natural EndOfTurn at eot_threshold=1.0, saw ${suppressed.endOfTurns.length} ` +
+            `expected no EndOfTurn, saw ${suppressed.endOfTurns.length} ` +
                 `(triggers: ${suppressed.endOfTurns.map((t) => t.trigger ?? "<absent>").join(", ")})`,
         );
     }
-    console.log(`  PASS: ${suppressed.turns.length} TurnInfo events, 0 EndOfTurn — natural detection suppressed`);
-    console.log("        so ForceEndTurn is the only way to close a turn at this threshold");
+    console.log(`  PASS: ${suppressed.turns.length} TurnInfo events, 0 EndOfTurn`);
+    console.log("        so ForceEndTurn is the only way to close a turn with both set");
 
     console.log("\nForce-end-turn live verification completed.");
 }
