@@ -7,6 +7,7 @@ import {
 } from "../../../../../../../../BaseClient.js";
 import { mergeHeaders } from "../../../../../../../../core/headers.js";
 import * as core from "../../../../../../../../core/index.js";
+import { mergeAdditionalBodyParameters } from "../../../../../../../../core/requestBody.js";
 import * as environments from "../../../../../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../../../../../errors/handleNonStatusCodeError.js";
 import * as errors from "../../../../../../../../errors/index.js";
@@ -32,6 +33,8 @@ export class DistributionCredentialsClient {
      * @param {DistributionCredentialsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.selfHosted.v1.distributionCredentials.list("123456-7890-1234-5678-901234")
@@ -107,6 +110,8 @@ export class DistributionCredentialsClient {
      * @param {DistributionCredentialsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.selfHosted.v1.distributionCredentials.create("123456-7890-1234-5678-901234", {
@@ -156,7 +161,7 @@ export class DistributionCredentialsClient {
                 .mergeAdditional(requestOptions?.queryParams)
                 .build(),
             requestType: "json",
-            body: _body,
+            body: mergeAdditionalBodyParameters(_body, requestOptions?.additionalBodyParameters),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -199,6 +204,8 @@ export class DistributionCredentialsClient {
      * @param {DistributionCredentialsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.selfHosted.v1.distributionCredentials.get("123456-7890-1234-5678-901234", "8b36cfd0-472f-4a21-833f-2d6343c3a2f3")
@@ -278,6 +285,8 @@ export class DistributionCredentialsClient {
      * @param {DistributionCredentialsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.selfHosted.v1.distributionCredentials.delete("123456-7890-1234-5678-901234", "8b36cfd0-472f-4a21-833f-2d6343c3a2f3")

@@ -14,6 +14,6 @@ export namespace SpeakV2ConfigureSuccess {
      * Synthesis configuration. A field is present only when it has been set on this session.
      */
     export interface Applied {
-        speed?: Deepgram.SpeakV2Speed | undefined;
+        speed?: Deepgram.SpeakV2SpeedValue | undefined;
     }
 }

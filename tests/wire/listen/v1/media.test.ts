@@ -22,7 +22,7 @@ describe("MediaClient", () => {
             metadata: {
                 request_id: "a847f427-4ad5-4d67-9b95-db801e58251c",
                 sha256: "154e291ecfa8be6ab8343560bcc109008fa7853eb5372533e8efdefc9b504c33",
-                created: "2024-05-12T18:57:13Z",
+                created: "2024-05-12T18:57:13.426Z",
                 duration: 25.933313,
                 channels: 1,
                 models: ["30089e05-99d1-4376-b32e-c263170674af"],
@@ -33,75 +33,37 @@ describe("MediaClient", () => {
                         arch: "nova-2",
                     },
                 },
-                summary_info: {
-                    model_uuid: "67875a7f-c9c4-48a0-aa55-5bdb8a91c34a",
-                    input_tokens: 95,
-                    output_tokens: 63,
-                },
-                sentiment_info: {
-                    model_uuid: "80ab3179-d113-4254-bd6b-4a2f96498695",
-                    input_tokens: 105,
-                    output_tokens: 105,
-                },
-                topics_info: {
-                    model_uuid: "80ab3179-d113-4254-bd6b-4a2f96498695",
-                    input_tokens: 105,
-                    output_tokens: 7,
-                },
-                intents_info: {
-                    model_uuid: "80ab3179-d113-4254-bd6b-4a2f96498695",
-                    input_tokens: 105,
-                    output_tokens: 4,
-                },
-                tags: ["test"],
+                diarize_info: { model_uuid: "9a1c8b3e-2f44-4c8a-b1d0-example0000", arch: "v2" },
             },
             results: {
-                channels: [{}],
-                utterances: [{}],
-                summary: {
-                    result: "success",
-                    short: "Speaker 0 discusses the significance of the first all-female spacewalk with an all-female team, stating that it is a tribute to the skilled and qualified women who were denied opportunities in the past.",
-                },
-                topics: {
-                    results: {
-                        topics: {
-                            segments: [
-                                {
-                                    text: "And, um, I think if it signifies anything, it is, uh, to honor the the women who came before us who, um, were skilled and qualified, um, and didn't get the the same opportunities that we have today.",
-                                    start_word: 32,
-                                    end_word: 69,
-                                    topics: [{ topic: "Spacewalk", confidence_score: 0.91581345 }],
-                                },
-                            ],
-                        },
+                channels: [
+                    {
+                        alternatives: [
+                            {
+                                transcript: "Yeah, as as much as, it's worth having a talk to the neighbors.",
+                                confidence: 0.9840088,
+                                words: [
+                                    {
+                                        word: "yeah",
+                                        start: 0.08,
+                                        end: 0.32,
+                                        confidence: 0.9975586,
+                                        speaker: 0,
+                                        speaker_confidence: 0.98,
+                                    },
+                                    {
+                                        word: "as",
+                                        start: 0.32,
+                                        end: 0.48,
+                                        confidence: 0.9862061,
+                                        speaker: 0,
+                                        speaker_confidence: 0.98,
+                                    },
+                                ],
+                            },
+                        ],
                     },
-                },
-                intents: {
-                    results: {
-                        intents: {
-                            segments: [
-                                {
-                                    text: "If you found this valuable, you can subscribe to the show on spotify or your favorite podcast app.",
-                                    start_word: 354,
-                                    end_word: 414,
-                                    intents: [{ intent: "Encourage podcasting", confidence_score: 0.0038975573 }],
-                                },
-                            ],
-                        },
-                    },
-                },
-                sentiments: {
-                    segments: [
-                        {
-                            text: "Yeah. As as much as, um, it's worth celebrating, uh, the first, uh, spacewalk, um, with an all-female team, I think many of us are looking forward to it just being normal. And, um, I think if it signifies anything, it is, uh, to honor the the women who came before us who, um, were skilled and qualified, um, and didn't get the the same opportunities that we have today.",
-                            start_word: 0,
-                            end_word: 69,
-                            sentiment: "positive",
-                            sentiment_score: 0.5810546875,
-                        },
-                    ],
-                    average: { sentiment: "positive", sentiment_score: 0.5810185185185185 },
-                },
+                ],
             },
         };
 
@@ -115,49 +77,31 @@ describe("MediaClient", () => {
             .build();
 
         const response = await client.listen.v1.media.transcribeUrl({
-            callback: "callback",
-            callback_method: "POST",
-            extra: "extra",
-            sentiment: true,
-            summarize: "v2",
-            tag: "tag",
-            topics: true,
-            custom_topic: "custom_topic",
-            custom_topic_mode: "extended",
-            intents: true,
-            custom_intent: "custom_intent",
-            custom_intent_mode: "extended",
-            detect_entities: true,
-            detect_language: true,
-            diarize: true,
-            diarize_model: "latest",
-            dictation: true,
-            encoding: "linear16",
-            filler_words: true,
-            keyterm: ["keyterm"],
-            keywords: "keywords",
-            language: "language",
-            measurements: true,
-            model: "nova-3",
-            multichannel: true,
-            numerals: true,
-            paragraphs: true,
-            profanity_filter: true,
-            punctuate: true,
-            redact: "redact",
-            replace: "replace",
-            search: "search",
-            smart_format: true,
-            utterances: true,
-            utt_split: 1.1,
-            version: "latest",
-            mip_opt_out: true,
             url: "https://dpgr.am/spacewalk.wav",
         });
         expect(response).toEqual(rawResponseBody);
     });
 
     test("transcribeUrl (2)", async () => {
+        const server = mockServerPool.createServer();
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
+        });
+
+        server.mockEndpoint().post("/v1/listen").respondWith().statusCode(200).build();
+
+        const response = await client.listen.v1.media.transcribeUrl({});
+        expect(response).toEqual(undefined);
+    });
+
+    test("transcribeUrl (3)", async () => {
         const server = mockServerPool.createServer();
         const client = new DeepgramClient({
             maxRetries: 0,
