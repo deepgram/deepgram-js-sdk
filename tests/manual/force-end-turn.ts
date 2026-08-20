@@ -21,7 +21,7 @@
  * Requires DEEPGRAM_API_KEY. Run with:
  *
  *     pnpm tsx tests/manual/force-end-turn.ts
- *     DEEPGRAM_BASE_URL=https://api.staging.deepgram.com pnpm tsx tests/manual/force-end-turn.ts
+ *     DEEPGRAM_BASE_URL=https://<host> pnpm tsx tests/manual/force-end-turn.ts
  */
 
 import { readFile } from "node:fs/promises";
