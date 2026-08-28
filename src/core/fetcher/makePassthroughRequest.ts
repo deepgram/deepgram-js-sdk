@@ -1,8 +1,10 @@
+import { DeepgramEnvironment } from "../../environments.js";
 import { createLogger, type LogConfig, type Logger } from "../logging/logger.js";
 import { join } from "../url/join.js";
 import { EndpointSupplier } from "./EndpointSupplier.js";
 import { getFetchFn } from "./getFetchFn.js";
 import { makeRequest } from "./makeRequest.js";
+import { redactUrl } from "./redactUrl.js";
 import { requestWithRetries } from "./requestWithRetries.js";
 import { Supplier } from "./Supplier.js";
 
@@ -114,8 +116,10 @@ export async function makePassthroughRequest(
         }
     }
 
-    // Apply auth headers
-    if (clientOptions.getAuthHeaders != null) {
+    // Apply auth headers, but only when the resolved URL targets the configured base URL.
+    // This prevents the SDK's credentials from leaking to an unrelated host when a caller
+    // passes an absolute cross-origin URL into the passthrough fetch escape hatch.
+    if (clientOptions.getAuthHeaders != null && targetsBaseUrl(fullUrl, baseUrl)) {
         const authHeaders = await clientOptions.getAuthHeaders();
         for (const [key, value] of Object.entries(authHeaders)) {
             mergedHeaders[key.toLowerCase()] = value;
@@ -155,7 +159,7 @@ export async function makePassthroughRequest(
     if (logger.isDebug()) {
         logger.debug("Making passthrough HTTP request", {
             method,
-            url: fullUrl,
+            url: redactUrl(fullUrl),
             hasBody: body != null,
         });
     }
@@ -180,10 +184,53 @@ export async function makePassthroughRequest(
     if (logger.isDebug()) {
         logger.debug("Passthrough HTTP request completed", {
             method,
-            url: fullUrl,
+            url: redactUrl(fullUrl),
             statusCode: response.status,
         });
     }
 
     return response;
+}
+
+/**
+ * Returns true when the resolved request URL points at an origin the SDK is configured to
+ * authenticate against: the caller's own base URL, or any host in the Deepgram environment.
+ * Relative paths are always joined onto the base URL, so they resolve to the base origin and
+ * return true. When the URL is not parseable, or matches no known origin, this returns false
+ * so auth headers are not attached.
+ *
+ * Patch (2026-08-19 regen): the generator compares the target against the resolved base URL
+ * ONLY. Deepgram serves its REST surface from two hosts — `base` (api.deepgram.com) and
+ * `agentRest` (agent.deepgram.com) — so an absolute URL to the agent host silently lost its
+ * auth header and failed with an unexplained 401. Widened to the full first-party set, which
+ * preserves the upstream fix (an unrelated host still receives no credentials) without
+ * breaking legitimate cross-host passthrough calls. The `wss://` entries cannot match an HTTP
+ * request, so including them is harmless and keeps this correct if a slot is added upstream.
+ *
+ * Note the generator also early-returns `false` when there is no base URL at all. That is
+ * deliberately NOT reproduced here: a first-party Deepgram origin is trustworthy regardless of
+ * whether the caller configured a base URL, and on `main` (before the origin check existed)
+ * that case received auth. Do not reinstate the early return when reconciling a future regen.
+ */
+function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
+    let targetOrigin: string;
+    try {
+        targetOrigin = new URL(fullUrl).origin;
+    } catch {
+        return false;
+    }
+
+    const allowedOrigins = new Set<string>();
+    for (const candidate of [baseUrl, ...Object.values(DeepgramEnvironment.Production)]) {
+        if (candidate == null) {
+            continue;
+        }
+        try {
+            allowedOrigins.add(new URL(candidate).origin);
+        } catch {
+            // Not a parseable absolute URL — cannot contribute an origin.
+        }
+    }
+
+    return allowedOrigins.has(targetOrigin);
 }

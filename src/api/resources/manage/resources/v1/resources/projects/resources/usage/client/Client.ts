@@ -47,6 +47,8 @@ export class UsageClient {
      * @param {UsageClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.usage.get("123456-7890-1234-5678-901234", {

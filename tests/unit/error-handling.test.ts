@@ -224,6 +224,29 @@ describe("Error inheritance chain", () => {
         expect(error instanceof Error).toBe(true);
     });
 
+    it("DeepgramTimeoutError is NOT instanceof DeepgramError", () => {
+        // The 2026-08-19 regen re-parented DeepgramTimeoutError onto DeepgramError, which
+        // silently breaks ordered catches: `if (e instanceof DeepgramError) ... else if
+        // (e instanceof DeepgramTimeoutError) ...` stops reaching the timeout branch, and
+        // nothing fails at compile time. src/errors/DeepgramTimeoutError.ts is frozen to
+        // keep the flat hierarchy; this pins it so a regen cannot re-parent it unnoticed.
+        // Delete this test when the new hierarchy is adopted in a major.
+        const error = new DeepgramTimeoutError("test");
+        expect(error instanceof DeepgramError).toBe(false);
+    });
+
+    it("an ordered catch still reaches the timeout branch", () => {
+        // The exact user-code shape the re-parenting would have broken.
+        const classify = (e: unknown): string => {
+            if (e instanceof DeepgramError) return "api";
+            if (e instanceof DeepgramTimeoutError) return "timeout";
+            return "other";
+        };
+
+        expect(classify(new DeepgramTimeoutError("timed out"))).toBe("timeout");
+        expect(classify(new DeepgramError({ message: "boom", statusCode: 500 }))).toBe("api");
+    });
+
     it("errors should be catchable in try-catch", () => {
         let caught = false;
 

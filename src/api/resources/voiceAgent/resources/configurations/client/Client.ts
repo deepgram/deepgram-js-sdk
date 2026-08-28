@@ -4,6 +4,7 @@ import type { BaseClientOptions, BaseRequestOptions } from "../../../../../../Ba
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "../../../../../../BaseClient.js";
 import { mergeHeaders } from "../../../../../../core/headers.js";
 import * as core from "../../../../../../core/index.js";
+import { mergeAdditionalBodyParameters } from "../../../../../../core/requestBody.js";
 import * as environments from "../../../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../../../errors/handleNonStatusCodeError.js";
 import * as errors from "../../../../../../errors/index.js";
@@ -29,6 +30,8 @@ export class ConfigurationsClient {
      * @param {ConfigurationsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.voiceAgent.configurations.list("123456-7890-1234-5678-901234")
@@ -104,6 +107,8 @@ export class ConfigurationsClient {
      * @param {ConfigurationsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.voiceAgent.configurations.create("123456-7890-1234-5678-901234", {
@@ -143,7 +148,7 @@ export class ConfigurationsClient {
             contentType: "application/json",
             queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             requestType: "json",
-            body: request,
+            body: mergeAdditionalBodyParameters(request, requestOptions?.additionalBodyParameters),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -186,6 +191,8 @@ export class ConfigurationsClient {
      * @param {ConfigurationsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.voiceAgent.configurations.get("123456-7890-1234-5678-901234", "a1b2c3d4-e5f6-7890-abcd-ef1234567890")
@@ -261,6 +268,8 @@ export class ConfigurationsClient {
      * @param {ConfigurationsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.voiceAgent.configurations.update("123456-7890-1234-5678-901234", "a1b2c3d4-e5f6-7890-abcd-ef1234567890", {
@@ -304,7 +313,7 @@ export class ConfigurationsClient {
             contentType: "application/json",
             queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             requestType: "json",
-            body: request,
+            body: mergeAdditionalBodyParameters(request, requestOptions?.additionalBodyParameters),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -344,6 +353,8 @@ export class ConfigurationsClient {
      * @param {ConfigurationsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.voiceAgent.configurations.delete("123456-7890-1234-5678-901234", "a1b2c3d4-e5f6-7890-abcd-ef1234567890")

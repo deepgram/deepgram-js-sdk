@@ -7,6 +7,7 @@ import {
 } from "../../../../../../../../../../BaseClient.js";
 import { mergeHeaders } from "../../../../../../../../../../core/headers.js";
 import * as core from "../../../../../../../../../../core/index.js";
+import { mergeAdditionalBodyParameters } from "../../../../../../../../../../core/requestBody.js";
 import * as environments from "../../../../../../../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../../../../../../../errors/handleNonStatusCodeError.js";
 import * as errors from "../../../../../../../../../../errors/index.js";
@@ -33,6 +34,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.list("123456-7890-1234-5678-901234", {
@@ -117,6 +120,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.create("project_id", {
@@ -156,7 +161,7 @@ export class KeysClient {
             contentType: "application/json",
             queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             requestType: "json",
-            body: request,
+            body: mergeAdditionalBodyParameters(request, requestOptions?.additionalBodyParameters),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -196,6 +201,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.get("123456-7890-1234-5678-901234", "123456789012345678901234")
@@ -270,6 +277,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.delete("123456-7890-1234-5678-901234", "123456789012345678901234")
