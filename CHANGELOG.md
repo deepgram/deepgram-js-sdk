@@ -2,16 +2,32 @@
 
 ## [5.9.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.8.0...v5.9.0) (2026-08-28)
 
+Listen v2 (Flux) force-end-turn, listen v1 diarization metadata, the Flux TTS GA voice catalog, and a passthrough-auth fix.
+
 
 ### Features
 
-* **regen:** listen v2 force-end-turn, listen v1 diarize metadata, and the Flux TTS GA voices ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
+* **Listen v2 (Flux) force-end-turn:** `socket.sendForceEndTurn()` sends the new `ListenV2ForceEndTurn` control message, ending the current turn on demand; Flux flushes buffered audio and emits a standard `EndOfTurn`. `ListenV2TurnInfo` gains `trigger` (`model` | `manual` | `timeout`, open enum) identifying what ended each turn. `eot_threshold` now accepts up to `1.0` (previously capped at `0.9`) to suppress Flux's confidence-based end-of-turn detection and own turn endings yourself — note `eot_timeout_ms` is an independent mechanism that still ends a turn after a pause, so set both when `ForceEndTurn` should be the only way a turn ends. Enablement is per deployment server-side (live in Deepgram-hosted US data centers at release). ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
+* **Listen v1 diarization detail:** `metadata.diarize_info` (`model_uuid`, `arch`) identifies which diarizer ran, and words gain per-word `speaker_confidence`. ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
+* **Flux TTS GA voice catalog:** the agent's Deepgram speak provider grows from 12 to 36 voices, and `flux-kit-en` is now the default voice when `agent.speak` is omitted. See Compatibility for `flux-renee-en`. ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
+* **Speak v2:** dedicated numeric `SpeakV2SpeedValue` type for the mid-stream `Configure.speed` field, plus expanded `speed` / `expressivity` documentation including the `SPEED_NOT_SUPPORTED` and `EXPRESSIVITY_*` warning codes. ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
+* **REST clients:** new per-request `additionalBodyParameters` option, spread onto the request body; debug logging of passthrough requests now scrubs credentials from URLs. ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
 
 
 ### Bug Fixes
 
+* **core:** `client.fetch()` now authenticates passthrough requests to all Deepgram hosts — an absolute URL to `agent.deepgram.com` previously lost the auth header and failed with an unexplained 401. Part of the origin-scoping change described under Compatibility. ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
 * **websocket:** default binaryType to arraybuffer for Bun compatibility ([cc4293c](https://github.com/deepgram/deepgram-js-sdk/commit/cc4293c0e994fd82177ceede5afbf0ff9c972991)), closes [#525](https://github.com/deepgram/deepgram-js-sdk/issues/525)
 * **websocket:** default binaryType to arraybuffer for Bun compatibility ([#535](https://github.com/deepgram/deepgram-js-sdk/issues/535)) ([1913abc](https://github.com/deepgram/deepgram-js-sdk/commit/1913abc26c95b126661546cf2a9daed60da5efaa))
+
+
+### Compatibility
+
+* **Passthrough `client.fetch()` credentials are now origin-scoped.** Previously the SDK attached your Deepgram auth headers to *every* URL passed to `client.fetch()`, including third-party hosts — a credential leak. Credentials are now sent only to Deepgram first-party origins (`api.deepgram.com`, `agent.deepgram.com`) and your configured `baseUrl`; requests to any other absolute URL are sent without auth. If you were routing passthrough calls through a proxy or other non-Deepgram host and relying on the key being auto-attached, attach it explicitly via request headers. Self-hosted and custom-`baseUrl` deployments are unaffected.
+* **`flux-renee-en`** was dropped from the GA voice catalog spec. The `Deepgram.Model.FluxReneeEn` constant remains, marked `@deprecated`, and the voice still synthesizes (verified 2026-08-19) — the GA cutover was a docs/spec change with no server-side removal.
+* **`SpeakV2Speed` stays numeric.** The generator retyped it as a string enum; it is widened back to admit `number`, so `speak.v2.connect({ speed: 1.0 })` keeps compiling. Numbers and their string equivalents serialize identically on the wire.
+* **`DeepgramTimeoutError` still extends `Error`,** not `DeepgramError`. The generator's re-parenting is deferred to the next major (it would silently change the behavior of ordered `instanceof` catch chains) and will be documented in the migration guide.
+* No modules were removed and no `optional → required` field changes on request types — verified by diffing the clean-built `.d.ts` surface (575 shared declaration files) against 5.8.0.
 
 ## [5.8.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.7.0...v5.8.0) (2026-08-12)
 
