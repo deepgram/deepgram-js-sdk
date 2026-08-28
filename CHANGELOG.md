@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.9.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.8.0...v5.9.0) (2026-08-28)
+
+
+### Features
+
+* **regen:** listen v2 force-end-turn, listen v1 diarize metadata, and the Flux TTS GA voices ([#537](https://github.com/deepgram/deepgram-js-sdk/issues/537)) ([03e7062](https://github.com/deepgram/deepgram-js-sdk/commit/03e7062d2938fa4de7dcd9d78eb1481f2fbb46d2))
+
+
+### Bug Fixes
+
+* **websocket:** default binaryType to arraybuffer for Bun compatibility ([cc4293c](https://github.com/deepgram/deepgram-js-sdk/commit/cc4293c0e994fd82177ceede5afbf0ff9c972991)), closes [#525](https://github.com/deepgram/deepgram-js-sdk/issues/525)
+* **websocket:** default binaryType to arraybuffer for Bun compatibility ([#535](https://github.com/deepgram/deepgram-js-sdk/issues/535)) ([1913abc](https://github.com/deepgram/deepgram-js-sdk/commit/1913abc26c95b126661546cf2a9daed60da5efaa))
+
 ## [5.8.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.7.0...v5.8.0) (2026-08-12)
 
 Flux TTS streaming controls, Listen v2 redaction, and an agent provider back-compat fix.
