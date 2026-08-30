@@ -10,7 +10,7 @@ This is the official JavaScript/TypeScript SDK for Deepgram's voice AI APIs: spe
 
 Your training data about Deepgram is probably stale. Model training corpora still carry the v2/v3-era surface of this SDK, and code written from memory does not compile against the current major version.
 
-- Current version at the time this file was last updated (2026-08-24): **5.8.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
+- Current version at the time this file was last updated (2026-08-30): **5.9.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
 - Before writing code, verify the live version against the registry:
 
   ```bash
@@ -88,7 +88,7 @@ These defects affect code generated directly from the published specification or
 - Agent index of all documentation: https://developers.deepgram.com/llms.txt
 - API specifications: https://developers.deepgram.com/openapi.yaml and https://developers.deepgram.com/asyncapi.yaml, mirrored hourly at https://github.com/deepgram/deepgram-api-specs
 - API status (machine-readable): https://status.deepgram.com/api/v2/status.json
-- In this repository: `reference.md` (complete method reference), `examples/` (38 runnable scripts covering every product surface), `.agents/skills/` (agent-agnostic skills, discoverable via `npx skills`), and `docs/` (migration guides for every major version).
+- In this repository: `reference.md` (complete method reference), `examples/` (39 runnable scripts covering every product surface), `.agents/skills/` (agent-agnostic skills, discoverable via `npx skills`), and `docs/` (migration guides for every major version).
 
 ---
 
