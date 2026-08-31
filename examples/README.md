@@ -20,6 +20,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 - **38-transcription-flux-eot.ts** - Flux end-of-turn tuning
 - **39-transcription-flux-force-end-turn.ts** - Manual Flux turn finalization
 - **40-abortsignal-cancellation.ts** - Safely cancel a WebSocket connection with AbortSignal
+- **41-transcription-live-reconnect.ts** - Production-grade reconnection for live transcription (backoff with jitter, close-code handling, audio buffering)
 
 ### Voice Agent
 - **09-voice-agent.ts** - Voice Agent configuration and usage

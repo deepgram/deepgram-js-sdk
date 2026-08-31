@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 example-38 example-39 example-40 test test-esm typecheck-tests lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 example-38 example-39 example-40 example-41 test test-esm typecheck-tests lint build browser browser-serve
 
 # Default target
 help:
@@ -11,7 +11,7 @@ help:
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
-	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-40) sequentially\n"
+	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-41) sequentially\n"
 	@printf "  \033[1;32mmake example-N\033[0m         - Run a specific example by number (e.g., make example-1)\n"
 	@printf "  \033[1;32mmake browser\033[0m           - Run browser tests\n"
 	@printf "  \033[1;32mmake browser-serve\033[0m     - Serve the browser examples for manual testing\n"
@@ -57,11 +57,12 @@ help:
 	@printf "  \033[36m38\033[0m - Transcription Flux End-of-Turn\n"
 	@printf "  \033[36m39\033[0m - Transcription Flux Force-End-Turn\n"
 	@printf "  \033[36m40\033[0m - AbortSignal Cancellation\n"
+	@printf "  \033[36m41\033[0m - Transcription Live Reconnect\n"
 
 # Run all examples
 examples:
 	@printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
-	TOTAL=40; \
+	TOTAL=41; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
 	PASSED_LIST=""; \
@@ -144,6 +145,7 @@ examples:
 	run_example 38 "examples/38-transcription-flux-eot.ts" "Transcription Flux End-of-Turn"; \
 	run_example 39 "examples/39-transcription-flux-force-end-turn.ts" "Transcription Flux Force-End-Turn"; \
 	run_example 40 "examples/40-abortsignal-cancellation.ts" "AbortSignal Cancellation"; \
+	run_example 41 "examples/41-transcription-live-reconnect.ts" "Transcription Live Reconnect"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -299,6 +301,9 @@ example-39:
 
 example-40:
 	pnpm exec tsx examples/40-abortsignal-cancellation.ts
+
+example-41:
+	pnpm exec tsx examples/41-transcription-live-reconnect.ts
 
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none
