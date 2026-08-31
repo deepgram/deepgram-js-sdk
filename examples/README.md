@@ -16,6 +16,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 - **07-transcription-live-websocket.js** - Live transcription via WebSocket
 - **08-transcription-captions.js** - Convert transcriptions to WebVTT/SRT captions
 - **22-transcription-advanced-options.js** - Advanced transcription options
+- **39-transcription-live-reconnect.js** - Production-grade reconnection for live transcription (backoff with jitter, close-code handling, audio buffering)
 
 ### Voice Agent
 - **09-voice-agent.js** - Voice Agent configuration and usage
