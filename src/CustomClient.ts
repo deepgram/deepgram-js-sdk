@@ -155,7 +155,9 @@ class AccessTokenAuthProviderWrapper implements core.AuthProvider {
     public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
         // Check for access token first (highest priority)
         // Access tokens use Bearer scheme, API keys use Token scheme
-        const accessToken = (await core.Supplier.get(this.accessToken)) ?? process.env?.DEEPGRAM_ACCESS_TOKEN;
+        const accessToken =
+            (await core.Supplier.get(this.accessToken)) ??
+            (typeof process !== "undefined" ? process.env?.DEEPGRAM_ACCESS_TOKEN : undefined);
         if (accessToken != null) {
             return {
                 headers: { Authorization: `Bearer ${accessToken}` },

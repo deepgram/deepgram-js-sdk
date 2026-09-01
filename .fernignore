@@ -159,11 +159,11 @@ src/Client.ts
 # Swap to .bak before regen.
 src/version.ts
 
-# src/BaseClient.ts is frozen only to keep its one-line patch deriving the SDK
-# version from src/version.ts (`import { SDK_VERSION }` + ``@deepgram/sdk/${SDK_VERSION}``)
-# instead of Fern's hardcoded version string — so the User-Agent never drifts and
-# the version lives in exactly one place. Re-apply that import patch after regen;
-# take all of Fern's other BaseClient changes. Swap to .bak before regen.
+# src/BaseClient.ts keeps two patches: derive the SDK version from src/version.ts
+# instead of Fern's hardcoded string, and wrap the generated API-key provider with
+# a process-safe supplier so browser/edge runtimes without Node's process global
+# raise the normal DeepgramError. Re-apply those patches after regen; take all of
+# Fern's other BaseClient changes. Swap to .bak before regen.
 src/BaseClient.ts
 
 # src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts: the 2026-07-31
