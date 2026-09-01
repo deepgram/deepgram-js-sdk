@@ -10,10 +10,16 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
-        const rawResponseBody = { models: [{ id: "gpt-5", name: "name", provider: "open_ai" }] };
+        const rawResponseBody = { models: [{ id: "gpt-5", name: "GPT-5", provider: "open_ai" }] };
+
         server
             .mockEndpoint()
             .get("/v1/agent/settings/think/models")
@@ -23,15 +29,7 @@ describe("ModelsClient", () => {
             .build();
 
         const response = await client.agent.v1.settings.think.models.list();
-        expect(response).toEqual({
-            models: [
-                {
-                    id: "gpt-5",
-                    name: "name",
-                    provider: "open_ai",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -39,10 +37,16 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/agent/settings/think/models")

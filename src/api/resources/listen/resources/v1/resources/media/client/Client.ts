@@ -7,6 +7,7 @@ import {
 } from "../../../../../../../../BaseClient.js";
 import { mergeHeaders } from "../../../../../../../../core/headers.js";
 import * as core from "../../../../../../../../core/index.js";
+import { mergeAdditionalBodyParameters } from "../../../../../../../../core/requestBody.js";
 import * as environments from "../../../../../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../../../../../errors/handleNonStatusCodeError.js";
 import * as errors from "../../../../../../../../errors/index.js";
@@ -32,46 +33,16 @@ export class MediaClient {
      * @param {MediaClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.listen.v1.media.transcribeUrl({
-     *         callback: "callback",
-     *         callback_method: "POST",
-     *         extra: "extra",
-     *         sentiment: true,
-     *         summarize: "v2",
-     *         tag: "tag",
-     *         topics: true,
-     *         custom_topic: "custom_topic",
-     *         custom_topic_mode: "extended",
-     *         intents: true,
-     *         custom_intent: "custom_intent",
-     *         custom_intent_mode: "extended",
-     *         detect_entities: true,
-     *         detect_language: true,
-     *         diarize: true,
-     *         dictation: true,
-     *         encoding: "linear16",
-     *         filler_words: true,
-     *         keywords: "keywords",
-     *         language: "language",
-     *         measurements: true,
-     *         model: "nova-3",
-     *         multichannel: true,
-     *         numerals: true,
-     *         paragraphs: true,
-     *         profanity_filter: true,
-     *         punctuate: true,
-     *         redact: "redact",
-     *         replace: "replace",
-     *         search: "search",
-     *         smart_format: true,
-     *         utterances: true,
-     *         utt_split: 1.1,
-     *         version: "latest",
-     *         mip_opt_out: true,
      *         url: "https://dpgr.am/spacewalk.wav"
      *     })
+     *
+     * @example
+     *     await client.listen.v1.media.transcribeUrl({})
      */
     public transcribeUrl(
         request: Deepgram.listen.v1.ListenV1RequestUrl,
@@ -100,6 +71,7 @@ export class MediaClient {
             detect_entities: detectEntities,
             detect_language: detectLanguage,
             diarize,
+            diarize_model: diarizeModel,
             dictation,
             encoding,
             filler_words: fillerWords,
@@ -139,6 +111,7 @@ export class MediaClient {
             detect_entities: detectEntities,
             detect_language: detectLanguage,
             diarize,
+            diarize_model: diarizeModel != null ? diarizeModel : undefined,
             dictation,
             encoding: encoding != null ? encoding : undefined,
             filler_words: fillerWords,
@@ -179,9 +152,13 @@ export class MediaClient {
             method: "POST",
             headers: _headers,
             contentType: "application/json",
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             requestType: "json",
-            body: _body,
+            body: mergeAdditionalBodyParameters(_body, requestOptions?.additionalBodyParameters),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -219,6 +196,8 @@ export class MediaClient {
      * @param {MediaClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     import { createReadStream } from "fs";
@@ -253,6 +232,7 @@ export class MediaClient {
             detect_entities: request.detect_entities,
             detect_language: request.detect_language,
             diarize: request.diarize,
+            diarize_model: request.diarize_model != null ? request.diarize_model : undefined,
             dictation: request.dictation,
             encoding: request.encoding != null ? request.encoding : undefined,
             filler_words: request.filler_words,
@@ -295,7 +275,11 @@ export class MediaClient {
             method: "POST",
             headers: _headers,
             contentType: "application/octet-stream",
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             requestType: "bytes",
             duplex: "half",
             body: _binaryUploadRequest.body,

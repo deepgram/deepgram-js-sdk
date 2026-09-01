@@ -23,12 +23,14 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install commitlint
-        run: |
-          npm install --save-dev @commitlint/config-conventional @commitlint/cli
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Validate PR title
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          echo "$PR_TITLE" | npx commitlint -g .github/.commitlintrc.json
+          echo "$PR_TITLE" | pnpm exec commitlint -g .github/.commitlintrc.json

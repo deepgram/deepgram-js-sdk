@@ -48,7 +48,6 @@ try {
     console.log("   - DeepgramClient can be imported");
     console.log("   - Client instance created successfully");
     console.log("   - All expected properties are present");
-
 } catch (error) {
     console.error("❌ ESM build validation failed:");
     console.error(error);

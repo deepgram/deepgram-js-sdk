@@ -20,6 +20,8 @@ export namespace AgentV1FunctionCallRequest {
             arguments: string;
             /** Whether the function should be executed client-side */
             client_side: boolean;
+            /** Some Gemini models require this as an additional function call identifier */
+            thought_signature?: string | undefined;
         }
     }
 }

@@ -10,10 +10,16 @@ describe("UsageClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { start: "2024-10-16", end: "2024-10-23", resolution: { units: "day", amount: 1 } };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/usage")
@@ -68,14 +74,7 @@ describe("UsageClient", () => {
             utterances: true,
             version: true,
         });
-        expect(response).toEqual({
-            start: "2024-10-16",
-            end: "2024-10-23",
-            resolution: {
-                units: "day",
-                amount: 1,
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -83,10 +82,16 @@ describe("UsageClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/usage")

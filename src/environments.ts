@@ -2,21 +2,18 @@
 
 export interface DeepgramEnvironmentUrls {
     base: string;
-    agent: string;
     production: string;
+    agent: string;
+    agentRest: string;
 }
 
 export const DeepgramEnvironment = {
     Production: {
         base: "https://api.deepgram.com",
-        agent: "wss://agent.deepgram.com",
         production: "wss://api.deepgram.com",
-    },
-    Agent: {
-        base: "https://agent.deepgram.com",
         agent: "wss://agent.deepgram.com",
-        production: "wss://api.deepgram.com",
+        agentRest: "https://agent.deepgram.com",
     },
 } as const;
 
-export type DeepgramEnvironment = typeof DeepgramEnvironment.Production | typeof DeepgramEnvironment.Agent;
+export type DeepgramEnvironment = typeof DeepgramEnvironment.Production;

@@ -6,6 +6,7 @@ import * as errors from "../errors/index.js";
 const PARAM_KEY = "apiKey" as const;
 const ENV_HEADER_KEY = "DEEPGRAM_API_KEY" as const;
 const HEADER_NAME = "Authorization" as const;
+const HEADER_PREFIX = "Token " as const;
 
 export class HeaderAuthProvider implements core.AuthProvider {
     private readonly options: HeaderAuthProvider.Options;
@@ -15,7 +16,7 @@ export class HeaderAuthProvider implements core.AuthProvider {
     }
 
     public static canCreate(options: Partial<HeaderAuthProvider.Options>): boolean {
-        return options?.[PARAM_KEY] != null || (typeof process !== "undefined" && process.env?.[ENV_HEADER_KEY] != null);
+        return options?.[PARAM_KEY] != null || process.env?.[ENV_HEADER_KEY] != null;
     }
 
     public async getAuthRequest({
@@ -23,7 +24,7 @@ export class HeaderAuthProvider implements core.AuthProvider {
     }: {
         endpointMetadata?: core.EndpointMetadata;
     } = {}): Promise<core.AuthRequest> {
-        const headerValue = (await core.Supplier.get(this.options[PARAM_KEY])) ?? (typeof process !== "undefined" ? process.env?.[ENV_HEADER_KEY] : undefined);
+        const headerValue = (await core.Supplier.get(this.options[PARAM_KEY])) ?? process.env?.[ENV_HEADER_KEY];
         if (headerValue == null) {
             throw new errors.DeepgramError({
                 message: HeaderAuthProvider.AUTH_CONFIG_ERROR_MESSAGE,
@@ -31,7 +32,7 @@ export class HeaderAuthProvider implements core.AuthProvider {
         }
 
         return {
-            headers: { [HEADER_NAME]: headerValue },
+            headers: { [HEADER_NAME]: `${HEADER_PREFIX}${headerValue}` },
         };
     }
 }

@@ -7,6 +7,7 @@ import {
 } from "../../../../../../../../../../BaseClient.js";
 import { mergeHeaders } from "../../../../../../../../../../core/headers.js";
 import * as core from "../../../../../../../../../../core/index.js";
+import { mergeAdditionalBodyParameters } from "../../../../../../../../../../core/requestBody.js";
 import * as environments from "../../../../../../../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../../../../../../../errors/handleNonStatusCodeError.js";
 import * as errors from "../../../../../../../../../../errors/index.js";
@@ -33,6 +34,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.list("123456-7890-1234-5678-901234", {
@@ -73,7 +76,11 @@ export class KeysClient {
             ),
             method: "GET",
             headers: _headers,
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            queryString: core.url
+                .queryBuilder()
+                .addMany(_queryParams)
+                .mergeAdditional(requestOptions?.queryParams)
+                .build(),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -109,10 +116,12 @@ export class KeysClient {
      * Creates a new API key with specified settings for the project
      *
      * @param {string} project_id - The unique identifier of the project
-     * @param {Deepgram.CreateKeyV1RequestOne} request
+     * @param {Deepgram.CreateKeyV1Request} [request]
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.create("project_id", {
@@ -121,7 +130,7 @@ export class KeysClient {
      */
     public create(
         project_id: string,
-        request?: Deepgram.CreateKeyV1RequestOne,
+        request?: Deepgram.CreateKeyV1Request,
         requestOptions?: KeysClient.RequestOptions,
     ): core.HttpResponsePromise<Deepgram.CreateKeyV1Response> {
         return core.HttpResponsePromise.fromPromise(this.__create(project_id, request, requestOptions));
@@ -129,7 +138,7 @@ export class KeysClient {
 
     private async __create(
         project_id: string,
-        request?: Deepgram.CreateKeyV1RequestOne,
+        request?: Deepgram.CreateKeyV1Request,
         requestOptions?: KeysClient.RequestOptions,
     ): Promise<core.WithRawResponse<Deepgram.CreateKeyV1Response>> {
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
@@ -150,9 +159,9 @@ export class KeysClient {
             method: "POST",
             headers: _headers,
             contentType: "application/json",
-            queryParameters: requestOptions?.queryParams,
+            queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             requestType: "json",
-            body: request,
+            body: mergeAdditionalBodyParameters(request, requestOptions?.additionalBodyParameters),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -192,6 +201,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.get("123456-7890-1234-5678-901234", "123456789012345678901234")
@@ -226,7 +237,7 @@ export class KeysClient {
             ),
             method: "GET",
             headers: _headers,
-            queryParameters: requestOptions?.queryParams,
+            queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -266,6 +277,8 @@ export class KeysClient {
      * @param {KeysClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.keys.delete("123456-7890-1234-5678-901234", "123456789012345678901234")
@@ -300,7 +313,7 @@ export class KeysClient {
             ),
             method: "DELETE",
             headers: _headers,
-            queryParameters: requestOptions?.queryParams,
+            queryString: core.url.queryBuilder().mergeAdditional(requestOptions?.queryParams).build(),
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
             abortSignal: requestOptions?.abortSignal,

@@ -31,6 +31,29 @@ export interface ListenV2TurnInfo {
     words: ListenV2TurnInfo.Words.Item[];
     /** Confidence that no more speech is coming in this turn */
     end_of_turn_confidence: number;
+    /**
+     * The cause of the turn ending. Present on every `EndOfTurn` event and only there.
+     *
+     * - **model** - the turn ended by Flux's native end-of-turn detection
+     *
+     * - **manual** - the turn ended because a `ForceEndTurn` message was sent
+     *
+     * - **timeout** - the turn ended because `eot_timeout_ms` elapsed
+     *
+     * This is an open enum. New values may be added over time, so clients must tolerate values they do not recognize.
+     */
+    trigger?: string | undefined;
+    /**
+     * Detected languages sorted by descending frequency in the
+     * transcript. Only present when the flux-general-multi model
+     * detects languages in the audio.
+     */
+    languages?: string[] | undefined;
+    /**
+     * The language hints that were supplied for this turn. Only
+     * present when language hints are configured.
+     */
+    languages_hinted?: string[] | undefined;
 }
 
 export namespace ListenV2TurnInfo {
@@ -59,6 +82,10 @@ export namespace ListenV2TurnInfo {
             word: string;
             /** Confidence that this word was transcribed correctly */
             confidence: number;
+            /** The start time of the word */
+            start?: number | undefined;
+            /** The end time of the word */
+            end?: number | undefined;
         }
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "@deepgram/sdk",
-    "version": "5.0.0",
+    "version": "5.9.0",
     "private": false,
     "repository": {
         "type": "git",
@@ -441,6 +441,17 @@
             },
             "default": "./dist/cjs/api/resources/speak/resources/v1/exports.js"
         },
+        "./speak/v2": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/resources/v2/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/resources/v2/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/resources/v2/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/resources/v2/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/resources/v2/exports.js"
+        },
         "./speak/v1/audio": {
             "import": {
                 "types": "./dist/esm/api/resources/speak/resources/v1/resources/audio/exports.d.mts",
@@ -451,6 +462,50 @@
                 "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
             },
             "default": "./dist/cjs/api/resources/speak/resources/v1/resources/audio/exports.js"
+        },
+        "./speak/v2/audio": {
+            "import": {
+                "types": "./dist/esm/api/resources/speak/resources/v2/resources/audio/exports.d.mts",
+                "default": "./dist/esm/api/resources/speak/resources/v2/resources/audio/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.d.ts",
+                "default": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/speak/resources/v2/resources/audio/exports.js"
+        },
+        "./voiceAgent": {
+            "import": {
+                "types": "./dist/esm/api/resources/voiceAgent/exports.d.mts",
+                "default": "./dist/esm/api/resources/voiceAgent/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/voiceAgent/exports.d.ts",
+                "default": "./dist/cjs/api/resources/voiceAgent/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/voiceAgent/exports.js"
+        },
+        "./voiceAgent/configurations": {
+            "import": {
+                "types": "./dist/esm/api/resources/voiceAgent/resources/configurations/exports.d.mts",
+                "default": "./dist/esm/api/resources/voiceAgent/resources/configurations/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/voiceAgent/resources/configurations/exports.d.ts",
+                "default": "./dist/cjs/api/resources/voiceAgent/resources/configurations/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/voiceAgent/resources/configurations/exports.js"
+        },
+        "./voiceAgent/variables": {
+            "import": {
+                "types": "./dist/esm/api/resources/voiceAgent/resources/variables/exports.d.mts",
+                "default": "./dist/esm/api/resources/voiceAgent/resources/variables/exports.mjs"
+            },
+            "require": {
+                "types": "./dist/cjs/api/resources/voiceAgent/resources/variables/exports.d.ts",
+                "default": "./dist/cjs/api/resources/voiceAgent/resources/variables/exports.js"
+            },
+            "default": "./dist/cjs/api/resources/voiceAgent/resources/variables/exports.js"
         },
         "./package.json": "./package.json"
     },
@@ -475,17 +530,23 @@
         "test:wire": "vitest --project wire"
     },
     "dependencies": {
-        "ws": "^8.16.0"
+        "ws": "^8.20.0"
     },
     "devDependencies": {
-        "webpack": "^5.97.1",
-        "ts-loader": "^9.5.1",
-        "@types/ws": "^8.5.10",
-        "vitest": "^3.2.4",
+        "webpack": "^5.105.4",
+        "ts-loader": "^9.5.4",
+        "@types/ws": "^8.18.1",
+        "vitest": "^4.1.1",
         "msw": "2.11.2",
-        "@types/node": "^18.19.70",
-        "typescript": "~5.7.2",
-        "@biomejs/biome": "2.4.3"
+        "@types/node": "^20.17.57",
+        "typescript": "~5.9.3",
+        "@biomejs/biome": "2.4.10",
+        "@commitlint/cli": "20.5.0",
+        "@commitlint/config-conventional": "20.0.0",
+        "tsx": "4.20.6",
+        "playwright": "1.59.1",
+        "vite": "6.4.2",
+        "terser": "5.46.1"
     },
     "browser": {
         "fs": false,
@@ -494,7 +555,7 @@
         "stream": false,
         "crypto": false
     },
-    "packageManager": "pnpm@10.20.0",
+    "packageManager": "pnpm@10.33.0",
     "engines": {
         "node": ">=18.0.0"
     },

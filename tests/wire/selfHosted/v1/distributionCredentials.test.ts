@@ -10,7 +10,12 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -27,6 +32,7 @@ describe("DistributionCredentialsClient", () => {
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/self-hosted/distribution/credentials")
@@ -36,23 +42,7 @@ describe("DistributionCredentialsClient", () => {
             .build();
 
         const response = await client.selfHosted.v1.distributionCredentials.list("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            distribution_credentials: [
-                {
-                    member: {
-                        member_id: "3376abcd-8e5e-49d3-92d4-876d3a4f0363",
-                        email: "email@example.com",
-                    },
-                    distribution_credentials: {
-                        distribution_credentials_id: "8b36cfd0-472f-4a21-833f-2d6343c3a2f3",
-                        provider: "quay",
-                        comment: "My Self-Hosted Distribution Credentials",
-                        scopes: ["self-hosted:product:api", "self-hosted:product:engine"],
-                        created: "2023-06-28T15:36:59Z",
-                    },
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -60,10 +50,16 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/self-hosted/distribution/credentials")
@@ -82,7 +78,12 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = {};
         const rawResponseBody = {
@@ -95,6 +96,7 @@ describe("DistributionCredentialsClient", () => {
                 created: "2023-06-28T15:36:59Z",
             },
         };
+
         server
             .mockEndpoint()
             .post("/v1/projects/123456-7890-1234-5678-901234/self-hosted/distribution/credentials")
@@ -105,21 +107,10 @@ describe("DistributionCredentialsClient", () => {
             .build();
 
         const response = await client.selfHosted.v1.distributionCredentials.create("123456-7890-1234-5678-901234", {
+            scopes: ["self-hosted:products"],
             provider: "quay",
         });
-        expect(response).toEqual({
-            member: {
-                member_id: "c7b9b131-73f3-11d9-8665-0b00d2e44b83",
-                email: "email@example.com",
-            },
-            distribution_credentials: {
-                distribution_credentials_id: "82c32c10-53b2-4d23-993f-864b3d44502a",
-                provider: "quay",
-                comment: "My Self-Hosted Distribution Credentials",
-                scopes: ["self-hosted:product:api", "self-hosted:product:engine"],
-                created: "2023-06-28T15:36:59Z",
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("create (2)", async () => {
@@ -127,10 +118,16 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = {};
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .post("/v1/projects/project_id/self-hosted/distribution/credentials")
@@ -150,7 +147,12 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -163,6 +165,7 @@ describe("DistributionCredentialsClient", () => {
                 created: "2023-06-28T15:36:59Z",
             },
         };
+
         server
             .mockEndpoint()
             .get(
@@ -177,19 +180,7 @@ describe("DistributionCredentialsClient", () => {
             "123456-7890-1234-5678-901234",
             "8b36cfd0-472f-4a21-833f-2d6343c3a2f3",
         );
-        expect(response).toEqual({
-            member: {
-                member_id: "c7b9b131-73f3-11d9-8665-0b00d2e44b83",
-                email: "email@example.com",
-            },
-            distribution_credentials: {
-                distribution_credentials_id: "82c32c10-53b2-4d23-993f-864b3d44502a",
-                provider: "quay",
-                comment: "My Self-Hosted Distribution Credentials",
-                scopes: ["self-hosted:product:api", "self-hosted:product:engine"],
-                created: "2023-06-28T15:36:59Z",
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -197,10 +188,16 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/self-hosted/distribution/credentials/distribution_credentials_id")
@@ -219,7 +216,12 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -232,6 +234,7 @@ describe("DistributionCredentialsClient", () => {
                 created: "2023-06-28T15:36:59Z",
             },
         };
+
         server
             .mockEndpoint()
             .delete(
@@ -246,19 +249,7 @@ describe("DistributionCredentialsClient", () => {
             "123456-7890-1234-5678-901234",
             "8b36cfd0-472f-4a21-833f-2d6343c3a2f3",
         );
-        expect(response).toEqual({
-            member: {
-                member_id: "c7b9b131-73f3-11d9-8665-0b00d2e44b83",
-                email: "email@example.com",
-            },
-            distribution_credentials: {
-                distribution_credentials_id: "82c32c10-53b2-4d23-993f-864b3d44502a",
-                provider: "quay",
-                comment: "My Self-Hosted Distribution Credentials",
-                scopes: ["self-hosted:product:api", "self-hosted:product:engine"],
-                created: "2023-06-28T15:36:59Z",
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("delete (2)", async () => {
@@ -266,10 +257,16 @@ describe("DistributionCredentialsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/project_id/self-hosted/distribution/credentials/distribution_credentials_id")

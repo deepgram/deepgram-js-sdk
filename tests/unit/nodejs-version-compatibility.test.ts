@@ -97,7 +97,7 @@ describe("Node.js version WebSocket compatibility", () => {
 
             // Note: mergeOnlyDefinedHeaders converts all keys to lowercase
             const authHeaders = mergeOnlyDefinedHeaders({
-                Authorization: "Token test-api-key"
+                Authorization: "Token test-api-key",
             });
 
             // Keys are lowercased by the merge function
@@ -109,7 +109,7 @@ describe("Node.js version WebSocket compatibility", () => {
             const { mergeHeaders, mergeOnlyDefinedHeaders } = await import("../../src/core/headers.js");
 
             const authHeaders = mergeOnlyDefinedHeaders({
-                Authorization: "Token test-api-key"
+                Authorization: "Token test-api-key",
             });
 
             const customHeaders = {

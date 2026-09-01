@@ -10,10 +10,16 @@ describe("ScopesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { scopes: ["scopes"] };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/members/123456789012345678901234/scopes")
@@ -26,9 +32,7 @@ describe("ScopesClient", () => {
             "123456-7890-1234-5678-901234",
             "123456789012345678901234",
         );
-        expect(response).toEqual({
-            scopes: ["scopes"],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -36,10 +40,16 @@ describe("ScopesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/members/member_id/scopes")
@@ -58,10 +68,16 @@ describe("ScopesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { scope: "admin" };
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .put("/v1/projects/123456-7890-1234-5678-901234/members/123456789012345678901234/scopes")
@@ -78,9 +94,7 @@ describe("ScopesClient", () => {
                 scope: "admin",
             },
         );
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("update (2)", async () => {
@@ -88,10 +102,16 @@ describe("ScopesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { scope: "scope" };
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .put("/v1/projects/project_id/members/member_id/scopes")

@@ -80,15 +80,15 @@
   <div class="container">
     <label for="apiKey">API Key:</label>
     <input type="password" id="apiKey" placeholder="Enter your Deepgram API key">
-    <button id="listModelsButton">List Available Thinking Models</button>
+    <button type="button" id="listModelsButton">List Available Thinking Models</button>
   </div>
 
   <div class="container">
     <h3>Voice Agent Session</h3>
     <label for="audioFile">Audio File (to stream):</label>
     <input type="file" id="audioFile" accept="audio/*">
-    <button id="startButton">Start Voice Agent</button>
-    <button id="stopButton" class="stop" disabled>Stop</button>
+    <button type="button" id="startButton">Start Voice Agent</button>
+    <button type="button" id="stopButton" class="stop" disabled>Stop</button>
   </div>
 
   <div id="output"></div>
@@ -338,4 +338,3 @@
   </script>
 </body>
 </html>
-

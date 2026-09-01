@@ -7,27 +7,11 @@ export type AgentV1SettingsAgentListenProvider =
     | Deepgram.agent.AgentV1SettingsAgentListenProvider.V2;
 
 export namespace AgentV1SettingsAgentListenProvider {
-    export interface V1 {
+    export interface V1 extends Deepgram.DeepgramListenProviderV1 {
         version: "v1";
-        /** Provider type for speech-to-text */
-        type: "deepgram";
-        /** Model to use for speech to text using the V1 API (e.g. Nova-3, Nova-2) */
-        model?: string | undefined;
-        /** Language code to use for speech-to-text. Can be a BCP-47 language tag (e.g. `en`), or `multi` for code-switching transcription */
-        language?: string | undefined;
-        /** Prompt keyterm recognition to improve Keyword Recall Rate */
-        keyterms?: string[] | undefined;
-        /** Applies smart formatting to improve transcript readability */
-        smart_format?: boolean | undefined;
     }
 
-    export interface V2 {
+    export interface V2 extends Deepgram.DeepgramListenProviderV2 {
         version: "v2";
-        /** Provider type for speech-to-text */
-        type: "deepgram";
-        /** Model to use for speech to text using the V2 API (e.g. flux-general-en) */
-        model: string;
-        /** Prompt keyterm recognition to improve Keyword Recall Rate */
-        keyterms?: string[] | undefined;
     }
 }
