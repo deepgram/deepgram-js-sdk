@@ -1,5 +1,20 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { DeepgramClient } from "../../src";
+import { describe, expect, it } from "vitest";
+import { DeepgramClient, DeepgramError } from "../../src";
+
+async function withoutProcess<T>(callback: () => Promise<T>): Promise<T> {
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "process");
+    if (!Reflect.deleteProperty(globalThis, "process")) {
+        throw new Error("Unable to remove process global for test");
+    }
+
+    try {
+        return await callback();
+    } finally {
+        if (descriptor != null) {
+            Object.defineProperty(globalThis, "process", descriptor);
+        }
+    }
+}
 
 /**
  * Tests for CustomDeepgramClient wrapper functionality.
@@ -309,23 +324,69 @@ describe("WebSocket connection methods", () => {
 describe("Auth provider wrappers", () => {
     describe("API Key auth", () => {
         it("should add Token prefix to API keys", async () => {
-            // Test that the ApiKeyAuthProviderWrapper correctly prefixes API keys
-            // We verify this indirectly through the client construction
             const client = new DeepgramClient({ apiKey: "test-api-key" });
-
-            // The auth provider should be set up correctly
             const opts = (client as any)._options;
-            expect(opts.authProvider).toBeDefined();
+
+            const authRequest = await opts.authProvider.getAuthRequest();
+
+            expect(authRequest.headers.Authorization).toBe("Token test-api-key");
+        });
+
+        it("should use an explicit API key when process is unavailable", async () => {
+            const client = new DeepgramClient({ apiKey: "browser-api-key" });
+            const opts = (client as any)._options;
+
+            const authRequest = await withoutProcess(() => opts.authProvider.getAuthRequest());
+
+            expect(authRequest.headers.Authorization).toBe("Token browser-api-key");
+        });
+
+        it("should report missing auth cleanly when process is unavailable", async () => {
+            const client = new DeepgramClient();
+            const opts = (client as any)._options;
+
+            const error = await withoutProcess(async () => {
+                try {
+                    await opts.authProvider.getAuthRequest();
+                    return undefined;
+                } catch (caught) {
+                    return caught;
+                }
+            });
+
+            expect(error).toBeInstanceOf(DeepgramError);
+            expect(error).not.toBeInstanceOf(ReferenceError);
+        });
+
+        it("should continue reading API keys from the Node environment", async () => {
+            const previousApiKey = process.env.DEEPGRAM_API_KEY;
+            process.env.DEEPGRAM_API_KEY = "environment-api-key";
+
+            try {
+                const client = new DeepgramClient();
+                const opts = (client as any)._options;
+
+                const authRequest = await opts.authProvider.getAuthRequest();
+
+                expect(authRequest.headers.Authorization).toBe("Token environment-api-key");
+            } finally {
+                if (previousApiKey == null) {
+                    delete process.env.DEEPGRAM_API_KEY;
+                } else {
+                    process.env.DEEPGRAM_API_KEY = previousApiKey;
+                }
+            }
         });
     });
 
     describe("Access Token auth", () => {
         it("should use Bearer prefix for access tokens", async () => {
             const client = new DeepgramClient({ accessToken: "test-access-token" });
-
-            // The auth provider should be set up correctly
             const opts = (client as any)._options;
-            expect(opts.authProvider).toBeDefined();
+
+            const authRequest = await opts.authProvider.getAuthRequest();
+
+            expect(authRequest.headers.Authorization).toBe("Bearer test-access-token");
         });
 
         it("should prefer access token over API key when both provided", async () => {
@@ -334,8 +395,28 @@ describe("Auth provider wrappers", () => {
                 accessToken: "test-access-token",
             });
 
-            // Both should be acceptable - access token takes priority at runtime
-            expect(client).toBeDefined();
+            const opts = (client as any)._options;
+
+            const authRequest = await opts.authProvider.getAuthRequest();
+
+            expect(authRequest.headers.Authorization).toBe("Bearer test-access-token");
+        });
+
+        it("should report missing auth when an access token supplier resolves undefined without process", async () => {
+            const client = new DeepgramClient({ accessToken: () => undefined });
+            const opts = (client as any)._options;
+
+            const error = await withoutProcess(async () => {
+                try {
+                    await opts.authProvider.getAuthRequest();
+                    return undefined;
+                } catch (caught) {
+                    return caught;
+                }
+            });
+
+            expect(error).toBeInstanceOf(DeepgramError);
+            expect(error).not.toBeInstanceOf(ReferenceError);
         });
     });
 });

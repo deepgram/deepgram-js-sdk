@@ -4,6 +4,7 @@ import { HeaderAuthProvider } from "./auth/HeaderAuthProvider.js";
 import { mergeHeaders } from "./core/headers.js";
 import * as core from "./core/index.js";
 import type * as environments from "./environments.js";
+import * as errors from "./errors/index.js";
 // Derive the SDK version from the single source of truth (src/version.ts), which
 // carries the release-please marker. Avoids a second hardcoded version that drifts.
 import { SDK_VERSION } from "./version.js";
@@ -106,7 +107,23 @@ export function normalizeClientOptionsWithAuth<T extends BaseClientOptions = Bas
     }
 
     const normalizedWithNoOpAuthProvider = withNoOpAuthProvider(normalized);
-    normalized.authProvider ??= new HeaderAuthProvider(normalizedWithNoOpAuthProvider);
+    // Resolve the environment fallback here so the generated provider never
+    // evaluates an undeclared `process` global in browser and edge runtimes.
+    const configuredApiKey = normalizedWithNoOpAuthProvider.apiKey;
+    normalized.authProvider ??= new HeaderAuthProvider({
+        ...normalizedWithNoOpAuthProvider,
+        apiKey: async () => {
+            const apiKey =
+                (await core.Supplier.get(configuredApiKey)) ??
+                (typeof process !== "undefined" ? process.env?.DEEPGRAM_API_KEY : undefined);
+            if (apiKey == null) {
+                throw new errors.DeepgramError({
+                    message: HeaderAuthProvider.AUTH_CONFIG_ERROR_MESSAGE,
+                });
+            }
+            return apiKey;
+        },
+    });
     return normalized;
 }
 
