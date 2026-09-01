@@ -18,7 +18,10 @@ export declare namespace V1Client {
         mip_opt_out?: Deepgram.SpeakV1MipOptOut | undefined;
         model?: Deepgram.SpeakV1Model;
         sample_rate?: Deepgram.SpeakV1SampleRate;
+        speed?: Deepgram.SpeakV1Speed;
         Authorization: string;
+        /** WebSocket subprotocols to use for the connection. */
+        protocols?: string | string[];
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
         /** Arbitrary headers to send with the websocket connect request. */
@@ -52,6 +55,8 @@ export class V1Client {
             mip_opt_out: mipOptOut,
             model,
             sample_rate: sampleRate,
+            speed,
+            protocols,
             queryParams,
             headers,
             debug,
@@ -65,8 +70,10 @@ export class V1Client {
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
             model: model != null ? model : undefined,
             sample_rate: sampleRate != null ? sampleRate : undefined,
+            speed,
         };
         const _headers: Record<string, unknown> = mergeHeaders(
+            this._options?.headers,
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
@@ -79,7 +86,7 @@ export class V1Client {
                     ).production,
                 "/v1/speak",
             ),
-            protocols: [],
+            protocols: protocols ?? [],
             queryParameters: { ..._queryParams, ...queryParams },
             headers: _headers,
             options: {

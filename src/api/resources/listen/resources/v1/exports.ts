@@ -2,4 +2,5 @@
 
 export { V1Client } from "./client/Client.js";
 export * from "./client/index.js";
+export { V1Socket } from "./client/Socket.js";
 export * from "./resources/index.js";

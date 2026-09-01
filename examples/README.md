@@ -17,6 +17,8 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 - **08-transcription-captions.ts** - Convert transcriptions to WebVTT/SRT captions
 - **22-transcription-advanced-options.ts** - Advanced transcription options
 - **26-transcription-live-websocket-v2.ts** - Live transcription via WebSocket V2
+- **38-transcription-flux-eot.ts** - Flux end-of-turn tuning
+- **39-transcription-flux-force-end-turn.ts** - Manual Flux turn finalization
 
 ### Voice Agent
 - **09-voice-agent.ts** - Voice Agent configuration and usage
@@ -27,6 +29,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 ### Text-to-Speech
 - **10-text-to-speech-single.ts** - Single request TTS
 - **11-text-to-speech-streaming.ts** - Streaming TTS via WebSocket
+- **37-text-to-speech-streaming-flux.ts** - Streaming TTS with Flux
 
 ### Text Intelligence
 - **12-text-intelligence.ts** - Text analysis using AI features
@@ -93,7 +96,6 @@ For more information, see:
 ## Notes
 
 - All examples use the v5 SDK signature (`new DeepgramClient()`) as documented in the README
-- Examples are commented out by default - uncomment the function calls to run them
+- Examples run when invoked; review each file's prerequisites and required environment variables before running it
 - Replace placeholder values (YOUR_DEEPGRAM_API_KEY, YOUR_PROJECT_ID, etc.) with actual values
 - Some examples require specific file paths or URLs - adjust as needed for your environment
-

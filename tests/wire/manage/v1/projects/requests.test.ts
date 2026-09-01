@@ -10,65 +10,58 @@ describe("RequestsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
-            page: 1.1,
-            limit: 1.1,
+            page: 0,
+            limit: 10,
             requests: [
                 {
-                    request_id: "request_id",
-                    project_uuid: "project_uuid",
-                    created: "2024-01-15T09:30:00Z",
-                    path: "path",
-                    api_key_id: "api_key_id",
-                    response: { key: "value" },
-                    code: 1.1,
-                    deployment: "deployment",
-                    callback: "callback",
+                    request_id: "a3f1c9d2-4b7e-4f9a-8c3d-2e5f7b9a1c0d",
+                    project_uuid: "12345678-90ab-cdef-1234-567890abcdef",
+                    created: "2024-01-15T09:48:20.000Z",
+                    path: "/v1/listen?",
+                    api_key_id: "b1e2c3d4-5678-90ab-cdef-1234567890ab",
+                    response: {
+                        details: {
+                            usd: 0.0075,
+                            duration: 30,
+                            total_audio: 30,
+                            channels: 1,
+                            streams: 1,
+                            tier: "base",
+                            metadata: {},
+                            models: ["1a2b3c4d-5e6f-4a8b-9c0d-1e2f3a4b5c6d"],
+                            method: "sync",
+                            tags: [],
+                            features: [],
+                            config: {},
+                        },
+                        token_details: [],
+                        code: 200,
+                        completed: "2024-01-15T09:48:21.000Z",
+                        deployment: "hosted:us",
+                    },
                 },
             ],
         };
+
         server
             .mockEndpoint()
-            .get("/v1/projects/123456-7890-1234-5678-901234/requests")
+            .get("/v1/projects/12345678-90ab-cdef-1234-567890abcdef/requests")
             .respondWith()
             .statusCode(200)
             .jsonBody(rawResponseBody)
             .build();
 
-        const response = await client.manage.v1.projects.requests.list("123456-7890-1234-5678-901234", {
-            start: "2024-01-15T09:30:00Z",
-            end: "2024-01-15T09:30:00Z",
-            limit: 1.1,
-            page: 1.1,
-            accessor: "12345678-1234-1234-1234-123456789012",
-            request_id: "12345678-1234-1234-1234-123456789012",
-            deployment: "hosted",
-            endpoint: "listen",
-            method: "sync",
-            status: "succeeded",
-        });
-        expect(response).toEqual({
-            page: 1.1,
-            limit: 1.1,
-            requests: [
-                {
-                    request_id: "request_id",
-                    project_uuid: "project_uuid",
-                    created: "2024-01-15T09:30:00Z",
-                    path: "path",
-                    api_key_id: "api_key_id",
-                    response: {
-                        key: "value",
-                    },
-                    code: 1.1,
-                    deployment: "deployment",
-                    callback: "callback",
-                },
-            ],
-        });
+        const response = await client.manage.v1.projects.requests.list("12345678-90ab-cdef-1234-567890abcdef");
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -76,10 +69,16 @@ describe("RequestsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/requests")
@@ -98,49 +97,57 @@ describe("RequestsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
             request: {
-                request_id: "request_id",
-                project_uuid: "project_uuid",
-                created: "2024-01-15T09:30:00Z",
-                path: "path",
-                api_key_id: "api_key_id",
-                response: { key: "value" },
-                code: 1.1,
-                deployment: "deployment",
-                callback: "callback",
+                request_id: "a3f1c9d2-4b7e-4f9a-8c3d-2e5f7b9a1c0d",
+                project_uuid: "12345678-90ab-cdef-1234-567890abcdef",
+                created: "2024-01-15T09:48:20.000Z",
+                path: "/v1/listen?",
+                api_key_id: "b1e2c3d4-5678-90ab-cdef-1234567890ab",
+                response: {
+                    details: {
+                        usd: 0.0075,
+                        duration: 30,
+                        total_audio: 30,
+                        channels: 1,
+                        streams: 1,
+                        tier: "base",
+                        metadata: {},
+                        models: ["1a2b3c4d-5e6f-4a8b-9c0d-1e2f3a4b5c6d"],
+                        method: "sync",
+                        tags: [],
+                        features: [],
+                        config: {},
+                    },
+                    token_details: [],
+                    code: 200,
+                    completed: "2024-01-15T09:48:21.000Z",
+                    deployment: "hosted:us",
+                },
             },
         };
+
         server
             .mockEndpoint()
-            .get("/v1/projects/123456-7890-1234-5678-901234/requests/123456-7890-1234-5678-901234")
+            .get("/v1/projects/12345678-90ab-cdef-1234-567890abcdef/requests/a3f1c9d2-4b7e-4f9a-8c3d-2e5f7b9a1c0d")
             .respondWith()
             .statusCode(200)
             .jsonBody(rawResponseBody)
             .build();
 
         const response = await client.manage.v1.projects.requests.get(
-            "123456-7890-1234-5678-901234",
-            "123456-7890-1234-5678-901234",
+            "12345678-90ab-cdef-1234-567890abcdef",
+            "a3f1c9d2-4b7e-4f9a-8c3d-2e5f7b9a1c0d",
         );
-        expect(response).toEqual({
-            request: {
-                request_id: "request_id",
-                project_uuid: "project_uuid",
-                created: "2024-01-15T09:30:00Z",
-                path: "path",
-                api_key_id: "api_key_id",
-                response: {
-                    key: "value",
-                },
-                code: 1.1,
-                deployment: "deployment",
-                callback: "callback",
-            },
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -148,10 +155,16 @@ describe("RequestsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/requests/request_id")

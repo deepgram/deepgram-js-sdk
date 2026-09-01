@@ -80,6 +80,9 @@ jobs:
           name: dist
           path: dist/
 
+      - name: Typecheck tests (compat-alias / regen safety nets)
+        run: make typecheck-tests
+
       - name: Test
         run: make test
 

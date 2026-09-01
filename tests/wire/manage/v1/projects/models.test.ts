@@ -10,7 +10,12 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -47,6 +52,7 @@ describe("ModelsClient", () => {
                 },
             ],
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/models")
@@ -58,40 +64,7 @@ describe("ModelsClient", () => {
         const response = await client.manage.v1.projects.models.list("123456-7890-1234-5678-901234", {
             include_outdated: true,
         });
-        expect(response).toEqual({
-            stt: [
-                {
-                    name: "nova-3",
-                    canonical_name: "nova-3",
-                    architecture: "base",
-                    languages: ["en", "en-us"],
-                    version: "2021-11-10.1",
-                    uuid: "6b28e919-8427-4f32-9847-492e2efd7daf",
-                    batch: true,
-                    streaming: true,
-                    formatted_output: true,
-                },
-            ],
-            tts: [
-                {
-                    name: "zeus",
-                    canonical_name: "aura-2-zeus-en",
-                    architecture: "aura-2",
-                    languages: ["en", "en-US"],
-                    version: "2025-04-07.0",
-                    uuid: "2baf189d-91ac-481d-b6d1-750888667b31",
-                    metadata: {
-                        accent: "American",
-                        age: "Adult",
-                        color: "#C58DFF",
-                        image: "https://static.deepgram.com/examples/avatars/zeus.jpg",
-                        sample: "https://static.deepgram.com/examples/Aura-2-zeus.wav",
-                        tags: ["masculine", "deep", "trustworthy", "smooth"],
-                        use_cases: ["IVR"],
-                    },
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -99,10 +72,16 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/models")
@@ -121,7 +100,12 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = {
@@ -135,6 +119,7 @@ describe("ModelsClient", () => {
             streaming: true,
             formatted_output: false,
         };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/models/af6e9977-99f6-4d8f-b6f5-dfdf6fb6e291")
@@ -147,17 +132,7 @@ describe("ModelsClient", () => {
             "123456-7890-1234-5678-901234",
             "af6e9977-99f6-4d8f-b6f5-dfdf6fb6e291",
         );
-        expect(response).toEqual({
-            name: "general",
-            canonical_name: "enhanced-general",
-            architecture: "polaris",
-            languages: ["en", "en-us"],
-            version: "2022-05-18.1",
-            uuid: "c7226e9e-ae1c-4057-ae2a-a71a6b0dc588",
-            batch: true,
-            streaming: true,
-            formatted_output: false,
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("get (2)", async () => {
@@ -165,10 +140,16 @@ describe("ModelsClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/models/model_id")

@@ -20,7 +20,7 @@ describe("ESM Build Tests", () => {
         const importRegex = /import\s+.*?\s+from\s+["'](\.\.?\/[^"']+)["']/g;
         const exportRegex = /export\s+.*?\s+from\s+["'](\.\.?\/[^"']+)["']/g;
 
-        let match;
+        let match: RegExpExecArray | null;
         while ((match = importRegex.exec(content)) !== null) {
             const importPath = match[1];
             expect(importPath).toMatch(/\.mjs$/);

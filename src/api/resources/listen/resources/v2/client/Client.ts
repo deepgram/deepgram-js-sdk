@@ -20,9 +20,15 @@ export declare namespace V2Client {
         eot_threshold?: Deepgram.ListenV2EotThreshold | undefined;
         eot_timeout_ms?: Deepgram.ListenV2EotTimeoutMs | undefined;
         keyterm?: Deepgram.ListenV2Keyterm;
+        language_hint?: Deepgram.ListenV2LanguageHint;
+        profanity_filter?: Deepgram.ListenV2ProfanityFilter;
+        numerals?: Deepgram.ListenV2Numerals;
+        redact?: Deepgram.ListenV2Redact;
         mip_opt_out?: Deepgram.ListenV2MipOptOut | undefined;
         tag?: Deepgram.ListenV2Tag | undefined;
         Authorization: string;
+        /** WebSocket subprotocols to use for the connection. */
+        protocols?: string | string[];
         /** Additional query parameters to send with the websocket connect request. */
         queryParams?: Record<string, unknown>;
         /** Arbitrary headers to send with the websocket connect request. */
@@ -54,8 +60,13 @@ export class V2Client {
             eot_threshold: eotThreshold,
             eot_timeout_ms: eotTimeoutMs,
             keyterm,
+            language_hint: languageHint,
+            profanity_filter: profanityFilter,
+            numerals,
+            redact,
             mip_opt_out: mipOptOut,
             tag,
+            protocols,
             queryParams,
             headers,
             debug,
@@ -86,12 +97,29 @@ export class V2Client {
                         ? eotTimeoutMs
                         : toJson(eotTimeoutMs)
                     : undefined,
-            keyterm: keyterm != null ? (typeof keyterm === "string" ? keyterm : toJson(keyterm)) : undefined,
+            keyterm: Array.isArray(keyterm)
+                ? keyterm.map((item) => (typeof item === "string" ? item : toJson(item)))
+                : keyterm != null
+                  ? typeof keyterm === "string"
+                      ? keyterm
+                      : toJson(keyterm)
+                  : undefined,
+            language_hint: Array.isArray(languageHint)
+                ? languageHint.map((item) => (typeof item === "string" ? item : toJson(item)))
+                : languageHint != null
+                  ? typeof languageHint === "string"
+                      ? languageHint
+                      : toJson(languageHint)
+                  : undefined,
+            profanity_filter: profanityFilter != null ? profanityFilter : undefined,
+            numerals: numerals != null ? numerals : undefined,
+            redact: redact != null ? redact : undefined,
             mip_opt_out:
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
             tag: tag != null ? (typeof tag === "string" ? tag : toJson(tag)) : undefined,
         };
         const _headers: Record<string, unknown> = mergeHeaders(
+            this._options?.headers,
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
             headers,
         );
@@ -104,7 +132,7 @@ export class V2Client {
                     ).production,
                 "/v2/listen",
             ),
-            protocols: [],
+            protocols: protocols ?? [],
             queryParameters: { ..._queryParams, ...queryParams },
             headers: _headers,
             options: {

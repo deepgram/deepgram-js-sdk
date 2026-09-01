@@ -140,12 +140,16 @@ connection.on("message", (data) => {
 connection.connect();
 await connection.waitForOpen();
 
-connection.sendAgentV1Settings({
+connection.sendSettings({
   type: "Settings",
+  audio: {
+    input: { encoding: "linear16", sample_rate: 24000 },
+    output: { encoding: "linear16", sample_rate: 16000, container: "wav" },
+  },
   agent: {
     language: "en",
     listen: {
-      provider: { type: "deepgram", model: "nova-3" },
+      provider: { type: "deepgram", version: "v1", model: "nova-3" },
     },
     think: {
       provider: { type: "open_ai", model: "gpt-4o-mini" },

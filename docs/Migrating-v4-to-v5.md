@@ -325,16 +325,16 @@ connection.start();
 const connection = await deepgram.speak.v1.connect({
   model: "aura-2-thalia-en",
   encoding: "linear16",
-  sample_rate: 24000,
+  sample_rate: "24000",
 });
 
 connection.on("open", () => {
   console.log("Connected");
 });
 
-connection.on("message", (data) => {
-  if (typeof data === "string") {
-    const audioBuffer = Buffer.from(data, "base64");
+connection.on("message", async (data) => {
+  if (data instanceof Blob) {
+    const audioBuffer = Buffer.from(await data.arrayBuffer());
     // Handle audio
   }
 });
@@ -343,7 +343,7 @@ connection.connect();
 await connection.waitForOpen();
 
 // Send text to synthesize
-connection.sendText({ type: "Text", text: "Hello, world!" });
+connection.sendText({ type: "Speak", text: "Hello, world!" });
 ```
 
 ### Agent V1
@@ -401,7 +401,7 @@ connection.sendSettings({
   agent: {
     language: "en",
     listen: {
-      provider: { type: "deepgram", model: "nova-3" },
+      provider: { type: "deepgram", version: "v1", model: "nova-3" },
     },
     think: {
       provider: { type: "open_ai", model: "gpt-4o-mini" },

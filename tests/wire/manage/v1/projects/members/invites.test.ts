@@ -10,10 +10,16 @@ describe("InvitesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { invites: [{ email: "email", scope: "scope" }] };
+
         server
             .mockEndpoint()
             .get("/v1/projects/123456-7890-1234-5678-901234/invites")
@@ -23,14 +29,7 @@ describe("InvitesClient", () => {
             .build();
 
         const response = await client.manage.v1.projects.members.invites.list("123456-7890-1234-5678-901234");
-        expect(response).toEqual({
-            invites: [
-                {
-                    email: "email",
-                    scope: "scope",
-                },
-            ],
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("list (2)", async () => {
@@ -38,10 +37,16 @@ describe("InvitesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .get("/v1/projects/project_id/invites")
@@ -60,10 +65,16 @@ describe("InvitesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { email: "email", scope: "scope" };
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .post("/v1/projects/123456-7890-1234-5678-901234/invites")
@@ -77,9 +88,7 @@ describe("InvitesClient", () => {
             email: "email",
             scope: "scope",
         });
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("create (2)", async () => {
@@ -87,10 +96,16 @@ describe("InvitesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
         const rawRequestBody = { email: "email", scope: "scope" };
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .post("/v1/projects/project_id/invites")
@@ -113,10 +128,16 @@ describe("InvitesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { message: "message" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/123456-7890-1234-5678-901234/invites/john.doe%40example.com")
@@ -129,9 +150,7 @@ describe("InvitesClient", () => {
             "123456-7890-1234-5678-901234",
             "john.doe@example.com",
         );
-        expect(response).toEqual({
-            message: "message",
-        });
+        expect(response).toEqual(rawResponseBody);
     });
 
     test("delete (2)", async () => {
@@ -139,10 +158,16 @@ describe("InvitesClient", () => {
         const client = new DeepgramClient({
             maxRetries: 0,
             apiKey: "test",
-            environment: { base: server.baseUrl, agent: server.baseUrl, production: server.baseUrl },
+            environment: {
+                base: server.baseUrl,
+                production: server.baseUrl,
+                agent: server.baseUrl,
+                agentRest: server.baseUrl,
+            },
         });
 
         const rawResponseBody = { key: "value" };
+
         server
             .mockEndpoint()
             .delete("/v1/projects/project_id/invites/email")
