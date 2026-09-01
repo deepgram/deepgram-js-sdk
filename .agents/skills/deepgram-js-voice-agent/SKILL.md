@@ -59,7 +59,7 @@ deepgramConnection.sendSettings({
   },
   agent: {
     language: "en",
-    listen: { provider: { type: "deepgram", model: "nova-3" } },
+    listen: { provider: { type: "deepgram", version: "v1", model: "nova-3" } },
     think: {
       provider: { type: "open_ai", model: "gpt-4o-mini" },
       prompt: "You are a friendly AI assistant.",
