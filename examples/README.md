@@ -19,6 +19,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 - **26-transcription-live-websocket-v2.ts** - Live transcription via WebSocket V2
 - **38-transcription-flux-eot.ts** - Flux end-of-turn tuning
 - **39-transcription-flux-force-end-turn.ts** - Manual Flux turn finalization
+- **40-abortsignal-cancellation.ts** - Safely cancel a WebSocket connection with AbortSignal
 
 ### Voice Agent
 - **09-voice-agent.ts** - Voice Agent configuration and usage
