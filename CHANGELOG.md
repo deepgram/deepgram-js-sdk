@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.10.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.9.0...v5.10.0) (2026-09-02)
+
+
+### Features
+
+* allow custom http agent for streaming websocket connections ([cb4c275](https://github.com/deepgram/deepgram-js-sdk/commit/cb4c275a881a3cd5dd40f86f08547728936d14d7))
+* **websocket:** support custom HTTP agents ([#504](https://github.com/deepgram/deepgram-js-sdk/issues/504)) ([bc6f9c4](https://github.com/deepgram/deepgram-js-sdk/commit/bc6f9c42702df60738399cdf698bfc806ff1634a))
+
+
+### Bug Fixes
+
+* **listen:** reject Nova-3 keywords before connecting ([c84cc14](https://github.com/deepgram/deepgram-js-sdk/commit/c84cc1439b5e03bb022f98b0bdad36238b43b86c))
+* **listen:** reject Nova-3 keywords before connecting ([#505](https://github.com/deepgram/deepgram-js-sdk/issues/505)) ([5263bea](https://github.com/deepgram/deepgram-js-sdk/commit/5263bea337bf2b6c547f141b92c9e845681bb700))
+
 ## [5.9.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.8.0...v5.9.0) (2026-08-28)
 
 Listen v2 (Flux) force-end-turn, listen v1 diarization metadata, the Flux TTS GA voice catalog, and a passthrough-auth fix.
