@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { Agent } from "node:http";
+
+import { describe, expect, it, vi } from "vitest";
 
 import { DeepgramClient, type DeepgramTransport, type DeepgramTransportFactory } from "../../src";
 
@@ -61,9 +63,11 @@ class FakeTransport implements DeepgramTransport {
 }
 
 describe("transportFactory", () => {
-    it("routes listen websocket connections through the custom transport", async () => {
+    it("routes listen websocket connections through the custom transport instead of an HTTP agent", async () => {
         const created: Array<{ url: string; headers: Record<string, string>; request: { service: string } }> = [];
         const transport = new FakeTransport();
+        const agent = new Agent();
+        const createConnection = vi.spyOn(agent, "createConnection");
 
         const transportFactory: DeepgramTransportFactory = (url, headers, request) => {
             created.push({ url, headers, request: { service: request.service } });
@@ -72,6 +76,7 @@ describe("transportFactory", () => {
 
         const client = new DeepgramClient({
             apiKey: "test-api-key",
+            agent,
             transportFactory,
         });
 
@@ -95,6 +100,7 @@ describe("transportFactory", () => {
         expect(created[0]?.headers.Authorization ?? created[0]?.headers.authorization).toBe("Token test-api-key");
         expect(created[0]?.headers["x-deepgram-session-id"]).toBeTruthy();
         expect(created[0]?.request.service).toBe("listen.v1");
+        expect(createConnection).not.toHaveBeenCalled();
 
         transport.emitOpen();
         expect(opened).toBe(true);
