@@ -1,5 +1,6 @@
 import { DeepgramClient } from "./Client.js";
 import { ReconnectingWebSocket } from "./core/websocket/ws.js";
+import { BadRequestError } from "./api/errors/index.js";
 import type { AgentClient } from "./api/resources/agent/client/Client.js";
 import type { ListenClient } from "./api/resources/listen/client/Client.js";
 import type { SpeakClient } from "./api/resources/speak/client/Client.js";
@@ -418,6 +419,26 @@ function buildQueryParams(args: Record<string, unknown>): Record<string, unknown
         Object.assign(result, args.queryParams);
     }
     return result;
+}
+
+/**
+ * Nova-3 uses `keyterm` prompting instead of the legacy `keywords` path. The API
+ * rejects non-empty `keywords` before upgrading the WebSocket, but browsers do
+ * not expose the response body from a rejected handshake. Rejecting before the
+ * connection attempt gives every runtime the same actionable error.
+ */
+function hasUnsupportedNova3Keywords(model: unknown, keywords: unknown): boolean {
+    const isNova3 = typeof model === "string" && (model === "nova-3" || model.startsWith("nova-3-"));
+    if (!isNova3 || keywords == null) {
+        return false;
+    }
+    if (typeof keywords === "string") {
+        return keywords.trim().length > 0;
+    }
+    if (Array.isArray(keywords)) {
+        return keywords.some((keyword) => typeof keyword !== "string" || keyword.trim().length > 0);
+    }
+    return true;
 }
 
 function normalizeProtocols(protocols?: string | string[]): string[] {
@@ -1289,6 +1310,13 @@ class WrappedListenV1Client extends ListenV1Client {
     public async connect(
         args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string },
     ): Promise<ListenV1Socket> {
+        if (hasUnsupportedNova3Keywords(args.model, args.keywords)) {
+            throw new BadRequestError({
+                err_code: "INVALID_QUERY_PARAMETER",
+                err_msg: "Keywords are not supported for Nova-3. Please use `keyterm` instead.",
+            });
+        }
+
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
 
         const socket = await createWebSocketConnection({
