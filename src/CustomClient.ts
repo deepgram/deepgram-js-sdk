@@ -496,8 +496,7 @@ function getAgent(options: DeepgramClient.Options): HttpAgent | undefined {
     return (options as CustomDeepgramClientOptions).agent;
 }
 
-/** @internal Exported only for unit testing. */
-export function createAgentInjectingWebSocket(Base: any, agent: HttpAgent): any {
+function createAgentInjectingWebSocket(Base: any, agent: HttpAgent): any {
     return class AgentInjectingWebSocket extends Base {
         constructor(url: string, protocols?: string | string[], wsOptions?: Record<string, unknown>) {
             super(url, protocols, { ...wsOptions, agent });
