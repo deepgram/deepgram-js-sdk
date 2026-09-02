@@ -66,7 +66,7 @@ await connection.waitForOpen();
 connection.socket.send(audioData);
 ```
 
-Pass an `abortSignal` to `connect()` to safely cancel a session, even one that hasn't finished connecting yet, and tear down all listeners. See [Canceling a WebSocket Connection (AbortSignal)](#canceling-a-websocket-connection-abortsignal).
+Pass an `abortSignal` to stop a connection attempt or active session and disable automatic reconnection. If you await `waitForOpen()`, make that wait abort-aware as shown in [Canceling a WebSocket Connection (AbortSignal)](#canceling-a-websocket-connection-abortsignal).
 
 #### File Transcription
 
@@ -303,22 +303,51 @@ const response = await client.listen.v1.media.transcribeFile(audioData, {
 
 ### Canceling a WebSocket Connection (AbortSignal)
 
-All real-time `connect()` methods — `listen.v1.connect()`, `agent.v1.connect()`, and
-`speak.v1.connect()` — accept an `abortSignal`. This is the recommended way to cancel a
-connection, especially in apps that start and stop sessions rapidly (Electron, Node.js
-backends, etc.).
+All real-time `connect()` methods — `listen.v1.connect()`, `listen.v2.connect()`,
+`agent.v1.connect()`, `speak.v1.connect()`, and `speak.v2.connect()` — accept an
+`abortSignal`. Use it when cancellation must be controlled outside the connection owner,
+such as in apps that start and stop sessions rapidly.
 
-When the signal aborts, the SDK closes the underlying WebSocket, disables automatic
-reconnection, and removes its internal event listeners so no `open` / `close` / `error`
-handlers fire afterwards and no dangling reconnect loop is left behind. It is also the only
-safe way to cancel a connection that is still opening, before the socket has finished
-connecting.
+When the signal aborts, the SDK stops the pending or active transport and disables automatic
+reconnection. A registered `close` callback can run as part of cancellation. AbortSignal does
+not clear callbacks registered with `connection.on()`, and `waitForOpen()` does not observe the
+signal directly. If a connection can be canceled while opening, make the wait abort-aware:
 
 ```typescript
 import { DeepgramClient } from "@deepgram/sdk";
 
 const client = new DeepgramClient();
 const controller = new AbortController();
+
+function waitForOpenOrAbort(
+  connection: { waitForOpen(): Promise<unknown> },
+  signal: AbortSignal,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const cleanup = () => signal.removeEventListener("abort", onAbort);
+    const onAbort = () => {
+      cleanup();
+      reject(signal.reason ?? new Error("Connection aborted"));
+    };
+
+    if (signal.aborted) {
+      onAbort();
+      return;
+    }
+
+    signal.addEventListener("abort", onAbort, { once: true });
+    connection.waitForOpen().then(
+      () => {
+        cleanup();
+        resolve();
+      },
+      (error) => {
+        cleanup();
+        reject(error);
+      },
+    );
+  });
+}
 
 const connection = await client.listen.v1.connect({
   model: "nova-3",
@@ -330,12 +359,15 @@ connection.on("open", () => console.log("Connection opened"));
 connection.on("message", (data) => console.log(data));
 
 connection.connect();
+await waitForOpenOrAbort(connection, controller.signal);
 
-// Cancel the session later, e.g. when the user stops it or before it finishes connecting
+// Cancel the session later. If this happens before open, the helper above rejects.
 controller.abort();
 ```
 
-An aborted signal is terminal: it tears the connection down for good. To start a new session, create a fresh `AbortController` and call `connect()` again.
+An aborted signal is terminal for that connection. To start a new session, create a fresh
+`AbortController` and connection. AbortSignal does not provide `removeAllListeners()`; manage
+the lifecycle of callbacks registered on the old connection separately.
 
 ### Access Raw Response Data
 
