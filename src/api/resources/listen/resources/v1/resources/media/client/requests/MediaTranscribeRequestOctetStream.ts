@@ -35,9 +35,9 @@ export interface MediaTranscribeRequestOctetStream {
     detect_entities?: boolean;
     /** Identifies the dominant language spoken in submitted audio */
     detect_language?: boolean;
-    /** Recognize speaker changes. Each word in the transcript will be assigned a speaker number starting at 0 */
+    /** Deprecated: use `diarize_model` instead. Recognize speaker changes. Each word in the transcript will be assigned a speaker number starting at 0. */
     diarize?: boolean;
-    /** Select and enable a specific batch diarization model version. If specifying this parameter, you should not set the deprecated `diarize=true` parameter. Not accepted on streaming requests. */
+    /** Select and enable a specific diarization model version. Specifying this parameter enables diarization and selects the model — you do not need to also set the deprecated `diarize=true` parameter. For batch, supported values are `latest` (currently v2), `v1`, and `v2`. For streaming, supported values are `latest` (currently v1) and `v1`; `v2` returns a validation error on streaming requests. */
     diarize_model?: Deepgram.listen.v1.MediaTranscribeRequestDiarizeModel;
     /** Dictation mode for controlling formatting with dictated speech */
     dictation?: boolean;
@@ -45,7 +45,13 @@ export interface MediaTranscribeRequestOctetStream {
     encoding?: Deepgram.listen.v1.MediaTranscribeRequestEncoding;
     /** Filler Words can help transcribe interruptions in your audio, like "uh" and "um" */
     filler_words?: boolean;
-    /** Key term prompting can boost or suppress specialized terminology and brands. Only compatible with Nova-3 */
+    /**
+     * Key term prompting improves recognition of specialized terminology and brands. Only compatible with Nova-3.
+     *
+     * `keyterm` accepts plain terms only. Unlike the legacy `keywords` feature, it does not support weights or intensifiers. Appending one (for example, `keyterm=term:0.15`) is not rejected—the weight is silently ignored and the entire value is treated as a literal keyterm.
+     *
+     * To boost multiple separate keyterms, repeat the `keyterm` parameter (for example, `keyterm=term1&keyterm=term2`). To boost one multi-word phrase as a single keyterm, join the words with `%20` or `+` (for example, `keyterm=customer%20service`). Do not separate keyterms with commas, semicolons, or line breaks.
+     */
     keyterm?: string | string[];
     /** Keywords can boost or suppress specialized terminology and brands */
     keywords?: string | string[];

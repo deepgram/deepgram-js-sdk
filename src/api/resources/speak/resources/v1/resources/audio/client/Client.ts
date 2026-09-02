@@ -7,6 +7,7 @@ import {
 } from "../../../../../../../../BaseClient.js";
 import { mergeHeaders } from "../../../../../../../../core/headers.js";
 import * as core from "../../../../../../../../core/index.js";
+import { mergeAdditionalBodyParameters } from "../../../../../../../../core/requestBody.js";
 import * as environments from "../../../../../../../../environments.js";
 import { handleNonStatusCodeError } from "../../../../../../../../errors/handleNonStatusCodeError.js";
 import * as errors from "../../../../../../../../errors/index.js";
@@ -29,6 +30,8 @@ export class AudioClient {
      * Convert text into natural-sounding speech using Deepgram's TTS REST API
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      */
     public generate(
         request: Deepgram.speak.v1.SpeakV1Request,
@@ -90,7 +93,7 @@ export class AudioClient {
                 .mergeAdditional(requestOptions?.queryParams)
                 .build(),
             requestType: "json",
-            body: _body,
+            body: mergeAdditionalBodyParameters(_body, requestOptions?.additionalBodyParameters),
             responseType: "binary-response",
             timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
             maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,

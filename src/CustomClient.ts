@@ -1,5 +1,6 @@
 import { DeepgramClient } from "./Client.js";
 import { ReconnectingWebSocket } from "./core/websocket/ws.js";
+import { BadRequestError } from "./api/errors/index.js";
 import type { AgentClient } from "./api/resources/agent/client/Client.js";
 import type { ListenClient } from "./api/resources/listen/client/Client.js";
 import type { SpeakClient } from "./api/resources/speak/client/Client.js";
@@ -10,13 +11,14 @@ import { V1Client as AgentV1Client } from "./api/resources/agent/resources/v1/cl
 import { V1Client as ListenV1Client } from "./api/resources/listen/resources/v1/client/Client.js";
 import { V2Client as ListenV2Client } from "./api/resources/listen/resources/v2/client/Client.js";
 import { V1Client as SpeakV1Client } from "./api/resources/speak/resources/v1/client/Client.js";
+import { V2Client as SpeakV2Client } from "./api/resources/speak/resources/v2/client/Client.js";
 import { V1Socket as AgentV1Socket } from "./api/resources/agent/resources/v1/client/Socket.js";
 import { V1Socket as ListenV1Socket } from "./api/resources/listen/resources/v1/client/Socket.js";
 import { V2Socket as ListenV2Socket } from "./api/resources/listen/resources/v2/client/Socket.js";
 import { V1Socket as SpeakV1Socket } from "./api/resources/speak/resources/v1/client/Socket.js";
+import { V2Socket as SpeakV2Socket } from "./api/resources/speak/resources/v2/client/Socket.js";
 import { mergeHeaders } from "./core/headers.js";
 import { fromJson } from "./core/json.js";
-import { BadRequestError } from "./api/errors/index.js";
 import * as core from "./core/index.js";
 import * as websocketEvents from "./core/websocket/events.js";
 import * as environments from "./environments.js";
@@ -81,7 +83,7 @@ function generateUUID(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         return crypto.randomUUID();
     }
-    
+
     // Fallback for Node.js: use the crypto module
     if (RUNTIME.type === "node") {
         try {
@@ -92,7 +94,7 @@ function generateUUID(): string {
             // Fallback if crypto module is not available
         }
     }
-    
+
     // Final fallback: manual UUID generation (RFC4122 version 4)
     // This should work everywhere but is less secure than crypto.randomUUID()
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -116,11 +118,15 @@ class ApiKeyAuthProviderWrapper implements core.AuthProvider {
     public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
         const authRequest = await this.originalProvider.getAuthRequest(arg);
         const authHeader = authRequest.headers?.Authorization || authRequest.headers?.authorization;
-        
+
         // If the header doesn't already have a scheme prefix, add "Token " prefix for API keys
         if (authHeader && typeof authHeader === "string") {
             // Only add prefix if it doesn't already have Bearer or Token prefix
-            if (!authHeader.startsWith("Bearer ") && !authHeader.startsWith("Token ") && !authHeader.startsWith("token ")) {
+            if (
+                !authHeader.startsWith("Bearer ") &&
+                !authHeader.startsWith("Token ") &&
+                !authHeader.startsWith("token ")
+            ) {
                 return {
                     headers: {
                         ...authRequest.headers,
@@ -129,7 +135,7 @@ class ApiKeyAuthProviderWrapper implements core.AuthProvider {
                 };
             }
         }
-        
+
         return authRequest;
     }
 }
@@ -169,6 +175,7 @@ export type ListenV2ConnectionArgs = Omit<ListenV2Client.ConnectArgs, "Authoriza
     keyterm?: string | string[];
 };
 export type SpeakV1ConnectionArgs = Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string };
+export type SpeakV2ConnectionArgs = Omit<SpeakV2Client.ConnectArgs, "Authorization"> & { Authorization?: string };
 
 export interface AgentV1ClientWithWebSocket extends AgentV1Client {
     connect(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
@@ -190,6 +197,11 @@ export interface SpeakV1ClientWithWebSocket extends SpeakV1Client {
     createConnection(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket>;
 }
 
+export interface SpeakV2ClientWithWebSocket extends SpeakV2Client {
+    connect(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket>;
+    createConnection(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket>;
+}
+
 export interface AgentClientWithWebSockets extends AgentClient {
     readonly v1: AgentV1ClientWithWebSocket;
 }
@@ -201,6 +213,7 @@ export interface ListenClientWithWebSockets extends ListenClient {
 
 export interface SpeakClientWithWebSockets extends SpeakClient {
     readonly v1: SpeakV1ClientWithWebSocket;
+    readonly v2: SpeakV2ClientWithWebSocket;
 }
 
 /**
@@ -238,7 +251,7 @@ export class CustomDeepgramClient extends DeepgramClient {
         // is in use: those transports own their retry lifecycle, and stacking
         // a second retry layer on top causes storm-on-storm under burst load.
         // Callers can still opt back in by explicitly passing reconnect: true.
-        const reconnect = options.reconnect ?? (options.transportFactory == null);
+        const reconnect = options.reconnect ?? options.transportFactory == null;
         const optionsWithSessionId: CustomDeepgramClientOptions = {
             ...options,
             reconnect,
@@ -261,7 +274,7 @@ export class CustomDeepgramClient extends DeepgramClient {
         if (options.accessToken != null) {
             (this._options as any).authProvider = new AccessTokenAuthProviderWrapper(
                 this._options.authProvider,
-                options.accessToken
+                options.accessToken,
             );
         }
     }
@@ -365,6 +378,10 @@ class WrappedSpeakClient extends SpeakClientImpl {
     public get v1() {
         return new WrappedSpeakV1Client(this._options);
     }
+
+    public get v2() {
+        return new WrappedSpeakV2Client(this._options);
+    }
 }
 
 /**
@@ -405,26 +422,21 @@ function buildQueryParams(args: Record<string, unknown>): Record<string, unknown
 }
 
 /**
- * Nova-3 dropped the legacy `keywords` parameter in favor of `keyterm`, and the API rejects the
- * combination with a 400. REST surfaces that error, but the streaming endpoint just closes the
- * socket cleanly (code 1000, no reason, no error event) — so it fails silently and the socket
- * never opens. Detecting the combination up front lets the client throw the same error REST
- * already does, in both Node and the browser.
- *
- * Exported for unit testing; not part of the public API.
+ * Nova-3 uses `keyterm` prompting instead of the legacy `keywords` path. The API
+ * rejects non-empty `keywords` before upgrading the WebSocket, but browsers do
+ * not expose the response body from a rejected handshake. Rejecting before the
+ * connection attempt gives every runtime the same actionable error.
  */
-export function isUnsupportedNova3Keywords(model: unknown, keywords: unknown): boolean {
-    if (typeof model !== "string" || !model.startsWith("nova-3")) {
+function hasUnsupportedNova3Keywords(model: unknown, keywords: unknown): boolean {
+    const isNova3 = typeof model === "string" && (model === "nova-3" || model.startsWith("nova-3-"));
+    if (!isNova3 || keywords == null) {
         return false;
     }
-    if (keywords == null) {
-        return false;
+    if (typeof keywords === "string") {
+        return keywords.trim().length > 0;
     }
-    if (typeof keywords === "string" && keywords.length === 0) {
-        return false;
-    }
-    if (Array.isArray(keywords) && keywords.length === 0) {
-        return false;
+    if (Array.isArray(keywords)) {
+        return keywords.some((keyword) => typeof keyword !== "string" || keyword.trim().length > 0);
     }
     return true;
 }
@@ -500,7 +512,9 @@ class TransportWebSocketAdapter {
         this._factory = args.factory;
         this._request = args.request;
         this._reconnect = args.reconnect !== false;
-        this._readyState = args.startClosed ? ReconnectingWebSocket.ReadyState.CLOSED : ReconnectingWebSocket.ReadyState.CONNECTING;
+        this._readyState = args.startClosed
+            ? ReconnectingWebSocket.ReadyState.CLOSED
+            : ReconnectingWebSocket.ReadyState.CONNECTING;
 
         if (this._request.abortSignal) {
             this._request.abortSignal.addEventListener("abort", this._handleAbort, { once: true });
@@ -890,19 +904,22 @@ class TransportWebSocketAdapter {
  * In Node.js, use the 'ws' library which supports headers.
  * In browser, use Sec-WebSocket-Protocol for authentication since headers aren't supported.
  */
-function getWebSocketOptions(headers: Record<string, unknown>, requestedProtocols: string[]): { 
-    WebSocket?: any; 
-    headers?: Record<string, unknown>; 
+function getWebSocketOptions(
+    headers: Record<string, unknown>,
+    requestedProtocols: string[],
+): {
+    WebSocket?: any;
+    headers?: Record<string, unknown>;
     protocols?: string[];
 } {
     const options: { WebSocket?: any; headers?: Record<string, unknown>; protocols?: string[] } = {};
-    
+
     // Check if we're in a browser environment (browser or web-worker)
     const isBrowser = RUNTIME.type === "browser" || RUNTIME.type === "web-worker";
-    
+
     // Extract session ID header
     const sessionIdHeader = headers["x-deepgram-session-id"] || headers["X-Deepgram-Session-Id"];
-    
+
     // In Node.js, ensure we use the 'ws' library which supports headers
     if (RUNTIME.type === "node" && NodeWebSocket) {
         options.WebSocket = NodeWebSocket;
@@ -915,18 +932,18 @@ function getWebSocketOptions(headers: Record<string, unknown>, requestedProtocol
         // Extract Authorization header and use Sec-WebSocket-Protocol instead
         const authHeader = headers.Authorization || headers.authorization;
         const browserHeaders: Record<string, unknown> = { ...headers };
-        
+
         // Remove Authorization and session ID from headers since they won't work in browser
         delete browserHeaders.Authorization;
         delete browserHeaders.authorization;
         delete browserHeaders["x-deepgram-session-id"];
         delete browserHeaders["X-Deepgram-Session-Id"];
-        
+
         options.headers = browserHeaders;
-        
+
         // Build protocols array for browser WebSocket
         const protocols = [...requestedProtocols];
-        
+
         // If we have an Authorization header, extract the token and format as protocols
         // Deepgram expects:
         // - For API keys: Sec-WebSocket-Protocol: token,API_KEY_GOES_HERE
@@ -946,12 +963,12 @@ function getWebSocketOptions(headers: Record<string, unknown>, requestedProtocol
                 protocols.push(authHeader);
             }
         }
-        
+
         // Add session ID as a protocol for browser WebSocket
         if (sessionIdHeader && typeof sessionIdHeader === "string") {
             protocols.push("x-deepgram-session-id", sessionIdHeader);
         }
-        
+
         if (protocols.length > 0) {
             options.protocols = protocols;
         }
@@ -962,7 +979,7 @@ function getWebSocketOptions(headers: Record<string, unknown>, requestedProtocol
             options.protocols = requestedProtocols;
         }
     }
-    
+
     return options;
 }
 
@@ -970,7 +987,10 @@ function getWebSocketOptions(headers: Record<string, unknown>, requestedProtocol
  * Helper function to setup binary-aware message handling for WebSocket sockets.
  * Handles both text (JSON) and binary messages correctly.
  */
-function setupBinaryHandling(socket: ReconnectingWebSocket, eventHandlers: { message?: (data: any) => void }): (event: MessageEvent) => void {
+function setupBinaryHandling(
+    socket: ReconnectingWebSocket,
+    eventHandlers: { message?: (data: any) => void },
+): (event: MessageEvent) => void {
     const binaryAwareHandler = (event: MessageEvent) => {
         // Handle both text (JSON) and binary messages
         if (typeof event.data === "string") {
@@ -981,9 +1001,13 @@ function setupBinaryHandling(socket: ReconnectingWebSocket, eventHandlers: { mes
                 // If JSON parsing fails, pass the raw string
                 eventHandlers.message?.(event.data);
             }
-        } else {
-            // Binary data - pass through as-is
+        } else if (event.data instanceof Blob) {
+            // Already a Blob - pass through as-is.
             eventHandlers.message?.(event.data);
+        } else {
+            // Binary arrives as an ArrayBuffer (the socket uses binaryType "arraybuffer").
+            // Wrap it in a Blob so consumers always receive a Blob, regardless of runtime.
+            eventHandlers.message?.(new Blob([event.data as BlobPart]));
         }
     };
 
@@ -995,10 +1019,10 @@ function setupBinaryHandling(socket: ReconnectingWebSocket, eventHandlers: { mes
             socket.removeEventListener("message", listener);
         });
     }
-    
+
     // Add our binary-aware handler
     socket.addEventListener("message", binaryAwareHandler);
-    
+
     return binaryAwareHandler;
 }
 
@@ -1007,12 +1031,15 @@ function setupBinaryHandling(socket: ReconnectingWebSocket, eventHandlers: { mes
  * This removes all event listeners that were registered by the auto-generated
  * Socket class constructor, preventing duplicate event firing when connect() is called.
  */
-function preventDuplicateEventListeners(socket: ReconnectingWebSocket, handlers: {
-    handleOpen?: () => void;
-    handleMessage?: (event: any) => void;
-    handleClose?: (event: any) => void;
-    handleError?: (event: any) => void;
-}) {
+function preventDuplicateEventListeners(
+    socket: ReconnectingWebSocket,
+    handlers: {
+        handleOpen?: () => void;
+        handleMessage?: (event: any) => void;
+        handleClose?: (event: any) => void;
+        handleError?: (event: any) => void;
+    },
+) {
     // Remove the handlers that were added by the auto-generated constructor
     if (handlers.handleOpen) {
         socket.removeEventListener("open", handlers.handleOpen);
@@ -1038,6 +1065,35 @@ function resetSocketConnectionState(socket: ReconnectingWebSocket): void {
         (socket as any)._connectLock = false;
         (socket as any)._shouldReconnect = true;
     }
+}
+
+/**
+ * Idempotency guard for the wrapped sockets' close().
+ *
+ * The generated `Socket.close()` synchronously re-fires the registered `close`
+ * event handler (via `handleClose({ code: 1000 })`). A `close` handler that
+ * calls `close()` again — an idiomatic cleanup pattern — would otherwise recurse
+ * infinitely and throw `RangeError: Maximum call stack size exceeded`, which
+ * surfaces as an unhandled promise rejection Node's own tracker cannot format
+ * ("Exception in PromiseRejectCallback"). This affects every streaming socket.
+ *
+ * We fix it at the wrapper layer (rather than freezing all 5 generated
+ * `Socket.ts` files): tracking closed instances in a WeakSet lets each
+ * `Wrapped…Socket` share one guard with no per-class field. `closeOnce()`
+ * no-ops on re-entry so the recursive cycle terminates after a single close
+ * notification, and each wrapper's `connect()` calls `armCloseGuard()` so a
+ * reconnected socket can be closed again.
+ */
+const closedSockets = new WeakSet<object>();
+function closeOnce(self: object, doClose: () => void): void {
+    if (closedSockets.has(self)) {
+        return;
+    }
+    closedSockets.add(self);
+    doClose();
+}
+function armCloseGuard(self: object): void {
+    closedSockets.delete(self);
 }
 
 /**
@@ -1077,22 +1133,16 @@ async function createWebSocketConnection({
     const authRequest = await (options as any).authProvider?.getAuthRequest();
 
     // Merge headers from options (which includes session ID), auth headers, and request headers
-    const mergedHeaders = mergeHeaders(
-        options.headers ?? {},
-        authRequest?.headers ?? {},
-        headers,
-    );
+    const mergedHeaders = mergeHeaders(options.headers ?? {}, authRequest?.headers ?? {}, headers);
 
     // Resolve any Suppliers in headers to actual values
     const _headers = await resolveHeaders(mergedHeaders);
     const normalizedProtocols = normalizeProtocols(protocols);
 
     // Get the appropriate base URL for the environment
-    const baseUrl = (await core.Supplier.get(options.baseUrl)) ??
-        (
-            (await core.Supplier.get(options.environment)) ??
-            environments.DeepgramEnvironment.Production
-        )[environmentKey];
+    const baseUrl =
+        (await core.Supplier.get(options.baseUrl)) ??
+        ((await core.Supplier.get(options.environment)) ?? environments.DeepgramEnvironment.Production)[environmentKey];
 
     const url = core.url.join(baseUrl, urlPath);
     const fullUrl = buildWebSocketUrl(url, queryParams);
@@ -1125,7 +1175,7 @@ async function createWebSocketConnection({
     const wsOptions = getWebSocketOptions(_headers, normalizedProtocols);
 
     // Create and return the ReconnectingWebSocket
-    return new ReconnectingWebSocket({
+    const socket = new ReconnectingWebSocket({
         url,
         protocols: wsOptions.protocols ?? [],
         queryParameters: queryParams,
@@ -1135,10 +1185,19 @@ async function createWebSocketConnection({
             debug: debug ?? false,
             maxRetries: reconnectAttempts ?? 30,
             startClosed: true,
-            connectionTimeout: connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : DEFAULT_CONNECTION_TIMEOUT_MS,
+            connectionTimeout:
+                connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : DEFAULT_CONNECTION_TIMEOUT_MS,
         },
         abortSignal,
     });
+
+    // Use the "arraybuffer" binaryType: some runtimes reject "blob" and throw when the socket
+    // opens. Set here (not in the generated core socket) so it survives regeneration; the
+    // socket is startClosed, so this applies before the underlying socket is created. Inbound
+    // binary is wrapped back into a Blob in setupBinaryHandling to keep the payload type
+    // consistent for consumers.
+    socket.binaryType = "arraybuffer";
+    return socket;
 }
 
 /**
@@ -1150,13 +1209,15 @@ async function createWebSocketConnection({
  * connection setup, authentication, and header handling.
  */
 class WrappedAgentV1Client extends AgentV1Client {
-    public async connect(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
+    public async connect(
+        args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {},
+    ): Promise<AgentV1Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/agent/converse",
-            environmentKey: 'agent',
+            environmentKey: "agent",
             queryParams: buildQueryParams(args as Record<string, unknown>),
             protocols,
             service: "agent.v1",
@@ -1183,7 +1244,9 @@ class WrappedAgentV1Client extends AgentV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {}): Promise<AgentV1Socket> {
+    public async createConnection(
+        args: Omit<AgentV1Client.ConnectArgs, "Authorization"> & { Authorization?: string } = {},
+    ): Promise<AgentV1Socket> {
         return this.connect(args);
     }
 }
@@ -1208,14 +1271,23 @@ class WrappedAgentV1Socket extends AgentV1Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedAgentV1Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
             handleOpen: socketAny.handleOpen,
             handleMessage: socketAny.handleMessage,
             handleClose: socketAny.handleClose,
-            handleError: socketAny.handleError
+            handleError: socketAny.handleError,
         });
 
         resetSocketConnectionState(this.socket);
@@ -1235,10 +1307,10 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedListenV1Client extends ListenV1Client {
-    public async connect(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
-        // Surface the same 400 the REST path throws for nova-3 + keywords, instead of letting the
-        // streaming handshake fail silently with a socket that never opens.
-        if (isUnsupportedNova3Keywords(args.model, args.keywords)) {
+    public async connect(
+        args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<ListenV1Socket> {
+        if (hasUnsupportedNova3Keywords(args.model, args.keywords)) {
             throw new BadRequestError({
                 err_code: "INVALID_QUERY_PARAMETER",
                 err_msg: "Keywords are not supported for Nova-3. Please use `keyterm` instead.",
@@ -1250,7 +1322,7 @@ class WrappedListenV1Client extends ListenV1Client {
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/listen",
-            environmentKey: 'production',
+            environmentKey: "production",
             queryParams: buildQueryParams(args as Record<string, unknown>),
             protocols,
             service: "listen.v1",
@@ -1277,7 +1349,9 @@ class WrappedListenV1Client extends ListenV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<ListenV1Socket> {
+    public async createConnection(
+        args: Omit<ListenV1Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<ListenV1Socket> {
         return this.connect(args);
     }
 }
@@ -1302,14 +1376,23 @@ class WrappedListenV1Socket extends ListenV1Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedListenV1Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
             handleOpen: socketAny.handleOpen,
             handleMessage: socketAny.handleMessage,
             handleClose: socketAny.handleClose,
-            handleError: socketAny.handleError
+            handleError: socketAny.handleError,
         });
 
         resetSocketConnectionState(this.socket);
@@ -1332,14 +1415,14 @@ class WrappedListenV2Client extends ListenV2Client {
         args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
             Authorization?: string;
             keyterm?: string | string[];
-        }
+        },
     ): Promise<ListenV2Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v2/listen",
-            environmentKey: 'production',
+            environmentKey: "production",
             queryParams: buildQueryParams(args as Record<string, unknown>),
             protocols,
             service: "listen.v2",
@@ -1366,7 +1449,12 @@ class WrappedListenV2Client extends ListenV2Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & { Authorization?: string; keyterm?: string | string[] }): Promise<ListenV2Socket> {
+    public async createConnection(
+        args: Omit<ListenV2Client.ConnectArgs, "Authorization" | "keyterm"> & {
+            Authorization?: string;
+            keyterm?: string | string[];
+        },
+    ): Promise<ListenV2Socket> {
         return this.connect(args);
     }
 }
@@ -1392,14 +1480,23 @@ class WrappedListenV2Socket extends ListenV2Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedListenV2Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
             handleOpen: socketAny.handleOpen,
             handleMessage: socketAny.handleMessage,
             handleClose: socketAny.handleClose,
-            handleError: socketAny.handleError
+            handleError: socketAny.handleError,
         });
 
         resetSocketConnectionState(this.socket);
@@ -1437,8 +1534,8 @@ class WrappedListenV2Socket extends ListenV2Socket {
             // In browsers, WebSocket ping/pong is automatic and not exposed to JavaScript
             throw new Error(
                 "WebSocket ping is not supported in browser environments. " +
-                "Browser WebSocket connections handle ping/pong automatically. " +
-                "If you need keepalive in the browser, consider sending periodic audio data or using a timer."
+                    "Browser WebSocket connections handle ping/pong automatically. " +
+                    "If you need keepalive in the browser, consider sending periodic audio data or using a timer.",
             );
         }
     }
@@ -1453,13 +1550,15 @@ class WrappedListenV2Socket extends ListenV2Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
-    public async connect(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
+    public async connect(
+        args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<SpeakV1Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/speak",
-            environmentKey: 'production',
+            environmentKey: "production",
             queryParams: buildQueryParams(args as Record<string, unknown>),
             protocols,
             service: "speak.v1",
@@ -1486,7 +1585,9 @@ class WrappedSpeakV1Client extends SpeakV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string }): Promise<SpeakV1Socket> {
+    public async createConnection(
+        args: Omit<SpeakV1Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<SpeakV1Socket> {
         return this.connect(args);
     }
 }
@@ -1518,14 +1619,128 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
         this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
     }
 
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
     public connect(): WrappedSpeakV1Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
         // Remove duplicate listeners before calling super.connect()
         const socketAny = this as any;
         preventDuplicateEventListeners(this.socket, {
             handleOpen: socketAny.handleOpen,
             handleMessage: socketAny.handleMessage,
             handleClose: socketAny.handleClose,
-            handleError: socketAny.handleError
+            handleError: socketAny.handleError,
+        });
+
+        resetSocketConnectionState(this.socket);
+        super.connect();
+        this.setupBinaryHandling();
+        return this;
+    }
+}
+
+/**
+ * Wrapper for Speak V2Client (Flux streaming TTS) that ensures the custom
+ * websocket implementation is used.
+ *
+ * Mirrors WrappedSpeakV1Client: routes the connection through
+ * createWebSocketConnection so the auth provider, session headers, custom
+ * transports and wrapper-level reconnect all apply, instead of the raw
+ * generated client's ReconnectingWebSocket.
+ */
+class WrappedSpeakV2Client extends SpeakV2Client {
+    public async connect(
+        args: Omit<SpeakV2Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<SpeakV2Socket> {
+        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } = args;
+
+        const socket = await createWebSocketConnection({
+            options: this._options,
+            urlPath: "/v2/speak",
+            environmentKey: "production",
+            queryParams: buildQueryParams(args as Record<string, unknown>),
+            protocols,
+            service: "speak.v2",
+            headers,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+        });
+
+        return new WrappedSpeakV2Socket({ socket });
+    }
+
+    /**
+     * Creates a WebSocket connection object without actually connecting.
+     * This is an alias for connect() with clearer naming - the returned socket
+     * is not connected until you call socket.connect().
+     *
+     * Usage:
+     * ```typescript
+     * const socket = await client.speak.v2.createConnection({ model: 'flux-alexis-en' });
+     * socket.on('open', () => console.log('Connected!'));
+     * socket.on('message', (audioData) => console.log('Audio received'));
+     * socket.connect(); // Actually initiates the connection
+     * ```
+     */
+    public async createConnection(
+        args: Omit<SpeakV2Client.ConnectArgs, "Authorization"> & { Authorization?: string },
+    ): Promise<SpeakV2Socket> {
+        return this.connect(args);
+    }
+}
+
+/**
+ * Wrapper for Speak V2Socket that handles binary messages correctly.
+ *
+ * Like WrappedSpeakV1Socket, the autogenerated V2 socket parses every message as
+ * JSON, but Flux TTS streams binary audio frames. We remove the broken JSON-only
+ * handler and install a binary-aware one so both audio (binary) and control
+ * messages (JSON) are delivered to `on("message")`.
+ */
+class WrappedSpeakV2Socket extends SpeakV2Socket {
+    private binaryAwareHandler?: (event: MessageEvent) => void;
+
+    constructor(args: SpeakV2Socket.Args) {
+        super(args);
+        // CRITICAL: Remove the autogenerated handleMessage that tries to parse EVERYTHING as JSON!
+        // The autogenerated Socket class assumes all messages are text/JSON, but Flux TTS sends binary audio.
+        // We must remove that broken handler immediately after the parent constructor runs.
+        const socketAny = this as any;
+        if (socketAny.handleMessage) {
+            this.socket.removeEventListener("message", socketAny.handleMessage);
+        }
+        this.setupBinaryHandling();
+    }
+
+    private setupBinaryHandling() {
+        this.binaryAwareHandler = setupBinaryHandling(this.socket, (this as any).eventHandlers);
+    }
+
+    public close(): void {
+        // Guard against the generated close() re-entering through its synchronous
+        // handleClose() → user `close` handler → close() cycle (stack overflow).
+        closeOnce(this, () => super.close());
+    }
+
+    public connect(): WrappedSpeakV2Socket {
+        // Arm the close() idempotency guard so a reconnected socket can close again.
+        armCloseGuard(this);
+
+        // Remove duplicate listeners before calling super.connect()
+        const socketAny = this as any;
+        preventDuplicateEventListeners(this.socket, {
+            handleOpen: socketAny.handleOpen,
+            handleMessage: socketAny.handleMessage,
+            handleClose: socketAny.handleClose,
+            handleError: socketAny.handleError,
         });
 
         resetSocketConnectionState(this.socket);

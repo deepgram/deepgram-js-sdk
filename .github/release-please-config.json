@@ -18,10 +18,6 @@
                 },
                 {
                     "type": "generic",
-                    "path": "src/BaseClient.ts"
-                },
-                {
-                    "type": "generic",
                     "path": "src/version.ts"
                 }
             ]

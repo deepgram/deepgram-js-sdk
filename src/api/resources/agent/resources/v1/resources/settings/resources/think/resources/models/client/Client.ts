@@ -31,6 +31,8 @@ export class ModelsClient {
      * @param {ModelsClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.agent.v1.settings.think.models.list()

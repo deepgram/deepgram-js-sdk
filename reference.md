@@ -148,43 +148,6 @@ Transcribe audio and video using Deepgram's speech-to-text REST API
 
 ```typescript
 await client.listen.v1.media.transcribeUrl({
-    callback: "callback",
-    callback_method: "POST",
-    extra: "extra",
-    sentiment: true,
-    summarize: "v2",
-    tag: "tag",
-    topics: true,
-    custom_topic: "custom_topic",
-    custom_topic_mode: "extended",
-    intents: true,
-    custom_intent: "custom_intent",
-    custom_intent_mode: "extended",
-    detect_entities: true,
-    detect_language: true,
-    diarize: true,
-    diarize_model: "latest",
-    dictation: true,
-    encoding: "linear16",
-    filler_words: true,
-    keyterm: ["keyterm"],
-    keywords: "keywords",
-    language: "language",
-    measurements: true,
-    model: "nova-3",
-    multichannel: true,
-    numerals: true,
-    paragraphs: true,
-    profanity_filter: true,
-    punctuate: true,
-    redact: "redact",
-    replace: "replace",
-    search: "search",
-    smart_format: true,
-    utterances: true,
-    utt_split: 1.1,
-    version: "latest",
-    mip_opt_out: true,
     url: "https://dpgr.am/spacewalk.wav"
 });
 
@@ -1346,18 +1309,7 @@ Generates a list of requests for a specific project
 <dd>
 
 ```typescript
-await client.manage.v1.projects.requests.list("123456-7890-1234-5678-901234", {
-    start: "2024-01-15T09:30:00Z",
-    end: "2024-01-15T09:30:00Z",
-    limit: 1.1,
-    page: 1.1,
-    accessor: "12345678-1234-1234-1234-123456789012",
-    request_id: "12345678-1234-1234-1234-123456789012",
-    deployment: "hosted",
-    endpoint: "listen",
-    method: "sync",
-    status: "succeeded"
-});
+await client.manage.v1.projects.requests.list("12345678-90ab-cdef-1234-567890abcdef");
 
 ```
 </dd>
@@ -1428,7 +1380,7 @@ Retrieves a specific request for a specific project
 <dd>
 
 ```typescript
-await client.manage.v1.projects.requests.get("123456-7890-1234-5678-901234", "123456-7890-1234-5678-901234");
+await client.manage.v1.projects.requests.get("12345678-90ab-cdef-1234-567890abcdef", "a3f1c9d2-4b7e-4f9a-8c3d-2e5f7b9a1c0d");
 
 ```
 </dd>
@@ -2915,6 +2867,73 @@ await client.speak.v1.audio.generate({
 <dd>
 
 **request:** `Deepgram.speak.v1.SpeakV1Request` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `AudioClient.RequestOptions` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Speak V2 Audio
+<details><summary><code>client.speak.v2.audio.<a href="/src/api/resources/speak/resources/v2/resources/audio/client/Client.ts">generate</a>({ ...params }) -> core.BinaryResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Synthesize a complete block of text into a single audio response using Deepgram's Flux TTS batch (REST) API. Use this for pre-rendering fixed audio (IVR prompts, notifications, narration) where the whole text is known up front and you don't need incremental playback or interruption.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.speak.v2.audio.generate({
+    model: "model",
+    text: "text"
+});
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `Deepgram.speak.v2.SpeakV2Request` 
     
 </dd>
 </dl>

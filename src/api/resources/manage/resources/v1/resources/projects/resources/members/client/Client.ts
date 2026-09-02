@@ -44,6 +44,8 @@ export class MembersClient {
      * @param {MembersClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.members.list("123456-7890-1234-5678-901234")
@@ -119,6 +121,8 @@ export class MembersClient {
      * @param {MembersClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Deepgram.BadRequestError}
+     * @throws {@link errors.DeepgramError}
+     * @throws {@link errors.DeepgramTimeoutError}
      *
      * @example
      *     await client.manage.v1.projects.members.delete("123456-7890-1234-5678-901234", "123456789012345678901234")

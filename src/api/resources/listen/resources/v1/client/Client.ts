@@ -19,6 +19,7 @@ export declare namespace V1Client {
         channels?: Deepgram.ListenV1Channels | undefined;
         detect_entities?: Deepgram.ListenV1DetectEntities;
         diarize?: Deepgram.ListenV1Diarize;
+        diarize_model?: Deepgram.listen.DiarizeModel;
         dictation?: Deepgram.ListenV1Dictation;
         encoding?: Deepgram.ListenV1Encoding;
         endpointing?: Deepgram.ListenV1Endpointing | undefined;
@@ -79,6 +80,7 @@ export class V1Client {
             channels,
             detect_entities: detectEntities,
             diarize,
+            diarize_model: diarizeModel,
             dictation,
             encoding,
             endpointing,
@@ -116,6 +118,7 @@ export class V1Client {
             channels: channels != null ? (typeof channels === "string" ? channels : toJson(channels)) : undefined,
             detect_entities: detectEntities != null ? detectEntities : undefined,
             diarize: diarize != null ? diarize : undefined,
+            diarize_model: diarizeModel != null ? diarizeModel : undefined,
             dictation: dictation != null ? dictation : undefined,
             encoding: encoding != null ? encoding : undefined,
             endpointing:

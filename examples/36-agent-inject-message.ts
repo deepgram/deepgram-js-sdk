@@ -67,7 +67,8 @@ async function agentInjectMessage() {
                 console.log("Agent started speaking");
             } else if (data.type === "AgentAudioDone") {
                 console.log("Agent finished speaking");
-            } else if (data instanceof Uint8Array || Buffer.isBuffer(data)) {
+            } else if (data instanceof Blob) {
+                // Audio data is delivered as a Blob
                 console.log("Audio data received");
             } else {
                 console.log("Message:", data);

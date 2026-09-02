@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it } from "vitest";
 import { DeepgramClient } from "../../src";
+import { BadRequestError } from "../../src/api/errors/index.js";
 
 /**
  * Tests for CustomDeepgramClient wrapper functionality.
@@ -48,6 +49,16 @@ describe("CustomDeepgramClient", () => {
 
             expect(client.speak).toBeDefined();
             expect(client.speak.v1).toBeDefined();
+            expect(client.speak.v2).toBeDefined();
+        });
+
+        it("should expose websocket helpers on speak.v2 (Flux streaming)", () => {
+            const client = new DeepgramClient({ apiKey: "test-key" });
+
+            // WrappedSpeakV2Client adds connect()/createConnection() on top of the
+            // generated V2Client — the raw generated client only has connect().
+            expect(typeof client.speak.v2.connect).toBe("function");
+            expect(typeof client.speak.v2.createConnection).toBe("function");
         });
 
         it("should provide access to agent client", () => {
@@ -293,6 +304,46 @@ describe("WebSocket connection methods", () => {
             expect(typeof socket.sendSettings).toBe("function");
             expect(typeof socket.sendMedia).toBe("function");
         });
+    });
+});
+
+describe("Listen V1 Nova-3 keywords validation", () => {
+    const client = new DeepgramClient({ apiKey: "test-key" });
+
+    for (const model of ["nova-3", "nova-3-general", "nova-3-medical"]) {
+        it(`rejects non-empty keywords for ${model}`, async () => {
+            await expect(client.listen.v1.connect({ model, keywords: "deepgram" })).rejects.toMatchObject({
+                name: "BadRequestError",
+                statusCode: 400,
+                body: {
+                    err_code: "INVALID_QUERY_PARAMETER",
+                    err_msg: "Keywords are not supported for Nova-3. Please use `keyterm` instead.",
+                },
+            });
+        });
+    }
+
+    it("throws the generated BadRequestError class before connecting", async () => {
+        await expect(
+            client.listen.v1.createConnection({ model: "nova-3", keywords: ["deepgram"] }),
+        ).rejects.toBeInstanceOf(BadRequestError);
+    });
+
+    it("allows keyterm with Nova-3", async () => {
+        await expect(client.listen.v1.connect({ model: "nova-3", keyterm: "deepgram" })).resolves.toBeDefined();
+    });
+
+    it("allows keywords with older models", async () => {
+        await expect(client.listen.v1.connect({ model: "nova-2", keywords: "deepgram" })).resolves.toBeDefined();
+    });
+
+    it("does not overmatch similar model names", async () => {
+        await expect(client.listen.v1.connect({ model: "nova-30", keywords: "deepgram" })).resolves.toBeDefined();
+    });
+
+    it("allows empty keywords because no query value is sent", async () => {
+        await expect(client.listen.v1.connect({ model: "nova-3", keywords: [] })).resolves.toBeDefined();
+        await expect(client.listen.v1.connect({ model: "nova-3", keywords: "   " })).resolves.toBeDefined();
     });
 });
 
