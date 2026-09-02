@@ -395,9 +395,16 @@ const client = new DeepgramClient({
 ### WebSocket Proxy / Custom HTTP Agent
 
 In Node.js you can route streaming WebSocket connections (`listen`, `speak`, `agent`)
-through a custom `http`/`https` agent — for example an `HttpsProxyAgent` so traffic
-transits a corporate HTTP/HTTPS egress proxy. Set `agent` on the client to apply it
-to every connection, or pass it per connection to override the client-level default:
+through any compatible custom `http.Agent` implementation. For example, install a
+Node 18-compatible version of `https-proxy-agent`:
+
+```bash
+npm install https-proxy-agent@8
+```
+
+Then create an `HttpsProxyAgent` to route traffic through a corporate HTTP/HTTPS
+egress proxy. Set `agent` on the client to apply it to every connection, or pass it
+per connection to override the client-level default:
 
 ```typescript
 import { DeepgramClient } from "@deepgram/sdk";
