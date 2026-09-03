@@ -38,20 +38,20 @@ describe("HeaderAuthProvider", () => {
         it("builds the Authorization header from the apiKey option", async () => {
             const provider = new HeaderAuthProvider({ apiKey: "secret" });
             const request = await provider.getAuthRequest();
-            expect(request.headers).toEqual({ Authorization: "secret" });
+            expect(request.headers).toEqual({ Authorization: "Token secret" });
         });
 
         it("resolves a supplier function for the apiKey", async () => {
             const provider = new HeaderAuthProvider({ apiKey: () => "lazy-secret" });
             const request = await provider.getAuthRequest({});
-            expect(request.headers).toEqual({ Authorization: "lazy-secret" });
+            expect(request.headers).toEqual({ Authorization: "Token lazy-secret" });
         });
 
         it("falls back to the env var", async () => {
             process.env[ENV_KEY] = "env-secret";
             const provider = new HeaderAuthProvider({});
             const request = await provider.getAuthRequest();
-            expect(request.headers).toEqual({ Authorization: "env-secret" });
+            expect(request.headers).toEqual({ Authorization: "Token env-secret" });
         });
 
         it("throws a DeepgramError when no key can be resolved", async () => {
@@ -69,7 +69,7 @@ describe("HeaderAuthProvider", () => {
         it("createInstance returns a working provider", async () => {
             const provider = HeaderAuthProvider.createInstance({ apiKey: "secret" });
             const request = await provider.getAuthRequest();
-            expect(request.headers).toEqual({ Authorization: "secret" });
+            expect(request.headers).toEqual({ Authorization: "Token secret" });
         });
     });
 });
