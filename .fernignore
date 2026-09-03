@@ -11,7 +11,6 @@ scripts/fix-wire-test-imports.js
 scripts/proxy-server.js
 scripts/revert-wire-test-imports.js
 scripts/validate-esm-build.mjs
-webpack.config.js
 
 # Tests
 tests/browser
@@ -47,7 +46,6 @@ tsconfig.typecheck.json
 
 # Other Stuff
 Makefile
-MIGRATION_GUIDE_V4_TO_V5.md
 docs
 .npmignore
 .gitignore
