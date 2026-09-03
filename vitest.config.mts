@@ -46,7 +46,7 @@ export default defineConfig({
             // A floor, not a target. The CodeCoverageSummary action renders ✔/❌ marks
             // but never fails the build, so without these the number is a dashboard
             // rather than a ratchet. Set a few points under the measured baseline
-            // (97.77 statements / 94.92 branches / 97.54 functions / 97.85 lines) so
+            // (97.30 statements / 94.19 branches / 96.98 functions / 97.37 lines) so
             // normal churn doesn't turn CI red. Raise them as coverage climbs.
             thresholds: {
                 statements: 95,
