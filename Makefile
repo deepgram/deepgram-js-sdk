@@ -320,10 +320,20 @@ build:
 	node scripts/validate-esm-build.mjs
 
 test:
-	node scripts/fix-wire-test-imports.js
-	pnpm exec vitest --project unit --run
+	@cleanup() { \
+		test_status=$$?; \
+		trap - 0 INT TERM; \
+		node scripts/revert-wire-test-imports.js; \
+		cleanup_status=$$?; \
+		if [ $$test_status -ne 0 ]; then exit $$test_status; fi; \
+		exit $$cleanup_status; \
+	}; \
+	trap cleanup 0; \
+	trap 'exit 130' INT; \
+	trap 'exit 143' TERM; \
+	node scripts/fix-wire-test-imports.js && \
+	pnpm exec vitest --project unit --run && \
 	pnpm exec vitest --project wire --run
-	node scripts/revert-wire-test-imports.js
 
 test-esm:
 	@printf "\033[1;36mRunning ESM build tests...\033[0m\n"
