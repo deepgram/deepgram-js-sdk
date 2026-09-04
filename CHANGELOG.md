@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.10.1](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.0...v5.10.1) (2026-09-04)
+
+
+### Bug Fixes
+
+* restore wire imports after test failures ([#541](https://github.com/deepgram/deepgram-js-sdk/issues/541)) ([00d0e17](https://github.com/deepgram/deepgram-js-sdk/commit/00d0e17f3aa369f3f3b9885d5882db0c61abee84))
+* **test:** set browser test discovery directory ([4e49e64](https://github.com/deepgram/deepgram-js-sdk/commit/4e49e64fcb9a6064620fbaaf5a2448a50fa406a9))
+
 ## [5.10.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.9.0...v5.10.0) (2026-09-02)
 
 Custom Node.js proxy-agent support for streaming connections, plus an early validation error for an unsupported Nova-3 prompting option.
