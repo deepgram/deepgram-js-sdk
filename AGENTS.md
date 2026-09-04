@@ -28,7 +28,6 @@ Current permanently frozen files:
 - `scripts/fix-wire-test-imports.js`, `scripts/revert-wire-test-imports.js` — post-generation import fixup scripts
 - `scripts/proxy-server.js` — development proxy server
 - `scripts/validate-esm-build.mjs` — ESM build validation
-- `webpack.config.js` — browser build configuration
 - `tests/browser` — browser-specific test suite
 - `tests/esm-build.test.ts` — ESM build validation test
 - `tests/manual` — hand-written manual smoke scripts (e.g. `tests/manual/compat.ts` for the legacy `CreateKeyV1RequestOne` alias, `tests/manual/force-end-turn.ts` for the live listen v2 force-end-turn path, which is gated per deployment and skips where it is not enabled). Not picked up by vitest; run with `pnpm tsx`.
@@ -38,7 +37,6 @@ Current permanently frozen files:
 - `tsconfig.typecheck.json` — hand-written type-check gate that compiles the compat/regen type-assertion tests (`compat-aliases.test.ts`, `regen-constraints.test.ts`) against `src` so a drifted shim fails `make typecheck-tests`. Not emitted by Fern; the generator deletes it each regen.
 - `vitest.config.mts` — test configuration
 - `Makefile` — development commands
-- `MIGRATION_GUIDE_V4_TO_V5.md` — migration documentation
 - `README.md`, `CHANGELOG.md` — docs
 - `CLAUDE.md`, `AGENTS.md`, `.mcp.json`, `.claude/`, `.agents/` — agent files (`.agents/skills/` holds agent-agnostic skills discoverable via `npx skills`)
 - `.github/`, `docs/`, `examples/` — folders
