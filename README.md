@@ -27,7 +27,23 @@ npm install @deepgram/sdk
 
 ## Reference
 
-- **[API Reference](./reference.md)** - Complete reference for all SDK methods and parameters
+- **[REST API Reference](./reference.md)** - Fern-generated methods and parameters for HTTP endpoints
+
+### Streaming WebSocket API
+
+Every streaming client exposes both `connect()` and `createConnection()`. They are aliases that return a start-closed socket: register handlers, call the socket's `connect()`, and then await `waitForOpen()` before sending data.
+
+All sockets expose `on("open" | "message" | "close" | "error", callback)`, `connect()`, `waitForOpen()`, `close()`, `readyState`, and a lower-level `socket` property. Prefer the typed send methods below instead of calling `socket.send()` directly.
+
+| Service | Create a socket | Typed send methods |
+| --- | --- | --- |
+| [Voice Agent v1](./src/api/resources/agent/resources/v1/client/Socket.ts) | `client.agent.v1.connect()` or `.createConnection()` | `sendSettings`, `sendUpdateListen`, `sendUpdateThink`, `sendUpdateSpeak`, `sendInjectUserMessage`, `sendInjectAgentMessage`, `sendFunctionCallResponse`, `sendKeepAlive`, `sendUpdatePrompt`, `sendMedia` |
+| [Speech-to-Text v1](./src/api/resources/listen/resources/v1/client/Socket.ts) | `client.listen.v1.connect(args)` or `.createConnection(args)` | `sendMedia`, `sendFinalize`, `sendCloseStream`, `sendKeepAlive` |
+| [Flux STT v2 (conversational)](./src/api/resources/listen/resources/v2/client/Socket.ts) | `client.listen.v2.connect(args)` or `.createConnection(args)` | `sendMedia`, `sendCloseStream`, `sendForceEndTurn`, `sendConfigure` |
+| [Text-to-Speech v1](./src/api/resources/speak/resources/v1/client/Socket.ts) | `client.speak.v1.connect(args)` or `.createConnection(args)` | `sendText`, `sendFlush`, `sendClear`, `sendClose` |
+| [Flux TTS v2](./src/api/resources/speak/resources/v2/client/Socket.ts) | `client.speak.v2.connect(args)` or `.createConnection(args)` | `sendSpeak`, `sendFlush`, `sendInterrupt`, `sendConfigure`, `sendClose` |
+
+The public connection argument types and Deepgram-specific wrapper behavior are defined in [`src/CustomClient.ts`](./src/CustomClient.ts). Use the linked socket classes for exact message and event types.
 
 ## Usage
 
@@ -63,7 +79,7 @@ connection.connect();
 await connection.waitForOpen();
 
 // Send audio data
-connection.socket.send(audioData);
+connection.sendMedia(audioData);
 ```
 
 Pass an `abortSignal` to stop a connection attempt or active session and disable automatic reconnection. If you await `waitForOpen()`, make that wait abort-aware as shown in [Canceling a WebSocket Connection (AbortSignal)](#canceling-a-websocket-connection-abortsignal).
