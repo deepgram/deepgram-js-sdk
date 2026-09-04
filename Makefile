@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 example-38 example-39 example-40 test test-esm typecheck-tests lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 example-38 example-39 example-40 test test-coverage test-esm typecheck-tests lint build browser browser-serve
 
 # Default target
 help:
@@ -8,6 +8,7 @@ help:
 	@printf "  \033[1;32mmake lint\033[0m              - Run Biome linter and formatter to check code quality\n"
 	@printf "  \033[1;32mmake build\033[0m             - Compile TypeScript to both CommonJS and ESM formats\n"
 	@printf "  \033[1;32mmake test\033[0m              - Fix wire test imports and run the test suite\n"
+	@printf "  \033[1;32mmake test-coverage\033[0m     - Run the test suite with V8 code coverage (CI test gate)\n"
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
@@ -334,6 +335,29 @@ test:
 	node scripts/fix-wire-test-imports.js && \
 	pnpm exec vitest --project unit --run && \
 	pnpm exec vitest --project wire --run
+
+# Same unit + wire suites as `test`, but with V8 code coverage. Both projects
+# run in a single vitest invocation so coverage is merged into one cobertura +
+# text report (CI consumes coverage/cobertura-coverage.xml). The wire-import
+# fixup/revert mirrors `test`: an EXIT/INT/TERM trap reverts even when vitest
+# fails or the run is interrupted, so no path leaves the wire tests rewritten,
+# and a failed revert fails the target instead of being swallowed.
+test-coverage:
+	@cleanup() { \
+		test_status=$$?; \
+		trap - 0 INT TERM; \
+		node scripts/revert-wire-test-imports.js; \
+		cleanup_status=$$?; \
+		if [ $$test_status -ne 0 ]; then exit $$test_status; fi; \
+		exit $$cleanup_status; \
+	}; \
+	trap cleanup 0; \
+	trap 'exit 130' INT; \
+	trap 'exit 143' TERM; \
+	node scripts/fix-wire-test-imports.js && \
+	pnpm exec vitest --project unit --project wire --run \
+		--coverage --coverage.provider=v8 \
+		--coverage.reporter=cobertura --coverage.reporter=text
 
 test-esm:
 	@printf "\033[1;36mRunning ESM build tests...\033[0m\n"
