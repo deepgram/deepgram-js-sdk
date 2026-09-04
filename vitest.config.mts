@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config";
 import { resolve } from "path";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
     test: {
@@ -31,6 +31,7 @@ export default defineConfig({
                     name: "browser",
                     environment: "node",
                     root: "./tests/browser",
+                    dir: resolve(__dirname, "./tests/browser"),
                     include: ["**/*.test.{js,ts,jsx,tsx}"],
                     setupFiles: ["./setup.ts"],
                     globalSetup: ["./global-setup.ts"],
@@ -48,6 +49,10 @@ export default defineConfig({
             // rather than a ratchet. Set a few points under the measured baseline
             // (97.30 statements / 94.19 branches / 96.98 functions / 97.37 lines) so
             // normal churn doesn't turn CI red. Raise them as coverage climbs.
+            //
+            // Keep in sync with the `thresholds:` input on the CodeCoverageSummary
+            // step in .github/workflows/ci.yml — the action defaults to 50/75, and a
+            // green ✔ next to a build this gate fails is worse than no marker.
             thresholds: {
                 statements: 95,
                 branches: 92,

@@ -20,9 +20,13 @@
  *     timeout, retries, abort signal), asserted through an injected capturing
  *     fetcher so no network is required.
  *
- * No network for the websocket paths (a fake socket / already-aborted signal is
- * used); the batch REST error paths use a local http server, matching
- * `speak-v2-batch.test.ts`.
+ * Nothing here depends on a fixed port or on a machine-level assumption about
+ * which ports are closed. The websocket paths use a fake socket, an
+ * already-aborted signal, or a capturing `transportFactory`; the REST error
+ * branches use an injected fetcher that returns the exact `Fetcher` result shape
+ * each branch dispatches on. The single real http server (for asserting query
+ * serialization as it actually arrives over the wire) binds port `0` and lets the
+ * OS assign a free port.
  *
  * Hand-written and frozen in `.fernignore` — Fern only generates HTTP WireMock
  * wire tests, so a regen would not reproduce this coverage.
@@ -30,7 +34,7 @@
 
 import http from "node:http";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { DeepgramClient, DeepgramError } from "../../src";
+import { DeepgramClient, DeepgramError, type DeepgramTransport } from "../../src";
 import { BadRequestError } from "../../src/api/errors/index.js";
 import { V2Client } from "../../src/api/resources/speak/resources/v2/client/Client.js";
 import { V2Socket } from "../../src/api/resources/speak/resources/v2/client/Socket.js";
@@ -92,9 +96,17 @@ describe("Speak V2Client.connect", () => {
             abortSignal: abortedSignal(),
         } as any);
         const qp = queryParamsOf(socket);
-        // boolean true -> toJson -> "true"; array -> toJson -> JSON string.
+        // boolean true -> toJson -> "true".
         expect(qp.mip_opt_out).toBe("true");
-        expect(qp.tag).toBe(JSON.stringify(["t1", "t2"]));
+        // `tag` is documented as repeatable (SpeakV2Tag), whose wire form is
+        // `tag=t1&tag=t2`. This *generated* client instead routes arrays through
+        // toJson, so the exact string it produces is not a contract worth
+        // freezing — asserting it would reject a generator fix that emits the
+        // documented repeatable form. Assert only that both tags survive
+        // serialization; the wire form is pinned on the public
+        // `DeepgramClient.speak.v2` path below, which already gets it right.
+        expect(String(qp.tag)).toContain("t1");
+        expect(String(qp.tag)).toContain("t2");
     });
 
     it("omits absent optional params", async () => {
@@ -144,6 +156,60 @@ describe("Speak V2Client.connect", () => {
         // Exercises the `environments.DeepgramEnvironment.Production.production`
         // fallback in connect() — no baseUrl / environment supplied.
         expect((socket as any).socket._url).toBe("wss://api.deepgram.com/v2/speak");
+    });
+});
+
+// --------------------------------------------------------------------------- //
+// The encoded upgrade URL, observed through the public client
+// --------------------------------------------------------------------------- //
+
+describe("Speak V2 websocket upgrade URL", () => {
+    /**
+     * `transportFactory` is the supported hook that receives the fully encoded
+     * upgrade URL, so it lets us assert the actual wire contract instead of the
+     * generated client's private `_queryParameters` bag.
+     */
+    async function capturedUpgradeUrl(args: Record<string, unknown>): Promise<URL> {
+        const urls: string[] = [];
+        const client = new DeepgramClient({
+            apiKey: "test",
+            transportFactory: (url: string) => {
+                urls.push(url);
+                return {
+                    send: () => undefined,
+                    onOpen: () => undefined,
+                    onMessage: () => undefined,
+                    onError: () => undefined,
+                    onClose: () => undefined,
+                    isOpen: () => false,
+                    close: () => undefined,
+                } as DeepgramTransport;
+            },
+        } as any);
+        const socket = await client.speak.v2.createConnection(args as any);
+        // createConnection() builds the socket without dialing; the transport is
+        // constructed on the first connect attempt.
+        (socket as any).socket.reconnect();
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(urls).toHaveLength(1);
+        return new URL(urls[0]!);
+    }
+
+    it("resolves the production host, path, and model", async () => {
+        const url = await capturedUpgradeUrl({ model: "flux-alexis-en" });
+        expect(url.protocol).toBe("wss:");
+        expect(url.host).toBe("api.deepgram.com");
+        expect(url.pathname).toBe("/v2/speak");
+        expect(url.searchParams.get("model")).toBe("flux-alexis-en");
+    });
+
+    it("sends repeatable tags as repeated query parameters", async () => {
+        // SpeakV2Tag is documented "Repeatable", so the wire form is
+        // `tag=t1&tag=t2` — not one JSON-encoded array value.
+        const url = await capturedUpgradeUrl({ model: "flux-alexis-en", tag: ["t1", "t2"] });
+        expect(url.searchParams.getAll("tag")).toEqual(["t1", "t2"]);
     });
 });
 
@@ -304,9 +370,71 @@ describe("Speak V2Socket", () => {
 // --------------------------------------------------------------------------- //
 
 describe("Speak V2 audio.generate error branches", () => {
+    /**
+     * The error branches are pure response-shape dispatch, so they are driven
+     * through an injected fetcher rather than a real socket: no port to collide
+     * with, no connect timeout to wait on, and the `reason` discriminant is set
+     * explicitly instead of being inferred from whatever a closed port does on
+     * the host running the suite.
+     */
+    function clientReturning(response: Record<string, unknown>) {
+        return new DeepgramClient({
+            apiKey: "test",
+            maxRetries: 0,
+            fetcher: (async () => response) as any,
+        });
+    }
+
+    const rawResponse = {
+        headers: new Headers(),
+        redirected: false,
+        status: 0,
+        statusText: "",
+        type: "basic",
+        url: "",
+    };
+
+    it("throws BadRequestError on a 400 response", async () => {
+        const client = clientReturning({
+            ok: false,
+            error: { reason: "status-code", statusCode: 400, body: { err_code: "Bad Request", err_msg: "boom" } },
+            rawResponse: { ...rawResponse, status: 400 },
+        });
+        await expect(client.speak.v2.audio.generate({ model: "m", text: "t" })).rejects.toBeInstanceOf(BadRequestError);
+    });
+
+    it("throws DeepgramError on a non-400 status code", async () => {
+        const client = clientReturning({
+            ok: false,
+            error: { reason: "status-code", statusCode: 500, body: { err_code: "Internal", err_msg: "kaboom" } },
+            rawResponse: { ...rawResponse, status: 500 },
+        });
+        const error = await client.speak.v2.audio.generate({ model: "m", text: "t" }).catch((e) => e);
+        expect(error).toBeInstanceOf(DeepgramError);
+        expect(error).not.toBeInstanceOf(BadRequestError);
+        expect((error as any).statusCode).toBe(500);
+    });
+
+    it("routes a transport failure through handleNonStatusCodeError", async () => {
+        // `reason !== "status-code"` — the fetch failed before any status arrived.
+        const client = clientReturning({
+            ok: false,
+            error: { reason: "unknown", errorMessage: "socket hang up" },
+            rawResponse,
+        });
+        const error = await client.speak.v2.audio.generate({ model: "m", text: "t" }).catch((e) => e);
+        expect(error).toBeInstanceOf(DeepgramError);
+        expect((error as Error).message).toContain("socket hang up");
+    });
+});
+
+// --------------------------------------------------------------------------- //
+// resources/audio/client/Client.ts — query serialization over real HTTP
+// --------------------------------------------------------------------------- //
+
+describe("Speak V2 audio.generate query serialization", () => {
     let server: http.Server;
-    const port = 39_997;
-    const baseUrl = `http://localhost:${port}`;
+    let baseUrl: string;
     // Mutated per test to steer the response the local server returns.
     let responder: (res: http.ServerResponse) => void;
 
@@ -324,7 +452,18 @@ describe("Speak V2 audio.generate error branches", () => {
             req.on("data", (c) => chunks.push(c as Buffer));
             req.on("end", () => responder(res));
         });
-        await new Promise<void>((resolve) => server.listen(port, resolve));
+        // Port 0 lets the OS pick a free port: a hard-coded one can already be in
+        // use on a developer machine or a parallel CI job. `error` rejects the
+        // setup so a bind failure surfaces as a failed hook, not a hook timeout.
+        await new Promise<void>((resolve, reject) => {
+            server.once("error", reject);
+            server.listen(0, "127.0.0.1", resolve);
+        });
+        const address = server.address();
+        if (address === null || typeof address === "string") {
+            throw new Error("expected an AddressInfo from server.address()");
+        }
+        baseUrl = `http://127.0.0.1:${address.port}`;
     });
 
     afterAll(async () => {
@@ -350,7 +489,7 @@ describe("Speak V2 audio.generate error branches", () => {
             callback: "https://cb.example.com",
             callback_method: "POST",
             mip_opt_out: true,
-            tag: ["t1"],
+            tag: ["t1", "t2"],
             bit_rate: 48000,
             container: "wav",
             encoding: "linear16",
@@ -363,45 +502,9 @@ describe("Speak V2 audio.generate error branches", () => {
         expect(query.get("container")).toBe("wav");
         expect(query.get("encoding")).toBe("linear16");
         expect(query.get("priority")).toBe("low");
-    });
-
-    it("throws BadRequestError on a 400 response", async () => {
-        responder = (res) => {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ err_code: "Bad Request", err_msg: "boom" }));
-        };
-        await expect(makeClient().speak.v2.audio.generate({ model: "m", text: "t" })).rejects.toBeInstanceOf(
-            BadRequestError,
-        );
-    });
-
-    it("throws DeepgramError on a non-400 status code", async () => {
-        responder = (res) => {
-            res.writeHead(500, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ err_code: "Internal", err_msg: "kaboom" }));
-        };
-        const error = await makeClient()
-            .speak.v2.audio.generate({ model: "m", text: "t" })
-            .catch((e) => e);
-        expect(error).toBeInstanceOf(DeepgramError);
-        expect(error).not.toBeInstanceOf(BadRequestError);
-        expect((error as any).statusCode).toBe(500);
-    });
-
-    it("routes a transport failure through handleNonStatusCodeError", async () => {
-        // Point at a closed port so the fetch fails before any status code is
-        // received (reason !== "status-code").
-        const client = new DeepgramClient({
-            apiKey: "test",
-            maxRetries: 0,
-            environment: {
-                base: "http://localhost:1",
-                production: "http://localhost:1",
-                agent: "http://localhost:1",
-                agentRest: "http://localhost:1",
-            },
-        });
-        await expect(client.speak.v2.audio.generate({ model: "m", text: "t" })).rejects.toBeInstanceOf(DeepgramError);
+        // SpeakV2Tag is documented "Repeatable" — as observed on the wire, the two
+        // tags arrive as two `tag` parameters, not one JSON-encoded array.
+        expect(query.getAll("tag")).toEqual(["t1", "t2"]);
     });
 });
 

@@ -321,24 +321,43 @@ build:
 	node scripts/validate-esm-build.mjs
 
 test:
-	node scripts/fix-wire-test-imports.js
-	pnpm exec vitest --project unit --run
+	@cleanup() { \
+		test_status=$$?; \
+		trap - 0 INT TERM; \
+		node scripts/revert-wire-test-imports.js; \
+		cleanup_status=$$?; \
+		if [ $$test_status -ne 0 ]; then exit $$test_status; fi; \
+		exit $$cleanup_status; \
+	}; \
+	trap cleanup 0; \
+	trap 'exit 130' INT; \
+	trap 'exit 143' TERM; \
+	node scripts/fix-wire-test-imports.js && \
+	pnpm exec vitest --project unit --run && \
 	pnpm exec vitest --project wire --run
-	node scripts/revert-wire-test-imports.js
 
 # Same unit + wire suites as `test`, but with V8 code coverage. Both projects
 # run in a single vitest invocation so coverage is merged into one cobertura +
 # text report (CI consumes coverage/cobertura-coverage.xml). The wire-import
-# fixup/revert mirrors `test`; revert runs even if vitest fails so a local run
-# never leaves the wire tests rewritten.
+# fixup/revert mirrors `test`: an EXIT/INT/TERM trap reverts even when vitest
+# fails or the run is interrupted, so no path leaves the wire tests rewritten,
+# and a failed revert fails the target instead of being swallowed.
 test-coverage:
-	node scripts/fix-wire-test-imports.js
+	@cleanup() { \
+		test_status=$$?; \
+		trap - 0 INT TERM; \
+		node scripts/revert-wire-test-imports.js; \
+		cleanup_status=$$?; \
+		if [ $$test_status -ne 0 ]; then exit $$test_status; fi; \
+		exit $$cleanup_status; \
+	}; \
+	trap cleanup 0; \
+	trap 'exit 130' INT; \
+	trap 'exit 143' TERM; \
+	node scripts/fix-wire-test-imports.js && \
 	pnpm exec vitest --project unit --project wire --run \
 		--coverage --coverage.provider=v8 \
-		--coverage.reporter=cobertura --coverage.reporter=text; \
-		status=$$?; \
-		node scripts/revert-wire-test-imports.js; \
-		exit $$status
+		--coverage.reporter=cobertura --coverage.reporter=text
 
 test-esm:
 	@printf "\033[1;36mRunning ESM build tests...\033[0m\n"

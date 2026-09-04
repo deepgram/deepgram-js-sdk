@@ -189,21 +189,37 @@ describe.each([
         const fake = new FakeSocket();
         const socket = make(fake);
         const promise = socket.waitForOpen();
-        const handled = promise.catch((e) => e);
         fake.emit("error", { message: "nope" });
-        await expect(Promise.resolve(handled)).resolves.toBeDefined();
+        // waitForOpen rejects with the raw event, not an Error, so `.rejects.toThrow()`
+        // would not match — compare the value. Converting the rejection to a resolution
+        // before asserting would make this test pass even if waitForOpen resolved.
+        await expect(promise).rejects.toEqual({ message: "nope" });
     });
 });
 
-describe("Socket message handler with non-JSON payloads", () => {
-    it("passes through invalid JSON to the message handler when supported", () => {
-        // The listen v1 socket parses JSON; ensure malformed payloads don't crash the suite.
+describe("Socket message handler payload parsing", () => {
+    const makeListenV1 = () => {
         const fake = new FakeSocket();
         const socket = new ListenV1Socket({ socket: fake as any });
         const seen: Seen = {};
         register(socket, seen);
-        // valid JSON path
+        return { fake, seen };
+    };
+
+    it("decodes a JSON payload before handing it to the message handler", () => {
+        const { fake, seen } = makeListenV1();
         fake.emit("message", { data: '{"type":"Results"}' });
         expect(seen.message).toEqual({ type: "Results" });
+    });
+
+    it("propagates a SyntaxError when the payload is not valid JSON", () => {
+        // The generated handler calls fromJson() (JSON.parse) unguarded, so a
+        // malformed frame surfaces as a throw out of the emit rather than reaching
+        // the message handler. Asserting that documents the real contract: callers
+        // needing binary/non-JSON frames must use the wrapped sockets in
+        // CustomClient.ts, which install a binary-aware handler instead.
+        const { fake, seen } = makeListenV1();
+        expect(() => fake.emit("message", { data: "not json {" })).toThrow(SyntaxError);
+        expect(seen.message).toBeUndefined();
     });
 });

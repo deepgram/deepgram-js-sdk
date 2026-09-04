@@ -8,12 +8,19 @@ type ListenerMap = {
     close?: (event: { code?: number; reason?: string }) => void;
 };
 
-class FakeTransport implements DeepgramTransport {
+/**
+ * `ping` is optional on DeepgramTransport, so a transport that never implements
+ * it is a legitimate implementation. This base class models exactly that: `ping`
+ * is absent from the instance *and* the prototype chain, which is what
+ * CustomClient's `transport.ping ? … : undefined` check actually looks at.
+ * (Deleting `ping` off a FakeTransport instance would not model it — the method
+ * lives on the prototype and stays reachable.)
+ */
+class PinglessTransport implements DeepgramTransport {
     public readonly listeners: ListenerMap = {};
     public readonly sent: Array<string | ArrayBuffer | Blob | ArrayBufferView> = [];
     public closed = false;
     public closeArgs: Array<{ code?: number; reason?: string }> = [];
-    public pingPayloads: Array<string | ArrayBuffer | Blob | ArrayBufferView | undefined> = [];
     private open = false;
 
     public send(data: string | ArrayBuffer | Blob | ArrayBufferView): void {
@@ -40,15 +47,21 @@ class FakeTransport implements DeepgramTransport {
         this.closeArgs.push({ code, reason });
         this.listeners.close?.({ code, reason });
     }
-    public ping(data?: string | ArrayBuffer | Blob | ArrayBufferView): void {
-        this.pingPayloads.push(data);
-    }
     public emitOpen(): void {
         this.open = true;
         this.listeners.open?.();
     }
     public emitMessage(message: string | ArrayBuffer | Blob | ArrayBufferView): void {
         this.listeners.message?.(message);
+    }
+}
+
+/** The default fake: everything PinglessTransport does, plus an explicit ping(). */
+class FakeTransport extends PinglessTransport {
+    public pingPayloads: Array<string | ArrayBuffer | Blob | ArrayBufferView | undefined> = [];
+
+    public ping(data?: string | ArrayBuffer | Blob | ArrayBufferView): void {
+        this.pingPayloads.push(data);
     }
 }
 
@@ -374,15 +387,16 @@ describe("TransportWebSocketAdapter branch edges", () => {
         expect(adapter.dispatchEvent({ type: "close", target: adapter })).toBe(true);
     });
 
-    it("handles a transport that does not expose ping()", async () => {
-        const created: Array<Record<string, unknown>> = [];
+    it("rejects ping() when the transport does not expose ping()", async () => {
+        const created: PinglessTransport[] = [];
         const client = new DeepgramClient({
             apiKey: "test-api-key",
             reconnect: true,
             transportFactory: () => {
-                // deliberately no `ping` method
-                const t = new FakeTransport() as unknown as Record<string, unknown>;
-                delete t.ping;
+                // A transport that genuinely has no `ping` — `delete t.ping` on a
+                // FakeTransport instance would not work, because `ping` lives on
+                // FakeTransport.prototype and the delete leaves it reachable.
+                const t = new PinglessTransport();
                 created.push(t);
                 return t as unknown as DeepgramTransport;
             },
@@ -391,9 +405,13 @@ describe("TransportWebSocketAdapter branch edges", () => {
         const adapter = (wrapped as unknown as { socket: { reconnect: () => void } }).socket;
         adapter.reconnect();
         await flush();
-        (created[0] as unknown as FakeTransport).emitOpen();
-        // pinging when the transport has no ping is a no-op that must not throw
-        expect(() => (wrapped as unknown as { ping: (d?: string) => void }).ping("x")).not.toThrow();
+        created[0]!.emitOpen();
+        // Guard against a silent no-op: _setTransportHandle leaves `_ws.ping`
+        // undefined for such a transport, so ping() must fail loudly rather than
+        // pretend a keepalive frame was sent.
+        expect(() => (wrapped as unknown as { ping: (d?: string) => void }).ping("x")).toThrow(
+            /ping is not supported/i,
+        );
     });
 });
 
