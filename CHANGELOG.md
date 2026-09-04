@@ -2,17 +2,16 @@
 
 ## [5.10.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.9.0...v5.10.0) (2026-09-02)
 
+Custom Node.js proxy-agent support for streaming connections, plus an early validation error for an unsupported Nova-3 prompting option.
 
 ### Features
 
-* allow custom http agent for streaming websocket connections ([cb4c275](https://github.com/deepgram/deepgram-js-sdk/commit/cb4c275a881a3cd5dd40f86f08547728936d14d7))
-* **websocket:** support custom HTTP agents ([#504](https://github.com/deepgram/deepgram-js-sdk/issues/504)) ([bc6f9c4](https://github.com/deepgram/deepgram-js-sdk/commit/bc6f9c42702df60738399cdf698bfc806ff1634a))
+* **websocket:** support a custom Node.js HTTP(S) agent for Agent v1, Listen v1/v2, and Speak v1/v2 streaming connections. Set `agent` on the client for every connection or per connection to override it, enabling proxies such as `HttpsProxyAgent`. Browser, web-worker, and `transportFactory` connections are unchanged. ([#504](https://github.com/deepgram/deepgram-js-sdk/issues/504)) ([bc6f9c4](https://github.com/deepgram/deepgram-js-sdk/commit/bc6f9c42702df60738399cdf698bfc806ff1634a))
 
 
 ### Bug Fixes
 
-* **listen:** reject Nova-3 keywords before connecting ([c84cc14](https://github.com/deepgram/deepgram-js-sdk/commit/c84cc1439b5e03bb022f98b0bdad36238b43b86c))
-* **listen:** reject Nova-3 keywords before connecting ([#505](https://github.com/deepgram/deepgram-js-sdk/issues/505)) ([5263bea](https://github.com/deepgram/deepgram-js-sdk/commit/5263bea337bf2b6c547f141b92c9e845681bb700))
+* **listen:** reject non-empty `keywords` before a Nova-3 Listen v1 connection attempt. The SDK now throws the same actionable 400-style error as REST and directs callers to `keyterm`; Nova-2, empty `keywords`, and names such as `nova-30` are unaffected. ([#505](https://github.com/deepgram/deepgram-js-sdk/issues/505)) ([5263bea](https://github.com/deepgram/deepgram-js-sdk/commit/5263bea337bf2b6c547f141b92c9e845681bb700))
 
 ## [5.9.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.8.0...v5.9.0) (2026-08-28)
 
