@@ -545,7 +545,7 @@
         "@commitlint/config-conventional": "20.0.0",
         "tsx": "4.20.6",
         "playwright": "1.59.1",
-        "vite": "6.4.2",
+        "vite": "6.4.3",
         "terser": "5.46.1"
     },
     "browser": {
