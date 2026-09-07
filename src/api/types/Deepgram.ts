@@ -9,8 +9,10 @@ export interface Deepgram {
     version?: string | undefined;
     /** Deepgram TTS model. Aura models (version v1) use the aura-* voices; Flux TTS (version v2) uses the flux-{voice}-{language} voices (e.g. flux-alexis-en). Defaults to flux-kit-en when agent.speak is omitted. */
     model: Deepgram.Model;
-    /** Speaking rate multiplier that adjusts the pace of generated speech while preserving natural prosody and voice quality. Aura (version v1) accepts any value from 0.7 to 1.5. Flux TTS (version v2) accepts only 0.85, 0.9, 0.95, 1.0, 1.05, 1.1 and 1.15; another value ends the session with FAILED_TO_SPEAK. Not yet supported in all languages. */
+    /** Speaking rate multiplier that adjusts the pace of generated speech while preserving natural prosody and voice quality. Aura (version v1) accepts any value from 0.7 to 1.5. Flux TTS (version v2) accepts values from 0.5 to 1.5 in 0.05 increments; a value the family does not accept ends the session with FAILED_TO_SPEAK. Not yet supported in all languages. */
     speed?: number | undefined;
+    /** Delivery register of the generated speech, on a calm-to-animated axis. Flux TTS (version v2) only, on every Flux voice. Accepts the whole numbers -2 to 2, where 0 (the default) is the voice's tuned delivery and the only value validated for production, -2 the calm end of the range and 2 the animated end. Fixed for the session. Beta: behavior may change in future model versions, and non-default values increase the risk of hallucinations and pronunciation errors. See [Expressivity](/docs/tts-expressivity). */
+    expressivity?: number | undefined;
 }
 
 export namespace Deepgram {
@@ -108,15 +110,6 @@ export namespace Deepgram {
         FluxNaveenEn: "flux-naveen-en",
         FluxPaigeEn: "flux-paige-en",
         FluxPriyaEn: "flux-priya-en",
-        /**
-         * @deprecated Removed from the published Flux TTS voice catalog in the GA cutover
-         * (deepgram-docs #1096, 2026-08-12). Retained here for backward compatibility: the
-         * voice was still synthesizing normally when this was verified on 2026-08-19, so
-         * dropping the constant would break callers whose code still works at runtime.
-         * It is no longer a documented voice and may be withdrawn without notice — prefer
-         * a voice from the GA catalog.
-         */
-        FluxReneeEn: "flux-renee-en",
         FluxRufusEn: "flux-rufus-en",
         FluxSeanEn: "flux-sean-en",
         FluxSharonEn: "flux-sharon-en",

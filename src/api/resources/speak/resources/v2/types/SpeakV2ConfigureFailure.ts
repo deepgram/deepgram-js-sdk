@@ -3,7 +3,7 @@
 export interface SpeakV2ConfigureFailure {
     /** Message type identifier */
     type: "ConfigureFailure";
-    /** Failure code, in `SCREAMING_SNAKE_CASE`. `SPEED_OUT_OF_RANGE`: outside the multipliers the model publishes. `SPEED_INCREMENT_INVALID`: inside the published range but not one of the multipliers. `SPEED_NOT_SUPPORTED`: this model or language has no runtime speed control at all. `INTERNAL_ERROR`: the configuration was acceptable but the server could not apply it — unlike the others, a server-side failure rather than a statement about the request. */
+    /** Failure code, in `SCREAMING_SNAKE_CASE`. `SPEED_OUT_OF_RANGE`: outside the range the model publishes. `SPEED_INCREMENT_INVALID`: inside the published range but off the `0.05` increment. `SPEED_NOT_SUPPORTED`: this model or language has no runtime speed control at all. `INTERNAL_ERROR`: the configuration was acceptable but the server could not apply it — unlike the others, a server-side failure rather than a statement about the request. */
     code: SpeakV2ConfigureFailure.Code;
     /** The configuration field the failure is about. Absent when the failure is not tied to one field. */
     field?: "speed" | undefined;
@@ -14,7 +14,7 @@ export interface SpeakV2ConfigureFailure {
 }
 
 export namespace SpeakV2ConfigureFailure {
-    /** Failure code, in `SCREAMING_SNAKE_CASE`. `SPEED_OUT_OF_RANGE`: outside the multipliers the model publishes. `SPEED_INCREMENT_INVALID`: inside the published range but not one of the multipliers. `SPEED_NOT_SUPPORTED`: this model or language has no runtime speed control at all. `INTERNAL_ERROR`: the configuration was acceptable but the server could not apply it — unlike the others, a server-side failure rather than a statement about the request. */
+    /** Failure code, in `SCREAMING_SNAKE_CASE`. `SPEED_OUT_OF_RANGE`: outside the range the model publishes. `SPEED_INCREMENT_INVALID`: inside the published range but off the `0.05` increment. `SPEED_NOT_SUPPORTED`: this model or language has no runtime speed control at all. `INTERNAL_ERROR`: the configuration was acceptable but the server could not apply it — unlike the others, a server-side failure rather than a statement about the request. */
     export const Code = {
         SpeedOutOfRange: "SPEED_OUT_OF_RANGE",
         SpeedIncrementInvalid: "SPEED_INCREMENT_INVALID",

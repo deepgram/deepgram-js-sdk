@@ -94,25 +94,6 @@ describe("MediaClient", () => {
                 agentRest: server.baseUrl,
             },
         });
-
-        server.mockEndpoint().post("/v1/listen").respondWith().statusCode(200).build();
-
-        const response = await client.listen.v1.media.transcribeUrl({});
-        expect(response).toEqual(undefined);
-    });
-
-    test("transcribeUrl (3)", async () => {
-        const server = mockServerPool.createServer();
-        const client = new DeepgramClient({
-            maxRetries: 0,
-            apiKey: "test",
-            environment: {
-                base: server.baseUrl,
-                production: server.baseUrl,
-                agent: server.baseUrl,
-                agentRest: server.baseUrl,
-            },
-        });
         const rawRequestBody = { url: "url" };
         const rawResponseBody = { key: "value" };
 

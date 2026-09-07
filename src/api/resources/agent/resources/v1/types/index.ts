@@ -3,6 +3,7 @@ export * from "./AgentV1AgentStartedSpeaking.js";
 export * from "./AgentV1AgentThinking.js";
 export * from "./AgentV1ConversationText.js";
 export * from "./AgentV1Error.js";
+export * from "./AgentV1ForceEndTurn.js";
 export * from "./AgentV1FunctionCallRequest.js";
 export * from "./AgentV1History.js";
 export * from "./AgentV1InjectAgentMessage.js";

@@ -40,9 +40,6 @@ export class MediaClient {
      *     await client.listen.v1.media.transcribeUrl({
      *         url: "https://dpgr.am/spacewalk.wav"
      *     })
-     *
-     * @example
-     *     await client.listen.v1.media.transcribeUrl({})
      */
     public transcribeUrl(
         request: Deepgram.listen.v1.ListenV1RequestUrl,

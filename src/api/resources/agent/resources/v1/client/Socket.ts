@@ -128,6 +128,11 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    public sendForceEndTurn(message: Deepgram.agent.AgentV1ForceEndTurn): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
         this.sendBinary(message);
@@ -202,6 +207,7 @@ export class V1Socket {
             | Deepgram.agent.AgentV1SendFunctionCallResponse
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
+            | Deepgram.agent.AgentV1ForceEndTurn
             | string,
     ): void {
         const jsonPayload = toJson(payload);
