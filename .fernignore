@@ -179,6 +179,11 @@ src/BaseClient.ts
 # Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
 
+# src/api/types/SpeakV2Speed.ts: the 2026-09-07 regen corrected the speed type
+# to `number`, but dropped the named string constants shipped in 5.10.0. Retain
+# both forms so existing callers using SpeakV2Speed.One or numeric speeds compile.
+src/api/types/SpeakV2Speed.ts
+
 # src/api/types/Deepgram.ts: the 2026-08-19 regen replaced the Early Access Flux TTS
 # voice roster with the GA catalog (deepgram-docs #1096, 2026-08-12). That added ~24
 # voices and dropped exactly one — `flux-renee-en`. Because Fern emits this enum as a

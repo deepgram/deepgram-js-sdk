@@ -291,6 +291,13 @@ describe("2026-07-09 regen constraints", () => {
             expect([nominal, slower]).toEqual([1.0, 0.85]);
         });
 
+        it("keeps the released named constants and string values", () => {
+            const viaConstant: Deepgram.SpeakV2Speed = Deepgram.SpeakV2Speed.One;
+            const viaString: Deepgram.SpeakV2Speed = "1.05";
+
+            expect([viaConstant, viaString]).toEqual(["1.00", "1.05"]);
+        });
+
         it("keeps the released Aura2PerseoIt constants", () => {
             // The spec no longer lists this model, but removing a named symbol from a patch
             // release breaks callers even while its string form remains assignable.

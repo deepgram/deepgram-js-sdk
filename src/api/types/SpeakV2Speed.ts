@@ -3,4 +3,16 @@
 /**
  * Speech-rate multiplier. `1.0` is the model's nominal rate; lower is slower. Accepted values run `0.5` to `1.5` in `0.05` increments. A value outside that range is rejected with `SPEED_OUT_OF_RANGE`; a value inside it but off the `0.05` increment with `SPEED_INCREMENT_INVALID`. Models and languages without runtime speed control reject any value with `SPEED_NOT_SUPPORTED`.
  */
-export type SpeakV2Speed = number;
+export const SpeakV2Speed = {
+    ZeroPointEightFive: "0.85",
+    ZeroPointNine: "0.90",
+    ZeroPointNineFive: "0.95",
+    One: "1.00",
+    OnePointZeroFive: "1.05",
+    OnePointOne: "1.10",
+    OnePointOneFive: "1.15",
+} as const;
+
+// The 2026-09-07 regen corrected this to `number`, but dropped the named value
+// object shipped in 5.10.0. Retain both forms so neither existing style breaks.
+export type SpeakV2Speed = (typeof SpeakV2Speed)[keyof typeof SpeakV2Speed] | string | number;
