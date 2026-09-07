@@ -131,6 +131,33 @@ describe("transportFactory", () => {
         socket.ping("keepalive");
         expect(transport.pingPayloads).toEqual(["keepalive"]);
     });
+
+    it('routes Agent ForceEndTurn through the custom transport as {"type":"ForceEndTurn"}', async () => {
+        const transport = new FakeTransport();
+        const created: Array<{ url: string; request: { service: string } }> = [];
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory: (url, _headers, request) => {
+                created.push({ url, request: { service: request.service } });
+                return transport;
+            },
+        });
+
+        const socket = await client.agent.v1.createConnection();
+        socket.connect();
+        await Promise.resolve();
+        transport.emitOpen();
+
+        socket.sendForceEndTurn({ type: "ForceEndTurn" });
+
+        expect(created).toEqual([
+            {
+                url: expect.stringContaining("wss://agent.deepgram.com/v1/agent/converse"),
+                request: { service: "agent.v1" },
+            },
+        ]);
+        expect(transport.sent).toEqual(['{"type":"ForceEndTurn"}']);
+    });
 });
 
 describe("reconnect flag", () => {

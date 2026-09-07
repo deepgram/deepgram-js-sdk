@@ -192,6 +192,17 @@ src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
 # coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
 src/api/types/Deepgram.ts
 
+# src/api/types/SpeakV1Model.ts: the 2026-09-07 regen removed the released
+# Aura2PerseoIt named constant. Keep it as a deprecated source-compatibility
+# alias until the next major release, when its removal can be documented.
+src/api/types/SpeakV1Model.ts
+
+# src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestModel.ts:
+# the 2026-09-07 regen removed the released Aura2PerseoIt named constant from
+# the audio request namespace too. Keep the matching deprecated compatibility
+# alias until the next major release. Covered by tests/unit/regen-constraints.test.ts.
+src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestModel.ts
+
 # src/errors/DeepgramTimeoutError.ts: the 2026-08-19 regen re-parented this class from
 # `Error` to `DeepgramError`. That is arguably the better hierarchy — a timeout IS a
 # Deepgram error, and it is currently the one error type the SDK's own base class fails

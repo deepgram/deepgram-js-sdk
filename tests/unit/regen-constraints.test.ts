@@ -291,6 +291,16 @@ describe("2026-07-09 regen constraints", () => {
             expect([nominal, slower]).toEqual([1.0, 0.85]);
         });
 
+        it("keeps the released Aura2PerseoIt constants", () => {
+            // The spec no longer lists this model, but removing a named symbol from a patch
+            // release breaks callers even while its string form remains assignable.
+            const speakModel: Deepgram.SpeakV1Model = Deepgram.SpeakV1Model.Aura2PerseoIt;
+            const audioModel: Deepgram.speak.v1.AudioGenerateRequestModel =
+                Deepgram.speak.v1.AudioGenerateRequestModel.Aura2PerseoIt;
+
+            expect([speakModel, audioModel]).toEqual(["aura-2-perseo-it", "aura-2-perseo-it"]);
+        });
+
         it("keeps the deprecated flux-renee-en voice constant", () => {
             // The GA catalog cutover (deepgram-docs #1096) dropped this one voice from the
             // spec while the service kept serving it. Fern emits named members, so losing
