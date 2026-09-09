@@ -117,6 +117,15 @@ jobs:
           output: both
 
       - name: Add coverage PR comment
+        if: hashFiles('code-coverage-results.md') != ''
+        # Belt-and-braces alongside the job-level fork gate above. That gate stops
+        # fork PRs, but it is not the only way this step can be handed a read-only
+        # token: Dependabot PRs run on same-repository branches (so they pass the
+        # gate) and still get a restricted GITHUB_TOKEN, and the API answers 403.
+        # A coverage comment is a nicety — never a reason to paint CI red on a PR
+        # whose author cannot do anything about it. The report is still in the job
+        # summary either way.
+        continue-on-error: true
         uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2.9.4
         # Fork PRs force GITHUB_TOKEN read-only regardless of the `permissions:`
         # block above, so this step cannot get `pull-requests: write` there and would
