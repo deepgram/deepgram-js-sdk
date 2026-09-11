@@ -2,9 +2,12 @@
 
 ## [5.10.1](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.0...v5.10.1) (2026-09-04)
 
+Corrects the v5.10.0 npm artifact mismatch: this release includes the Custom Node.js proxy-agent support announced in the v5.10.0 release notes.
 
 ### Bug Fixes
 
+* **websocket:** publish the Node.js HTTP(S) `agent` option for Agent v1, Listen v1/v2, and Speak v1/v2 streaming connections that was present in the v5.10.0 tag but missing from its npm artifact. ([#547](https://github.com/deepgram/deepgram-js-sdk/issues/547))
+* **release:** build the commit tagged by Release Please and publish through npm Trusted Publishing (GitHub OIDC), preventing source/artifact drift and removing the long-lived npm publish token. ([#545](https://github.com/deepgram/deepgram-js-sdk/issues/545))
 * restore wire imports after test failures ([#541](https://github.com/deepgram/deepgram-js-sdk/issues/541)) ([00d0e17](https://github.com/deepgram/deepgram-js-sdk/commit/00d0e17f3aa369f3f3b9885d5882db0c61abee84))
 * **test:** set browser test discovery directory ([4e49e64](https://github.com/deepgram/deepgram-js-sdk/commit/4e49e64fcb9a6064620fbaaf5a2448a50fa406a9))
 
