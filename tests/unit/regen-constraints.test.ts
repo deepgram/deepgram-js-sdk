@@ -264,15 +264,13 @@ describe("2026-07-09 regen constraints", () => {
         });
 
         it("speed/expressivity are numeric (spec enums are NOT enforced in codegen)", () => {
-            // The spec constrains speed to 0.85..1.15 (0.05 steps) and expressivity to
+            // The spec constrains speed to 0.5..1.5 (0.05 steps) and expressivity to
             // -2..2, but these generate without runtime narrowing, so out-of-range values
             // type-check and are only rejected server-side. Pinned so a future generator
             // that DOES narrow these is noticed here.
             //
-            // The 2026-08-19 regen narrowed SpeakV2Speed to a string enum, which broke the
-            // numeric `speak.v2.connect({ speed })` call sites that shipped in 5.8.0. The
-            // shim in src/api/types/SpeakV2Speed.ts widens it back to admit `number`; this
-            // numeric assignment is what proves the shim is still in place.
+            // Keep the connect parameter numeric and intentionally open. Values outside the
+            // documented range are rejected by the service rather than the TypeScript type.
             const speed: Deepgram.SpeakV2Speed = 3.7;
             const expressivity: Deepgram.SpeakV2Expressivity = 99;
             expect([speed, expressivity]).toEqual([3.7, 99]);
@@ -285,7 +283,7 @@ describe("2026-07-09 regen constraints", () => {
         });
     });
 
-    describe("2026-08-19 regen: SpeakV2Speed back-compat", () => {
+    describe("Flux TTS generator constraints", () => {
         it("still accepts the documented numeric multipliers", () => {
             // The form callers actually wrote before the regen: a bare number.
             const nominal: Deepgram.SpeakV2Speed = 1.0;
@@ -293,11 +291,21 @@ describe("2026-07-09 regen constraints", () => {
             expect([nominal, slower]).toEqual([1.0, 0.85]);
         });
 
-        it("also accepts the generated string constants and stays open", () => {
-            // The shim keeps Fern's new named constants usable rather than discarding them.
-            const viaConst: Deepgram.SpeakV2Speed = Deepgram.SpeakV2Speed.One;
+        it("keeps the released named constants and string values", () => {
+            const viaConstant: Deepgram.SpeakV2Speed = Deepgram.SpeakV2Speed.One;
             const viaString: Deepgram.SpeakV2Speed = "1.05";
-            expect([viaConst, viaString]).toEqual(["1.00", "1.05"]);
+
+            expect([viaConstant, viaString]).toEqual(["1.00", "1.05"]);
+        });
+
+        it("keeps the released Aura2PerseoIt constants", () => {
+            // The spec no longer lists this model, but removing a named symbol from a patch
+            // release breaks callers even while its string form remains assignable.
+            const speakModel: Deepgram.SpeakV1Model = Deepgram.SpeakV1Model.Aura2PerseoIt;
+            const audioModel: Deepgram.speak.v1.AudioGenerateRequestModel =
+                Deepgram.speak.v1.AudioGenerateRequestModel.Aura2PerseoIt;
+
+            expect([speakModel, audioModel]).toEqual(["aura-2-perseo-it", "aura-2-perseo-it"]);
         });
 
         it("keeps the deprecated flux-renee-en voice constant", () => {

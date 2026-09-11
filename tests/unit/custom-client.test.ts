@@ -302,6 +302,7 @@ describe("WebSocket connection methods", () => {
             expect(typeof socket.close).toBe("function");
             expect(typeof socket.on).toBe("function");
             expect(typeof socket.sendSettings).toBe("function");
+            expect(typeof socket.sendForceEndTurn).toBe("function");
             expect(typeof socket.sendMedia).toBe("function");
         });
     });

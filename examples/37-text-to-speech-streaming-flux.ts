@@ -159,9 +159,8 @@ async function textToSpeechStreamingFlux() {
             await deepgramConnection.waitForOpen();
 
             // Set the speaking rate before the first Speak (Configure can also be sent
-            // again between turns to change it). Accepted multipliers are 0.85–1.15 in
-            // 0.05 steps; anything else comes back as a ConfigureFailure (handled above)
-            // rather than throwing here.
+            // again between turns to change it). Accepted multipliers are 0.5–1.5 in
+            // 0.05 steps.
             deepgramConnection.sendConfigure({ type: "Configure", speed: 1.05 });
 
             // A longer passage so there is enough audio in flight to barge in on.

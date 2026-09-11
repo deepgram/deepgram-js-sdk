@@ -79,6 +79,10 @@ export class V2Socket {
         this.sendJson(message);
     }
 
+    /**
+     * Requires server-side enablement. On deployments without the feature, the
+     * server returns `UNPARSABLE_CLIENT_MESSAGE` and closes the connection.
+     */
     public sendForceEndTurn(message: Deepgram.listen.ListenV2ForceEndTurn): void {
         this.assertSocketIsOpen();
         this.sendJson(message);

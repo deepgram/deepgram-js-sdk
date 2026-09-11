@@ -53,7 +53,7 @@ export interface MediaTranscribeRequestOctetStream {
      * To boost multiple separate keyterms, repeat the `keyterm` parameter (for example, `keyterm=term1&keyterm=term2`). To boost one multi-word phrase as a single keyterm, join the words with `%20` or `+` (for example, `keyterm=customer%20service`). Do not separate keyterms with commas, semicolons, or line breaks.
      */
     keyterm?: string | string[];
-    /** Keywords can boost or suppress specialized terminology and brands */
+    /** Keywords can boost or suppress specialized terminology and brands. `keywords` is not supported with Nova-3 models; use `keyterm` instead. */
     keywords?: string | string[];
     /** The [BCP-47 language tag](https://tools.ietf.org/html/bcp47) that hints at the primary spoken language. Depending on the Model and API endpoint you choose only certain languages are available */
     language?: string;

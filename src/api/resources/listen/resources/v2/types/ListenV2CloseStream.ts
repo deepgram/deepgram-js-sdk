@@ -6,7 +6,7 @@ export interface ListenV2CloseStream {
 }
 
 export namespace ListenV2CloseStream {
-    // A v2 CloseStream message's `type` is ALWAYS "CloseStream" — that is the only value
+    // A v2 CloseStream message's `type` is ALWAYS "CloseStream" - that is the only value
     // this control message has ever had. `Finalize`/`KeepAlive` are v1 control messages
     // and were never valid on v2; an earlier copy of this shim wrongly carried them (a
     // copy-paste from v1's Type enum), so they are intentionally absent here. The Type

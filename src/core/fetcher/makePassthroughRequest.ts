@@ -200,8 +200,8 @@ export async function makePassthroughRequest(
  * so auth headers are not attached.
  *
  * Patch (2026-08-19 regen): the generator compares the target against the resolved base URL
- * ONLY. Deepgram serves its REST surface from two hosts — `base` (api.deepgram.com) and
- * `agentRest` (agent.deepgram.com) — so an absolute URL to the agent host silently lost its
+ * ONLY. Deepgram serves its REST surface from two hosts - `base` (api.deepgram.com) and
+ * `agentRest` (agent.deepgram.com) - so an absolute URL to the agent host silently lost its
  * auth header and failed with an unexplained 401. Widened to the full first-party set, which
  * preserves the upstream fix (an unrelated host still receives no credentials) without
  * breaking legitimate cross-host passthrough calls. The `wss://` entries cannot match an HTTP
@@ -228,7 +228,7 @@ function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
         try {
             allowedOrigins.add(new URL(candidate).origin);
         } catch {
-            // Not a parseable absolute URL — cannot contribute an origin.
+            // Not a parseable absolute URL - cannot contribute an origin.
         }
     }
 
