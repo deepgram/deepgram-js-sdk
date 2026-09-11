@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.11.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.1...v5.11.0) (2026-09-11)
+
+
+### Features
+
+* **regen:** agent ForceEndTurn, agent speak expressivity, Flux TTS speed range 0.5-1.5 ([#546](https://github.com/deepgram/deepgram-js-sdk/issues/546)) ([96fca66](https://github.com/deepgram/deepgram-js-sdk/commit/96fca66bbd93f522bc85b2fae477d7fbf1998e99))
+
 ## [5.10.1](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.0...v5.10.1) (2026-09-04)
 
 Corrects the v5.10.0 npm artifact mismatch: this release includes the Custom Node.js proxy-agent support announced in the v5.10.0 release notes.
