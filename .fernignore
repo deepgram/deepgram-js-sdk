@@ -184,6 +184,11 @@ src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
 # both forms so existing callers using SpeakV2Speed.One or numeric speeds compile.
 src/api/types/SpeakV2Speed.ts
 
+# src/api/resources/listen/resources/v2/client/Socket.ts: retain the ForceEndTurn
+# server-enablement caveat because deployments without the feature close the socket
+# with UNPARSABLE_CLIENT_MESSAGE. Swap to .bak before regen.
+src/api/resources/listen/resources/v2/client/Socket.ts
+
 # src/api/types/Deepgram.ts: the 2026-08-19 regen replaced the Early Access Flux TTS
 # voice roster with the GA catalog (deepgram-docs #1096, 2026-08-12). That added ~24
 # voices and dropped exactly one — `flux-renee-en`. Because Fern emits this enum as a

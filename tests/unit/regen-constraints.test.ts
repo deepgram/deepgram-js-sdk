@@ -264,7 +264,7 @@ describe("2026-07-09 regen constraints", () => {
         });
 
         it("speed/expressivity are numeric (spec enums are NOT enforced in codegen)", () => {
-            // The spec constrains speed to 0.85..1.15 (0.05 steps) and expressivity to
+            // The spec constrains speed to 0.5..1.5 (0.05 steps) and expressivity to
             // -2..2, but these generate without runtime narrowing, so out-of-range values
             // type-check and are only rejected server-side. Pinned so a future generator
             // that DOES narrow these is noticed here.

@@ -12,10 +12,8 @@ export const SpeakV2Speed = {
 } as const;
 
 /**
- * Speech-rate multiplier. `1.0` is the model's nominal rate; lower is slower. The
- * spec documents values from `0.5` to `1.5` in `0.05` increments. As of
- * 2026-09-07, production accepts values outside `0.85` to `1.15` intermittently;
- * stay inside that range until the wider range is announced live. A value outside
+ * Speech-rate multiplier. `1.0` is the model's nominal rate; lower is slower.
+ * Accepted values run from `0.5` to `1.5` in `0.05` increments. A value outside
  * the supported range is rejected with `SPEED_OUT_OF_RANGE`; a value off the
  * `0.05` increment with `SPEED_INCREMENT_INVALID`. Models and languages without
  * runtime speed control reject any value with `SPEED_NOT_SUPPORTED`.
