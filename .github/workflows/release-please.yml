@@ -69,6 +69,8 @@ jobs:
     needs: test
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
+      release_tag: ${{ steps.release.outputs.tag_name }}
+      release_sha: ${{ steps.release.outputs.sha }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -87,6 +89,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release-please.outputs.release_sha }}
 
       - name: Set up node
         uses: actions/setup-node@v6
@@ -98,6 +102,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --no-optional=false
+
+      - name: Verify release version
+        env:
+          RELEASE_TAG: ${{ needs.release-please.outputs.release_tag }}
+        run: |
+          node -e 'const expected = process.env.RELEASE_TAG.replace(/^v/, ""); const actual = require("./package.json").version; if (actual !== expected) throw new Error(`package.json is ${actual}; expected ${expected} from ${process.env.RELEASE_TAG}`);'
 
       - name: Build
         run: make build
