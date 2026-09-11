@@ -37,13 +37,13 @@ All sockets expose `on("open" | "message" | "close" | "error", callback)`, `conn
 
 | Service | Create a socket | Typed send methods |
 | --- | --- | --- |
-| [Voice Agent v1](./src/api/resources/agent/resources/v1/client/Socket.ts) | `client.agent.v1.connect()` or `.createConnection()` | `sendSettings`, `sendUpdateListen`, `sendUpdateThink`, `sendUpdateSpeak`, `sendInjectUserMessage`, `sendInjectAgentMessage`, `sendFunctionCallResponse`, `sendKeepAlive`, `sendUpdatePrompt`, `sendMedia` |
-| [Speech-to-Text v1](./src/api/resources/listen/resources/v1/client/Socket.ts) | `client.listen.v1.connect(args)` or `.createConnection(args)` | `sendMedia`, `sendFinalize`, `sendCloseStream`, `sendKeepAlive` |
-| [Flux STT v2 (conversational)](./src/api/resources/listen/resources/v2/client/Socket.ts) | `client.listen.v2.connect(args)` or `.createConnection(args)` | `sendMedia`, `sendCloseStream`, `sendForceEndTurn`, `sendConfigure` |
-| [Text-to-Speech v1](./src/api/resources/speak/resources/v1/client/Socket.ts) | `client.speak.v1.connect(args)` or `.createConnection(args)` | `sendText`, `sendFlush`, `sendClear`, `sendClose` |
-| [Flux TTS v2](./src/api/resources/speak/resources/v2/client/Socket.ts) | `client.speak.v2.connect(args)` or `.createConnection(args)` | `sendSpeak`, `sendFlush`, `sendInterrupt`, `sendConfigure`, `sendClose` |
+| [Voice Agent v1](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/agent/resources/v1/client/Socket.ts) | `client.agent.v1.connect()` or `.createConnection()` | `sendSettings`, `sendUpdateListen`, `sendUpdateThink`, `sendUpdateSpeak`, `sendInjectUserMessage`, `sendInjectAgentMessage`, `sendFunctionCallResponse`, `sendKeepAlive`, `sendUpdatePrompt`, `sendForceEndTurn`, `sendMedia` |
+| [Speech-to-Text v1](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/listen/resources/v1/client/Socket.ts) | `client.listen.v1.connect(args)` or `.createConnection(args)` | `sendMedia`, `sendFinalize`, `sendCloseStream`, `sendKeepAlive` |
+| [Flux STT v2 (conversational)](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/listen/resources/v2/client/Socket.ts) | `client.listen.v2.connect(args)` or `.createConnection(args)` | `sendMedia`, `sendCloseStream`, `sendForceEndTurn`, `sendConfigure` |
+| [Text-to-Speech v1](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/speak/resources/v1/client/Socket.ts) | `client.speak.v1.connect(args)` or `.createConnection(args)` | `sendText`, `sendFlush`, `sendClear`, `sendClose` |
+| [Flux TTS v2](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/speak/resources/v2/client/Socket.ts) | `client.speak.v2.connect(args)` or `.createConnection(args)` | `sendSpeak`, `sendFlush`, `sendInterrupt`, `sendConfigure`, `sendClose` |
 
-The public connection argument types and Deepgram-specific wrapper behavior are defined in [`src/CustomClient.ts`](./src/CustomClient.ts). Use the linked socket classes for exact message and event types.
+The public connection argument types and Deepgram-specific wrapper behavior are defined in [`src/CustomClient.ts`](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/CustomClient.ts). Use the linked socket classes for exact message and event types.
 
 ## Usage
 
