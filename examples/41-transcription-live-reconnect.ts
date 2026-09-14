@@ -352,8 +352,8 @@ export async function main({
             const code = event?.code;
             log(`Connection closed (code: ${code ?? "unknown"})`);
 
-            // The SDK emits a synthetic code-1000 close before error listeners.
-            // Wait one microtask so its error handler can mark this close retryable.
+            // Defer classification so a close/error pair from a custom transport
+            // is evaluated together before deciding whether to reconnect.
             deferCloseAction(() => {
                 switch (
                     closeAction({
@@ -430,20 +430,21 @@ export async function main({
         if (shuttingDown) {
             return;
         }
+        if (!connection || connection.readyState !== READY_STATE_OPEN) {
+            log("Connection unavailable before finalization. Exiting.");
+            finish(1);
+            return;
+        }
         shuttingDown = true;
         shutdownMetadataReceived = false;
         log("Audio complete — sending CloseStream for a clean shutdown");
-        if (connection && connection.readyState === READY_STATE_OPEN) {
-            connection.sendCloseStream({ type: "CloseStream" });
-            // The server replies with a final Metadata message and then closes
-            // with code 1000. Don't wait forever if that close never arrives.
-            shutdownWatchdog = setTimeout(() => {
-                log("Timed out waiting for Deepgram to finalize the stream. Exiting.");
-                finish(1);
-            }, 10000);
-        } else {
-            finish(0);
-        }
+        connection.sendCloseStream({ type: "CloseStream" });
+        // The server replies with a final Metadata message and then closes with
+        // code 1000. Don't wait forever if that close never arrives.
+        shutdownWatchdog = setTimeout(() => {
+            log("Timed out waiting for Deepgram to finalize the stream. Exiting.");
+            finish(1);
+        }, 10000);
     }
 
     /** Stop timers and release the socket so the process can exit cleanly. */
@@ -469,17 +470,28 @@ export async function main({
         if (activeConnection) {
             activeConnection.close();
         }
+        process.off("SIGINT", handleSigint);
         log(`Done (exit code: ${exitCode})`);
         process.exitCode = exitCode;
     }
 
-    // Graceful Ctrl+C: drain what we have and close the stream properly.
-    process.on("SIGINT", () => {
-        log("SIGINT — shutting down");
+    // Stop ingesting on Ctrl+C, then drain buffered audio through the normal
+    // reconnect and finalization paths rather than reporting a partial success.
+    function handleSigint() {
+        log("SIGINT - draining buffered audio before shutdown");
         audioExhausted = true;
-        beginShutdown();
-        setTimeout(() => finish(0), 3000).unref();
-    });
+        if (pumpTimer) {
+            clearInterval(pumpTimer);
+            pumpTimer = null;
+        }
+        if (connection && connection.readyState === READY_STATE_OPEN) {
+            flushBuffer();
+        } else {
+            void reconnect();
+        }
+    }
+
+    process.on("SIGINT", handleSigint);
 
     // -----------------------------------------------------------------------
     // Start streaming
@@ -517,10 +529,10 @@ export async function main({
             audioExhausted = true;
             clearInterval(pumpTimer);
             pumpTimer = null;
-            // Only shut down if nothing is buffered; otherwise the reconnect
-            // path flushes the buffer first and then shuts down.
+            // The reconnect path flushes any retained buffer before shutting
+            // down; an active connection can finalize immediately.
             if (connection && connection.readyState === READY_STATE_OPEN) {
-                beginShutdown();
+                flushBuffer();
             }
             return;
         }

@@ -6,7 +6,9 @@ type Listener = (data: never) => void;
 
 class FakeConnection implements ReconnectConnection {
     readyState = 1;
-    socket = { close: vi.fn() };
+    socket = {
+        close: vi.fn((code?: number) => this.emit("close", { code })),
+    };
     sendCloseStream = vi.fn();
     sendKeepAlive = vi.fn();
     sendMedia = vi.fn();
@@ -47,6 +49,67 @@ describe("live reconnect example", () => {
         process.exitCode = originalExitCode;
     });
 
+    it("drains buffered audio after SIGINT while disconnected", async () => {
+        const firstConnection = new FakeConnection();
+        const secondConnection = new FakeConnection();
+        let resolveSecondConnection: (connection: ReconnectConnection) => void;
+        const connectionFactory = vi
+            .fn<() => Promise<ReconnectConnection>>()
+            .mockResolvedValueOnce(firstConnection)
+            .mockImplementationOnce(
+                () =>
+                    new Promise<ReconnectConnection>((resolve) => {
+                        resolveSecondConnection = resolve;
+                    }),
+            );
+
+        await main({
+            audio: new Uint8Array(44100 * 2 * 20),
+            connectionFactory,
+            simulateDrop: false,
+        });
+        firstConnection.emit("close", { code: 4000 });
+        await vi.advanceTimersByTimeAsync(250);
+        process.emit("SIGINT");
+
+        if (!resolveSecondConnection) {
+            throw new Error("Reconnect attempt did not create a second connection");
+        }
+        resolveSecondConnection(secondConnection);
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(secondConnection.sendMedia).toHaveBeenCalledTimes(1);
+        expect(secondConnection.sendCloseStream).toHaveBeenCalledWith({ type: "CloseStream" });
+
+        secondConnection.emit("message", { type: "Metadata", request_id: "request-id" });
+        secondConnection.emit("close", { code: 1000 });
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(process.exitCode).toBe(0);
+    });
+
+    it("waits for finalization after SIGINT while connected", async () => {
+        const connection = new FakeConnection();
+        const connectionFactory = vi.fn<() => Promise<ReconnectConnection>>().mockResolvedValue(connection);
+
+        await main({
+            audio: new Uint8Array(44100 * 2 * 20),
+            connectionFactory,
+            simulateDrop: false,
+        });
+        process.emit("SIGINT");
+        await vi.advanceTimersByTimeAsync(3000);
+
+        expect(connection.sendCloseStream).toHaveBeenCalledWith({ type: "CloseStream" });
+        expect(process.exitCode).toBe(originalExitCode);
+
+        connection.emit("message", { type: "Metadata", request_id: "request-id" });
+        connection.emit("close", { code: 1000 });
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(process.exitCode).toBe(0);
+    });
+
     it("keeps discarded buffered audio in the first post-reconnect transcript", async () => {
         const bytesPerSecond = 44100 * 2;
         const firstConnection = new FakeConnection();
@@ -65,10 +128,9 @@ describe("live reconnect example", () => {
         await main({
             audio: new Uint8Array(bytesPerSecond * 50),
             connectionFactory,
-            simulateDrop: false,
+            simulateDrop: true,
         });
         await vi.advanceTimersByTimeAsync(8000);
-        firstConnection.emit("close", { code: 4000 });
         await vi.advanceTimersByTimeAsync(0);
         await vi.advanceTimersByTimeAsync(32000);
 
@@ -89,7 +151,7 @@ describe("live reconnect example", () => {
         expect(console.log).toHaveBeenCalledWith(expect.stringContaining("Transcript [10.00s - 11.00s]: resumed"));
     });
 
-    it("reconnects after the SDK emits an error following a synthetic normal close", async () => {
+    it("reconnects when an error follows a normal close from a custom transport", async () => {
         const firstConnection = new FakeConnection();
         const secondConnection = new FakeConnection();
         const connectionFactory = vi
