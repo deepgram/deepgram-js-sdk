@@ -203,16 +203,39 @@ export type SpeakV1SocketMessage = SpeakV1Socket.Response | Blob;
 export type SpeakV2SocketMessage = SpeakV2Socket.Response | Blob;
 
 /**
+ * Removes a listener previously added with `on()`. Unlike `on()`, this is not part of
+ * the generated socket classes — it is installed alongside `for await` support so that
+ * `on()` can support more than one listener per event in the first place. Removing a
+ * callback that was never added, or was already removed, is a no-op, matching
+ * `EventTarget.removeEventListener` and Node's `EventEmitter.off()`.
+ */
+type SocketOff<Message> = {
+    (event: "open", callback: () => void): void;
+    (event: "message", callback: (message: Message) => void): void;
+    (event: "close", callback: (event: core.CloseEvent) => void): void;
+    (event: "error", callback: (error: Error) => void): void;
+};
+
+/**
  * The streaming sockets, with async iteration. Consuming a connection with `for await`
  * is equivalent to `on("message", ...)`: iteration ends when the socket closes, throws
  * if it errors, and `break` closes the connection. Both styles can be used on the same
  * socket, and messages that arrive between iterations are buffered rather than dropped.
+ *
+ * Also widens `on()` to support more than one listener per event, and adds `off()` to
+ * remove one — the generated socket's `on()` keeps only the most recently registered
+ * callback per event.
  */
-export type AsyncIterableAgentV1Socket = AgentV1Socket & AsyncIterable<AgentV1SocketMessage>;
-export type AsyncIterableListenV1Socket = ListenV1Socket & AsyncIterable<ListenV1SocketMessage>;
-export type AsyncIterableListenV2Socket = ListenV2Socket & AsyncIterable<ListenV2SocketMessage>;
-export type AsyncIterableSpeakV1Socket = SpeakV1Socket & AsyncIterable<SpeakV1SocketMessage>;
-export type AsyncIterableSpeakV2Socket = SpeakV2Socket & AsyncIterable<SpeakV2SocketMessage>;
+export type AsyncIterableAgentV1Socket = AgentV1Socket &
+    AsyncIterable<AgentV1SocketMessage> & { off: SocketOff<AgentV1SocketMessage> };
+export type AsyncIterableListenV1Socket = ListenV1Socket &
+    AsyncIterable<ListenV1SocketMessage> & { off: SocketOff<ListenV1SocketMessage> };
+export type AsyncIterableListenV2Socket = ListenV2Socket &
+    AsyncIterable<ListenV2SocketMessage> & { off: SocketOff<ListenV2SocketMessage> };
+export type AsyncIterableSpeakV1Socket = SpeakV1Socket &
+    AsyncIterable<SpeakV1SocketMessage> & { off: SocketOff<SpeakV1SocketMessage> };
+export type AsyncIterableSpeakV2Socket = SpeakV2Socket &
+    AsyncIterable<SpeakV2SocketMessage> & { off: SocketOff<SpeakV2SocketMessage> };
 
 export interface AgentV1ClientWithWebSocket extends AgentV1Client {
     connect(args?: AgentV1ConnectionArgs): Promise<AsyncIterableAgentV1Socket>;
@@ -1089,11 +1112,13 @@ function setupBinaryHandling(
 interface SocketInternals {
     socket: ReconnectingWebSocket;
     eventHandlers: {
+        open?: () => void;
         message?: (message: unknown) => void;
         close?: (event: unknown) => void;
         error?: (error: Error) => void;
     };
     on: (event: string, callback: unknown) => void;
+    off?: (event: string, callback: unknown) => void;
     close: () => void;
     [Symbol.asyncIterator]?: () => AsyncIterableIterator<unknown>;
 }
@@ -1135,26 +1160,39 @@ function estimateMessageByteLength(message: unknown): number {
 }
 
 /**
- * Adds `for await` support to a generated socket, alongside the existing callback API.
+ * Adds `for await` support to a generated socket, alongside the existing callback API,
+ * and fixes `on()` so multiple listeners on the same event can coexist.
  *
- * The generated `on()` keeps a single handler per event, so an iterator that registered
- * itself through `on("message", ...)` would silently displace a caller's callback, and a
- * caller registering afterwards would silently displace the iterator. This instead takes
- * over the three handler slots the socket dispatches through, holds the caller's handlers
- * in a separate record, and rebinds `on()` to write there. Both consumers then see every
- * message regardless of which registered first. `setupBinaryHandling` is unaffected: it
- * reads `eventHandlers.message` at dispatch time rather than capturing it, so binary
- * frames arrive here already normalized to a Blob.
+ * The generated `on()` keeps a single handler per event: a second `on("message", ...)`
+ * call silently displaces the first, an iterator that registered itself the same way
+ * would silently displace a caller's callback, and there is no `off()` to remove one.
+ * This instead takes over the four handler slots the socket dispatches through, holds
+ * every caller's handler in a per-event list, and rebinds `on()`/`off()` to push to and
+ * splice from those lists (registering the same callback for the same event twice is a
+ * no-op, matching `EventTarget.addEventListener`). All distinct listeners for an event
+ * then run on every dispatch, in registration order, regardless of which registered
+ * first — the iterator included. Each dispatch runs over a snapshot of the list, so a
+ * listener that calls `off()` on itself (or on another listener) mid-dispatch does not
+ * skip whoever comes after it, matching Node's `EventEmitter`. `setupBinaryHandling` is
+ * unaffected: it reads
+ * `eventHandlers.message` at dispatch time rather than capturing it, so binary frames
+ * arrive here already normalized to a Blob.
  */
 function installAsyncIteration(socket: object): void {
     const internals = socket as unknown as SocketInternals;
     const handlers = internals.eventHandlers;
 
     const userHandlers: {
-        message?: (message: unknown) => void;
-        close?: (event: unknown) => void;
-        error?: (error: Error) => void;
-    } = { message: handlers.message, close: handlers.close, error: handlers.error };
+        open: Array<() => void>;
+        message: Array<(message: unknown) => void>;
+        close: Array<(event: unknown) => void>;
+        error: Array<(error: Error) => void>;
+    } = {
+        open: handlers.open ? [handlers.open] : [],
+        message: handlers.message ? [handlers.message] : [],
+        close: handlers.close ? [handlers.close] : [],
+        error: handlers.error ? [handlers.error] : [],
+    };
 
     const state: AsyncIterationState = {
         queue: [],
@@ -1210,9 +1248,17 @@ function installAsyncIteration(socket: object): void {
         );
     };
 
+    handlers.open = () => {
+        for (const cb of [...userHandlers.open]) {
+            cb();
+        }
+    };
+
     handlers.message = (message) => {
         try {
-            userHandlers.message?.(message);
+            for (const cb of [...userHandlers.message]) {
+                cb(message);
+            }
         } finally {
             if (state.started && !state.ended && !handOff({ value: message, done: false })) {
                 const byteLength = estimateMessageByteLength(message);
@@ -1239,7 +1285,9 @@ function installAsyncIteration(socket: object): void {
 
     handlers.close = (event) => {
         try {
-            userHandlers.close?.(event);
+            for (const cb of [...userHandlers.close]) {
+                cb(event);
+            }
         } finally {
             // The core socket emits a close before an associated error, and it
             // starts reconnecting before exposing a recoverable close to callers.
@@ -1253,7 +1301,9 @@ function installAsyncIteration(socket: object): void {
 
     handlers.error = (error) => {
         try {
-            userHandlers.error?.(error);
+            for (const cb of [...userHandlers.error]) {
+                cb(error);
+            }
         } finally {
             if (!state.ended) {
                 fail(error);
@@ -1261,15 +1311,26 @@ function installAsyncIteration(socket: object): void {
         }
     };
 
-    // Route on() into the caller's record so registering a callback does not displace the
-    // dispatchers above. `open` has no bearing on iteration and stays on the socket.
-    const originalOn = internals.on.bind(socket);
+    // Route on()/off() into the caller's per-event lists instead of the generated
+    // single-slot assignment, so multiple listeners on the same event coexist and any
+    // one of them can be removed without disturbing the others — the iterator included.
+    // Registering the same callback reference for the same event twice is a no-op,
+    // matching `EventTarget.addEventListener`.
     internals.on = (event: string, callback: unknown): void => {
-        if (event === "message" || event === "close" || event === "error") {
-            (userHandlers as Record<string, unknown>)[event] = callback;
+        const list = (userHandlers as Record<string, unknown[]>)[event];
+        if (list && !list.includes(callback)) {
+            list.push(callback);
+        }
+    };
+    internals.off = (event: string, callback: unknown): void => {
+        const list = (userHandlers as Record<string, unknown[]>)[event];
+        if (!list) {
             return;
         }
-        originalOn(event, callback);
+        const index = list.indexOf(callback);
+        if (index !== -1) {
+            list.splice(index, 1);
+        }
     };
 
     internals[Symbol.asyncIterator] = (): AsyncIterableIterator<unknown> => {
@@ -1559,6 +1620,10 @@ class WrappedAgentV1Socket extends AgentV1Socket {
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<AgentV1SocketMessage>;
 
+    // Installed by installAsyncIteration() alongside on(), so multiple listeners on
+    // the same event can coexist and any one of them can be removed independently.
+    public declare off: SocketOff<AgentV1SocketMessage>;
+
     constructor(args: AgentV1Socket.Args) {
         super(args);
         this.setupBinaryHandling();
@@ -1665,6 +1730,10 @@ class WrappedListenV1Socket extends ListenV1Socket {
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV1SocketMessage>;
 
+    // Installed by installAsyncIteration() alongside on(), so multiple listeners on
+    // the same event can coexist and any one of them can be removed independently.
+    public declare off: SocketOff<ListenV1SocketMessage>;
+
     constructor(args: ListenV1Socket.Args) {
         super(args);
         this.setupBinaryHandling();
@@ -1763,6 +1832,10 @@ class WrappedListenV2Socket extends ListenV2Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV2SocketMessage>;
+
+    // Installed by installAsyncIteration() alongside on(), so multiple listeners on
+    // the same event can coexist and any one of them can be removed independently.
+    public declare off: SocketOff<ListenV2SocketMessage>;
 
     constructor(args: ListenV2Socket.Args) {
         super(args);
@@ -1897,6 +1970,10 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<SpeakV1SocketMessage>;
 
+    // Installed by installAsyncIteration() alongside on(), so multiple listeners on
+    // the same event can coexist and any one of them can be removed independently.
+    public declare off: SocketOff<SpeakV1SocketMessage>;
+
     constructor(args: SpeakV1Socket.Args) {
         super(args);
         // CRITICAL: Remove the autogenerated handleMessage that tries to parse EVERYTHING as JSON!
@@ -2002,6 +2079,10 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<SpeakV2SocketMessage>;
+
+    // Installed by installAsyncIteration() alongside on(), so multiple listeners on
+    // the same event can coexist and any one of them can be removed independently.
+    public declare off: SocketOff<SpeakV2SocketMessage>;
 
     constructor(args: SpeakV2Socket.Args) {
         super(args);
