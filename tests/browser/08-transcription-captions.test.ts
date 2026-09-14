@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { chromium, Browser, Page } from "playwright";
-import { getExampleUrl, clickButton, waitForOutput, hasSuccessOutput } from "./helpers";
+import { type Browser, chromium, type Page } from "playwright";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { clickButton, getExampleUrl, waitForOutputMatching } from "./helpers";
 
 describe("Browser Example: 08-transcription-captions", () => {
     let browser: Browser;
@@ -23,14 +23,13 @@ describe("Browser Example: 08-transcription-captions", () => {
         // No API key input needed - proxy handles auth
         await clickButton(page, "runExample");
 
-        // Wait for output to appear (transcription can take time)
-        await waitForOutput(page, 30000);
+        // The page writes "Generating transcription..." immediately, before the API response.
+        const output = await waitForOutputMatching(
+            page,
+            (value) => value.includes("✓ Transcription result:") && value.includes('"results"'),
+        );
 
-        // Wait a bit more for transcription to complete
-        await page.waitForTimeout(2000);
-
-        // Check for success output
-        const hasSuccess = await hasSuccessOutput(page);
-        expect(hasSuccess).toBe(true);
+        expect(output).toContain("✓ Transcription result:");
+        expect(output).toContain('"results"');
     }, 30000);
 });

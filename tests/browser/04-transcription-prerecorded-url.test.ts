@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { chromium, Browser, Page } from "playwright";
-import { getExampleUrl, clickButton, waitForOutput, hasSuccessOutput } from "./helpers";
+import { type Browser, chromium, type Page } from "playwright";
+import { afterAll, beforeAll, describe, it } from "vitest";
+import { clickButton, getExampleUrl, waitForSuccessOutput } from "./helpers";
 
 describe("Browser Example: 04-transcription-prerecorded-url", () => {
     let browser: Browser;
@@ -26,14 +26,6 @@ describe("Browser Example: 04-transcription-prerecorded-url", () => {
         // Click the run button (no API key input needed - proxy handles auth)
         await clickButton(page, "runExample");
 
-        // Wait for output to appear (transcription can take time)
-        await waitForOutput(page, 30000);
-
-        // Wait a bit more for transcription to complete
-        await page.waitForTimeout(2000);
-
-        // Check for success output
-        const hasSuccess = await hasSuccessOutput(page);
-        expect(hasSuccess).toBe(true);
+        await waitForSuccessOutput(page);
     }, 30000);
 });
