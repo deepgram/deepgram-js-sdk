@@ -4,8 +4,8 @@
  * Real-world streaming connections drop: networks blip, servers restart, and
  * idle streams time out (Deepgram closes a connection that receives no audio
  * for 10 seconds with a NET-0001 error). A production integration must survive
- * all of that without losing audio. This example demonstrates the full recovery
- * pattern on Deepgram's /v1/listen websocket:
+ * all of that with a bounded audio-loss policy for long outages. This example
+ * demonstrates the full recovery pattern on Deepgram's /v1/listen websocket:
  *
  *   1. Exponential backoff with full jitter and a retry cap
  *   2. Distinguishing reconnect-worthy close codes from a normal closure
@@ -85,7 +85,7 @@ const DROP_AFTER_SECONDS = 8;
 // ReconnectingWebSocket ready state: 0 CONNECTING, 1 OPEN, 2 CLOSING, 3 CLOSED
 const READY_STATE_OPEN = 1;
 
-export function timestampOffsetSeconds(deliveredBytes, droppedBytes) {
+export function timestampOffsetSeconds(deliveredBytes: number, droppedBytes: number): number {
     return (deliveredBytes + droppedBytes) / BYTES_PER_SECOND;
 }
 
