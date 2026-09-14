@@ -238,3 +238,8 @@ src/errors/DeepgramTimeoutError.ts
 # upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
 # tests/unit/passthrough-auth.test.ts. Swap to .bak before regen.
 src/core/fetcher/makePassthroughRequest.ts
+
+# src/core/websocket/ws.ts: clear the reconnect lock when retries are exhausted so
+# async iterators receive terminal close events instead of waiting indefinitely.
+# Swap to .bak before regen.
+src/core/websocket/ws.ts

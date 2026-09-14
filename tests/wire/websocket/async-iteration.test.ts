@@ -142,6 +142,31 @@ describe("Socket async iteration", () => {
         await iterator.return?.();
     });
 
+    it("still delivers to a callback registered before iteration starts", async () => {
+        wsServer.on("connection", (ws) => {
+            ws.once("message", () => {
+                ws.send(JSON.stringify(results("shared", true)));
+                setTimeout(() => ws.close(1000), 50);
+            });
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        const viaCallback: unknown[] = [];
+        socket.on("message", (data) => viaCallback.push(data));
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.sendKeepAlive({ type: "KeepAlive" });
+        const first = await iterator.next();
+
+        expect((first.value as { type: string }).type).toBe("Results");
+        expect(viaCallback).toHaveLength(1);
+
+        await iterator.return?.();
+    });
+
     it("closes the connection when the consumer breaks", async () => {
         let serverSawClose = false;
         wsServer.on("connection", (ws) => {
@@ -236,6 +261,29 @@ describe("Socket async iteration", () => {
         ).toBe("after");
     });
 
+    it("ends iteration when recoverable retries are exhausted", async () => {
+        wsServer.on("connection", (ws) => {
+            ws.once("message", () => {
+                ws.send(JSON.stringify(results("last", true)));
+                setTimeout(() => ws.close(1011), 10);
+            });
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({
+            model: "nova-3",
+            reconnectAttempts: 0,
+        });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.sendKeepAlive({ type: "KeepAlive" });
+
+        await expect(iterator.next()).resolves.toMatchObject({ done: false });
+        await expect(iterator.next()).resolves.toEqual({ value: undefined, done: true });
+    });
+
     it("rejects and closes when a consumer exceeds the queue limit", async () => {
         let serverSawClose = false;
         wsServer.on("connection", (ws) => {
@@ -260,6 +308,35 @@ describe("Socket async iteration", () => {
 
         await expect(first).resolves.toMatchObject({ done: false });
         await new Promise((resolve) => setTimeout(resolve, 50));
+        await expect(iterator.next()).rejects.toThrow("Async iterator buffer overflow");
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        expect(serverSawClose).toBe(true);
+    });
+
+    it("rejects and closes when queued binary audio exceeds 16 MiB", async () => {
+        let serverSawClose = false;
+        wsServer.on("connection", (ws) => {
+            ws.on("close", () => {
+                serverSawClose = true;
+            });
+            ws.once("message", () => {
+                for (let i = 0; i < 18; i++) {
+                    ws.send(Buffer.alloc(1024 * 1024));
+                }
+            });
+        });
+
+        const socket = await makeClient().speak.v1.createConnection({ model: "aura-asteria-en" });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        const first = iterator.next();
+        socket.sendText({ type: "Speak", text: "trigger" });
+
+        await expect(first).resolves.toMatchObject({ done: false, value: expect.any(Blob) });
+        await new Promise((resolve) => setTimeout(resolve, 100));
         await expect(iterator.next()).rejects.toThrow("Async iterator buffer overflow");
         await new Promise((resolve) => setTimeout(resolve, 50));
         expect(serverSawClose).toBe(true);
