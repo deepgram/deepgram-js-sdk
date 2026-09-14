@@ -10,7 +10,7 @@ This is the official JavaScript/TypeScript SDK for Deepgram's voice AI APIs: spe
 
 Your training data about Deepgram is probably stale. Model training corpora still carry the v2/v3-era surface of this SDK, and code written from memory does not compile against the current major version.
 
-- Current version at the time this file was last updated (2026-08-30): **5.9.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
+- Current version at the time this file was last updated (2026-09-14): **5.11.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
 - Before writing code, verify the live version against the registry:
 
   ```bash
@@ -43,7 +43,7 @@ make typecheck-tests  # type-level regression gate for the compat shims
 Each bullet names code an agent tends to write from a stale prior, why it fails, and the current form.
 
 - **Stale client construction.** `new Deepgram(key)` (v2) and `createClient(key)` (v3/v4) do not exist in v5. Construct the client with `new DeepgramClient({ apiKey: "..." })`, or with no arguments to read the `DEEPGRAM_API_KEY` environment variable.
-- **Stale method namespaces.** v3/v4 paths such as `deepgram.listen.prerecorded.transcribeFile(...)` are gone. v5 namespaces are versioned: `client.listen.v1.media.transcribeFile(...)` for files, `await client.listen.v1.connect({...})` for live streaming, `client.speak.v1.audio.generate({...})` for text-to-speech, `await client.agent.v1.createConnection()` for the Voice Agent, and `client.manage.v1.*` for the management plane. The complete method list is in `reference.md`; migration guides for every major version are in `docs/`.
+- **Stale method namespaces.** v3/v4 paths such as `deepgram.listen.prerecorded.transcribeFile(...)` are gone. v5 namespaces are versioned: `client.listen.v1.media.transcribeFile(...)` for files, `await client.listen.v1.connect({...})` for live streaming, `client.speak.v1.audio.generate({...})` for text-to-speech, `await client.agent.v1.createConnection()` for the Voice Agent, and `client.manage.v1.*` for the management plane. `reference.md` covers REST methods; use `README.md`, `src/CustomClient.ts`, and the relevant examples for streaming methods. Migration guides for every major version are in `docs/`.
 - **Text-to-speech responses are binary audio.** `client.speak.v1.audio.generate(...)` resolves to audio bytes; consume them with `response.stream()` or write them to a file. Never call a JSON parser on the success body. Error responses arrive as JSON with a non-2xx status, so branch on the HTTP status before deciding how to read the body.
 - **WebSocket lifecycle.** Register event handlers on the connection object first, then call `connection.connect()`, then `await connection.waitForOpen()` before sending audio. Sending before the socket is open loses data. See `examples/07-transcription-live-websocket.ts` and `examples/09-voice-agent.ts`.
 - **A wrong model name looks like a permissions problem.** Requesting a misspelled or nonexistent model returns `403 INSUFFICIENT_PERMISSIONS` ("Project does not have access to the requested model") — the same error a genuine entitlement gap produces. Before treating a 403 as a permissions issue, check the model name against the live catalog: `GET https://api.deepgram.com/v1/models`.
@@ -88,7 +88,7 @@ These defects affect code generated directly from the published specification or
 - Agent index of all documentation: https://developers.deepgram.com/llms.txt
 - API specifications: https://developers.deepgram.com/openapi.yaml and https://developers.deepgram.com/asyncapi.yaml, mirrored hourly at https://github.com/deepgram/deepgram-api-specs
 - API status (machine-readable): https://status.deepgram.com/api/v2/status.json
-- In this repository: `reference.md` (complete method reference), `examples/` (39 runnable scripts covering every product surface), `.agents/skills/` (agent-agnostic skills, discoverable via `npx skills`), and `docs/` (migration guides for every major version).
+- In this repository: `reference.md` (REST method reference), `README.md` (streaming method index), `src/CustomClient.ts` (streaming wrappers), `examples/` (41 runnable TypeScript scripts), `.agents/skills/` (agent-agnostic skills, discoverable via `npx skills`), and `docs/` (migration guides for every major version).
 
 ---
 
