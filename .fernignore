@@ -17,6 +17,7 @@ tests/browser
 tests/esm-build.test.ts
 tests/manual
 tests/unit/agent-providers.test.ts
+tests/unit/async-iteration-types.test.ts
 tests/unit/async-send-finalize.test.ts
 tests/unit/baseurl-priority.test.ts
 tests/unit/compat-aliases.test.ts

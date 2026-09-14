@@ -191,29 +191,52 @@ export type SpeakV2ConnectionArgs = Omit<SpeakV2Client.ConnectArgs, "Authorizati
     Authorization?: string;
 } & WebSocketAgentArg;
 
+/**
+ * Messages delivered by each streaming socket, both to `on("message", ...)` and to
+ * `for await`. The agent and speak sockets also carry binary audio, which the wrapped
+ * sockets normalize to a `Blob` before delivery on every runtime.
+ */
+export type AgentV1SocketMessage = AgentV1Socket.Response | Blob;
+export type ListenV1SocketMessage = ListenV1Socket.Response;
+export type ListenV2SocketMessage = ListenV2Socket.Response;
+export type SpeakV1SocketMessage = SpeakV1Socket.Response | Blob;
+export type SpeakV2SocketMessage = SpeakV2Socket.Response | Blob;
+
+/**
+ * The streaming sockets, with async iteration. Consuming a connection with `for await`
+ * is equivalent to `on("message", ...)`: iteration ends when the socket closes, throws
+ * if it errors, and `break` closes the connection. Both styles can be used on the same
+ * socket, and messages that arrive between iterations are buffered rather than dropped.
+ */
+export type AsyncIterableAgentV1Socket = AgentV1Socket & AsyncIterable<AgentV1SocketMessage>;
+export type AsyncIterableListenV1Socket = ListenV1Socket & AsyncIterable<ListenV1SocketMessage>;
+export type AsyncIterableListenV2Socket = ListenV2Socket & AsyncIterable<ListenV2SocketMessage>;
+export type AsyncIterableSpeakV1Socket = SpeakV1Socket & AsyncIterable<SpeakV1SocketMessage>;
+export type AsyncIterableSpeakV2Socket = SpeakV2Socket & AsyncIterable<SpeakV2SocketMessage>;
+
 export interface AgentV1ClientWithWebSocket extends AgentV1Client {
-    connect(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
-    createConnection(args?: AgentV1ConnectionArgs): Promise<AgentV1Socket>;
+    connect(args?: AgentV1ConnectionArgs): Promise<AsyncIterableAgentV1Socket>;
+    createConnection(args?: AgentV1ConnectionArgs): Promise<AsyncIterableAgentV1Socket>;
 }
 
 export interface ListenV1ClientWithWebSocket extends ListenV1Client {
-    connect(args: ListenV1ConnectionArgs): Promise<ListenV1Socket>;
-    createConnection(args: ListenV1ConnectionArgs): Promise<ListenV1Socket>;
+    connect(args: ListenV1ConnectionArgs): Promise<AsyncIterableListenV1Socket>;
+    createConnection(args: ListenV1ConnectionArgs): Promise<AsyncIterableListenV1Socket>;
 }
 
 export interface ListenV2ClientWithWebSocket extends ListenV2Client {
-    connect(args: ListenV2ConnectionArgs): Promise<ListenV2Socket>;
-    createConnection(args: ListenV2ConnectionArgs): Promise<ListenV2Socket>;
+    connect(args: ListenV2ConnectionArgs): Promise<AsyncIterableListenV2Socket>;
+    createConnection(args: ListenV2ConnectionArgs): Promise<AsyncIterableListenV2Socket>;
 }
 
 export interface SpeakV1ClientWithWebSocket extends SpeakV1Client {
-    connect(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket>;
-    createConnection(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket>;
+    connect(args: SpeakV1ConnectionArgs): Promise<AsyncIterableSpeakV1Socket>;
+    createConnection(args: SpeakV1ConnectionArgs): Promise<AsyncIterableSpeakV1Socket>;
 }
 
 export interface SpeakV2ClientWithWebSocket extends SpeakV2Client {
-    connect(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket>;
-    createConnection(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket>;
+    connect(args: SpeakV2ConnectionArgs): Promise<AsyncIterableSpeakV2Socket>;
+    createConnection(args: SpeakV2ConnectionArgs): Promise<AsyncIterableSpeakV2Socket>;
 }
 
 export interface AgentClientWithWebSockets extends AgentClient {
@@ -1060,6 +1083,243 @@ function setupBinaryHandling(
 }
 
 /**
+ * The parts of a generated socket this helper reaches into. The generated classes keep
+ * `eventHandlers` protected, so it is described structurally rather than widened to `any`.
+ */
+interface SocketInternals {
+    socket: ReconnectingWebSocket;
+    eventHandlers: {
+        message?: (message: unknown) => void;
+        close?: (event: unknown) => void;
+        error?: (error: Error) => void;
+    };
+    on: (event: string, callback: unknown) => void;
+    close: () => void;
+    [Symbol.asyncIterator]?: () => AsyncIterableIterator<unknown>;
+}
+
+/**
+ * Per-socket state backing `for await`.
+ *
+ * Messages are queued only once iteration has actually started. A caller who uses
+ * `on("message", ...)` and never iterates would otherwise accumulate every message
+ * for the life of the connection.
+ */
+interface AsyncIterationState {
+    queue: Array<{ message: unknown; byteLength: number }>;
+    queuedBytes: number;
+    waiting: Array<{
+        resolve: (result: IteratorResult<unknown>) => void;
+        reject: (error: Error) => void;
+    }>;
+    started: boolean;
+    activeIterator: boolean;
+    ended: boolean;
+    failure?: Error;
+}
+
+const MAX_ASYNC_ITERATOR_QUEUE_MESSAGES = 1000;
+const MAX_ASYNC_ITERATOR_QUEUE_BYTES = 16 * 1024 * 1024;
+
+function estimateMessageByteLength(message: unknown): number {
+    if (typeof message === "string") {
+        return new TextEncoder().encode(message).byteLength;
+    }
+    if (message instanceof Blob) {
+        return message.size;
+    }
+    if (message instanceof ArrayBuffer || ArrayBuffer.isView(message)) {
+        return message.byteLength;
+    }
+    return new TextEncoder().encode(String(JSON.stringify(message))).byteLength;
+}
+
+/**
+ * Adds `for await` support to a generated socket, alongside the existing callback API.
+ *
+ * The generated `on()` keeps a single handler per event, so an iterator that registered
+ * itself through `on("message", ...)` would silently displace a caller's callback, and a
+ * caller registering afterwards would silently displace the iterator. This instead takes
+ * over the three handler slots the socket dispatches through, holds the caller's handlers
+ * in a separate record, and rebinds `on()` to write there. Both consumers then see every
+ * message regardless of which registered first. `setupBinaryHandling` is unaffected: it
+ * reads `eventHandlers.message` at dispatch time rather than capturing it, so binary
+ * frames arrive here already normalized to a Blob.
+ */
+function installAsyncIteration(socket: object): void {
+    const internals = socket as unknown as SocketInternals;
+    const handlers = internals.eventHandlers;
+
+    const userHandlers: {
+        message?: (message: unknown) => void;
+        close?: (event: unknown) => void;
+        error?: (error: Error) => void;
+    } = { message: handlers.message, close: handlers.close, error: handlers.error };
+
+    const state: AsyncIterationState = {
+        queue: [],
+        queuedBytes: 0,
+        waiting: [],
+        started: false,
+        activeIterator: false,
+        ended: false,
+    };
+
+    const handOff = (result: IteratorResult<unknown>): boolean => {
+        const next = state.waiting.shift();
+        if (!next) {
+            return false;
+        }
+        next.resolve(result);
+        return true;
+    };
+
+    const finish = (): void => {
+        state.ended = true;
+        state.activeIterator = false;
+        while (state.waiting.length > 0) {
+            state.waiting.shift()?.resolve({ value: undefined, done: true });
+        }
+    };
+
+    const fail = (error: Error): void => {
+        state.ended = true;
+        state.activeIterator = false;
+        state.queue = [];
+        state.queuedBytes = 0;
+        state.failure = error;
+        while (state.waiting.length > 0) {
+            state.waiting.shift()?.reject(error);
+        }
+    };
+
+    const reconnectPending = (): boolean => {
+        // Both supported WebSocket implementations set this lock before they
+        // dispatch a recoverable close to generated socket handlers.
+        const reconnectState = internals.socket as unknown as {
+            _connectLock?: boolean;
+            _shouldReconnect?: boolean;
+            _retryCount?: number;
+            _options?: { maxRetries?: number };
+        };
+        const maxRetries = reconnectState._options?.maxRetries ?? Infinity;
+        return (
+            reconnectState._connectLock === true &&
+            reconnectState._shouldReconnect === true &&
+            (reconnectState._retryCount ?? maxRetries) < maxRetries
+        );
+    };
+
+    handlers.message = (message) => {
+        try {
+            userHandlers.message?.(message);
+        } finally {
+            if (state.started && !state.ended && !handOff({ value: message, done: false })) {
+                const byteLength = estimateMessageByteLength(message);
+                if (
+                    state.queue.length >= MAX_ASYNC_ITERATOR_QUEUE_MESSAGES ||
+                    state.queuedBytes + byteLength > MAX_ASYNC_ITERATOR_QUEUE_BYTES
+                ) {
+                    const error = new Error(
+                        "Async iterator buffer overflow; consume messages faster or use callbacks.",
+                    );
+                    fail(error);
+                    try {
+                        internals.close();
+                    } catch {
+                        // Already closed.
+                    }
+                } else {
+                    state.queue.push({ message, byteLength });
+                    state.queuedBytes += byteLength;
+                }
+            }
+        }
+    };
+
+    handlers.close = (event) => {
+        try {
+            userHandlers.close?.(event);
+        } finally {
+            // The core socket emits a close before an associated error, and it
+            // starts reconnecting before exposing a recoverable close to callers.
+            queueMicrotask(() => {
+                if (!state.ended && !reconnectPending()) {
+                    finish();
+                }
+            });
+        }
+    };
+
+    handlers.error = (error) => {
+        try {
+            userHandlers.error?.(error);
+        } finally {
+            if (!state.ended) {
+                fail(error);
+            }
+        }
+    };
+
+    // Route on() into the caller's record so registering a callback does not displace the
+    // dispatchers above. `open` has no bearing on iteration and stays on the socket.
+    const originalOn = internals.on.bind(socket);
+    internals.on = (event: string, callback: unknown): void => {
+        if (event === "message" || event === "close" || event === "error") {
+            (userHandlers as Record<string, unknown>)[event] = callback;
+            return;
+        }
+        originalOn(event, callback);
+    };
+
+    internals[Symbol.asyncIterator] = (): AsyncIterableIterator<unknown> => {
+        if (state.activeIterator) {
+            throw new Error("Only one async iterator can consume a streaming socket at a time.");
+        }
+        state.started = true;
+        state.activeIterator = !state.ended;
+        const iterator: AsyncIterableIterator<unknown> = {
+            [Symbol.asyncIterator]() {
+                return this;
+            },
+            next(): Promise<IteratorResult<unknown>> {
+                if (state.queue.length > 0) {
+                    const message = state.queue.shift();
+                    if (message) {
+                        state.queuedBytes -= message.byteLength;
+                        return Promise.resolve({ value: message.message, done: false });
+                    }
+                }
+                if (state.failure !== undefined) {
+                    const failure = state.failure;
+                    state.failure = undefined;
+                    return Promise.reject(failure);
+                }
+                if (state.ended) {
+                    return Promise.resolve({ value: undefined, done: true });
+                }
+                return new Promise<IteratorResult<unknown>>((resolve, reject) => {
+                    state.waiting.push({ resolve, reject });
+                });
+            },
+            return(value?: unknown): Promise<IteratorResult<unknown>> {
+                // Breaking out of a for-await tears the connection down, matching the Python SDK.
+                finish();
+                state.queue.length = 0;
+                state.queuedBytes = 0;
+                try {
+                    internals.close();
+                } catch {
+                    // Already closed.
+                }
+                return Promise.resolve({ value, done: true } as IteratorResult<unknown>);
+            },
+        };
+        return iterator;
+    };
+}
+
+/**
  * Helper to prevent duplicate event listeners on WebSocket connections.
  * This removes all event listeners that were registered by the auto-generated
  * Socket class constructor, preventing duplicate event firing when connect() is called.
@@ -1246,7 +1506,7 @@ async function createWebSocketConnection({
  * connection setup, authentication, and header handling.
  */
 class WrappedAgentV1Client extends AgentV1Client {
-    public async connect(args: AgentV1ConnectionArgs = {}): Promise<AgentV1Socket> {
+    public async connect(args: AgentV1ConnectionArgs = {}): Promise<AsyncIterableAgentV1Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
@@ -1280,7 +1540,7 @@ class WrappedAgentV1Client extends AgentV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: AgentV1ConnectionArgs = {}): Promise<AgentV1Socket> {
+    public async createConnection(args: AgentV1ConnectionArgs = {}): Promise<AsyncIterableAgentV1Socket> {
         return this.connect(args);
     }
 }
@@ -1296,9 +1556,13 @@ class WrappedAgentV1Client extends AgentV1Client {
 class WrappedAgentV1Socket extends AgentV1Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
 
+    // Installed on the instance by installAsyncIteration() in the constructor.
+    public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<AgentV1SocketMessage>;
+
     constructor(args: AgentV1Socket.Args) {
         super(args);
         this.setupBinaryHandling();
+        installAsyncIteration(this);
     }
 
     private setupBinaryHandling() {
@@ -1341,7 +1605,7 @@ class WrappedAgentV1Socket extends AgentV1Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedListenV1Client extends ListenV1Client {
-    public async connect(args: ListenV1ConnectionArgs): Promise<ListenV1Socket> {
+    public async connect(args: ListenV1ConnectionArgs): Promise<AsyncIterableListenV1Socket> {
         if (hasUnsupportedNova3Keywords(args.model, args.keywords)) {
             throw new BadRequestError({
                 err_code: "INVALID_QUERY_PARAMETER",
@@ -1382,7 +1646,7 @@ class WrappedListenV1Client extends ListenV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: ListenV1ConnectionArgs): Promise<ListenV1Socket> {
+    public async createConnection(args: ListenV1ConnectionArgs): Promise<AsyncIterableListenV1Socket> {
         return this.connect(args);
     }
 }
@@ -1398,9 +1662,13 @@ class WrappedListenV1Client extends ListenV1Client {
 class WrappedListenV1Socket extends ListenV1Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
 
+    // Installed on the instance by installAsyncIteration() in the constructor.
+    public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV1SocketMessage>;
+
     constructor(args: ListenV1Socket.Args) {
         super(args);
         this.setupBinaryHandling();
+        installAsyncIteration(this);
     }
 
     private setupBinaryHandling() {
@@ -1442,7 +1710,7 @@ class WrappedListenV1Socket extends ListenV1Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedListenV2Client extends ListenV2Client {
-    public async connect(args: ListenV2ConnectionArgs): Promise<ListenV2Socket> {
+    public async connect(args: ListenV2ConnectionArgs): Promise<AsyncIterableListenV2Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
@@ -1476,7 +1744,7 @@ class WrappedListenV2Client extends ListenV2Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: ListenV2ConnectionArgs): Promise<ListenV2Socket> {
+    public async createConnection(args: ListenV2ConnectionArgs): Promise<AsyncIterableListenV2Socket> {
         return this.connect(args);
     }
 }
@@ -1493,9 +1761,13 @@ class WrappedListenV2Client extends ListenV2Client {
 class WrappedListenV2Socket extends ListenV2Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
 
+    // Installed on the instance by installAsyncIteration() in the constructor.
+    public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV2SocketMessage>;
+
     constructor(args: ListenV2Socket.Args) {
         super(args);
         this.setupBinaryHandling();
+        installAsyncIteration(this);
     }
 
     private setupBinaryHandling() {
@@ -1572,7 +1844,7 @@ class WrappedListenV2Socket extends ListenV2Socket {
  * connection setup, authentication, and header handling.
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
-    public async connect(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket> {
+    public async connect(args: SpeakV1ConnectionArgs): Promise<AsyncIterableSpeakV1Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
@@ -1606,7 +1878,7 @@ class WrappedSpeakV1Client extends SpeakV1Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: SpeakV1ConnectionArgs): Promise<SpeakV1Socket> {
+    public async createConnection(args: SpeakV1ConnectionArgs): Promise<AsyncIterableSpeakV1Socket> {
         return this.connect(args);
     }
 }
@@ -1622,6 +1894,9 @@ class WrappedSpeakV1Client extends SpeakV1Client {
 class WrappedSpeakV1Socket extends SpeakV1Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
 
+    // Installed on the instance by installAsyncIteration() in the constructor.
+    public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<SpeakV1SocketMessage>;
+
     constructor(args: SpeakV1Socket.Args) {
         super(args);
         // CRITICAL: Remove the autogenerated handleMessage that tries to parse EVERYTHING as JSON!
@@ -1632,6 +1907,7 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
             this.socket.removeEventListener("message", socketAny.handleMessage);
         }
         this.setupBinaryHandling();
+        installAsyncIteration(this);
     }
 
     private setupBinaryHandling() {
@@ -1674,7 +1950,7 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
  * generated client's ReconnectingWebSocket.
  */
 class WrappedSpeakV2Client extends SpeakV2Client {
-    public async connect(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket> {
+    public async connect(args: SpeakV2ConnectionArgs): Promise<AsyncIterableSpeakV2Socket> {
         const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
 
         const socket = await createWebSocketConnection({
@@ -1708,7 +1984,7 @@ class WrappedSpeakV2Client extends SpeakV2Client {
      * socket.connect(); // Actually initiates the connection
      * ```
      */
-    public async createConnection(args: SpeakV2ConnectionArgs): Promise<SpeakV2Socket> {
+    public async createConnection(args: SpeakV2ConnectionArgs): Promise<AsyncIterableSpeakV2Socket> {
         return this.connect(args);
     }
 }
@@ -1724,6 +2000,9 @@ class WrappedSpeakV2Client extends SpeakV2Client {
 class WrappedSpeakV2Socket extends SpeakV2Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
 
+    // Installed on the instance by installAsyncIteration() in the constructor.
+    public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<SpeakV2SocketMessage>;
+
     constructor(args: SpeakV2Socket.Args) {
         super(args);
         // CRITICAL: Remove the autogenerated handleMessage that tries to parse EVERYTHING as JSON!
@@ -1734,6 +2013,7 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
             this.socket.removeEventListener("message", socketAny.handleMessage);
         }
         this.setupBinaryHandling();
+        installAsyncIteration(this);
     }
 
     private setupBinaryHandling() {
