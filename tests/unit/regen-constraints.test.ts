@@ -173,6 +173,34 @@ describe("2026-07-09 regen constraints", () => {
             expect(model).toBe("flux-alexis-en");
         });
 
+        it("pins the complete SpeakV2Encoding member set (guards a regen dropping a value)", () => {
+            // linear16 is the only streaming-compatible member exposed as an enum;
+            // mulaw/alaw round out the raw-audio set. Compressed encodings (mp3, etc.)
+            // are batch-only and intentionally NOT in this enum.
+            expect(Deepgram.SpeakV2Encoding).toEqual({
+                Linear16: "linear16",
+                Mulaw: "mulaw",
+                Alaw: "alaw",
+            });
+            // Open union: an unknown string is still assignable.
+            const custom: Deepgram.SpeakV2Encoding = "future-codec";
+            expect(custom).toBe("future-codec");
+        });
+
+        it("pins the complete SpeakV2SampleRate member set (guards a regen dropping a value)", () => {
+            expect(Deepgram.SpeakV2SampleRate).toEqual({
+                EightThousand: "8000",
+                SixteenThousand: "16000",
+                TwentyFourThousand: "24000",
+                ThirtyTwoThousand: "32000",
+                FortyFourThousandOneHundred: "44100",
+                FortyEightThousand: "48000",
+            });
+            // Open union: an arbitrary rate string is still assignable at the type level.
+            const custom: Deepgram.SpeakV2SampleRate = "96000";
+            expect(custom).toBe("96000");
+        });
+
         it("SpeakV2Error.Code enum is open-ended", () => {
             const known: Deepgram.speak.SpeakV2Error.Code = Deepgram.speak.SpeakV2Error.Code.Net0000;
             const open: Deepgram.speak.SpeakV2Error.Code = "SOME-CUSTOM-CODE";
