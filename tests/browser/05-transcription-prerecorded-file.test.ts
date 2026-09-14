@@ -1,13 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { chromium, Browser, Page } from "playwright";
-import {
-    getExampleUrl,
-    clickButton,
-    uploadFile,
-    waitForOutput,
-    hasSuccessOutput,
-    getSpacewalkAudioPath,
-} from "./helpers";
+import { type Browser, chromium, type Page } from "playwright";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { clickButton, getExampleUrl, getOutputContent, getSpacewalkAudioPath, uploadFile } from "./helpers";
 
 describe("Browser Example: 05-transcription-prerecorded-file", () => {
     let browser: Browser;
@@ -33,14 +26,24 @@ describe("Browser Example: 05-transcription-prerecorded-file", () => {
         await uploadFile(page, "#audioFile", spacewalkPath);
         await clickButton(page, "runExample");
 
-        // Wait for output to appear (file transcription can take time)
-        await waitForOutput(page, 30000);
+        // The page writes "Transcribing..." immediately, before the live API response.
+        // Wait for a non-empty transcript instead of treating that progress message as output.
+        const deadline = Date.now() + 30000;
+        let output = "";
+        while (Date.now() < deadline) {
+            output = await getOutputContent(page);
+            if (output.includes("✗ Error:") || output.includes("✗ No data returned")) {
+                throw new Error(`File transcription failed:\n${output}`);
+            }
+            if (output.includes("✓ Transcription:") && !output.includes("No transcript found")) {
+                break;
+            }
+            await page.waitForTimeout(500);
+        }
 
-        // Wait a bit more for transcription to complete
-        await page.waitForTimeout(2000);
-
-        // Check for success output
-        const hasSuccess = await hasSuccessOutput(page);
-        expect(hasSuccess).toBe(true);
+        expect(output, `Timed out waiting for a transcript. Last page output:\n${output}`).toContain(
+            "✓ Transcription:",
+        );
+        expect(output).not.toContain("No transcript found");
     }, 30000);
 });
