@@ -2,10 +2,17 @@
 
 ## [5.11.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.1...v5.11.0) (2026-09-11)
 
+Agent force-end-turn support, Flux TTS expressivity controls, and a wider Flux TTS speed range.
 
 ### Features
 
-* **regen:** agent ForceEndTurn, agent speak expressivity, Flux TTS speed range 0.5-1.5 ([#546](https://github.com/deepgram/deepgram-js-sdk/issues/546)) ([96fca66](https://github.com/deepgram/deepgram-js-sdk/commit/96fca66bbd93f522bc85b2fae477d7fbf1998e99))
+* **Agent:** add `socket.sendForceEndTurn({ type: "ForceEndTurn" })` to end the current turn on demand. Agent Deepgram speak providers using Flux (`version: "v2"`) also accept `expressivity`, a whole-number calm-to-animated setting from `-2` to `2`; `0` is the default. ([#546](https://github.com/deepgram/deepgram-js-sdk/issues/546)) ([96fca66](https://github.com/deepgram/deepgram-js-sdk/commit/96fca66bbd93f522bc85b2fae477d7fbf1998e99))
+* **Speak v2 (Flux TTS):** `speed` now accepts values from `0.5` to `1.5` in `0.05` increments, instead of `0.85` to `1.15`. Batch Speak v2 requests also accept `expressivity` from `-2` to `2`. ([#546](https://github.com/deepgram/deepgram-js-sdk/issues/546)) ([96fca66](https://github.com/deepgram/deepgram-js-sdk/commit/96fca66bbd93f522bc85b2fae477d7fbf1998e99))
+
+### Compatibility
+
+* `SpeakV2Speed` remains usable as a numeric type. Its released named string constants remain available but are deprecated; use numeric values for new code.
+* `SpeakV1Model.Aura2PerseoIt` and `AudioGenerateRequestModel.Aura2PerseoIt` remain as deprecated aliases until the next major release. The `aura-2-perseo-it` model is not served by the API.
 
 ## [5.10.1](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.0...v5.10.1) (2026-09-04)
 
