@@ -1196,7 +1196,11 @@ function installAsyncIteration(socket: object): void {
     const reconnectPending = (): boolean => {
         // Both supported WebSocket implementations set this lock before they
         // dispatch a recoverable close to generated socket handlers.
-        return (internals.socket as unknown as { _connectLock?: boolean })._connectLock === true;
+        const reconnectState = internals.socket as unknown as {
+            _connectLock?: boolean;
+            _shouldReconnect?: boolean;
+        };
+        return reconnectState._connectLock === true && reconnectState._shouldReconnect === true;
     };
 
     handlers.message = (message) => {

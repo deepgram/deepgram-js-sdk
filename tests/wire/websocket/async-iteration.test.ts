@@ -284,6 +284,52 @@ describe("Socket async iteration", () => {
         await expect(iterator.next()).resolves.toEqual({ value: undefined, done: true });
     });
 
+    it("ends iteration when a close callback stops a pending reconnect", async () => {
+        wsServer.on("connection", (ws) => {
+            ws.once("message", () => {
+                ws.send(JSON.stringify(results("last", true)));
+                setTimeout(() => ws.close(1011), 10);
+            });
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        socket.on("close", () => socket.close());
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.sendKeepAlive({ type: "KeepAlive" });
+
+        await expect(iterator.next()).resolves.toMatchObject({ done: false });
+        await expect(iterator.next()).resolves.toEqual({ value: undefined, done: true });
+    });
+
+    it("ends iteration when an abort signal stops a pending reconnect", async () => {
+        const abortController = new AbortController();
+        wsServer.on("connection", (ws) => {
+            ws.once("message", () => {
+                ws.send(JSON.stringify(results("last", true)));
+                setTimeout(() => ws.close(1011), 10);
+            });
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({
+            model: "nova-3",
+            abortSignal: abortController.signal,
+        });
+        openSockets.push(socket);
+        socket.on("close", () => abortController.abort());
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.sendKeepAlive({ type: "KeepAlive" });
+
+        await expect(iterator.next()).resolves.toMatchObject({ done: false });
+        await expect(iterator.next()).resolves.toEqual({ value: undefined, done: true });
+    });
+
     it("rejects and closes when a consumer exceeds the queue limit", async () => {
         let serverSawClose = false;
         wsServer.on("connection", (ws) => {
