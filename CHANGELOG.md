@@ -1,5 +1,30 @@
 # Changelog
 
+## [5.12.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.11.0...v5.12.0) (2026-09-14)
+
+
+### Features
+
+* add async iteration to the streaming sockets ([b09166f](https://github.com/deepgram/deepgram-js-sdk/commit/b09166fd2b2b5e8c81079affdd03c786eeccdb89))
+* add async iteration to the streaming sockets ([#550](https://github.com/deepgram/deepgram-js-sdk/issues/550)) ([10b7de0](https://github.com/deepgram/deepgram-js-sdk/commit/10b7de0e054bf8b97df0936616f2c093604af0ef))
+* **examples:** add production-grade live reconnection example ([2eeb916](https://github.com/deepgram/deepgram-js-sdk/commit/2eeb916c936fb5f31f1338229e6f5af1ffe138b3))
+* **examples:** add production-grade live reconnection example ([#539](https://github.com/deepgram/deepgram-js-sdk/issues/539)) ([98d253b](https://github.com/deepgram/deepgram-js-sdk/commit/98d253b727f701c33e24eb10b400be24b37eb73c))
+
+
+### Bug Fixes
+
+* **browser:** wait for caption transcription ([f1cc3a6](https://github.com/deepgram/deepgram-js-sdk/commit/f1cc3a6739318066bb790480c6643031cd6c1139))
+* **browser:** wait for transcription completion ([13f705a](https://github.com/deepgram/deepgram-js-sdk/commit/13f705a615ff838af0d0aaacf5e91b759facce94))
+* **ci:** isolate coverage reporting ([a675339](https://github.com/deepgram/deepgram-js-sdk/commit/a67533960d6d0adac1c40f6a17fc2d8d512e7c36))
+* **examples:** drain audio on interrupt ([8f94bf9](https://github.com/deepgram/deepgram-js-sdk/commit/8f94bf99c50602e02d1675bec7a39fa2cfd14962))
+* **examples:** handle reconnect lifecycle ([06d38f8](https://github.com/deepgram/deepgram-js-sdk/commit/06d38f8870567e3ddd5bc5c56a3faddaab6e03f6))
+* harden streaming async iteration ([1a819a7](https://github.com/deepgram/deepgram-js-sdk/commit/1a819a77d0af47f5c08f9752d6aa43f7e05e012a))
+* keep websocket retry handling custom ([4c13a1e](https://github.com/deepgram/deepgram-js-sdk/commit/4c13a1ebb4ea1884a62c448b55cf9bb17d3bdacb))
+* release websocket retry lock ([a067b55](https://github.com/deepgram/deepgram-js-sdk/commit/a067b55ed9d0c41e84bdac39abd1a87061f4166a))
+* repair coverage lockfile ([e369f8c](https://github.com/deepgram/deepgram-js-sdk/commit/e369f8c1a56a4023e03556e2f00da5b0ee26306b))
+* repair pnpm-lock.yaml after bad merge, align @vitest/coverage-v8 with vitest ([74d2c51](https://github.com/deepgram/deepgram-js-sdk/commit/74d2c515fe30613db8bc015ea92ffd79f832132d))
+* settle stopped websocket reconnects ([eca2fde](https://github.com/deepgram/deepgram-js-sdk/commit/eca2fdeae7d40435a7da2dd7317061d51d8282ab))
+
 ## [5.11.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.1...v5.11.0) (2026-09-11)
 
 Agent force-end-turn support, Flux TTS expressivity controls, and a wider Flux TTS speed range.
