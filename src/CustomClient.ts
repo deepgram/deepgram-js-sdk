@@ -1199,8 +1199,15 @@ function installAsyncIteration(socket: object): void {
         const reconnectState = internals.socket as unknown as {
             _connectLock?: boolean;
             _shouldReconnect?: boolean;
+            _retryCount?: number;
+            _options?: { maxRetries?: number };
         };
-        return reconnectState._connectLock === true && reconnectState._shouldReconnect === true;
+        const maxRetries = reconnectState._options?.maxRetries ?? Infinity;
+        return (
+            reconnectState._connectLock === true &&
+            reconnectState._shouldReconnect === true &&
+            (reconnectState._retryCount ?? maxRetries) < maxRetries
+        );
     };
 
     handlers.message = (message) => {
