@@ -103,6 +103,8 @@ for await (const message of connection) {
 Iteration ends when the connection closes, throws if it errors, and `break` closes the
 connection. Messages that arrive while your loop body is still running are buffered rather
 than dropped, and `on("message", ...)` keeps working alongside iteration if you want both.
+Each connection supports one active iterator. Its queue is capped at 1,000 messages or 16 MiB;
+an overflow throws and closes the connection rather than retaining unbounded audio in memory.
 This works on `listen.v1`, `listen.v2`, `agent.v1`, `speak.v1` and `speak.v2`; on the sockets
 that carry audio, binary frames are delivered as a `Blob`.
 

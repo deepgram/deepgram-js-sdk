@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { DeepgramClient } from "../../../src";
-import { mockServerPool } from "../../mock-server/MockServerPool";
-import { MockServer } from "../../mock-server/MockServer";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Server } from "ws";
+import { DeepgramClient } from "../../../src";
+import type { MockServer } from "../../mock-server/MockServer";
+import { mockServerPool } from "../../mock-server/MockServerPool";
 
 /**
  * Wire tests for `for await` on the streaming sockets (issue #549).
@@ -74,7 +74,7 @@ describe("Socket async iteration", () => {
             ws.send(JSON.stringify(results("one", false)));
             ws.send(JSON.stringify(results("two", true)));
             ws.send(JSON.stringify({ type: "Metadata", request_id: "abc" }));
-            setTimeout(() => ws.close(), 50);
+            setTimeout(() => ws.close(1000), 50);
         });
 
         const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
@@ -96,7 +96,7 @@ describe("Socket async iteration", () => {
             for (let i = 0; i < 5; i++) {
                 ws.send(JSON.stringify(results(`chunk-${i}`, false)));
             }
-            setTimeout(() => ws.close(), 100);
+            setTimeout(() => ws.close(1000), 100);
         });
 
         const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
@@ -168,5 +168,114 @@ describe("Socket async iteration", () => {
         expect(received).toBe(2);
         await new Promise((resolve) => setTimeout(resolve, 100));
         expect(serverSawClose).toBe(true);
+    });
+
+    it("settles a pending read when the iterator returns", async () => {
+        wsServer.on("connection", () => {});
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        const pending = iterator.next();
+        await iterator.return?.();
+
+        await expect(pending).resolves.toEqual({ value: undefined, done: true });
+    });
+
+    it("rejects iteration when the connection errors", async () => {
+        await new Promise<void>((resolve) => wsServer.close(() => resolve()));
+
+        const socket = await makeClient().listen.v1.createConnection({
+            model: "nova-3",
+            reconnectAttempts: 0,
+        });
+        openSockets.push(socket);
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.connect();
+
+        await expect(iterator.next()).rejects.toThrow();
+    });
+
+    it("continues iteration after a recoverable reconnect", async () => {
+        let connectionCount = 0;
+        wsServer.on("connection", (ws) => {
+            ws.once("message", () => {
+                connectionCount++;
+                ws.send(JSON.stringify(results(connectionCount === 1 ? "before" : "after", true)));
+                setTimeout(() => ws.close(connectionCount === 1 ? 1011 : 1000), 10);
+            });
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        const socketInternals = socket.socket as unknown as {
+            _options: { minReconnectionDelay: number };
+        };
+        socketInternals._options.minReconnectionDelay = 0;
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.sendKeepAlive({ type: "KeepAlive" });
+        const first = await iterator.next();
+
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        socket.sendKeepAlive({ type: "KeepAlive" });
+        const second = await iterator.next();
+
+        expect(
+            (first.value as { channel: { alternatives: Array<{ transcript: string }> } }).channel.alternatives[0]
+                .transcript,
+        ).toBe("before");
+        expect(
+            (second.value as { channel: { alternatives: Array<{ transcript: string }> } }).channel.alternatives[0]
+                .transcript,
+        ).toBe("after");
+    });
+
+    it("rejects and closes when a consumer exceeds the queue limit", async () => {
+        let serverSawClose = false;
+        wsServer.on("connection", (ws) => {
+            ws.on("close", () => {
+                serverSawClose = true;
+            });
+            ws.once("message", () => {
+                for (let i = 0; i <= 1001; i++) {
+                    ws.send(JSON.stringify(results(`chunk-${i}`, false)));
+                }
+            });
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        const first = iterator.next();
+        socket.sendKeepAlive({ type: "KeepAlive" });
+
+        await expect(first).resolves.toMatchObject({ done: false });
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        await expect(iterator.next()).rejects.toThrow("Async iterator buffer overflow");
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        expect(serverSawClose).toBe(true);
+    });
+
+    it("rejects a second active iterator", async () => {
+        wsServer.on("connection", () => {});
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        expect(() => socket[Symbol.asyncIterator]()).toThrow("Only one async iterator");
+
+        await iterator.return?.();
     });
 });

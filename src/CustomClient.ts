@@ -1087,6 +1087,7 @@ function setupBinaryHandling(
  * `eventHandlers` protected, so it is described structurally rather than widened to `any`.
  */
 interface SocketInternals {
+    socket: ReconnectingWebSocket;
     eventHandlers: {
         message?: (message: unknown) => void;
         close?: (event: unknown) => void;
@@ -1105,14 +1106,32 @@ interface SocketInternals {
  * for the life of the connection.
  */
 interface AsyncIterationState {
-    queue: unknown[];
+    queue: Array<{ message: unknown; byteLength: number }>;
+    queuedBytes: number;
     waiting: Array<{
         resolve: (result: IteratorResult<unknown>) => void;
         reject: (error: Error) => void;
     }>;
     started: boolean;
+    activeIterator: boolean;
     ended: boolean;
     failure?: Error;
+}
+
+const MAX_ASYNC_ITERATOR_QUEUE_MESSAGES = 1000;
+const MAX_ASYNC_ITERATOR_QUEUE_BYTES = 16 * 1024 * 1024;
+
+function estimateMessageByteLength(message: unknown): number {
+    if (typeof message === "string") {
+        return new TextEncoder().encode(message).byteLength;
+    }
+    if (message instanceof Blob) {
+        return message.size;
+    }
+    if (message instanceof ArrayBuffer || ArrayBuffer.isView(message)) {
+        return message.byteLength;
+    }
+    return new TextEncoder().encode(String(JSON.stringify(message))).byteLength;
 }
 
 /**
@@ -1137,7 +1156,14 @@ function installAsyncIteration(socket: object): void {
         error?: (error: Error) => void;
     } = { message: handlers.message, close: handlers.close, error: handlers.error };
 
-    const state: AsyncIterationState = { queue: [], waiting: [], started: false, ended: false };
+    const state: AsyncIterationState = {
+        queue: [],
+        queuedBytes: 0,
+        waiting: [],
+        started: false,
+        activeIterator: false,
+        ended: false,
+    };
 
     const handOff = (result: IteratorResult<unknown>): boolean => {
         const next = state.waiting.shift();
@@ -1150,41 +1176,77 @@ function installAsyncIteration(socket: object): void {
 
     const finish = (): void => {
         state.ended = true;
+        state.activeIterator = false;
         while (state.waiting.length > 0) {
             state.waiting.shift()?.resolve({ value: undefined, done: true });
         }
     };
 
-    handlers.message = (message) => {
-        userHandlers.message?.(message);
-        if (!state.started || state.ended) {
-            return;
+    const fail = (error: Error): void => {
+        state.ended = true;
+        state.activeIterator = false;
+        state.queue = [];
+        state.queuedBytes = 0;
+        state.failure = error;
+        while (state.waiting.length > 0) {
+            state.waiting.shift()?.reject(error);
         }
-        if (!handOff({ value: message, done: false })) {
-            state.queue.push(message);
+    };
+
+    const reconnectPending = (): boolean => {
+        // Both supported WebSocket implementations set this lock before they
+        // dispatch a recoverable close to generated socket handlers.
+        return (internals.socket as unknown as { _connectLock?: boolean })._connectLock === true;
+    };
+
+    handlers.message = (message) => {
+        try {
+            userHandlers.message?.(message);
+        } finally {
+            if (state.started && !state.ended && !handOff({ value: message, done: false })) {
+                const byteLength = estimateMessageByteLength(message);
+                if (
+                    state.queue.length >= MAX_ASYNC_ITERATOR_QUEUE_MESSAGES ||
+                    state.queuedBytes + byteLength > MAX_ASYNC_ITERATOR_QUEUE_BYTES
+                ) {
+                    const error = new Error(
+                        "Async iterator buffer overflow; consume messages faster or use callbacks.",
+                    );
+                    fail(error);
+                    try {
+                        internals.close();
+                    } catch {
+                        // Already closed.
+                    }
+                } else {
+                    state.queue.push({ message, byteLength });
+                    state.queuedBytes += byteLength;
+                }
+            }
         }
     };
 
     handlers.close = (event) => {
-        userHandlers.close?.(event);
-        if (!state.ended) {
-            finish();
+        try {
+            userHandlers.close?.(event);
+        } finally {
+            // The core socket emits a close before an associated error, and it
+            // starts reconnecting before exposing a recoverable close to callers.
+            queueMicrotask(() => {
+                if (!state.ended && !reconnectPending()) {
+                    finish();
+                }
+            });
         }
     };
 
     handlers.error = (error) => {
-        userHandlers.error?.(error);
-        if (state.ended) {
-            return;
-        }
-        state.ended = true;
-        if (state.waiting.length > 0) {
-            while (state.waiting.length > 0) {
-                state.waiting.shift()?.reject(error);
+        try {
+            userHandlers.error?.(error);
+        } finally {
+            if (!state.ended) {
+                fail(error);
             }
-        } else {
-            // Nobody is waiting yet; surface it on the next next() call instead of dropping it.
-            state.failure = error;
         }
     };
 
@@ -1200,14 +1262,22 @@ function installAsyncIteration(socket: object): void {
     };
 
     internals[Symbol.asyncIterator] = (): AsyncIterableIterator<unknown> => {
+        if (state.activeIterator) {
+            throw new Error("Only one async iterator can consume a streaming socket at a time.");
+        }
         state.started = true;
+        state.activeIterator = !state.ended;
         const iterator: AsyncIterableIterator<unknown> = {
             [Symbol.asyncIterator]() {
                 return this;
             },
             next(): Promise<IteratorResult<unknown>> {
                 if (state.queue.length > 0) {
-                    return Promise.resolve({ value: state.queue.shift(), done: false });
+                    const message = state.queue.shift();
+                    if (message) {
+                        state.queuedBytes -= message.byteLength;
+                        return Promise.resolve({ value: message.message, done: false });
+                    }
                 }
                 if (state.failure !== undefined) {
                     const failure = state.failure;
@@ -1223,8 +1293,9 @@ function installAsyncIteration(socket: object): void {
             },
             return(value?: unknown): Promise<IteratorResult<unknown>> {
                 // Breaking out of a for-await tears the connection down, matching the Python SDK.
-                state.ended = true;
+                finish();
                 state.queue.length = 0;
+                state.queuedBytes = 0;
                 try {
                     internals.close();
                 } catch {
