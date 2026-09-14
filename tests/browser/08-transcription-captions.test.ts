@@ -1,6 +1,6 @@
 import { type Browser, chromium, type Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { clickButton, getExampleUrl, getOutputContent } from "./helpers";
+import { clickButton, getExampleUrl, waitForOutputMatching } from "./helpers";
 
 describe("Browser Example: 08-transcription-captions", () => {
     let browser: Browser;
@@ -24,22 +24,12 @@ describe("Browser Example: 08-transcription-captions", () => {
         await clickButton(page, "runExample");
 
         // The page writes "Generating transcription..." immediately, before the API response.
-        const deadline = Date.now() + 30000;
-        let output = "";
-        while (Date.now() < deadline) {
-            output = await getOutputContent(page);
-            if (output.includes("✗ Error:") || output.includes("✗ No data returned")) {
-                throw new Error(`Caption generation failed:\n${output}`);
-            }
-            if (output.includes("✓ Transcription result:") && output.includes('"results"')) {
-                break;
-            }
-            await page.waitForTimeout(500);
-        }
-
-        expect(output, `Timed out waiting for caption source data. Last page output:\n${output}`).toContain(
-            "✓ Transcription result:",
+        const output = await waitForOutputMatching(
+            page,
+            (value) => value.includes("✓ Transcription result:") && value.includes('"results"'),
         );
+
+        expect(output).toContain("✓ Transcription result:");
         expect(output).toContain('"results"');
     }, 30000);
 });

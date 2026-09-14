@@ -1,4 +1,5 @@
 import { resolve } from "path";
+import type { Page } from "playwright";
 import { TEST_BASE_URL } from "./setup";
 
 /**
@@ -72,6 +73,29 @@ export async function waitForOutput(page: any, timeout = 30000): Promise<void> {
 }
 
 /**
+ * Wait for output that satisfies a test-specific completion condition.
+ */
+export async function waitForOutputMatching(
+    page: Page,
+    matches: (output: string) => boolean,
+    timeout = 25000,
+): Promise<string> {
+    const deadline = Date.now() + timeout;
+    let output = "";
+
+    while (Date.now() < deadline) {
+        const outputElement = await page.$("#output");
+        output = (await outputElement?.textContent()) ?? "";
+        if (matches(output)) {
+            return output;
+        }
+        await page.waitForTimeout(500);
+    }
+
+    throw new Error(`Timed out waiting for expected page output. Last page output:\n${output}`);
+}
+
+/**
  * Get output content
  */
 export async function getOutputContent(page: any): Promise<string> {
@@ -84,8 +108,7 @@ export async function getOutputContent(page: any): Promise<string> {
  * Check if output contains success message
  * Looks for checkmarks (✓), "success" text, or successful API responses (JSON data)
  */
-export async function hasSuccessOutput(page: any): Promise<boolean> {
-    const content = await getOutputContent(page);
+export function isSuccessOutput(content: string): boolean {
     if (!content || content.trim().length === 0) {
         return false;
     }
@@ -149,6 +172,21 @@ export async function hasSuccessOutput(page: any): Promise<boolean> {
     ];
 
     return successPatterns.some((pattern) => contentLower.includes(pattern));
+}
+
+/**
+ * Check if output contains success message
+ * Looks for checkmarks (✓), "success" text, or successful API responses (JSON data)
+ */
+export async function hasSuccessOutput(page: any): Promise<boolean> {
+    return isSuccessOutput(await getOutputContent(page));
+}
+
+/**
+ * Wait for a successful page response rather than intermediate progress output.
+ */
+export async function waitForSuccessOutput(page: Page, timeout = 25000): Promise<string> {
+    return waitForOutputMatching(page, isSuccessOutput, timeout);
 }
 
 /**
