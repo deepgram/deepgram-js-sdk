@@ -85,8 +85,85 @@ const DROP_AFTER_SECONDS = 8;
 // ReconnectingWebSocket ready state: 0 CONNECTING, 1 OPEN, 2 CLOSING, 3 CLOSED
 const READY_STATE_OPEN = 1;
 
-export function timestampOffsetSeconds(deliveredBytes: number, droppedBytes: number): number {
+type ReconnectServerMessage = {
+    type: string;
+    channel?: { alternatives?: Array<{ transcript?: string }> };
+    duration?: number;
+    is_final?: boolean;
+    request_id?: string;
+    start?: number;
+};
+
+export interface ReconnectConnection {
+    readyState: number;
+    socket: { close(code?: number, reason?: string): void };
+    on(event: "open", listener: () => void): void;
+    on(event: "message", listener: (data: ReconnectServerMessage) => void): void;
+    on(event: "error", listener: (error: Error) => void): void;
+    on(event: "close", listener: (event: { code?: number }) => void): void;
+    connect(): void;
+    waitForOpen(): Promise<void>;
+    sendMedia(chunk: Uint8Array): void;
+    sendKeepAlive(message: { type: "KeepAlive" }): void;
+    sendCloseStream(message: { type: "CloseStream" }): void;
+    close(): void;
+}
+
+type ReconnectExampleOptions = {
+    audio?: Uint8Array;
+    connectionFactory?: () => Promise<ReconnectConnection>;
+    simulateDrop?: boolean;
+};
+
+function timestampOffsetSeconds(deliveredBytes: number, droppedBytes: number): number {
     return (deliveredBytes + droppedBytes) / BYTES_PER_SECOND;
+}
+
+function bufferAudioChunk<T extends { length: number }>(
+    audioBuffer: T[],
+    bufferedBytes: number,
+    chunk: T,
+    maxBufferedBytes: number,
+): { bufferedBytes: number; droppedBytes: number; droppedChunks: T[] } {
+    audioBuffer.push(chunk);
+    bufferedBytes += chunk.length;
+
+    let droppedBytes = 0;
+    const droppedChunks: T[] = [];
+    while (bufferedBytes > maxBufferedBytes && audioBuffer.length > 0) {
+        const dropped = audioBuffer.shift();
+        if (dropped) {
+            bufferedBytes -= dropped.length;
+            droppedBytes += dropped.length;
+            droppedChunks.push(dropped);
+        }
+    }
+
+    return { bufferedBytes, droppedBytes, droppedChunks };
+}
+
+type CloseAction = "reconnect" | "success" | "failure";
+
+function closeAction({
+    code,
+    sawTransportError,
+    shuttingDown,
+    shutdownMetadataReceived,
+}: {
+    code: number | undefined;
+    sawTransportError: boolean;
+    shuttingDown: boolean;
+    shutdownMetadataReceived: boolean;
+}): CloseAction {
+    if (shuttingDown) {
+        return shutdownMetadataReceived && code === 1000 ? "success" : "failure";
+    }
+
+    return isReconnectWorthy(code) || sawTransportError ? "reconnect" : "failure";
+}
+
+function deferCloseAction(callback: () => void): void {
+    queueMicrotask(callback);
 }
 
 // ---------------------------------------------------------------------------
@@ -125,43 +202,58 @@ function sleep(ms) {
 // Reconnecting transcriber
 // ---------------------------------------------------------------------------
 
-async function main() {
+export async function main({
+    audio: suppliedAudio,
+    connectionFactory: suppliedConnectionFactory,
+    simulateDrop = SIMULATE_DROP,
+}: ReconnectExampleOptions = {}) {
     // Strip the 44-byte WAV header to get raw linear16 PCM (see note above on
     // why reconnectable streams should send raw audio).
-    const audio = readFileSync(join(__dirname, "spacewalk.wav")).subarray(44);
+    const audio = suppliedAudio ?? readFileSync(join(__dirname, "spacewalk.wav")).subarray(44);
     const deepgramClient = new DeepgramClient({
         apiKey: process.env.DEEPGRAM_API_KEY,
     });
+    const connectionFactory =
+        suppliedConnectionFactory ??
+        (async () => {
+            return (await deepgramClient.listen.v1.createConnection({
+                ...TRANSCRIPTION_OPTIONS,
+                // Disable the SDK socket's transport-level retry: this example owns
+                // reconnection at the application level so it can buffer audio,
+                // apply its own backoff, and classify close codes.
+                reconnectAttempts: 0,
+                connectionTimeoutInSeconds: 10,
+            })) as unknown as ReconnectConnection;
+        });
 
-    let connection = null; // the active SDK socket, or null while disconnected
+    let connection: ReconnectConnection | null = null; // the active SDK socket, or null while disconnected
     let shuttingDown = false; // a deliberate shutdown is in progress
     let reconnecting = false; // a reconnect loop is in flight
     let audioExhausted = false; // the audio source has produced its last chunk
     let simulatedDrop = false; // the one forced disconnect has fired
 
-    const audioBuffer = []; // chunks produced while disconnected
+    const audioBuffer: Uint8Array[] = []; // chunks produced while disconnected
     let bufferedBytes = 0;
     let deliveredBytes = 0; // total bytes handed to any connection
     let droppedBytes = 0; // total oldest buffered audio intentionally discarded
     let timestampOffsetSec = 0; // audio seconds delivered before the current connection
+    let shutdownMetadataReceived = false;
 
     let keepAliveTimer = null;
     let pumpTimer = null;
     let shutdownWatchdog = null;
     let audioCursor = 0;
 
-    function log(message) {
+    function log(message: string) {
         console.log(`[${new Date().toISOString()}] ${message}`);
     }
 
     /** Queue a chunk while disconnected, dropping the oldest audio at the cap. */
-    function bufferChunk(chunk) {
-        audioBuffer.push(chunk);
-        bufferedBytes += chunk.length;
-        while (bufferedBytes > MAX_BUFFERED_BYTES && audioBuffer.length > 0) {
-            const dropped = audioBuffer.shift();
-            bufferedBytes -= dropped.length;
-            droppedBytes += dropped.length;
+    function bufferChunk(chunk: Uint8Array) {
+        const buffered = bufferAudioChunk(audioBuffer, bufferedBytes, chunk, MAX_BUFFERED_BYTES);
+        bufferedBytes = buffered.bufferedBytes;
+        droppedBytes += buffered.droppedBytes;
+        for (const dropped of buffered.droppedChunks) {
             log(`Buffer cap reached — dropped ${dropped.length} bytes of oldest audio`);
         }
     }
@@ -201,20 +293,27 @@ async function main() {
         }
     }
 
-    function handleMessage(data) {
+    function handleMessage(messageConnection: ReconnectConnection, data: ReconnectServerMessage) {
+        if (connection !== messageConnection) {
+            return;
+        }
+
         if (data.type === "Results") {
-            const transcript = data.channel.alternatives[0]?.transcript;
+            const transcript = data.channel?.alternatives?.[0]?.transcript;
             if (data.is_final && transcript) {
                 // Each connection's timestamps restart at 0, so add the offset
                 // accumulated across previous connections to keep a continuous
                 // timeline for the whole stream.
-                const start = (timestampOffsetSec + data.start).toFixed(2);
-                const end = (timestampOffsetSec + data.start + data.duration).toFixed(2);
+                const start = (timestampOffsetSec + (data.start ?? 0)).toFixed(2);
+                const end = (timestampOffsetSec + (data.start ?? 0) + (data.duration ?? 0)).toFixed(2);
                 log(`Transcript [${start}s - ${end}s]: ${transcript}`);
             }
         } else if (data.type === "Metadata") {
             // Sent by the server after it acknowledges CloseStream and finishes
             // processing; a normal closure (code 1000) follows.
+            if (shuttingDown) {
+                shutdownMetadataReceived = true;
+            }
             log(`Metadata received (request_id: ${data.request_id})`);
         }
     }
@@ -224,14 +323,7 @@ async function main() {
      * resolve once it is open. Rejects if the connection attempt fails.
      */
     async function openConnection() {
-        const newConnection = await deepgramClient.listen.v1.createConnection({
-            ...TRANSCRIPTION_OPTIONS,
-            // Disable the SDK socket's transport-level retry: this example owns
-            // reconnection at the application level so it can buffer audio,
-            // apply its own backoff, and classify close codes.
-            reconnectAttempts: 0,
-            connectionTimeoutInSeconds: 10,
-        });
+        const newConnection = await connectionFactory();
 
         // The SDK surfaces some transport errors as a close event with a
         // normal-looking code. Remember that this connection errored so the
@@ -242,7 +334,7 @@ async function main() {
             log("Connection open");
         });
 
-        newConnection.on("message", handleMessage);
+        newConnection.on("message", (data) => handleMessage(newConnection, data));
 
         newConnection.on("error", (error) => {
             sawTransportError = true;
@@ -260,17 +352,32 @@ async function main() {
             const code = event?.code;
             log(`Connection closed (code: ${code ?? "unknown"})`);
 
-            if (shuttingDown) {
-                finish(0);
-                return;
-            }
-
-            if (isReconnectWorthy(code) || sawTransportError) {
-                void reconnect();
-            } else {
-                log("Close is not reconnect-worthy — check your audio and options. Exiting.");
-                finish(1);
-            }
+            // The SDK emits a synthetic code-1000 close before error listeners.
+            // Wait one microtask so its error handler can mark this close retryable.
+            deferCloseAction(() => {
+                switch (
+                    closeAction({
+                        code,
+                        sawTransportError,
+                        shuttingDown,
+                        shutdownMetadataReceived,
+                    })
+                ) {
+                    case "success":
+                        finish(0);
+                        break;
+                    case "reconnect":
+                        void reconnect();
+                        break;
+                    default:
+                        log(
+                            shuttingDown
+                                ? "Stream closed before Deepgram finalized it. Exiting."
+                                : "Close is not reconnect-worthy — check your audio and options. Exiting.",
+                        );
+                        finish(1);
+                }
+            });
         });
 
         newConnection.connect();
@@ -324,14 +431,15 @@ async function main() {
             return;
         }
         shuttingDown = true;
+        shutdownMetadataReceived = false;
         log("Audio complete — sending CloseStream for a clean shutdown");
         if (connection && connection.readyState === READY_STATE_OPEN) {
             connection.sendCloseStream({ type: "CloseStream" });
             // The server replies with a final Metadata message and then closes
             // with code 1000. Don't wait forever if that close never arrives.
             shutdownWatchdog = setTimeout(() => {
-                log("Timed out waiting for the server to close — forcing shutdown");
-                finish(0);
+                log("Timed out waiting for Deepgram to finalize the stream. Exiting.");
+                finish(1);
             }, 10000);
         } else {
             finish(0);
@@ -418,7 +526,7 @@ async function main() {
         }
 
         // Demo only: force one mid-stream disconnect so the recovery path runs.
-        if (SIMULATE_DROP && !simulatedDrop && deliveredBytes >= DROP_AFTER_SECONDS * BYTES_PER_SECOND && connection) {
+        if (simulateDrop && !simulatedDrop && deliveredBytes >= DROP_AFTER_SECONDS * BYTES_PER_SECOND && connection) {
             simulatedDrop = true;
             log("Simulating a mid-stream network drop (close code 4000)");
             connection.socket.close(4000, "simulated network drop");
