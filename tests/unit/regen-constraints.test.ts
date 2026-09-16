@@ -408,3 +408,23 @@ describe("2026-07-09 regen constraints", () => {
         });
     });
 });
+
+describe("2026-09-16 agent surfaces", () => {
+    it("FunctionCallCancelled retains every cancelled function id and name", () => {
+        const message: Deepgram.agent.AgentV1FunctionCallCancelled = {
+            type: "FunctionCallCancelled",
+            functions: [{ id: "call-123", name: "book_flight" }],
+        };
+
+        expect(JSON.parse(JSON.stringify(message))).toEqual(message);
+    });
+
+    it("Think functions accept defer_until_eot", () => {
+        const think: Deepgram.ThinkSettingsV1 = {
+            provider: { type: "open_ai", model: "gpt-4o-mini" },
+            functions: [{ name: "book_flight", defer_until_eot: true }],
+        };
+
+        expect(think.functions?.[0]?.defer_until_eot).toBe(true);
+    });
+});
