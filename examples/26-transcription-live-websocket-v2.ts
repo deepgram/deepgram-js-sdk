@@ -25,11 +25,13 @@ const deepgramClient = new DeepgramClient({
 
 async function liveTranscriptionV2() {
     let pingInterval = null;
+    let closeStreamSent = false;
 
     try {
         // Create a connection object with transcription options (not yet connected)
         const deepgramConnection = await deepgramClient.listen.v2.createConnection({
             model: "flux-general-en",
+            shouldReconnect: (event) => !closeStreamSent && event.code !== 1000,
             // V2 API parameters - model is required
             // encoding and sample_rate are optional and may be auto-detected
         });
@@ -110,6 +112,7 @@ async function liveTranscriptionV2() {
                 setTimeout(() => {
                     console.log("Keepalive demo complete, closing stream");
                     // Close the stream when done
+                    closeStreamSent = true;
                     deepgramConnection.sendCloseStream({ type: "CloseStream" });
                     // Connection will close after receiving final results
                 }, 30000);

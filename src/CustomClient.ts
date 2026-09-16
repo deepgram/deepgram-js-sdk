@@ -43,6 +43,7 @@ const WEBSOCKET_OPTION_KEYS = new Set([
     "reconnectAttempts",
     "connectionTimeoutInSeconds",
     "abortSignal",
+    "shouldReconnect",
     "queryParams",
     "agent",
 ]);
@@ -558,16 +559,19 @@ class TransportWebSocketAdapter {
     // signals that the underlying transport owns reconnect — the wrapper
     // attempts the connect once and surfaces any error without re-attempting.
     private readonly _reconnect: boolean;
+    private readonly _shouldReconnectAfterClose?: (event: websocketEvents.CloseEvent) => boolean;
 
     constructor(args: {
         factory: DeepgramTransportFactory;
         request: DeepgramTransportRequest;
         startClosed?: boolean;
         reconnect?: boolean;
+        shouldReconnect?: (event: websocketEvents.CloseEvent) => boolean;
     }) {
         this._factory = args.factory;
         this._request = args.request;
         this._reconnect = args.reconnect !== false;
+        this._shouldReconnectAfterClose = args.shouldReconnect;
         this._readyState = args.startClosed
             ? ReconnectingWebSocket.ReadyState.CLOSED
             : ReconnectingWebSocket.ReadyState.CONNECTING;
@@ -907,7 +911,16 @@ class TransportWebSocketAdapter {
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
         this._setTransportHandle(undefined);
 
-        if (code === 1000 || this._terminalMessageSent) {
+        let shouldReconnect = code !== 1000;
+        if (this._shouldReconnectAfterClose) {
+            try {
+                shouldReconnect = this._shouldReconnectAfterClose(new websocketEvents.CloseEvent(code, reason, this));
+            } catch (error) {
+                this._debug("shouldReconnect threw, treating close as terminal", error);
+                shouldReconnect = false;
+            }
+        }
+        if (!shouldReconnect || this._terminalMessageSent) {
             this._shouldReconnect = false;
         }
 
@@ -1394,6 +1407,7 @@ async function createWebSocketConnection({
     reconnectAttempts,
     connectionTimeoutInSeconds,
     abortSignal,
+    shouldReconnect,
     agent,
 }: {
     options: DeepgramClient.Options;
@@ -1407,6 +1421,7 @@ async function createWebSocketConnection({
     reconnectAttempts?: number;
     connectionTimeoutInSeconds?: number;
     abortSignal?: AbortSignal;
+    shouldReconnect?: (event: websocketEvents.CloseEvent) => boolean;
     agent?: HttpAgent;
 }): Promise<ReconnectingWebSocket> {
     // Ensure ws is loaded for Node.js environments (no-op after first call)
@@ -1451,6 +1466,7 @@ async function createWebSocketConnection({
             request,
             startClosed: true,
             reconnect,
+            shouldReconnect,
         }) as unknown as ReconnectingWebSocket;
     }
 
@@ -1472,6 +1488,7 @@ async function createWebSocketConnection({
             startClosed: true,
             connectionTimeout:
                 connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : DEFAULT_CONNECTION_TIMEOUT_MS,
+            shouldReconnect,
         },
         abortSignal,
     });
@@ -1495,7 +1512,16 @@ async function createWebSocketConnection({
  */
 class WrappedAgentV1Client extends AgentV1Client {
     public async connect(args: AgentV1ConnectionArgs = {}): Promise<AsyncIterableAgentV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1509,6 +1535,7 @@ class WrappedAgentV1Client extends AgentV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1601,7 +1628,16 @@ class WrappedListenV1Client extends ListenV1Client {
             });
         }
 
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1615,6 +1651,7 @@ class WrappedListenV1Client extends ListenV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1699,7 +1736,16 @@ class WrappedListenV1Socket extends ListenV1Socket {
  */
 class WrappedListenV2Client extends ListenV2Client {
     public async connect(args: ListenV2ConnectionArgs): Promise<AsyncIterableListenV2Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1713,6 +1759,7 @@ class WrappedListenV2Client extends ListenV2Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1833,7 +1880,16 @@ class WrappedListenV2Socket extends ListenV2Socket {
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
     public async connect(args: SpeakV1ConnectionArgs): Promise<AsyncIterableSpeakV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1847,6 +1903,7 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1939,7 +1996,16 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
  */
 class WrappedSpeakV2Client extends SpeakV2Client {
     public async connect(args: SpeakV2ConnectionArgs): Promise<AsyncIterableSpeakV2Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1953,6 +2019,7 @@ class WrappedSpeakV2Client extends SpeakV2Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 

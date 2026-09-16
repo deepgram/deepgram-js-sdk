@@ -25,8 +25,10 @@ const deepgramClient = new DeepgramClient({
 
 async function liveTranscriptionFluxEot() {
     try {
+        let closeStreamSent = false;
         const deepgramConnection = await deepgramClient.listen.v2.createConnection({
             model: "flux-general-en",
+            shouldReconnect: (event) => !closeStreamSent && event.code !== 1000,
             // End-of-turn tuning for Flux
             eot_threshold: 0.8,
             eager_eot_threshold: 0.5,
@@ -82,6 +84,7 @@ async function liveTranscriptionFluxEot() {
             audioStream.on("end", () => {
                 console.log("Audio stream ended");
                 setTimeout(() => {
+                    closeStreamSent = true;
                     deepgramConnection.sendCloseStream({ type: "CloseStream" });
                 }, 3000);
             });

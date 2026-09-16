@@ -50,8 +50,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function liveTranscriptionForceEndTurn() {
     try {
+        let closeStreamSent = false;
         const deepgramConnection = await deepgramClient.listen.v2.createConnection({
             model: "flux-general-en",
+            shouldReconnect: (event) => !closeStreamSent && event.code !== 1000,
             encoding: "linear16",
             sample_rate: SAMPLE_RATE,
             // Never end a turn on Flux's own judgement — we will end it ourselves.
@@ -136,6 +138,7 @@ async function liveTranscriptionForceEndTurn() {
             console.log("\nForceEndTurn is not enabled on this deployment.");
             console.log("With eot_threshold=1.0 and no ForceEndTurn, turns never end on their own.");
         } else if (!closed) {
+            closeStreamSent = true;
             deepgramConnection.sendCloseStream({ type: "CloseStream" });
             await sleep(1000);
         }

@@ -201,6 +201,21 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports).toHaveLength(1);
     });
 
+    it("passes shouldReconnect to the transport instead of the query string", async () => {
+        const shouldReconnect = vi.fn(() => false);
+        const { adapter, transports } = await makeV2Adapter({}, { shouldReconnect, reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(adapter.url).not.toContain("shouldReconnect");
+        expect(shouldReconnect).toHaveBeenCalledOnce();
+        expect(transports).toHaveLength(1);
+    });
+
     it("reconnects after a transport error", async () => {
         const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 5 });
         adapter.onerror = () => {};
