@@ -59,7 +59,14 @@ async function main(): Promise<void> {
                 think: {
                     provider: { type: "open_ai", model: "gpt-4o-mini" },
                     prompt: "You are a concise assistant.",
-                    functions: [{ name: "book_flight", defer_until_eot: true }],
+                    functions: [
+                        {
+                            name: "book_flight",
+                            description: "Book a flight for the caller.",
+                            parameters: { type: "object", properties: {} },
+                            defer_until_eot: true,
+                        },
+                    ],
                 },
                 speak: { provider: { type: "deepgram", model: "aura-2-thalia-en" } },
                 greeting: "Hello.",
