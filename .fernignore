@@ -203,8 +203,20 @@ src/api/types/SpeakV2Speed.ts
 
 # src/api/resources/listen/resources/v2/client/Socket.ts: retain the ForceEndTurn
 # server-enablement caveat because deployments without the feature close the socket
-# with UNPARSABLE_CLIENT_MESSAGE. Swap to .bak before regen.
+# with UNPARSABLE_CLIENT_MESSAGE. Also preserve v5's replacement semantics for on().
+# Swap to .bak before regen.
 src/api/resources/listen/resources/v2/client/Socket.ts
+
+# Fern 3.94.0 changes socket on() registrations to accumulate. Preserve v5's
+# replacement semantics until the next major release; all continue exposing off().
+src/api/resources/agent/resources/v1/client/Socket.ts
+src/api/resources/listen/resources/v1/client/Socket.ts
+src/api/resources/speak/resources/v1/client/Socket.ts
+src/api/resources/speak/resources/v2/client/Socket.ts
+
+# Fern 3.94.0 evaluates shouldReconnect during reconnect()'s internal close,
+# allowing a false policy to suppress an explicit reconnect. Re-arm reconnect.
+src/core/websocket/ws.ts
 
 # src/api/types/Deepgram.ts: the 2026-08-19 regen replaced the Early Access Flux TTS
 # voice roster with the GA catalog (deepgram-docs #1096, 2026-08-12). That added ~24

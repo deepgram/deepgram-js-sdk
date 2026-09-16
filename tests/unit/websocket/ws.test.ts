@@ -146,6 +146,15 @@ describe("ReconnectingWebSocket reconnect policy", () => {
         expect(FakeWebSocket.instances).toHaveLength(2);
     });
 
+    it("reconnects when explicitly requested despite a false close policy", async () => {
+        await openInitialConnection({ shouldReconnect: () => false });
+
+        socket?.reconnect();
+        await flush();
+
+        expect(FakeWebSocket.instances).toHaveLength(2);
+    });
+
     it("supports a stateful predicate that becomes terminal after a client-side end-of-stream", async () => {
         let streamEnded = false;
         const ws = await openInitialConnection({

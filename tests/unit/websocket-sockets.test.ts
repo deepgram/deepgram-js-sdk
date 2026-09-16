@@ -124,19 +124,22 @@ describe.each([
         expect(seen.close).toEqual({ code: 1011, reason: "server" });
     });
 
-    it("removes only the requested event handler", () => {
+    it("replaces a handler when the same event is registered again", () => {
         const fake = new FakeSocket();
         const socket = make(fake);
-        const removed = vi.fn();
-        const retained = vi.fn();
+        const previous = vi.fn();
+        const current = vi.fn();
 
-        socket.on("message", removed);
-        socket.on("message", retained);
-        socket.off("message", removed);
+        socket.on("message", previous);
+        socket.on("message", current);
         fake.emit("message", { data: '{"type":"Test"}' });
 
-        expect(removed).not.toHaveBeenCalled();
-        expect(retained).toHaveBeenCalledWith({ type: "Test" });
+        expect(previous).not.toHaveBeenCalled();
+        expect(current).toHaveBeenCalledWith({ type: "Test" });
+
+        socket.off("message", current);
+        fake.emit("message", { data: '{"type":"Test"}' });
+        expect(current).toHaveBeenCalledOnce();
     });
 
     it("exposes readyState from the underlying socket", () => {

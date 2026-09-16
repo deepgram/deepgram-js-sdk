@@ -1,11 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Features
-
-* **websocket:** Streaming socket `on()` handlers now accumulate in registration order. Use `off(event, callback)` to remove a handler; re-registering a handler no longer replaces the prior callback.
-
 ## [5.11.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.1...v5.11.0) (2026-09-11)
 
 Agent force-end-turn support, Flux TTS expressivity controls, and a wider Flux TTS speed range.

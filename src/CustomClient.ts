@@ -1176,9 +1176,8 @@ function estimateMessageByteLength(message: unknown): number {
 /**
  * Adds `for await` support to a generated socket, alongside the existing callback API.
  *
- * The generated `on()` accumulates handlers, so iteration adds its own listeners alongside
- * caller callbacks. `setupBinaryHandling` dispatches normalized messages through the same
- * handler arrays, so binary frames arrive here as Blob values.
+ * Public `on()` retains v5 replacement semantics. Iteration keeps its own handler in the
+ * generated handler array so callbacks and iteration continue receiving every message.
  */
 function installAsyncIteration(socket: object): void {
     const internals = socket as unknown as SocketInternals;
@@ -1238,42 +1237,59 @@ function installAsyncIteration(socket: object): void {
         );
     };
 
-    handlers.message.push((message) => {
-        if (state.started && !state.ended && !handOff({ value: message, done: false })) {
-            const byteLength = estimateMessageByteLength(message);
-            if (
-                state.queue.length >= MAX_ASYNC_ITERATOR_QUEUE_MESSAGES ||
-                state.queuedBytes + byteLength > MAX_ASYNC_ITERATOR_QUEUE_BYTES
-            ) {
-                const error = new Error("Async iterator buffer overflow; consume messages faster or use callbacks.");
-                fail(error);
-                try {
-                    internals.close();
-                } catch {
-                    // Already closed.
+    const iterationHandlers = {
+        message: (message: unknown) => {
+            if (state.started && !state.ended && !handOff({ value: message, done: false })) {
+                const byteLength = estimateMessageByteLength(message);
+                if (
+                    state.queue.length >= MAX_ASYNC_ITERATOR_QUEUE_MESSAGES ||
+                    state.queuedBytes + byteLength > MAX_ASYNC_ITERATOR_QUEUE_BYTES
+                ) {
+                    const error = new Error(
+                        "Async iterator buffer overflow; consume messages faster or use callbacks.",
+                    );
+                    fail(error);
+                    try {
+                        internals.close();
+                    } catch {
+                        // Already closed.
+                    }
+                } else {
+                    state.queue.push({ message, byteLength });
+                    state.queuedBytes += byteLength;
                 }
-            } else {
-                state.queue.push({ message, byteLength });
-                state.queuedBytes += byteLength;
             }
-        }
-    });
-
-    handlers.close.push(() => {
-        // The core socket emits a close before an associated error, and it
-        // starts reconnecting before exposing a recoverable close to callers.
-        queueMicrotask(() => {
-            if (!state.ended && !reconnectPending()) {
-                finish();
+        },
+        close: () => {
+            // The core socket emits a close before an associated error, and it
+            // starts reconnecting before exposing a recoverable close to callers.
+            queueMicrotask(() => {
+                if (!state.ended && !reconnectPending()) {
+                    finish();
+                }
+            });
+        },
+        error: (error: Error) => {
+            if (!state.ended) {
+                fail(error);
             }
-        });
-    });
+        },
+    };
 
-    handlers.error.push((error) => {
-        if (!state.ended) {
-            fail(error);
+    handlers.message.push(iterationHandlers.message);
+    handlers.close.push(iterationHandlers.close);
+    handlers.error.push(iterationHandlers.error);
+
+    const originalOn = internals.on.bind(socket);
+    internals.on = (event: string, callback: unknown): void => {
+        if (event === "message" || event === "close" || event === "error") {
+            const handler = iterationHandlers[event];
+            const userHandlers = handlers[event];
+            userHandlers.splice(0, userHandlers.length, callback as never, handler as never);
+            return;
         }
-    });
+        originalOn(event, callback);
+    };
 
     internals[Symbol.asyncIterator] = (): AsyncIterableIterator<unknown> => {
         if (state.activeIterator) {

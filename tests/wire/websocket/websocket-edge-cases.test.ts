@@ -83,7 +83,7 @@ describe("WebSocket edge cases and error handling", () => {
             expect(tracker.getCount("close")).toBe(3);
         });
 
-        it("invokes every registration for the same event", async () => {
+        it("replaces the handler when an event is registered again", async () => {
             const tracker = new WebSocketEventTracker();
 
             server
@@ -125,7 +125,7 @@ describe("WebSocket edge cases and error handling", () => {
             await socket.waitForOpen();
             await new Promise((resolve) => setTimeout(resolve, 200));
 
-            expect(tracker.getCount("open")).toBe(3);
+            expect(tracker.getCount("open")).toBe(1);
 
             socket.close();
         });

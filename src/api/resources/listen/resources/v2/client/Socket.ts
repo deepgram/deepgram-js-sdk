@@ -68,8 +68,6 @@ export class V2Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
-     * Handlers accumulate: registering another callback for the same event does not replace
-     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -82,7 +80,7 @@ export class V2Socket {
         callback: NonNullable<V2Socket.EventHandlers[T]>,
     ): void {
         const handlers = this.eventHandlers[event] as Array<NonNullable<V2Socket.EventHandlers[T]>>;
-        handlers.push(callback);
+        handlers.splice(0, handlers.length, callback);
     }
 
     /**
