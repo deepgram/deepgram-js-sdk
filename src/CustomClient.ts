@@ -883,18 +883,15 @@ class TransportWebSocketAdapter {
         if (!isTerminalClientMessage(data)) {
             return;
         }
-        if (result instanceof Promise) {
-            void result.then(
-                () => {
-                    if (this._transport === transport) {
-                        this._terminalMessageSent = true;
-                    }
-                },
-                (error) => this._debug("terminal message failed to send", error),
-            );
-            return;
-        }
         this._terminalMessageSent = true;
+        if (result instanceof Promise) {
+            void result.then(undefined, (error) => {
+                if (this._transport === transport) {
+                    this._terminalMessageSent = false;
+                }
+                this._debug("terminal message failed to send", error);
+            });
+        }
     }
 
     private _handleError(error: Error): void {

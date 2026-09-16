@@ -74,12 +74,13 @@ export class V1Socket {
      * });
      * ```
      */
-    public on<T extends keyof V1Socket.EventHandlers>(
-        event: T,
-        callback: NonNullable<V1Socket.EventHandlers[T]>,
-    ): void {
+    public on<T extends keyof V1Socket.EventHandlers>(event: T, callback: V1Socket.EventHandlers[T]): void {
         const handlers = this.eventHandlers[event] as Array<NonNullable<V1Socket.EventHandlers[T]>>;
-        handlers.splice(0, handlers.length, callback);
+        if (callback == null) {
+            handlers.length = 0;
+        } else {
+            handlers.splice(0, handlers.length, callback);
+        }
     }
 
     /**
