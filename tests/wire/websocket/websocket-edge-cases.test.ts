@@ -83,7 +83,7 @@ describe("WebSocket edge cases and error handling", () => {
             expect(tracker.getCount("close")).toBe(3);
         });
 
-        it("should handle multiple event registrations without duplicates", async () => {
+        it("invokes every registration for the same event", async () => {
             const tracker = new WebSocketEventTracker();
 
             server
@@ -125,8 +125,7 @@ describe("WebSocket edge cases and error handling", () => {
             await socket.waitForOpen();
             await new Promise((resolve) => setTimeout(resolve, 200));
 
-            // Should still only fire once per actual event
-            expect(tracker.getCount("open")).toBe(1);
+            expect(tracker.getCount("open")).toBe(3);
 
             socket.close();
         });

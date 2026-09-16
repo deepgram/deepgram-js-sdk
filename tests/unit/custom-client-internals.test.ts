@@ -89,6 +89,13 @@ async function makeAdapter(clientOpts: Record<string, unknown> = {}, connectArgs
     return { ...harness, wrapped, adapter };
 }
 
+async function makeV2Adapter(clientOpts: Record<string, unknown> = {}, connectArgs: Record<string, unknown> = {}) {
+    const harness = makeClient(clientOpts);
+    const wrapped = await harness.client.listen.v2.createConnection({ model: "flux-general-en", ...connectArgs });
+    const adapter = (wrapped as any).socket;
+    return { ...harness, wrapped, adapter };
+}
+
 afterEach(() => {
     vi.useRealTimers();
 });
@@ -177,6 +184,21 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         transports[1]!.listeners.close?.({ code: 1000, reason: "bye" });
         await flush();
         expect(transports).toHaveLength(2);
+    });
+
+    it("does not reconnect after a Flux CloseStream followed by a no-status close", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(transports[0]!.sent).toContain('{"type":"CloseStream"}');
+        expect(transports).toHaveLength(1);
     });
 
     it("reconnects after a transport error", async () => {

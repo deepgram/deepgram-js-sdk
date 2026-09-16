@@ -539,6 +539,7 @@ class TransportWebSocketAdapter {
     private _connectLock = false;
     private _binaryType: BinaryType = "blob";
     private _closeCalled = false;
+    private _terminalMessageSent = false;
     private _messageQueue: DeepgramTransportMessage[] = [];
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
     private _transport: DeepgramTransport | undefined;
@@ -657,6 +658,7 @@ class TransportWebSocketAdapter {
     public reconnect(code?: number, reason?: string): void {
         this._shouldReconnect = true;
         this._closeCalled = false;
+        this._terminalMessageSent = false;
         this._retryCount = -1;
         this._readyState = ReconnectingWebSocket.ReadyState.CONNECTING;
 
@@ -672,6 +674,10 @@ class TransportWebSocketAdapter {
     }
 
     public send(data: DeepgramTransportMessage): void {
+        if (isTerminalClientMessage(data)) {
+            this._terminalMessageSent = true;
+        }
+
         if (this._transport?.isOpen()) {
             void this._transport.send(data);
             return;
@@ -901,7 +907,7 @@ class TransportWebSocketAdapter {
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
         this._setTransportHandle(undefined);
 
-        if (code === 1000) {
+        if (code === 1000 || this._terminalMessageSent) {
             this._shouldReconnect = false;
         }
 
@@ -951,6 +957,18 @@ class TransportWebSocketAdapter {
         } else {
             (listener as (event: websocketEvents.WebSocketEventMap[T]) => void)(event);
         }
+    }
+}
+
+function isTerminalClientMessage(data: DeepgramTransportMessage): boolean {
+    if (typeof data !== "string") {
+        return false;
+    }
+
+    try {
+        return (JSON.parse(data) as { type?: unknown }).type === "CloseStream";
+    } catch {
+        return false;
     }
 }
 
@@ -1045,25 +1063,31 @@ function getWebSocketOptions(
  */
 function setupBinaryHandling(
     socket: ReconnectingWebSocket,
-    eventHandlers: { message?: (data: any) => void },
+    eventHandlers: { message: Array<(data: unknown) => void> },
 ): (event: MessageEvent) => void {
+    const dispatchMessage = (message: unknown): void => {
+        for (const handler of [...eventHandlers.message]) {
+            handler(message);
+        }
+    };
+
     const binaryAwareHandler = (event: MessageEvent) => {
         // Handle both text (JSON) and binary messages
         if (typeof event.data === "string") {
             try {
                 const data = fromJson(event.data);
-                eventHandlers.message?.(data);
-            } catch (error) {
+                dispatchMessage(data);
+            } catch {
                 // If JSON parsing fails, pass the raw string
-                eventHandlers.message?.(event.data);
+                dispatchMessage(event.data);
             }
         } else if (event.data instanceof Blob) {
             // Already a Blob - pass through as-is.
-            eventHandlers.message?.(event.data);
+            dispatchMessage(event.data);
         } else {
             // Binary arrives as an ArrayBuffer (the socket uses binaryType "arraybuffer").
             // Wrap it in a Blob so consumers always receive a Blob, regardless of runtime.
-            eventHandlers.message?.(new Blob([event.data as BlobPart]));
+            dispatchMessage(new Blob([event.data as BlobPart]));
         }
     };
 
@@ -1089,9 +1113,9 @@ function setupBinaryHandling(
 interface SocketInternals {
     socket: ReconnectingWebSocket;
     eventHandlers: {
-        message?: (message: unknown) => void;
-        close?: (event: unknown) => void;
-        error?: (error: Error) => void;
+        message: Array<(message: unknown) => void>;
+        close: Array<(event: unknown) => void>;
+        error: Array<(error: Error) => void>;
     };
     on: (event: string, callback: unknown) => void;
     close: () => void;
@@ -1137,24 +1161,13 @@ function estimateMessageByteLength(message: unknown): number {
 /**
  * Adds `for await` support to a generated socket, alongside the existing callback API.
  *
- * The generated `on()` keeps a single handler per event, so an iterator that registered
- * itself through `on("message", ...)` would silently displace a caller's callback, and a
- * caller registering afterwards would silently displace the iterator. This instead takes
- * over the three handler slots the socket dispatches through, holds the caller's handlers
- * in a separate record, and rebinds `on()` to write there. Both consumers then see every
- * message regardless of which registered first. `setupBinaryHandling` is unaffected: it
- * reads `eventHandlers.message` at dispatch time rather than capturing it, so binary
- * frames arrive here already normalized to a Blob.
+ * The generated `on()` accumulates handlers, so iteration adds its own listeners alongside
+ * caller callbacks. `setupBinaryHandling` dispatches normalized messages through the same
+ * handler arrays, so binary frames arrive here as Blob values.
  */
 function installAsyncIteration(socket: object): void {
     const internals = socket as unknown as SocketInternals;
     const handlers = internals.eventHandlers;
-
-    const userHandlers: {
-        message?: (message: unknown) => void;
-        close?: (event: unknown) => void;
-        error?: (error: Error) => void;
-    } = { message: handlers.message, close: handlers.close, error: handlers.error };
 
     const state: AsyncIterationState = {
         queue: [],
@@ -1210,67 +1223,42 @@ function installAsyncIteration(socket: object): void {
         );
     };
 
-    handlers.message = (message) => {
-        try {
-            userHandlers.message?.(message);
-        } finally {
-            if (state.started && !state.ended && !handOff({ value: message, done: false })) {
-                const byteLength = estimateMessageByteLength(message);
-                if (
-                    state.queue.length >= MAX_ASYNC_ITERATOR_QUEUE_MESSAGES ||
-                    state.queuedBytes + byteLength > MAX_ASYNC_ITERATOR_QUEUE_BYTES
-                ) {
-                    const error = new Error(
-                        "Async iterator buffer overflow; consume messages faster or use callbacks.",
-                    );
-                    fail(error);
-                    try {
-                        internals.close();
-                    } catch {
-                        // Already closed.
-                    }
-                } else {
-                    state.queue.push({ message, byteLength });
-                    state.queuedBytes += byteLength;
-                }
-            }
-        }
-    };
-
-    handlers.close = (event) => {
-        try {
-            userHandlers.close?.(event);
-        } finally {
-            // The core socket emits a close before an associated error, and it
-            // starts reconnecting before exposing a recoverable close to callers.
-            queueMicrotask(() => {
-                if (!state.ended && !reconnectPending()) {
-                    finish();
-                }
-            });
-        }
-    };
-
-    handlers.error = (error) => {
-        try {
-            userHandlers.error?.(error);
-        } finally {
-            if (!state.ended) {
+    handlers.message.push((message) => {
+        if (state.started && !state.ended && !handOff({ value: message, done: false })) {
+            const byteLength = estimateMessageByteLength(message);
+            if (
+                state.queue.length >= MAX_ASYNC_ITERATOR_QUEUE_MESSAGES ||
+                state.queuedBytes + byteLength > MAX_ASYNC_ITERATOR_QUEUE_BYTES
+            ) {
+                const error = new Error("Async iterator buffer overflow; consume messages faster or use callbacks.");
                 fail(error);
+                try {
+                    internals.close();
+                } catch {
+                    // Already closed.
+                }
+            } else {
+                state.queue.push({ message, byteLength });
+                state.queuedBytes += byteLength;
             }
         }
-    };
+    });
 
-    // Route on() into the caller's record so registering a callback does not displace the
-    // dispatchers above. `open` has no bearing on iteration and stays on the socket.
-    const originalOn = internals.on.bind(socket);
-    internals.on = (event: string, callback: unknown): void => {
-        if (event === "message" || event === "close" || event === "error") {
-            (userHandlers as Record<string, unknown>)[event] = callback;
-            return;
+    handlers.close.push(() => {
+        // The core socket emits a close before an associated error, and it
+        // starts reconnecting before exposing a recoverable close to callers.
+        queueMicrotask(() => {
+            if (!state.ended && !reconnectPending()) {
+                finish();
+            }
+        });
+    });
+
+    handlers.error.push((error) => {
+        if (!state.ended) {
+            fail(error);
         }
-        originalOn(event, callback);
-    };
+    });
 
     internals[Symbol.asyncIterator] = (): AsyncIterableIterator<unknown> => {
         if (state.activeIterator) {
