@@ -218,6 +218,23 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports).toHaveLength(2);
     });
 
+    it("does not carry terminal state into a reconnected transport", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1006, reason: "unexpected" });
+        await flush();
+        transports[1]!.emitOpen();
+        transports[1]!.listeners.close?.({ code: 1005, reason: "no status" });
+        await flush();
+
+        expect(transports).toHaveLength(3);
+    });
+
     it("does not reconnect after a TTS Close followed by a no-status close", async () => {
         const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 5 });
         adapter.onerror = () => {};

@@ -854,6 +854,7 @@ class TransportWebSocketAdapter {
         this._debug("open event");
         this._clearConnectTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.OPEN;
+        this._terminalMessageSent = false;
 
         const queued = [...this._messageQueue];
         this._messageQueue = [];
@@ -1863,6 +1864,7 @@ class WrappedListenV2Socket extends ListenV2Socket {
         super(args);
         this.onCloseStreamSent = args.onCloseStreamSent ?? (() => {});
         this.onConnect = args.onConnect ?? (() => {});
+        this.socket.addEventListener("open", this.onConnect);
         this.setupBinaryHandling();
         installAsyncIteration(this);
     }
