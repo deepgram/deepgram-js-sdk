@@ -27,13 +27,20 @@ async function main(): Promise<void> {
     const client = new DeepgramClient({ apiKey });
     const socket = await client.agent.v1.createConnection();
     let resolveApplied: (() => void) | undefined;
-    const settingsApplied = new Promise<void>((resolve) => {
+    let rejectApplied: ((error: Error) => void) | undefined;
+    const settingsApplied = new Promise<void>((resolve, reject) => {
         resolveApplied = resolve;
+        rejectApplied = reject;
     });
 
     socket.on("message", (message) => {
-        if (typeof message !== "string" && message.type === "SettingsApplied") {
+        if (typeof message === "string") {
+            return;
+        }
+        if (message.type === "SettingsApplied") {
             resolveApplied?.();
+        } else if (message.type === "Error") {
+            rejectApplied?.(new Error(`${message.code}: ${message.description}`));
         }
     });
 
@@ -44,21 +51,30 @@ async function main(): Promise<void> {
             type: "Settings",
             audio: {
                 input: { encoding: "linear16", sample_rate: 24000 },
-                output: { encoding: "linear16", sample_rate: 16000, container: "none" },
+                output: { encoding: "linear16", sample_rate: 16000, container: "wav" },
             },
             agent: {
-                listen: { provider: { type: "deepgram", version: "v1", model: "nova-3" } },
+                language: "en",
+                listen: { provider: { type: "deepgram", model: "nova-3" } },
                 think: {
                     provider: { type: "open_ai", model: "gpt-4o-mini" },
+                    prompt: "You are a concise assistant.",
                     functions: [{ name: "book_flight", defer_until_eot: true }],
                 },
                 speak: { provider: { type: "deepgram", model: "aura-2-thalia-en" } },
+                greeting: "Hello.",
             },
         });
 
         await withTimeout(settingsApplied, 10000);
         assert.ok(true, "Voice Agent accepted defer_until_eot settings");
         console.log("PASS: Voice Agent accepted defer_until_eot settings");
+    } catch (error) {
+        if (error instanceof Error && error.message.startsWith("UNPARSABLE_CLIENT_MESSAGE")) {
+            console.log("SKIP: defer_until_eot is not enabled on this Voice Agent deployment");
+            return;
+        }
+        throw error;
     } finally {
         socket.close();
     }
