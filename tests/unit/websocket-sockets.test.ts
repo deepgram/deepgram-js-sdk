@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { V1Socket as AgentV1Socket } from "../../src/api/resources/agent/resources/v1/client/Socket.js";
 import { V1Socket as ListenV1Socket } from "../../src/api/resources/listen/resources/v1/client/Socket.js";
 import { V2Socket as ListenV2Socket } from "../../src/api/resources/listen/resources/v2/client/Socket.js";
@@ -122,6 +122,21 @@ describe.each([
 
         fake.emit("close", { code: 1011, reason: "server" });
         expect(seen.close).toEqual({ code: 1011, reason: "server" });
+    });
+
+    it("removes only the requested event handler", () => {
+        const fake = new FakeSocket();
+        const socket = make(fake);
+        const removed = vi.fn();
+        const retained = vi.fn();
+
+        socket.on("message", removed);
+        socket.on("message", retained);
+        socket.off("message", removed);
+        fake.emit("message", { data: '{"type":"Test"}' });
+
+        expect(removed).not.toHaveBeenCalled();
+        expect(retained).toHaveBeenCalledWith({ type: "Test" });
     });
 
     it("exposes readyState from the underlying socket", () => {
