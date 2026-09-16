@@ -25,21 +25,31 @@ export declare namespace V2Socket {
 
 export class V2Socket {
     public readonly socket: core.ReconnectingWebSocket;
-    protected readonly eventHandlers: V2Socket.EventHandlers = {};
+    protected readonly eventHandlers: {
+        [K in keyof V2Socket.EventHandlers]-?: Array<NonNullable<V2Socket.EventHandlers[K]>>;
+    } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
-        this.eventHandlers.open?.();
+        for (const handler of [...this.eventHandlers.open]) {
+            handler();
+        }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
-        this.eventHandlers.message?.(data as V2Socket.Response);
+        for (const handler of [...this.eventHandlers.message]) {
+            handler(data as V2Socket.Response);
+        }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
-        this.eventHandlers.close?.(event);
+        for (const handler of [...this.eventHandlers.close]) {
+            handler(event);
+        }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
         const message = event.message;
-        this.eventHandlers.error?.(new Error(message));
+        for (const handler of [...this.eventHandlers.error]) {
+            handler(new Error(message));
+        }
     };
 
     constructor(args: V2Socket.Args) {
@@ -58,6 +68,8 @@ export class V2Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
+     * Handlers accumulate: registering another callback for the same event does not replace
+     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -65,8 +77,33 @@ export class V2Socket {
      * });
      * ```
      */
-    public on<T extends keyof V2Socket.EventHandlers>(event: T, callback: V2Socket.EventHandlers[T]): void {
-        this.eventHandlers[event] = callback;
+    public on<T extends keyof V2Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V2Socket.EventHandlers[T]>,
+    ): void {
+        const handlers = this.eventHandlers[event] as Array<NonNullable<V2Socket.EventHandlers[T]>>;
+        handlers.push(callback);
+    }
+
+    /**
+     * @param event - The event to detach from.
+     * @param callback - The callback previously registered with `on`. No-op if it is not registered for this event.
+     * Usage:
+     * ```typescript
+     * const handler = () => console.log('The websocket is open');
+     * this.on('open', handler);
+     * this.off('open', handler);
+     * ```
+     */
+    public off<T extends keyof V2Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V2Socket.EventHandlers[T]>,
+    ): void {
+        const handlers = this.eventHandlers[event] as Array<NonNullable<V2Socket.EventHandlers[T]>>;
+        const index = handlers.lastIndexOf(callback);
+        if (index !== -1) {
+            handlers.splice(index, 1);
+        }
     }
 
     public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
@@ -79,10 +116,6 @@ export class V2Socket {
         this.sendJson(message);
     }
 
-    /**
-     * Requires server-side enablement. On deployments without the feature, the
-     * server returns `UNPARSABLE_CLIENT_MESSAGE` and closes the connection.
-     */
     public sendForceEndTurn(message: Deepgram.listen.ListenV2ForceEndTurn): void {
         this.assertSocketIsOpen();
         this.sendJson(message);

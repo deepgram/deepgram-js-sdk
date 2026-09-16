@@ -24,21 +24,31 @@ export declare namespace V1Socket {
 
 export class V1Socket {
     public readonly socket: core.ReconnectingWebSocket;
-    protected readonly eventHandlers: V1Socket.EventHandlers = {};
+    protected readonly eventHandlers: {
+        [K in keyof V1Socket.EventHandlers]-?: Array<NonNullable<V1Socket.EventHandlers[K]>>;
+    } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
-        this.eventHandlers.open?.();
+        for (const handler of [...this.eventHandlers.open]) {
+            handler();
+        }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
-        this.eventHandlers.message?.(data as V1Socket.Response);
+        for (const handler of [...this.eventHandlers.message]) {
+            handler(data as V1Socket.Response);
+        }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
-        this.eventHandlers.close?.(event);
+        for (const handler of [...this.eventHandlers.close]) {
+            handler(event);
+        }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
         const message = event.message;
-        this.eventHandlers.error?.(new Error(message));
+        for (const handler of [...this.eventHandlers.error]) {
+            handler(new Error(message));
+        }
     };
 
     constructor(args: V1Socket.Args) {
@@ -57,6 +67,8 @@ export class V1Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
+     * Handlers accumulate: registering another callback for the same event does not replace
+     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -64,8 +76,33 @@ export class V1Socket {
      * });
      * ```
      */
-    public on<T extends keyof V1Socket.EventHandlers>(event: T, callback: V1Socket.EventHandlers[T]): void {
-        this.eventHandlers[event] = callback;
+    public on<T extends keyof V1Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V1Socket.EventHandlers[T]>,
+    ): void {
+        const handlers = this.eventHandlers[event] as Array<NonNullable<V1Socket.EventHandlers[T]>>;
+        handlers.push(callback);
+    }
+
+    /**
+     * @param event - The event to detach from.
+     * @param callback - The callback previously registered with `on`. No-op if it is not registered for this event.
+     * Usage:
+     * ```typescript
+     * const handler = () => console.log('The websocket is open');
+     * this.on('open', handler);
+     * this.off('open', handler);
+     * ```
+     */
+    public off<T extends keyof V1Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V1Socket.EventHandlers[T]>,
+    ): void {
+        const handlers = this.eventHandlers[event] as Array<NonNullable<V1Socket.EventHandlers[T]>>;
+        const index = handlers.lastIndexOf(callback);
+        if (index !== -1) {
+            handlers.splice(index, 1);
+        }
     }
 
     public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {

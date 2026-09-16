@@ -1,6 +1,6 @@
 {
     "name": "@deepgram/sdk",
-    "version": "5.11.0",
+    "version": "5.11.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -536,18 +536,11 @@
         "webpack": "^5.105.4",
         "ts-loader": "^9.5.4",
         "@types/ws": "^8.18.1",
-        "vitest": "4.1.11",
-        "@vitest/coverage-v8": "4.1.11",
+        "vitest": "^4.1.1",
         "msw": "2.11.2",
-        "@types/node": "^20.17.57",
+        "@types/node": "^20.0.0",
         "typescript": "~5.9.3",
-        "@biomejs/biome": "2.4.10",
-        "@commitlint/cli": "20.5.0",
-        "@commitlint/config-conventional": "20.0.0",
-        "tsx": "4.20.6",
-        "playwright": "1.59.1",
-        "vite": "6.4.3",
-        "terser": "5.46.1"
+        "@biomejs/biome": "2.4.10"
     },
     "browser": {
         "fs": false,
