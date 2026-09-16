@@ -938,7 +938,10 @@ class TransportWebSocketAdapter {
         }
         // A caller-provided policy takes precedence. The CloseStream behavior is
         // the default for custom transports because it is protocol-specific.
-        if (!shouldReconnect || (this._shouldReconnectAfterClose == null && this._terminalMessageSent)) {
+        if (
+            !shouldReconnect ||
+            (this._shouldReconnectAfterClose == null && this._terminalMessageSent && code === 1005)
+        ) {
             this._shouldReconnect = false;
         }
 
@@ -1805,7 +1808,7 @@ class WrappedListenV2Client extends ListenV2Client {
             shouldReconnect:
                 shouldReconnect ??
                 (getTransportFactory(this._options) == null
-                    ? (event) => !closeStreamSent && event.code !== 1000
+                    ? (event) => event.code !== 1000 && !(closeStreamSent && event.code === 1005)
                     : undefined),
             agent,
         });
