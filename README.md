@@ -33,7 +33,9 @@ npm install @deepgram/sdk
 
 Every streaming client exposes both `connect()` and `createConnection()`. They are aliases that return a start-closed socket: register handlers, call the socket's `connect()`, and then await `waitForOpen()` before sending data.
 
-All sockets expose `on("open" | "message" | "close" | "error", callback)`, `connect()`, `waitForOpen()`, `close()`, `readyState`, and a lower-level `socket` property. Prefer the typed send methods below instead of calling `socket.send()` directly.
+All sockets expose `on("open" | "message" | "close" | "error", callback)`, `off(event, callback)`, `connect()`, `waitForOpen()`, `close()`, `readyState`, and a lower-level `socket` property. Registering `on()` again for the same event replaces the prior callback. Prefer the typed send methods below instead of calling `socket.send()` directly.
+
+Pass `shouldReconnect: (event) => boolean` when a connection needs a custom close policy. Flux Listen V2 automatically treats the server no-status (`1005`) close after `sendCloseStream()` as terminal; other closes retain the default retry behavior.
 
 | Service | Create a socket | Typed send methods |
 | --- | --- | --- |

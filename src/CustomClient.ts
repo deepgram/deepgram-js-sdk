@@ -678,12 +678,9 @@ class TransportWebSocketAdapter {
     }
 
     public send(data: DeepgramTransportMessage): void {
-        if (isTerminalClientMessage(data)) {
-            this._terminalMessageSent = true;
-        }
-
-        if (this._transport?.isOpen()) {
-            void this._transport.send(data);
+        const transport = this._transport;
+        if (transport?.isOpen()) {
+            this._send(transport, data);
             return;
         }
 
@@ -861,7 +858,7 @@ class TransportWebSocketAdapter {
         const queued = [...this._messageQueue];
         this._messageQueue = [];
         for (const message of queued) {
-            void transport.send(message);
+            this._send(transport, message);
         }
 
         const event = new websocketEvents.Event("open", this);
@@ -878,6 +875,25 @@ class TransportWebSocketAdapter {
             this.onmessage(event);
         }
         this._listeners.message.forEach((listener) => this._callEventListener(event, listener));
+    }
+
+    private _send(transport: DeepgramTransport, data: DeepgramTransportMessage): void {
+        const result = transport.send(data);
+        if (!isTerminalClientMessage(data)) {
+            return;
+        }
+        if (result instanceof Promise) {
+            void result.then(
+                () => {
+                    if (this._transport === transport) {
+                        this._terminalMessageSent = true;
+                    }
+                },
+                (error) => this._debug("terminal message failed to send", error),
+            );
+            return;
+        }
+        this._terminalMessageSent = true;
     }
 
     private _handleError(error: Error): void {
@@ -981,7 +997,8 @@ function isTerminalClientMessage(data: DeepgramTransportMessage): boolean {
     }
 
     try {
-        return (JSON.parse(data) as { type?: unknown }).type === "CloseStream";
+        const type = (JSON.parse(data) as { type?: unknown }).type;
+        return type === "CloseStream" || type === "Close";
     } catch {
         return false;
     }
@@ -1082,7 +1099,13 @@ function setupBinaryHandling(
 ): (event: MessageEvent) => void {
     const dispatchMessage = (message: unknown): void => {
         for (const handler of [...eventHandlers.message]) {
-            handler(message);
+            try {
+                handler(message);
+            } catch (error) {
+                // Keep an application callback from starving async iteration.
+                // biome-ignore lint/suspicious/noConsole: surface user callback failures without stopping other handlers
+                console.error("Deepgram WebSocket message handler failed", error);
+            }
         }
     };
 
@@ -1285,7 +1308,7 @@ function installAsyncIteration(socket: object): void {
         if (event === "message" || event === "close" || event === "error") {
             const handler = iterationHandlers[event];
             const userHandlers = handlers[event];
-            userHandlers.splice(0, userHandlers.length, callback as never, handler as never);
+            userHandlers.splice(0, userHandlers.length, handler as never, callback as never);
             return;
         }
         originalOn(event, callback);
@@ -1656,6 +1679,7 @@ class WrappedListenV1Client extends ListenV1Client {
             shouldReconnect,
             agent,
         } = args;
+        let closeStreamSent = false;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1764,6 +1788,7 @@ class WrappedListenV2Client extends ListenV2Client {
             shouldReconnect,
             agent,
         } = args;
+        let closeStreamSent = false;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1777,11 +1802,23 @@ class WrappedListenV2Client extends ListenV2Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
-            shouldReconnect,
+            shouldReconnect:
+                shouldReconnect ??
+                (getTransportFactory(this._options) == null
+                    ? (event) => !closeStreamSent && event.code !== 1000
+                    : undefined),
             agent,
         });
 
-        return new WrappedListenV2Socket({ socket });
+        return new WrappedListenV2Socket({
+            socket,
+            onCloseStreamSent: () => {
+                closeStreamSent = true;
+            },
+            onConnect: () => {
+                closeStreamSent = false;
+            },
+        });
     }
 
     /**
@@ -1813,12 +1850,16 @@ class WrappedListenV2Client extends ListenV2Client {
  */
 class WrappedListenV2Socket extends ListenV2Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
+    private readonly onCloseStreamSent: () => void;
+    private readonly onConnect: () => void;
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV2SocketMessage>;
 
-    constructor(args: ListenV2Socket.Args) {
+    constructor(args: ListenV2Socket.Args & { onCloseStreamSent?: () => void; onConnect?: () => void }) {
         super(args);
+        this.onCloseStreamSent = args.onCloseStreamSent ?? (() => {});
+        this.onConnect = args.onConnect ?? (() => {});
         this.setupBinaryHandling();
         installAsyncIteration(this);
     }
@@ -1833,7 +1874,13 @@ class WrappedListenV2Socket extends ListenV2Socket {
         closeOnce(this, () => super.close());
     }
 
+    public sendCloseStream(message: Deepgram.listen.ListenV2CloseStream): void {
+        super.sendCloseStream(message);
+        this.onCloseStreamSent();
+    }
+
     public connect(): WrappedListenV2Socket {
+        this.onConnect();
         // Arm the close() idempotency guard so a reconnected socket can close again.
         armCloseGuard(this);
 

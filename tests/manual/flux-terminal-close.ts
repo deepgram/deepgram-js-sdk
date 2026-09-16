@@ -24,7 +24,6 @@ async function main(): Promise<void> {
         return;
     }
 
-    let closeStreamSent = false;
     let opens = 0;
     let resolveClose: ((code: number) => void) | undefined;
     const closed = new Promise<number>((resolve) => {
@@ -33,7 +32,6 @@ async function main(): Promise<void> {
     const client = new DeepgramClient({ apiKey });
     const socket = await client.listen.v2.createConnection({
         model: "flux-general-en",
-        shouldReconnect: () => !closeStreamSent,
     });
 
     socket.on("open", () => {
@@ -46,7 +44,6 @@ async function main(): Promise<void> {
     try {
         socket.connect();
         await socket.waitForOpen();
-        closeStreamSent = true;
         socket.sendCloseStream({ type: "CloseStream" });
 
         const code = await closeTimeout(closed, 10000);

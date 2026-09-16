@@ -16,8 +16,11 @@ class FakeTransport implements DeepgramTransport {
     public pingPayloads: Array<string | ArrayBuffer | Blob | ArrayBufferView | undefined> = [];
     private open = false;
 
-    public send(data: string | ArrayBuffer | Blob | ArrayBufferView): void {
+    public nextSendResult: void | Promise<void> = undefined;
+
+    public send(data: string | ArrayBuffer | Blob | ArrayBufferView): void | Promise<void> {
         this.sent.push(data);
+        return this.nextSendResult;
     }
     public onOpen(listener: () => void): void {
         this.listeners.open = listener;
@@ -199,6 +202,21 @@ describe("TransportWebSocketAdapter lifecycle", () => {
 
         expect(transports[0]!.sent).toContain('{"type":"CloseStream"}');
         expect(transports).toHaveLength(1);
+    });
+
+    it("reconnects when a terminal message is rejected", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.nextSendResult = Promise.reject(new Error("send failed"));
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(transports).toHaveLength(2);
     });
 
     it("honors an explicit reconnect policy after CloseStream", async () => {
