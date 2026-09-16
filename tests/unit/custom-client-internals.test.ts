@@ -201,6 +201,22 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports).toHaveLength(1);
     });
 
+    it("honors an explicit reconnect policy after CloseStream", async () => {
+        const shouldReconnect = vi.fn(() => true);
+        const { adapter, transports } = await makeV2Adapter({}, { shouldReconnect, reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(shouldReconnect).toHaveBeenCalledOnce();
+        expect(transports).toHaveLength(2);
+    });
+
     it("passes shouldReconnect to the transport instead of the query string", async () => {
         const shouldReconnect = vi.fn(() => false);
         const { adapter, transports } = await makeV2Adapter({}, { shouldReconnect, reconnectAttempts: 5 });

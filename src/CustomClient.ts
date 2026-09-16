@@ -920,7 +920,9 @@ class TransportWebSocketAdapter {
                 shouldReconnect = false;
             }
         }
-        if (!shouldReconnect || this._terminalMessageSent) {
+        // A caller-provided policy takes precedence. The CloseStream behavior is
+        // the default for custom transports because it is protocol-specific.
+        if (!shouldReconnect || (this._shouldReconnectAfterClose == null && this._terminalMessageSent)) {
             this._shouldReconnect = false;
         }
 
