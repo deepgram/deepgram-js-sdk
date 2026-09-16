@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { chromium, Browser, Page } from "playwright";
-import { getExampleUrl, clickButton, waitForOutput, hasSuccessOutput } from "./helpers";
+import { type Browser, chromium, type Page } from "playwright";
+import { afterAll, beforeAll, describe, it } from "vitest";
+import { clickButton, getExampleUrl, waitForSuccessOutput } from "./helpers";
 
 describe("Browser Example: 12-text-intelligence", () => {
     let browser: Browser;
@@ -23,14 +23,6 @@ describe("Browser Example: 12-text-intelligence", () => {
         // No API key input needed - proxy handles auth
         await clickButton(page, "runExample");
 
-        // Wait for output to appear (text analysis can take time)
-        await waitForOutput(page, 30000);
-
-        // Wait a bit more for analysis to complete
-        await page.waitForTimeout(2000);
-
-        // Check for success output
-        const hasSuccess = await hasSuccessOutput(page);
-        expect(hasSuccess).toBe(true);
+        await waitForSuccessOutput(page);
     }, 30000);
 });
