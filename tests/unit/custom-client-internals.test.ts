@@ -204,6 +204,20 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports).toHaveLength(1);
     });
 
+    it("does not reconnect after a TTS Close followed by a no-status close", async () => {
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "Close" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(transports).toHaveLength(1);
+    });
+
     it("reconnects when a terminal message is rejected", async () => {
         const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
         adapter.onerror = () => {};

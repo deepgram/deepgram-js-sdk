@@ -1874,7 +1874,7 @@ class WrappedListenV2Socket extends ListenV2Socket {
         closeOnce(this, () => super.close());
     }
 
-    public sendCloseStream(message: Deepgram.listen.ListenV2CloseStream): void {
+    public sendCloseStream(message: Parameters<ListenV2Socket["sendCloseStream"]>[0]): void {
         super.sendCloseStream(message);
         this.onCloseStreamSent();
     }
