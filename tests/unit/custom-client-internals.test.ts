@@ -279,7 +279,7 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports).toHaveLength(2);
     });
 
-    it("does not reconnect when a CloseStream close arrives before its send promise settles", async () => {
+    it("does not reconnect when a CloseStream send resolves after its 1005 close", async () => {
         const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
         adapter.onerror = () => {};
         adapter.reconnect();
@@ -294,8 +294,34 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         transports[0]!.listeners.close?.({ code: 1005, reason: "" });
         await flush();
         resolveSend?.();
+        await flush();
 
         expect(transports).toHaveLength(1);
+    });
+
+    it("reconnects when a CloseStream send rejects after its 1005 close", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        const transport = transports[0];
+        expect(transport).toBeDefined();
+        if (transport == null) {
+            throw new Error("transport was not created");
+        }
+        transport.emitOpen();
+        let rejectSend: ((error: Error) => void) | undefined;
+        transport.nextSendResult = new Promise<void>((_resolve, reject) => {
+            rejectSend = reject;
+        });
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transport.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+        rejectSend?.(new Error("send failed"));
+        await flush();
+
+        expect(transports).toHaveLength(2);
     });
 
     it("honors an explicit reconnect policy after CloseStream", async () => {
