@@ -1309,7 +1309,11 @@ function installAsyncIteration(socket: object): void {
         if (event === "message" || event === "close" || event === "error") {
             const handler = iterationHandlers[event];
             const userHandlers = handlers[event];
-            userHandlers.splice(0, userHandlers.length, handler as never, callback as never);
+            if (callback == null) {
+                userHandlers.splice(0, userHandlers.length, handler as never);
+            } else {
+                userHandlers.splice(0, userHandlers.length, handler as never, callback as never);
+            }
             return;
         }
         originalOn(event, callback);

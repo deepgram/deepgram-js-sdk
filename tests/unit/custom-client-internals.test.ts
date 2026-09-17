@@ -154,6 +154,20 @@ describe("TransportWebSocketAdapter event listeners", () => {
 });
 
 describe("TransportWebSocketAdapter lifecycle", () => {
+    it("keeps async iteration active when a custom-transport callback is cleared", async () => {
+        const { wrapped, adapter, transports } = await makeAdapter();
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        const iterator = wrapped[Symbol.asyncIterator]();
+        wrapped.on("message", undefined);
+        transports[0]!.emitMessage('{"type":"Results"}');
+
+        await expect(iterator.next()).resolves.toMatchObject({ value: { type: "Results" }, done: false });
+        await iterator.return?.();
+    });
+
     it("flushes queued messages on open and forwards messages", async () => {
         const { adapter, transports } = await makeAdapter();
         const messages: unknown[] = [];
