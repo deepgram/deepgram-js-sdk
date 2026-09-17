@@ -1684,8 +1684,6 @@ class WrappedListenV1Client extends ListenV1Client {
             shouldReconnect,
             agent,
         } = args;
-        let closeStreamSent = false;
-
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/listen",
