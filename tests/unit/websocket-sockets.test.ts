@@ -3,6 +3,8 @@ import { V1Socket as AgentV1Socket } from "../../src/api/resources/agent/resourc
 import { V1Socket as ListenV1Socket } from "../../src/api/resources/listen/resources/v1/client/Socket.js";
 import { V2Socket as ListenV2Socket } from "../../src/api/resources/listen/resources/v2/client/Socket.js";
 import { V1Socket as SpeakV1Socket } from "../../src/api/resources/speak/resources/v1/client/Socket.js";
+import { V2Socket as SpeakV2Socket } from "../../src/api/resources/speak/resources/v2/client/Socket.js";
+import type { ReconnectingWebSocket } from "../../src/core/websocket/ws.js";
 
 const OPEN = 1;
 const CONNECTING = 0;
@@ -103,6 +105,19 @@ describe.each([
             s.sendClose({ type: "Close" } as any);
         },
     },
+    {
+        name: "speak V2Socket",
+        make: (fake: FakeSocket) => new SpeakV2Socket({ socket: fake as unknown as ReconnectingWebSocket }),
+        binarySend: undefined,
+        jsonSends: (s: unknown) => {
+            const socket = s as SpeakV2Socket;
+            socket.sendSpeak({ type: "Speak", text: "hi" } as never);
+            socket.sendFlush({ type: "Flush" } as never);
+            socket.sendInterrupt({ type: "Interrupt" } as never);
+            socket.sendConfigure({ type: "Configure" } as never);
+            socket.sendClose({ type: "Close" } as never);
+        },
+    },
 ])("$name", ({ make, binarySend, jsonSends }) => {
     it("forwards socket events to registered handlers", () => {
         const fake = new FakeSocket();
@@ -140,6 +155,35 @@ describe.each([
         socket.off("message", current);
         fake.emit("message", { data: '{"type":"Test"}' });
         expect(current).toHaveBeenCalledOnce();
+    });
+
+    it("contains handler failures without starving other handlers", () => {
+        const fake = new FakeSocket();
+        const socket = make(fake);
+        const eventHandlers = (socket as { eventHandlers: Record<string, Array<() => void>> }).eventHandlers;
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+
+        try {
+            for (const [event, payload] of [
+                ["open", { type: "open" }],
+                ["message", { data: '{"type":"Test"}' }],
+                ["close", { code: 1000 }],
+                ["error", { message: "socket failure" }],
+            ] as const) {
+                const followUp = vi.fn();
+                socket.on(event, () => {
+                    throw new Error("callback failure");
+                });
+                eventHandlers[event]?.push(followUp);
+
+                expect(() => fake.emit(event, payload)).not.toThrow();
+                expect(followUp).toHaveBeenCalledOnce();
+            }
+
+            expect(error).toHaveBeenCalledTimes(4);
+        } finally {
+            error.mockRestore();
+        }
     });
 
     it("exposes readyState from the underlying socket", () => {

@@ -47,6 +47,8 @@ Pass `shouldReconnect: (event) => boolean` when a connection needs a custom clos
 
 The public connection argument types and Deepgram-specific wrapper behavior are defined in [`src/CustomClient.ts`](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/CustomClient.ts). Use the linked socket classes for exact message and event types.
 
+For Voice Agent function calls, do not send `FunctionCallResponse` for an ID listed in a `FunctionCallCancelled` event. Set `defer_until_eot: true` on an `agent.think.functions` entry when its action cannot be undone: the agent waits until the user's turn is confirmed, and discards the deferred call if that turn resumes.
+
 ## Usage
 
 ### Quick Start

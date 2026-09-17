@@ -53,6 +53,7 @@ tests/unit/websocket-native.test.ts
 tests/unit/websocket-reconnection.test.ts
 tests/unit/websocket-sockets.test.ts
 tests/unit/websocket-wrappers.test.ts
+tests/unit/websocket
 tests/wire/listen/v1/transcription.test.ts
 tests/wire/websocket
 vitest.config.mts
@@ -208,7 +209,8 @@ src/api/types/SpeakV2Speed.ts
 src/api/resources/listen/resources/v2/client/Socket.ts
 
 # Fern 3.94.0 changes socket on() registrations to accumulate. Preserve v5's
-# replacement semantics until the next major release; all continue exposing off().
+# replacement semantics and isolate user handler failures until the next major;
+# all continue exposing off().
 src/api/resources/agent/resources/v1/client/Socket.ts
 src/api/resources/listen/resources/v1/client/Socket.ts
 src/api/resources/speak/resources/v1/client/Socket.ts
