@@ -1,6 +1,12 @@
 ---
 name: deepgram-js-text-intelligence
-description: Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Text Intelligence / Read (`/v1/read`) for sentiment, summarization, topic detection, and intent recognition on text input. Covers `client.read.v1.text.analyze(...)` with `body: { text }` or `body: { url }`. Use `deepgram-js-audio-intelligence` when the source is audio instead of text. Triggers include "read API", "text intelligence", "analyze text", "sentiment", "summarize text", "topics", "intents", and "read.v1".
+description: >
+  Use when writing or reviewing JavaScript/TypeScript in this repo that calls Deepgram Text
+  Intelligence / Read (`/v1/read`) for sentiment, summarization, topic detection, and intent
+  recognition on text input. Covers `client.read.v1.text.analyze(...)` with `body: { text }` or
+  `body: { url }`. Use `deepgram-js-audio-intelligence` when the source is audio instead of text.
+  Triggers include "read API", "text intelligence", "analyze text", "sentiment", "summarize
+  text", "topics", "intents", and "read.v1".
 ---
 
 # Using Deepgram Text Intelligence (JavaScript / TypeScript SDK)
