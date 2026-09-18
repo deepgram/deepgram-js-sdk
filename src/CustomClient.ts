@@ -541,8 +541,6 @@ class TransportWebSocketAdapter {
     private _binaryType: BinaryType = "blob";
     private _closeCalled = false;
     private _terminalMessageSent = false;
-    private _pendingTerminalMessage: { transport: DeepgramTransport; result: Promise<void> } | undefined;
-    private _pendingTerminalClose: { transport: DeepgramTransport; code: number; reason: string } | undefined;
     private _messageQueue: DeepgramTransportMessage[] = [];
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
     private _transport: DeepgramTransport | undefined;
@@ -645,7 +643,6 @@ class TransportWebSocketAdapter {
     public close(code = 1000, reason?: string): void {
         this._closeCalled = true;
         this._shouldReconnect = false;
-        this._clearTerminalMessageState();
         this._clearConnectTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSING;
 
@@ -665,7 +662,7 @@ class TransportWebSocketAdapter {
     public reconnect(code?: number, reason?: string): void {
         this._shouldReconnect = true;
         this._closeCalled = false;
-        this._clearTerminalMessageState();
+        this._terminalMessageSent = false;
         this._retryCount = -1;
         this._readyState = ReconnectingWebSocket.ReadyState.CONNECTING;
 
@@ -735,7 +732,6 @@ class TransportWebSocketAdapter {
         this._debug("abort signal fired");
         this._closeCalled = true;
         this._shouldReconnect = false;
-        this._clearTerminalMessageState();
         this._clearConnectTimeout();
 
         const transport = this._transport;
@@ -858,7 +854,7 @@ class TransportWebSocketAdapter {
         this._debug("open event");
         this._clearConnectTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.OPEN;
-        this._clearTerminalMessageState();
+        this._terminalMessageSent = false;
 
         const queued = [...this._messageQueue];
         this._messageQueue = [];
@@ -887,24 +883,20 @@ class TransportWebSocketAdapter {
         if (!isTerminalClientMessage(data)) {
             return;
         }
-
-        if (result instanceof Promise) {
-            const pending = { transport, result };
-            this._pendingTerminalMessage = pending;
-            void result.then(
-                () => this._settleTerminalMessage(pending),
-                (error) => this._settleTerminalMessage(pending, error),
-            );
-            return;
-        }
-
         this._terminalMessageSent = true;
+        if (result instanceof Promise) {
+            void result.then(undefined, (error) => {
+                if (this._transport === transport) {
+                    this._terminalMessageSent = false;
+                }
+                this._debug("terminal message failed to send", error);
+            });
+        }
     }
 
     private _handleError(error: Error): void {
         this._debug("error event", error.message);
         this._clearConnectTimeout();
-        this._clearTerminalMessageState();
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
 
         const event = new websocketEvents.ErrorEvent(error, this);
@@ -929,53 +921,10 @@ class TransportWebSocketAdapter {
     private _handleClose(code: number, reason: string): void {
         this._debug("close event", code, reason);
         this._clearConnectTimeout();
-        const transport = this._transport;
         this._transport = undefined;
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
         this._setTransportHandle(undefined);
 
-        const pending = this._pendingTerminalMessage;
-        if (
-            transport != null &&
-            pending?.transport === transport &&
-            this._shouldReconnectAfterClose == null &&
-            code === 1005
-        ) {
-            this._pendingTerminalClose = { transport, code, reason };
-            return;
-        }
-
-        if (pending?.transport === transport) {
-            this._clearTerminalMessageState();
-        } else {
-            this._clearPendingTerminalMessage();
-        }
-
-        this._completeClose(code, reason);
-    }
-
-    private _settleTerminalMessage(
-        pending: { transport: DeepgramTransport; result: Promise<void> },
-        error?: unknown,
-    ): void {
-        if (this._pendingTerminalMessage !== pending) {
-            return;
-        }
-
-        this._pendingTerminalMessage = undefined;
-        this._terminalMessageSent = error == null;
-        if (error != null) {
-            this._debug("terminal message failed to send", error);
-        }
-
-        const pendingClose = this._pendingTerminalClose;
-        if (pendingClose?.transport === pending.transport) {
-            this._pendingTerminalClose = undefined;
-            this._completeClose(pendingClose.code, pendingClose.reason);
-        }
-    }
-
-    private _completeClose(code: number, reason: string): void {
         let shouldReconnect = code !== 1000;
         if (this._shouldReconnectAfterClose) {
             try {
@@ -994,22 +943,11 @@ class TransportWebSocketAdapter {
             this._shouldReconnect = false;
         }
 
-        this._terminalMessageSent = false;
         this._emitClose(code, reason);
 
         if (this._shouldReconnect && !this._closeCalled) {
             void this._connect();
         }
-    }
-
-    private _clearPendingTerminalMessage(): void {
-        this._pendingTerminalMessage = undefined;
-        this._pendingTerminalClose = undefined;
-    }
-
-    private _clearTerminalMessageState(): void {
-        this._terminalMessageSent = false;
-        this._clearPendingTerminalMessage();
     }
 
     private _emitClose(code: number, reason: string): void {
