@@ -36,6 +36,7 @@ tests/unit/file/multipart.test.ts
 tests/unit/generated-ws-clients.test.ts
 tests/unit/latency-report-stt-compat.test.ts
 tests/unit/listen-v2-control-messages.test.ts
+tests/unit/live-reconnect-example.test.ts
 tests/unit/misc-branches.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
@@ -52,6 +53,7 @@ tests/unit/websocket-native.test.ts
 tests/unit/websocket-reconnection.test.ts
 tests/unit/websocket-sockets.test.ts
 tests/unit/websocket-wrappers.test.ts
+tests/unit/websocket
 tests/wire/listen/v1/transcription.test.ts
 tests/wire/websocket
 vitest.config.mts
@@ -202,8 +204,21 @@ src/api/types/SpeakV2Speed.ts
 
 # src/api/resources/listen/resources/v2/client/Socket.ts: retain the ForceEndTurn
 # server-enablement caveat because deployments without the feature close the socket
-# with UNPARSABLE_CLIENT_MESSAGE. Swap to .bak before regen.
+# with UNPARSABLE_CLIENT_MESSAGE. Also preserve v5's replacement semantics for on().
+# Swap to .bak before regen.
 src/api/resources/listen/resources/v2/client/Socket.ts
+
+# Fern 3.94.0 changes socket on() registrations to accumulate. Preserve v5's
+# replacement semantics and isolate user handler failures until the next major;
+# all continue exposing off().
+src/api/resources/agent/resources/v1/client/Socket.ts
+src/api/resources/listen/resources/v1/client/Socket.ts
+src/api/resources/speak/resources/v1/client/Socket.ts
+src/api/resources/speak/resources/v2/client/Socket.ts
+
+# Fern 3.94.0 evaluates shouldReconnect during reconnect()'s internal close,
+# allowing a false policy to suppress an explicit reconnect. Re-arm reconnect.
+src/core/websocket/ws.ts
 
 # src/api/types/Deepgram.ts: the 2026-08-19 regen replaced the Early Access Flux TTS
 # voice roster with the GA catalog (deepgram-docs #1096, 2026-08-12). That added ~24

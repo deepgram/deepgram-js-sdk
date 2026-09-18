@@ -43,6 +43,7 @@ const WEBSOCKET_OPTION_KEYS = new Set([
     "reconnectAttempts",
     "connectionTimeoutInSeconds",
     "abortSignal",
+    "shouldReconnect",
     "queryParams",
     "agent",
 ]);
@@ -539,6 +540,7 @@ class TransportWebSocketAdapter {
     private _connectLock = false;
     private _binaryType: BinaryType = "blob";
     private _closeCalled = false;
+    private _terminalMessageSent = false;
     private _messageQueue: DeepgramTransportMessage[] = [];
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
     private _transport: DeepgramTransport | undefined;
@@ -557,16 +559,19 @@ class TransportWebSocketAdapter {
     // signals that the underlying transport owns reconnect — the wrapper
     // attempts the connect once and surfaces any error without re-attempting.
     private readonly _reconnect: boolean;
+    private readonly _shouldReconnectAfterClose?: (event: websocketEvents.CloseEvent) => boolean;
 
     constructor(args: {
         factory: DeepgramTransportFactory;
         request: DeepgramTransportRequest;
         startClosed?: boolean;
         reconnect?: boolean;
+        shouldReconnect?: (event: websocketEvents.CloseEvent) => boolean;
     }) {
         this._factory = args.factory;
         this._request = args.request;
         this._reconnect = args.reconnect !== false;
+        this._shouldReconnectAfterClose = args.shouldReconnect;
         this._readyState = args.startClosed
             ? ReconnectingWebSocket.ReadyState.CLOSED
             : ReconnectingWebSocket.ReadyState.CONNECTING;
@@ -657,6 +662,7 @@ class TransportWebSocketAdapter {
     public reconnect(code?: number, reason?: string): void {
         this._shouldReconnect = true;
         this._closeCalled = false;
+        this._terminalMessageSent = false;
         this._retryCount = -1;
         this._readyState = ReconnectingWebSocket.ReadyState.CONNECTING;
 
@@ -672,8 +678,9 @@ class TransportWebSocketAdapter {
     }
 
     public send(data: DeepgramTransportMessage): void {
-        if (this._transport?.isOpen()) {
-            void this._transport.send(data);
+        const transport = this._transport;
+        if (transport?.isOpen()) {
+            this._send(transport, data);
             return;
         }
 
@@ -847,11 +854,12 @@ class TransportWebSocketAdapter {
         this._debug("open event");
         this._clearConnectTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.OPEN;
+        this._terminalMessageSent = false;
 
         const queued = [...this._messageQueue];
         this._messageQueue = [];
         for (const message of queued) {
-            void transport.send(message);
+            this._send(transport, message);
         }
 
         const event = new websocketEvents.Event("open", this);
@@ -868,6 +876,37 @@ class TransportWebSocketAdapter {
             this.onmessage(event);
         }
         this._listeners.message.forEach((listener) => this._callEventListener(event, listener));
+    }
+
+    private _send(transport: DeepgramTransport, data: DeepgramTransportMessage): void {
+        const terminalMessage = isTerminalClientMessage(data);
+        if (terminalMessage) {
+            // A synchronous transport can close from send(), so record intent first.
+            this._terminalMessageSent = true;
+        }
+
+        let result: void | Promise<void>;
+        try {
+            result = transport.send(data);
+        } catch (error) {
+            if (terminalMessage && this._transport === transport) {
+                this._terminalMessageSent = false;
+            }
+            throw error;
+        }
+
+        if (!terminalMessage) {
+            return;
+        }
+
+        if (result instanceof Promise) {
+            void result.then(undefined, (error) => {
+                if (this._transport === transport) {
+                    this._terminalMessageSent = false;
+                }
+                this._debug("terminal message failed to send", error);
+            });
+        }
     }
 
     private _handleError(error: Error): void {
@@ -901,10 +940,25 @@ class TransportWebSocketAdapter {
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
         this._setTransportHandle(undefined);
 
-        if (code === 1000) {
+        let shouldReconnect = code !== 1000;
+        if (this._shouldReconnectAfterClose) {
+            try {
+                shouldReconnect = this._shouldReconnectAfterClose(new websocketEvents.CloseEvent(code, reason, this));
+            } catch (error) {
+                this._debug("shouldReconnect threw, treating close as terminal", error);
+                shouldReconnect = false;
+            }
+        }
+        // A caller-provided policy takes precedence. The CloseStream behavior is
+        // the default for custom transports because it is protocol-specific.
+        if (
+            !shouldReconnect ||
+            (this._shouldReconnectAfterClose == null && this._terminalMessageSent && code === 1005)
+        ) {
             this._shouldReconnect = false;
         }
 
+        this._terminalMessageSent = false;
         this._emitClose(code, reason);
 
         if (this._shouldReconnect && !this._closeCalled) {
@@ -951,6 +1005,19 @@ class TransportWebSocketAdapter {
         } else {
             (listener as (event: websocketEvents.WebSocketEventMap[T]) => void)(event);
         }
+    }
+}
+
+function isTerminalClientMessage(data: DeepgramTransportMessage): boolean {
+    if (typeof data !== "string") {
+        return false;
+    }
+
+    try {
+        const type = (JSON.parse(data) as { type?: unknown }).type;
+        return type === "CloseStream" || type === "Close";
+    } catch {
+        return false;
     }
 }
 
@@ -1045,25 +1112,37 @@ function getWebSocketOptions(
  */
 function setupBinaryHandling(
     socket: ReconnectingWebSocket,
-    eventHandlers: { message?: (data: any) => void },
+    eventHandlers: { message: Array<(data: unknown) => void> },
 ): (event: MessageEvent) => void {
+    const dispatchMessage = (message: unknown): void => {
+        for (const handler of [...eventHandlers.message]) {
+            try {
+                handler(message);
+            } catch (error) {
+                // Keep an application callback from starving async iteration.
+                // biome-ignore lint/suspicious/noConsole: surface user callback failures without stopping other handlers
+                console.error("Deepgram WebSocket message handler failed", error);
+            }
+        }
+    };
+
     const binaryAwareHandler = (event: MessageEvent) => {
         // Handle both text (JSON) and binary messages
         if (typeof event.data === "string") {
             try {
                 const data = fromJson(event.data);
-                eventHandlers.message?.(data);
-            } catch (error) {
+                dispatchMessage(data);
+            } catch {
                 // If JSON parsing fails, pass the raw string
-                eventHandlers.message?.(event.data);
+                dispatchMessage(event.data);
             }
         } else if (event.data instanceof Blob) {
             // Already a Blob - pass through as-is.
-            eventHandlers.message?.(event.data);
+            dispatchMessage(event.data);
         } else {
             // Binary arrives as an ArrayBuffer (the socket uses binaryType "arraybuffer").
             // Wrap it in a Blob so consumers always receive a Blob, regardless of runtime.
-            eventHandlers.message?.(new Blob([event.data as BlobPart]));
+            dispatchMessage(new Blob([event.data as BlobPart]));
         }
     };
 
@@ -1089,9 +1168,9 @@ function setupBinaryHandling(
 interface SocketInternals {
     socket: ReconnectingWebSocket;
     eventHandlers: {
-        message?: (message: unknown) => void;
-        close?: (event: unknown) => void;
-        error?: (error: Error) => void;
+        message: Array<(message: unknown) => void>;
+        close: Array<(event: unknown) => void>;
+        error: Array<(error: Error) => void>;
     };
     on: (event: string, callback: unknown) => void;
     close: () => void;
@@ -1137,24 +1216,12 @@ function estimateMessageByteLength(message: unknown): number {
 /**
  * Adds `for await` support to a generated socket, alongside the existing callback API.
  *
- * The generated `on()` keeps a single handler per event, so an iterator that registered
- * itself through `on("message", ...)` would silently displace a caller's callback, and a
- * caller registering afterwards would silently displace the iterator. This instead takes
- * over the three handler slots the socket dispatches through, holds the caller's handlers
- * in a separate record, and rebinds `on()` to write there. Both consumers then see every
- * message regardless of which registered first. `setupBinaryHandling` is unaffected: it
- * reads `eventHandlers.message` at dispatch time rather than capturing it, so binary
- * frames arrive here already normalized to a Blob.
+ * Public `on()` retains v5 replacement semantics. Iteration keeps its own handler in the
+ * generated handler array so callbacks and iteration continue receiving every message.
  */
 function installAsyncIteration(socket: object): void {
     const internals = socket as unknown as SocketInternals;
     const handlers = internals.eventHandlers;
-
-    const userHandlers: {
-        message?: (message: unknown) => void;
-        close?: (event: unknown) => void;
-        error?: (error: Error) => void;
-    } = { message: handlers.message, close: handlers.close, error: handlers.error };
 
     const state: AsyncIterationState = {
         queue: [],
@@ -1210,10 +1277,8 @@ function installAsyncIteration(socket: object): void {
         );
     };
 
-    handlers.message = (message) => {
-        try {
-            userHandlers.message?.(message);
-        } finally {
+    const iterationHandlers = {
+        message: (message: unknown) => {
             if (state.started && !state.ended && !handOff({ value: message, done: false })) {
                 const byteLength = estimateMessageByteLength(message);
                 if (
@@ -1234,13 +1299,8 @@ function installAsyncIteration(socket: object): void {
                     state.queuedBytes += byteLength;
                 }
             }
-        }
-    };
-
-    handlers.close = (event) => {
-        try {
-            userHandlers.close?.(event);
-        } finally {
+        },
+        close: () => {
             // The core socket emits a close before an associated error, and it
             // starts reconnecting before exposing a recoverable close to callers.
             queueMicrotask(() => {
@@ -1248,25 +1308,28 @@ function installAsyncIteration(socket: object): void {
                     finish();
                 }
             });
-        }
-    };
-
-    handlers.error = (error) => {
-        try {
-            userHandlers.error?.(error);
-        } finally {
+        },
+        error: (error: Error) => {
             if (!state.ended) {
                 fail(error);
             }
-        }
+        },
     };
 
-    // Route on() into the caller's record so registering a callback does not displace the
-    // dispatchers above. `open` has no bearing on iteration and stays on the socket.
+    handlers.message.push(iterationHandlers.message);
+    handlers.close.push(iterationHandlers.close);
+    handlers.error.push(iterationHandlers.error);
+
     const originalOn = internals.on.bind(socket);
     internals.on = (event: string, callback: unknown): void => {
         if (event === "message" || event === "close" || event === "error") {
-            (userHandlers as Record<string, unknown>)[event] = callback;
+            const handler = iterationHandlers[event];
+            const userHandlers = handlers[event];
+            if (callback == null) {
+                userHandlers.splice(0, userHandlers.length, handler as never);
+            } else {
+                userHandlers.splice(0, userHandlers.length, handler as never, callback as never);
+            }
             return;
         }
         originalOn(event, callback);
@@ -1406,6 +1469,7 @@ async function createWebSocketConnection({
     reconnectAttempts,
     connectionTimeoutInSeconds,
     abortSignal,
+    shouldReconnect,
     agent,
 }: {
     options: DeepgramClient.Options;
@@ -1419,6 +1483,7 @@ async function createWebSocketConnection({
     reconnectAttempts?: number;
     connectionTimeoutInSeconds?: number;
     abortSignal?: AbortSignal;
+    shouldReconnect?: (event: websocketEvents.CloseEvent) => boolean;
     agent?: HttpAgent;
 }): Promise<ReconnectingWebSocket> {
     // Ensure ws is loaded for Node.js environments (no-op after first call)
@@ -1463,6 +1528,7 @@ async function createWebSocketConnection({
             request,
             startClosed: true,
             reconnect,
+            shouldReconnect,
         }) as unknown as ReconnectingWebSocket;
     }
 
@@ -1484,6 +1550,7 @@ async function createWebSocketConnection({
             startClosed: true,
             connectionTimeout:
                 connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : DEFAULT_CONNECTION_TIMEOUT_MS,
+            shouldReconnect,
         },
         abortSignal,
     });
@@ -1507,7 +1574,16 @@ async function createWebSocketConnection({
  */
 class WrappedAgentV1Client extends AgentV1Client {
     public async connect(args: AgentV1ConnectionArgs = {}): Promise<AsyncIterableAgentV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1521,6 +1597,7 @@ class WrappedAgentV1Client extends AgentV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1613,8 +1690,16 @@ class WrappedListenV1Client extends ListenV1Client {
             });
         }
 
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
-
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
         const socket = await createWebSocketConnection({
             options: this._options,
             urlPath: "/v1/listen",
@@ -1627,6 +1712,7 @@ class WrappedListenV1Client extends ListenV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1711,7 +1797,17 @@ class WrappedListenV1Socket extends ListenV1Socket {
  */
 class WrappedListenV2Client extends ListenV2Client {
     public async connect(args: ListenV2ConnectionArgs): Promise<AsyncIterableListenV2Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
+        let closeStreamSent = false;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1725,10 +1821,23 @@ class WrappedListenV2Client extends ListenV2Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect:
+                shouldReconnect ??
+                (getTransportFactory(this._options) == null
+                    ? (event) => event.code !== 1000 && !(closeStreamSent && event.code === 1005)
+                    : undefined),
             agent,
         });
 
-        return new WrappedListenV2Socket({ socket });
+        return new WrappedListenV2Socket({
+            socket,
+            onCloseStreamSent: () => {
+                closeStreamSent = true;
+            },
+            onConnect: () => {
+                closeStreamSent = false;
+            },
+        });
     }
 
     /**
@@ -1760,12 +1869,17 @@ class WrappedListenV2Client extends ListenV2Client {
  */
 class WrappedListenV2Socket extends ListenV2Socket {
     private binaryAwareHandler?: (event: MessageEvent) => void;
+    private readonly onCloseStreamSent: () => void;
+    private readonly onConnect: () => void;
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV2SocketMessage>;
 
-    constructor(args: ListenV2Socket.Args) {
+    constructor(args: ListenV2Socket.Args & { onCloseStreamSent?: () => void; onConnect?: () => void }) {
         super(args);
+        this.onCloseStreamSent = args.onCloseStreamSent ?? (() => {});
+        this.onConnect = args.onConnect ?? (() => {});
+        this.socket.addEventListener("open", this.onConnect);
         this.setupBinaryHandling();
         installAsyncIteration(this);
     }
@@ -1780,7 +1894,13 @@ class WrappedListenV2Socket extends ListenV2Socket {
         closeOnce(this, () => super.close());
     }
 
+    public sendCloseStream(message: Parameters<ListenV2Socket["sendCloseStream"]>[0]): void {
+        super.sendCloseStream(message);
+        this.onCloseStreamSent();
+    }
+
     public connect(): WrappedListenV2Socket {
+        this.onConnect();
         // Arm the close() idempotency guard so a reconnected socket can close again.
         armCloseGuard(this);
 
@@ -1845,7 +1965,16 @@ class WrappedListenV2Socket extends ListenV2Socket {
  */
 class WrappedSpeakV1Client extends SpeakV1Client {
     public async connect(args: SpeakV1ConnectionArgs): Promise<AsyncIterableSpeakV1Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1859,6 +1988,7 @@ class WrappedSpeakV1Client extends SpeakV1Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 
@@ -1951,7 +2081,16 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
  */
 class WrappedSpeakV2Client extends SpeakV2Client {
     public async connect(args: SpeakV2ConnectionArgs): Promise<AsyncIterableSpeakV2Socket> {
-        const { headers, protocols, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal, agent } = args;
+        const {
+            headers,
+            protocols,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+            agent,
+        } = args;
 
         const socket = await createWebSocketConnection({
             options: this._options,
@@ -1965,6 +2104,7 @@ class WrappedSpeakV2Client extends SpeakV2Client {
             reconnectAttempts,
             connectionTimeoutInSeconds,
             abortSignal,
+            shouldReconnect,
             agent,
         });
 

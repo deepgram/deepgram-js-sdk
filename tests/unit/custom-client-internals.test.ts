@@ -16,8 +16,16 @@ class FakeTransport implements DeepgramTransport {
     public pingPayloads: Array<string | ArrayBuffer | Blob | ArrayBufferView | undefined> = [];
     private open = false;
 
-    public send(data: string | ArrayBuffer | Blob | ArrayBufferView): void {
+    public nextSendResult: void | Promise<void> = undefined;
+    public closeOnSend: { code?: number; reason?: string } | undefined;
+
+    public send(data: string | ArrayBuffer | Blob | ArrayBufferView): void | Promise<void> {
         this.sent.push(data);
+        if (this.closeOnSend) {
+            this.open = false;
+            this.listeners.close?.(this.closeOnSend);
+        }
+        return this.nextSendResult;
     }
     public onOpen(listener: () => void): void {
         this.listeners.open = listener;
@@ -89,6 +97,13 @@ async function makeAdapter(clientOpts: Record<string, unknown> = {}, connectArgs
     return { ...harness, wrapped, adapter };
 }
 
+async function makeV2Adapter(clientOpts: Record<string, unknown> = {}, connectArgs: Record<string, unknown> = {}) {
+    const harness = makeClient(clientOpts);
+    const wrapped = await harness.client.listen.v2.createConnection({ model: "flux-general-en", ...connectArgs });
+    const adapter = (wrapped as any).socket;
+    return { ...harness, wrapped, adapter };
+}
+
 afterEach(() => {
     vi.useRealTimers();
 });
@@ -144,6 +159,20 @@ describe("TransportWebSocketAdapter event listeners", () => {
 });
 
 describe("TransportWebSocketAdapter lifecycle", () => {
+    it("keeps async iteration active when a custom-transport callback is cleared", async () => {
+        const { wrapped, adapter, transports } = await makeAdapter();
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        const iterator = wrapped[Symbol.asyncIterator]();
+        wrapped.on("message", undefined);
+        transports[0]!.emitMessage('{"type":"Results"}');
+
+        await expect(iterator.next()).resolves.toMatchObject({ value: { type: "Results" }, done: false });
+        await iterator.return?.();
+    });
+
     it("flushes queued messages on open and forwards messages", async () => {
         const { adapter, transports } = await makeAdapter();
         const messages: unknown[] = [];
@@ -177,6 +206,157 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         transports[1]!.listeners.close?.({ code: 1000, reason: "bye" });
         await flush();
         expect(transports).toHaveLength(2);
+    });
+
+    it("does not reconnect after a Flux CloseStream followed by a no-status close", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(transports[0]!.sent).toContain('{"type":"CloseStream"}');
+        expect(transports).toHaveLength(1);
+    });
+
+    it("delivers a synchronous CloseStream close even when its send promise never settles", async () => {
+        const { wrapped, adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        const transport = transports[0];
+        expect(transport).toBeDefined();
+        if (transport == null) {
+            throw new Error("transport was not created");
+        }
+        const closes: number[] = [];
+        adapter.onclose = (event: { code: number }) => closes.push(event.code);
+        transport.emitOpen();
+        transport.closeOnSend = { code: 1005, reason: "" };
+        transport.nextSendResult = new Promise<void>(() => {});
+        const iterator = wrapped[Symbol.asyncIterator]();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        await flush();
+
+        expect(closes).toEqual([1005]);
+        await expect(iterator.next()).resolves.toEqual({ value: undefined, done: true });
+        expect(transports).toHaveLength(1);
+    });
+
+    it.each([1006, 1011])("reconnects after a Flux CloseStream followed by close code %i", async (code) => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code, reason: "unexpected" });
+        await flush();
+
+        expect(transports).toHaveLength(2);
+    });
+
+    it("does not carry terminal state into a reconnected transport", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1006, reason: "unexpected" });
+        await flush();
+        transports[1]!.emitOpen();
+        transports[1]!.listeners.close?.({ code: 1005, reason: "no status" });
+        await flush();
+
+        expect(transports).toHaveLength(3);
+    });
+
+    it("does not reconnect after a TTS Close followed by a no-status close", async () => {
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "Close" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(transports).toHaveLength(1);
+    });
+
+    it("reconnects when a terminal message is rejected", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.nextSendResult = Promise.reject(new Error("send failed"));
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        await flush();
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(transports).toHaveLength(2);
+    });
+
+    it("does not reconnect when a CloseStream close arrives before its send promise settles", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        let resolveSend: (() => void) | undefined;
+        transports[0]!.nextSendResult = new Promise<void>((resolve) => {
+            resolveSend = resolve;
+        });
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+        resolveSend?.();
+
+        expect(transports).toHaveLength(1);
+    });
+
+    it("honors an explicit reconnect policy after CloseStream", async () => {
+        const shouldReconnect = vi.fn(() => true);
+        const { adapter, transports } = await makeV2Adapter({}, { shouldReconnect, reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(shouldReconnect).toHaveBeenCalledOnce();
+        expect(transports).toHaveLength(2);
+    });
+
+    it("passes shouldReconnect to the transport instead of the query string", async () => {
+        const shouldReconnect = vi.fn(() => false);
+        const { adapter, transports } = await makeV2Adapter({}, { shouldReconnect, reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        transports[0]!.listeners.close?.({ code: 1005, reason: "" });
+        await flush();
+
+        expect(adapter.url).not.toContain("shouldReconnect");
+        expect(shouldReconnect).toHaveBeenCalledOnce();
+        expect(transports).toHaveLength(1);
     });
 
     it("reconnects after a transport error", async () => {

@@ -33,6 +33,8 @@ export namespace ThinkSettingsV1 {
             description?: string | undefined;
             /** Function parameters */
             parameters?: Record<string, unknown> | undefined;
+            /** Hold this function call until the user's turn is confirmed instead of dispatching it speculatively. Set it to true for actions that cannot be undone. If the turn resumes, a deferred call is discarded before it runs. Defaults to false */
+            defer_until_eot?: boolean | undefined;
             /** The Function endpoint to call. if not passed, function is called client-side */
             endpoint?: Item.Endpoint | undefined;
         }

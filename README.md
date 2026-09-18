@@ -33,7 +33,9 @@ npm install @deepgram/sdk
 
 Every streaming client exposes both `connect()` and `createConnection()`. They are aliases that return a start-closed socket: register handlers, call the socket's `connect()`, and then await `waitForOpen()` before sending data.
 
-All sockets expose `on("open" | "message" | "close" | "error", callback)`, `connect()`, `waitForOpen()`, `close()`, `readyState`, and a lower-level `socket` property. Prefer the typed send methods below instead of calling `socket.send()` directly.
+All sockets expose `on("open" | "message" | "close" | "error", callback)`, `off(event, callback)`, `connect()`, `waitForOpen()`, `close()`, `readyState`, and a lower-level `socket` property. Registering `on()` again for the same event replaces the prior callback. Prefer the typed send methods below instead of calling `socket.send()` directly.
+
+Pass `shouldReconnect: (event) => boolean` when a connection needs a custom close policy. Native Flux Listen V2 automatically treats the server no-status (`1005`) close after `sendCloseStream()` as terminal; other native socket closes retain the default retry behavior. Custom transports disable wrapper retries by default; with `reconnect: true`, a `1005` close after `CloseStream` or TTS `Close` is terminal unless `shouldReconnect` overrides it.
 
 | Service | Create a socket | Typed send methods |
 | --- | --- | --- |
@@ -44,6 +46,8 @@ All sockets expose `on("open" | "message" | "close" | "error", callback)`, `conn
 | [Flux TTS v2](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/speak/resources/v2/client/Socket.ts) | `client.speak.v2.connect(args)` or `.createConnection(args)` | `sendSpeak`, `sendFlush`, `sendInterrupt`, `sendConfigure`, `sendClose` |
 
 The public connection argument types and Deepgram-specific wrapper behavior are defined in [`src/CustomClient.ts`](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/CustomClient.ts). Use the linked socket classes for exact message and event types.
+
+For Voice Agent function calls, do not send `FunctionCallResponse` for an ID listed in a `FunctionCallCancelled` event. Set `defer_until_eot: true` on an `agent.think.functions` entry when its action cannot be undone: the agent waits until the user's turn is confirmed, and discards the deferred call if that turn resumes.
 
 ## Usage
 

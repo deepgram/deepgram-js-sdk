@@ -23,6 +23,7 @@ export declare namespace V1Socket {
         | Deepgram.agent.AgentV1AgentThinking
         | Deepgram.agent.AgentV1LatencyReport
         | Deepgram.agent.AgentV1FunctionCallRequest
+        | Deepgram.agent.AgentV1FunctionCallCancelled
         | Deepgram.agent.AgentV1AgentStartedSpeaking
         | Deepgram.agent.AgentV1AgentAudioDone
         | Deepgram.agent.AgentV1Error
@@ -39,21 +40,47 @@ export declare namespace V1Socket {
 
 export class V1Socket {
     public readonly socket: core.ReconnectingWebSocket;
-    protected readonly eventHandlers: V1Socket.EventHandlers = {};
+    protected readonly eventHandlers: {
+        [K in keyof V1Socket.EventHandlers]-?: Array<NonNullable<V1Socket.EventHandlers[K]>>;
+    } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
-        this.eventHandlers.open?.();
+        for (const handler of [...this.eventHandlers.open]) {
+            try {
+                handler();
+            } catch (error) {
+                console.error("Deepgram WebSocket open handler failed", error);
+            }
+        }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
-        this.eventHandlers.message?.(data as V1Socket.Response);
+        for (const handler of [...this.eventHandlers.message]) {
+            try {
+                handler(data as V1Socket.Response);
+            } catch (error) {
+                console.error("Deepgram WebSocket message handler failed", error);
+            }
+        }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
-        this.eventHandlers.close?.(event);
+        for (const handler of [...this.eventHandlers.close]) {
+            try {
+                handler(event);
+            } catch (error) {
+                console.error("Deepgram WebSocket close handler failed", error);
+            }
+        }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
         const message = event.message;
-        this.eventHandlers.error?.(new Error(message));
+        for (const handler of [...this.eventHandlers.error]) {
+            try {
+                handler(new Error(message));
+            } catch (error) {
+                console.error("Deepgram WebSocket error handler failed", error);
+            }
+        }
     };
 
     constructor(args: V1Socket.Args) {
@@ -80,7 +107,33 @@ export class V1Socket {
      * ```
      */
     public on<T extends keyof V1Socket.EventHandlers>(event: T, callback: V1Socket.EventHandlers[T]): void {
-        this.eventHandlers[event] = callback;
+        const handlers = this.eventHandlers[event] as Array<NonNullable<V1Socket.EventHandlers[T]>>;
+        if (callback == null) {
+            handlers.length = 0;
+        } else {
+            handlers.splice(0, handlers.length, callback);
+        }
+    }
+
+    /**
+     * @param event - The event to detach from.
+     * @param callback - The callback previously registered with `on`. No-op if it is not registered for this event.
+     * Usage:
+     * ```typescript
+     * const handler = () => console.log('The websocket is open');
+     * this.on('open', handler);
+     * this.off('open', handler);
+     * ```
+     */
+    public off<T extends keyof V1Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V1Socket.EventHandlers[T]>,
+    ): void {
+        const handlers = this.eventHandlers[event] as Array<NonNullable<V1Socket.EventHandlers[T]>>;
+        const index = handlers.lastIndexOf(callback);
+        if (index !== -1) {
+            handlers.splice(index, 1);
+        }
     }
 
     public sendSettings(message: Deepgram.agent.AgentV1Settings): void {

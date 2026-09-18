@@ -21,12 +21,14 @@ export declare namespace V1Client {
         headers?: Record<string, string>;
         /** Enable debug mode on the websocket. Defaults to false. */
         debug?: boolean;
-        /** Number of reconnect attempts. Defaults to 30. */
+        /** Maximum number of times to automatically reconnect after the connection closes unexpectedly. Defaults to 30. Set to 0 to disable reconnecting. */
         reconnectAttempts?: number;
         /** The timeout for establishing the WebSocket connection in seconds. */
         connectionTimeoutInSeconds?: number;
         /** A signal to abort the WebSocket connection. */
         abortSignal?: AbortSignal;
+        /** Decides whether a close event should trigger a reconnect. Return false to treat the close as terminal. Defaults to reconnecting on any close code other than 1000. */
+        shouldReconnect?: (event: core.CloseEvent) => boolean;
     }
 }
 
@@ -43,8 +45,16 @@ export class V1Client {
     }
 
     public async connect(args: V1Client.ConnectArgs): Promise<V1Socket> {
-        const { protocols, queryParams, headers, debug, reconnectAttempts, connectionTimeoutInSeconds, abortSignal } =
-            args;
+        const {
+            protocols,
+            queryParams,
+            headers,
+            debug,
+            reconnectAttempts,
+            connectionTimeoutInSeconds,
+            abortSignal,
+            shouldReconnect,
+        } = args;
         const _headers: Record<string, unknown> = mergeHeaders(
             this._options?.headers,
             mergeOnlyDefinedHeaders({ Authorization: args.Authorization }),
@@ -66,6 +76,7 @@ export class V1Client {
                 debug: debug ?? false,
                 maxRetries: reconnectAttempts ?? 30,
                 connectionTimeout: connectionTimeoutInSeconds != null ? connectionTimeoutInSeconds * 1000 : undefined,
+                shouldReconnect,
             },
             abortSignal: abortSignal,
         });

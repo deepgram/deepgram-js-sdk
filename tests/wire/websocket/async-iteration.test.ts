@@ -142,6 +142,43 @@ describe("Socket async iteration", () => {
         await iterator.return?.();
     });
 
+    it("keeps iteration active when a native callback is cleared", async () => {
+        wsServer.on("connection", (ws) => {
+            ws.send(JSON.stringify(results("shared", true)));
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.on("message", undefined);
+
+        await expect(iterator.next()).resolves.toMatchObject({ value: { type: "Results" }, done: false });
+        await iterator.return?.();
+    });
+
+    it("delivers to iteration before a callback throws", async () => {
+        wsServer.on("connection", (ws) => {
+            ws.send(JSON.stringify(results("shared", true)));
+        });
+
+        const socket = await makeClient().listen.v1.createConnection({ model: "nova-3" });
+        openSockets.push(socket);
+        socket.connect();
+        await socket.waitForOpen();
+
+        const iterator = socket[Symbol.asyncIterator]();
+        socket.on("message", () => {
+            throw new Error("callback failure");
+        });
+
+        const first = await iterator.next();
+        expect((first.value as { type: string }).type).toBe("Results");
+        await iterator.return?.();
+    });
+
     it("still delivers to a callback registered before iteration starts", async () => {
         wsServer.on("connection", (ws) => {
             ws.once("message", () => {

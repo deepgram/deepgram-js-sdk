@@ -138,4 +138,38 @@ describe("Agent UpdateListen / ListenUpdated", () => {
 
         socket.close();
     });
+
+    it("delivers FunctionCallCancelled messages to consumers", async () => {
+        const tracker = new WebSocketEventTracker();
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: server.baseUrl,
+                production: `ws://localhost:${wsPort}`,
+                agent: `ws://localhost:${wsPort}`,
+            },
+        });
+        const socket = await client.agent.v1.createConnection();
+        openSockets.push(socket);
+        socket.on("message", (data) => tracker.track((data as { type?: string })?.type ?? "binary", data));
+
+        wsServer.on("connection", (ws) => {
+            const cancelled: Deepgram.agent.AgentV1FunctionCallCancelled = {
+                type: "FunctionCallCancelled",
+                functions: [{ id: "call-123", name: "book_flight" }],
+            };
+            ws.send(JSON.stringify(cancelled));
+        });
+
+        socket.connect();
+        await socket.waitForOpen();
+        await waitForEventCount(tracker, "FunctionCallCancelled", 1);
+
+        expect(tracker.getHistory().find((event) => event.event === "FunctionCallCancelled")?.data).toEqual({
+            type: "FunctionCallCancelled",
+            functions: [{ id: "call-123", name: "book_flight" }],
+        });
+        socket.close();
+    });
 });
