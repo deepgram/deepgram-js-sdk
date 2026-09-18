@@ -17,9 +17,14 @@ class FakeTransport implements DeepgramTransport {
     private open = false;
 
     public nextSendResult: void | Promise<void> = undefined;
+    public closeOnSend: { code?: number; reason?: string } | undefined;
 
     public send(data: string | ArrayBuffer | Blob | ArrayBufferView): void | Promise<void> {
         this.sent.push(data);
+        if (this.closeOnSend) {
+            this.open = false;
+            this.listeners.close?.(this.closeOnSend);
+        }
         return this.nextSendResult;
     }
     public onOpen(listener: () => void): void {
@@ -215,6 +220,28 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         await flush();
 
         expect(transports[0]!.sent).toContain('{"type":"CloseStream"}');
+        expect(transports).toHaveLength(1);
+    });
+
+    it("does not reconnect when a custom transport closes synchronously from CloseStream send", async () => {
+        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        const transport = transports[0];
+        expect(transport).toBeDefined();
+        if (transport == null) {
+            throw new Error("transport was not created");
+        }
+        const closes: number[] = [];
+        adapter.onclose = (event: { code: number }) => closes.push(event.code);
+        transport.emitOpen();
+        transport.closeOnSend = { code: 1005, reason: "" };
+
+        adapter.send(JSON.stringify({ type: "CloseStream" }));
+        await flush();
+
+        expect(closes).toEqual([1005]);
         expect(transports).toHaveLength(1);
     });
 

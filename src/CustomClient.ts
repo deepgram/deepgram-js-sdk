@@ -879,11 +879,26 @@ class TransportWebSocketAdapter {
     }
 
     private _send(transport: DeepgramTransport, data: DeepgramTransportMessage): void {
-        const result = transport.send(data);
-        if (!isTerminalClientMessage(data)) {
+        const terminalMessage = isTerminalClientMessage(data);
+        if (terminalMessage) {
+            // A synchronous transport can close from send(), so record intent first.
+            this._terminalMessageSent = true;
+        }
+
+        let result: void | Promise<void>;
+        try {
+            result = transport.send(data);
+        } catch (error) {
+            if (terminalMessage && this._transport === transport) {
+                this._terminalMessageSent = false;
+            }
+            throw error;
+        }
+
+        if (!terminalMessage) {
             return;
         }
-        this._terminalMessageSent = true;
+
         if (result instanceof Promise) {
             void result.then(undefined, (error) => {
                 if (this._transport === transport) {
@@ -943,6 +958,7 @@ class TransportWebSocketAdapter {
             this._shouldReconnect = false;
         }
 
+        this._terminalMessageSent = false;
         this._emitClose(code, reason);
 
         if (this._shouldReconnect && !this._closeCalled) {
