@@ -35,7 +35,7 @@ Every streaming client exposes both `connect()` and `createConnection()`. They a
 
 All sockets expose `on("open" | "message" | "close" | "error", callback)`, `off(event, callback)`, `connect()`, `waitForOpen()`, `close()`, `readyState`, and a lower-level `socket` property. Registering `on()` again for the same event replaces the prior callback. Prefer the typed send methods below instead of calling `socket.send()` directly.
 
-Pass `shouldReconnect: (event) => boolean` when a connection needs a custom close policy. Flux Listen V2 automatically treats the server no-status (`1005`) close after `sendCloseStream()` as terminal; other closes retain the default retry behavior.
+Pass `shouldReconnect: (event) => boolean` when a connection needs a custom close policy. Native Flux Listen V2 automatically treats the server no-status (`1005`) close after `sendCloseStream()` as terminal; other native socket closes retain the default retry behavior. Custom transports disable wrapper retries by default; with `reconnect: true`, a `1005` close after `CloseStream` or TTS `Close` is terminal unless `shouldReconnect` overrides it.
 
 | Service | Create a socket | Typed send methods |
 | --- | --- | --- |

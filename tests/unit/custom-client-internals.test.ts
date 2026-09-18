@@ -223,8 +223,8 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports).toHaveLength(1);
     });
 
-    it("does not reconnect when a custom transport closes synchronously from CloseStream send", async () => {
-        const { adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
+    it("delivers a synchronous CloseStream close even when its send promise never settles", async () => {
+        const { wrapped, adapter, transports } = await makeV2Adapter({}, { reconnectAttempts: 5 });
         adapter.onerror = () => {};
         adapter.reconnect();
         await flush();
@@ -237,11 +237,14 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         adapter.onclose = (event: { code: number }) => closes.push(event.code);
         transport.emitOpen();
         transport.closeOnSend = { code: 1005, reason: "" };
+        transport.nextSendResult = new Promise<void>(() => {});
+        const iterator = wrapped[Symbol.asyncIterator]();
 
         adapter.send(JSON.stringify({ type: "CloseStream" }));
         await flush();
 
         expect(closes).toEqual([1005]);
+        await expect(iterator.next()).resolves.toEqual({ value: undefined, done: true });
         expect(transports).toHaveLength(1);
     });
 
