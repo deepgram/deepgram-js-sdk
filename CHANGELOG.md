@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.12.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.11.0...v5.12.0) (2026-09-18)
+
+
+### Features
+
+* **Streaming WebSockets:** All Voice Agent, Listen v1/v2, and Speak v1/v2 sockets now support `for await...of`. Callback handlers remain usable alongside iteration, and breaking from the loop closes the connection. ([#550](https://github.com/deepgram/deepgram-js-sdk/pull/550))
+* **Voice Agent:** Add `FunctionCallCancelled` messages and the `defer_until_eot` function setting, allowing integrations to avoid responding to invalidated calls and defer irreversible actions until end of turn. ([#557](https://github.com/deepgram/deepgram-js-sdk/pull/557))
+* **Examples:** Add a production-grade Listen v1 reconnection example with bounded audio buffering, jittered backoff, close-code handling, and timestamp continuity. ([#539](https://github.com/deepgram/deepgram-js-sdk/pull/539))
+
+### Improvements
+
+* **Streaming WebSockets:** Add `off(event, callback)` and per-close `shouldReconnect` control. Flux Listen v2 now treats the expected no-status (`1005`) close after `sendCloseStream()` as terminal. Existing `on()` replacement semantics are unchanged. ([#557](https://github.com/deepgram/deepgram-js-sdk/pull/557))
+
+### Documentation
+
+* Document the complete streaming WebSocket surface in the packaged README, including lifecycle and typed send methods. ([#542](https://github.com/deepgram/deepgram-js-sdk/pull/542))
+
 ## [5.11.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.1...v5.11.0) (2026-09-11)
 
 Agent force-end-turn support, Flux TTS expressivity controls, and a wider Flux TTS speed range.
