@@ -5,46 +5,17 @@
 
 ### Features
 
-* add async iteration to the streaming sockets ([b09166f](https://github.com/deepgram/deepgram-js-sdk/commit/b09166fd2b2b5e8c81079affdd03c786eeccdb89))
-* add async iteration to the streaming sockets ([#550](https://github.com/deepgram/deepgram-js-sdk/issues/550)) ([10b7de0](https://github.com/deepgram/deepgram-js-sdk/commit/10b7de0e054bf8b97df0936616f2c093604af0ef))
-* **examples:** add production-grade live reconnection example ([2eeb916](https://github.com/deepgram/deepgram-js-sdk/commit/2eeb916c936fb5f31f1338229e6f5af1ffe138b3))
-* **examples:** add production-grade live reconnection example ([#539](https://github.com/deepgram/deepgram-js-sdk/issues/539)) ([98d253b](https://github.com/deepgram/deepgram-js-sdk/commit/98d253b727f701c33e24eb10b400be24b37eb73c))
-* **regen:** agent function cancellation and defer-until-EOT ([#557](https://github.com/deepgram/deepgram-js-sdk/issues/557)) ([73300d3](https://github.com/deepgram/deepgram-js-sdk/commit/73300d3cd1804d658fcf8cfbe99b00bf65ebccdc))
+* **Streaming WebSockets:** All Voice Agent, Listen v1/v2, and Speak v1/v2 sockets now support `for await...of`. Callback handlers remain usable alongside iteration, and breaking from the loop closes the connection. ([#550](https://github.com/deepgram/deepgram-js-sdk/pull/550))
+* **Voice Agent:** Add `FunctionCallCancelled` messages and the `defer_until_eot` function setting, allowing integrations to avoid responding to invalidated calls and defer irreversible actions until end of turn. ([#557](https://github.com/deepgram/deepgram-js-sdk/pull/557))
+* **Examples:** Add a production-grade Listen v1 reconnection example with bounded audio buffering, jittered backoff, close-code handling, and timestamp continuity. ([#539](https://github.com/deepgram/deepgram-js-sdk/pull/539))
 
+### Improvements
 
-### Bug Fixes
+* **Streaming WebSockets:** Add `off(event, callback)` and per-close `shouldReconnect` control. Flux Listen v2 now treats the expected no-status (`1005`) close after `sendCloseStream()` as terminal. Existing `on()` replacement semantics are unchanged. ([#557](https://github.com/deepgram/deepgram-js-sdk/pull/557))
 
-* **browser:** wait for caption transcription ([f1cc3a6](https://github.com/deepgram/deepgram-js-sdk/commit/f1cc3a6739318066bb790480c6643031cd6c1139))
-* **browser:** wait for transcription completion ([13f705a](https://github.com/deepgram/deepgram-js-sdk/commit/13f705a615ff838af0d0aaacf5e91b759facce94))
-* **ci:** isolate coverage reporting ([a675339](https://github.com/deepgram/deepgram-js-sdk/commit/a67533960d6d0adac1c40f6a17fc2d8d512e7c36))
-* clear websocket callbacks safely ([db698aa](https://github.com/deepgram/deepgram-js-sdk/commit/db698aa5176a0af5496022c5c9c4f044b07ae296))
-* **examples:** drain audio on interrupt ([8f94bf9](https://github.com/deepgram/deepgram-js-sdk/commit/8f94bf99c50602e02d1675bec7a39fa2cfd14962))
-* **examples:** handle reconnect lifecycle ([06d38f8](https://github.com/deepgram/deepgram-js-sdk/commit/06d38f8870567e3ddd5bc5c56a3faddaab6e03f6))
-* handle terminal flux stream closes ([9254a17](https://github.com/deepgram/deepgram-js-sdk/commit/9254a175539a8404f6ae2f717ba350d4d45b8749))
-* harden streaming async iteration ([1a819a7](https://github.com/deepgram/deepgram-js-sdk/commit/1a819a77d0af47f5c08f9752d6aa43f7e05e012a))
-* honor explicit websocket reconnect policy ([0e1c784](https://github.com/deepgram/deepgram-js-sdk/commit/0e1c784ae31e6e75f11189afe5e286a2d74745a5))
-* isolate websocket handler errors ([38742af](https://github.com/deepgram/deepgram-js-sdk/commit/38742afa00fcc4c6e5bce200a9cd6db3bfe90e42))
-* keep websocket retry handling custom ([4c13a1e](https://github.com/deepgram/deepgram-js-sdk/commit/4c13a1ebb4ea1884a62c448b55cf9bb17d3bdacb))
-* preserve optional websocket callbacks ([e0ec733](https://github.com/deepgram/deepgram-js-sdk/commit/e0ec73306aa91f9bdaa0b14c3cdf03c3b3df4887))
-* preserve synchronous terminal closes ([80a0cfa](https://github.com/deepgram/deepgram-js-sdk/commit/80a0cfa84d8512fc25636d7973c9d843253c0e36))
-* preserve transport reconnect on failed close ([aa4ef92](https://github.com/deepgram/deepgram-js-sdk/commit/aa4ef922c499f1b73422cb76bdfd49bc05878902))
-* preserve websocket handler semantics ([11d2623](https://github.com/deepgram/deepgram-js-sdk/commit/11d26239f917467c51a3ae2cbee0f442196689d9))
-* preserve websocket reconnect policy ([2e69fb9](https://github.com/deepgram/deepgram-js-sdk/commit/2e69fb95984fbe23e083463fc89a17096a4a74c8))
-* reconnect after unexpected terminal closes ([b2c4116](https://github.com/deepgram/deepgram-js-sdk/commit/b2c411676119834c7dd6db62e3a7d0ba364f575e))
-* release websocket retry lock ([a067b55](https://github.com/deepgram/deepgram-js-sdk/commit/a067b55ed9d0c41e84bdac39abd1a87061f4166a))
-* remove unused listen state ([3a8bfed](https://github.com/deepgram/deepgram-js-sdk/commit/3a8bfed818e21bc4ea318e80a9aa13cd17dbf89a))
-* repair coverage lockfile ([e369f8c](https://github.com/deepgram/deepgram-js-sdk/commit/e369f8c1a56a4023e03556e2f00da5b0ee26306b))
-* repair pnpm-lock.yaml after bad merge, align @vitest/coverage-v8 with vitest ([74d2c51](https://github.com/deepgram/deepgram-js-sdk/commit/74d2c515fe30613db8bc015ea92ffd79f832132d))
-* reset terminal state after reconnect ([c92fff8](https://github.com/deepgram/deepgram-js-sdk/commit/c92fff84f78448415c57543e25c0f705043e3b65))
-* settle stopped websocket reconnects ([eca2fde](https://github.com/deepgram/deepgram-js-sdk/commit/eca2fdeae7d40435a7da2dd7317061d51d8282ab))
-* **skills:** use folded block scalar so SKILL.md frontmatter parses ([b1049db](https://github.com/deepgram/deepgram-js-sdk/commit/b1049dbae937446b4773369691a992e55b83597d))
-* **skills:** use folded block scalar so SKILL.md frontmatter parses ([#558](https://github.com/deepgram/deepgram-js-sdk/issues/558)) ([386a713](https://github.com/deepgram/deepgram-js-sdk/commit/386a7134050a6973ac92ed0d01ef70355247c7b0))
-* wait for terminal transport sends ([23e1dbc](https://github.com/deepgram/deepgram-js-sdk/commit/23e1dbc6fc5112e0d89748279d10f0da8a636829))
+### Documentation
 
-
-### Reverts
-
-* wait for terminal transport sends ([9f0e5c0](https://github.com/deepgram/deepgram-js-sdk/commit/9f0e5c0a328568fdcd0dc1be56ab396f217a3822))
+* Document the complete streaming WebSocket surface in the packaged README, including lifecycle and typed send methods. ([#542](https://github.com/deepgram/deepgram-js-sdk/pull/542))
 
 ## [5.11.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.10.1...v5.11.0) (2026-09-11)
 
