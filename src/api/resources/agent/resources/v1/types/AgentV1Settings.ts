@@ -93,43 +93,56 @@ export namespace AgentV1Settings {
         }
     }
 
-    export type Agent =
-        | {
-              language?: string | undefined;
-              context?:
-                  | {
-                        messages?:
-                            | (
-                                  | {
-                                        type: "History";
-                                        role: "user" | "assistant" | string;
-                                        content: string;
-                                    }
-                                  | {
-                                        type: "History";
-                                        function_calls: {
-                                            id: string;
-                                            name: string;
-                                            client_side: boolean;
-                                            arguments: string;
-                                            response: string;
-                                            thought_signature?: string | undefined;
-                                        }[];
-                                    }
-                              )[]
-                            | undefined;
-                    }
-                  | undefined;
-              listen?:
-                  | {
-                        provider?: Deepgram.agent.AgentV1SettingsAgentContextListenProvider | undefined;
-                    }
-                  | undefined;
-              think?: (Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[]) | undefined;
-              speak?: (Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[]) | undefined;
-              greeting?: string | undefined;
-          }
-        /**
-         * The ID of an agent created using the agent builder */
-        | string;
+    export interface Agent {
+        /** Deprecated. Use `listen.provider.language` and `speak.provider.language` fields instead. */
+        language?: string | undefined;
+        /** Conversation context including the history of messages and function calls */
+        context?: Agent.Context | undefined;
+        listen?: Agent.Listen | undefined;
+        think?: Agent.Think | undefined;
+        speak?: Agent.Speak | undefined;
+        /** Optional message that agent will speak at the start */
+        greeting?: string | undefined;
+    }
+
+    export namespace Agent {
+        export interface Context {
+            /** Conversation history as a list of messages and function calls */
+            messages?: Context.Messages.Item[] | undefined;
+        }
+
+        export namespace Context {
+            export type Messages = Messages.Item[];
+
+            export namespace Messages {
+                /** A history message is either a conversational message or a function call */
+                export type Item =
+                    | {
+                          type: "History";
+                          role: "user" | "assistant" | string;
+                          content: string;
+                      }
+                    | {
+                          type: "History";
+                          function_calls: {
+                              id: string;
+                              name: string;
+                              client_side: boolean;
+                              arguments: string;
+                              response: string;
+                              thought_signature?: string | undefined;
+                          }[];
+                      };
+            }
+        }
+
+        export interface Listen {
+            provider?: Deepgram.agent.AgentV1SettingsAgentContextListenProvider | undefined;
+        }
+
+        export type Think = Deepgram.ThinkSettingsV1 | Deepgram.ThinkSettingsV1[];
+        export type Speak = Deepgram.SpeakSettingsV1 | Deepgram.SpeakSettingsV1[];
+    }
+
+    export type AgentReference = AgentV1Settings.Agent | string;
 }

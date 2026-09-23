@@ -30,25 +30,41 @@ export class V2Socket {
     } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
         for (const handler of [...this.eventHandlers.open]) {
-            handler();
+            try {
+                handler();
+            } catch (error) {
+                console.error("Deepgram WebSocket open handler failed", error);
+            }
         }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
         for (const handler of [...this.eventHandlers.message]) {
-            handler(data as V2Socket.Response);
+            try {
+                handler(data as V2Socket.Response);
+            } catch (error) {
+                console.error("Deepgram WebSocket message handler failed", error);
+            }
         }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
         for (const handler of [...this.eventHandlers.close]) {
-            handler(event);
+            try {
+                handler(event);
+            } catch (error) {
+                console.error("Deepgram WebSocket close handler failed", error);
+            }
         }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
         const message = event.message;
         for (const handler of [...this.eventHandlers.error]) {
-            handler(new Error(message));
+            try {
+                handler(new Error(message));
+            } catch (error) {
+                console.error("Deepgram WebSocket error handler failed", error);
+            }
         }
     };
 
@@ -68,8 +84,6 @@ export class V2Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
-     * Handlers accumulate: registering another callback for the same event does not replace
-     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -77,12 +91,13 @@ export class V2Socket {
      * });
      * ```
      */
-    public on<T extends keyof V2Socket.EventHandlers>(
-        event: T,
-        callback: NonNullable<V2Socket.EventHandlers[T]>,
-    ): void {
+    public on<T extends keyof V2Socket.EventHandlers>(event: T, callback: V2Socket.EventHandlers[T]): void {
         const handlers = this.eventHandlers[event] as Array<NonNullable<V2Socket.EventHandlers[T]>>;
-        handlers.push(callback);
+        if (callback == null) {
+            handlers.length = 0;
+        } else {
+            handlers.splice(0, handlers.length, callback);
+        }
     }
 
     /**
@@ -116,6 +131,10 @@ export class V2Socket {
         this.sendJson(message);
     }
 
+    /**
+     * Requires server-side enablement. On deployments without the feature, the
+     * server returns `UNPARSABLE_CLIENT_MESSAGE` and closes the connection.
+     */
     public sendForceEndTurn(message: Deepgram.listen.ListenV2ForceEndTurn): void {
         this.assertSocketIsOpen();
         this.sendJson(message);

@@ -9,6 +9,8 @@ export interface DeepgramListenProviderV2 {
     model: string;
     /** An array of one or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details. */
     language_hints?: string[] | undefined;
+    /** @deprecated Use `language_hints` instead. */
+    language_hint?: DeepgramListenProviderV2.LanguageHint | undefined;
     /** End-of-turn confidence required to finish a turn. Valid range: 0.5 - 1.0. Defaults to 0.7. Set to 1.0 to fully suppress confidence-based end-of-turn detection. `eot_timeout_ms` still ends idle turns; increase it when using ForceEndTurn for full manual turn control. */
     eot_threshold?: number | undefined;
     /** End-of-turn confidence required to fire an eager end-of-turn event. When set, enables EagerEndOfTurn and TurnResumed events. Valid range: 0.3 - 0.9. */
@@ -17,4 +19,9 @@ export interface DeepgramListenProviderV2 {
     eot_timeout_ms?: number | undefined;
     /** Prompt keyterm recognition to improve Keyword Recall Rate */
     keyterms?: string[] | undefined;
+}
+
+export namespace DeepgramListenProviderV2 {
+    /** One or more BCP-47 language codes to bias the model toward specific languages. */
+    export type LanguageHint = string | string[];
 }
