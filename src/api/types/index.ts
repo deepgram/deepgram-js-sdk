@@ -76,6 +76,7 @@ export * from "./ListenV1Tag.js";
 export * from "./ListenV1UtteranceEndMs.js";
 export * from "./ListenV1VadEvents.js";
 export * from "./ListenV1Version.js";
+export * from "./ListenV2ConfigureNumerals.js";
 export * from "./ListenV2EagerEotThreshold.js";
 export * from "./ListenV2Encoding.js";
 export * from "./ListenV2EotThreshold.js";

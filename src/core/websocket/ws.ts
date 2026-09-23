@@ -256,9 +256,6 @@ export class ReconnectingWebSocket {
             this._connect();
         } else {
             this._disconnect(code, reason);
-            // Explicit reconnects must not be vetoed by the server-close policy
-            // evaluated during _disconnect().
-            this._shouldReconnect = true;
             this._connect();
         }
     }

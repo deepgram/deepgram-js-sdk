@@ -9,13 +9,7 @@ export interface DeepgramListenProviderV2 {
     model: string;
     /** An array of one or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details. */
     language_hints?: string[] | undefined;
-    /**
-     * @deprecated Use `language_hints` instead. Backward-compat shim: the 2026-06-16 regen
-     * renamed this field to `language_hints`. The singular `language_hint` was never honored
-     * by the API, so this is kept only so existing call sites keep compiling; prefer `language_hints`.
-     */
-    language_hint?: DeepgramListenProviderV2.LanguageHint | undefined;
-    /** End-of-turn confidence required to finish a turn. Valid range: 0.5 - 1.0. Defaults to 0.7. Set to 1.0 to fully suppress natural end-of-turn detection and end turns with the ForceEndTurn message. */
+    /** End-of-turn confidence required to finish a turn. Valid range: 0.5 - 1.0. Defaults to 0.7. Set to 1.0 to fully suppress confidence-based end-of-turn detection. `eot_timeout_ms` still ends idle turns; increase it when using ForceEndTurn for full manual turn control. */
     eot_threshold?: number | undefined;
     /** End-of-turn confidence required to fire an eager end-of-turn event. When set, enables EagerEndOfTurn and TurnResumed events. Valid range: 0.3 - 0.9. */
     eager_eot_threshold?: number | undefined;
@@ -23,17 +17,4 @@ export interface DeepgramListenProviderV2 {
     eot_timeout_ms?: number | undefined;
     /** Prompt keyterm recognition to improve Keyword Recall Rate */
     keyterms?: string[] | undefined;
-}
-
-// Backward-compat shim: the 2026-06-16 regen replaced the `language_hint`
-// (`string | string[]`) field with `language_hints?: string[]` and dropped the
-// `DeepgramListenProviderV2.LanguageHint` namespace type that Fern previously
-// emitted. The nested `AgentV1SettingsAgentContextListenProviderV2.LanguageHint`
-// alias and the compat-aliases regression test still reference this type, so we
-// recreate it here and freeze the file in .fernignore.
-export namespace DeepgramListenProviderV2 {
-    /**
-     * One or more BCP-47 language codes to bias the model toward specific languages. Only supported when model is flux-general-multi. Without hints, the model auto-detects the spoken language. See the Language Prompting guide for details.
-     */
-    export type LanguageHint = string | string[];
 }

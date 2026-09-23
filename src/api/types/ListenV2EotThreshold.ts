@@ -2,7 +2,8 @@
 
 /**
  * End-of-turn confidence required to finish a turn. Valid Values 0.5 -
- * 1.0. Set to 1.0 to fully suppress natural end-of-turn detection and
- * drive turn endings yourself with the `ForceEndTurn` message.
+ * 1.0. Set to 1.0 to suppress confidence-based end-of-turn detection.
+ * `eot_timeout_ms` still ends idle turns; increase it when using
+ * `ForceEndTurn` for full manual turn control.
  */
 export type ListenV2EotThreshold = unknown;
