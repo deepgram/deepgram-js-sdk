@@ -4,6 +4,8 @@ import { HeaderAuthProvider } from "./auth/HeaderAuthProvider.js";
 import { mergeHeaders } from "./core/headers.js";
 import * as core from "./core/index.js";
 import type * as environments from "./environments.js";
+// Derive the SDK version from the single source of truth (src/version.ts), which
+// carries the release-please marker. Avoids a second hardcoded version that drifts.
 import { SDK_VERSION } from "./version.js";
 
 export type AuthOption =

@@ -198,6 +198,19 @@ export async function makePassthroughRequest(
  * Relative paths are always joined onto the base URL, so they resolve to the base origin and
  * return true. When the URL is not parseable, or matches no known origin, this returns false
  * so auth headers are not attached.
+ *
+ * Patch (2026-08-19 regen): the generator compares the target against the resolved base URL
+ * ONLY. Deepgram serves its REST surface from two hosts - `base` (api.deepgram.com) and
+ * `agentRest` (agent.deepgram.com) - so an absolute URL to the agent host silently lost its
+ * auth header and failed with an unexplained 401. Widened to the full first-party set, which
+ * preserves the upstream fix (an unrelated host still receives no credentials) without
+ * breaking legitimate cross-host passthrough calls. The `wss://` entries cannot match an HTTP
+ * request, so including them is harmless and keeps this correct if a slot is added upstream.
+ *
+ * Note the generator also early-returns `false` when there is no base URL at all. That is
+ * deliberately NOT reproduced here: a first-party Deepgram origin is trustworthy regardless of
+ * whether the caller configured a base URL, and on `main` (before the origin check existed)
+ * that case received auth. Do not reinstate the early return when reconciling a future regen.
  */
 function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
     let targetOrigin: string;

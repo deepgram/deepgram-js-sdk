@@ -92,7 +92,7 @@ describe("listen v2 control messages", () => {
         expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "CloseStream" });
     });
 
-    it('sendConfigure serializes the numerals option', async () => {
+    it("sendConfigure serializes the numerals option", async () => {
         const { socket, transport } = await openSocket();
 
         socket.sendConfigure({ type: "Configure", numerals: true });
