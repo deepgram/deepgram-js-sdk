@@ -92,6 +92,14 @@ describe("listen v2 control messages", () => {
         expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "CloseStream" });
     });
 
+    it('sendConfigure serializes the numerals option', async () => {
+        const { socket, transport } = await openSocket();
+
+        socket.sendConfigure({ type: "Configure", numerals: true });
+
+        expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "Configure", numerals: true });
+    });
+
     it("control messages are sent as text frames, not binary", async () => {
         // Audio goes out binary; control messages must not, or the server rejects them as
         // unparsable audio.
