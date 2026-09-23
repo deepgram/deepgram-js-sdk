@@ -115,9 +115,6 @@ export namespace AgentV1Settings {
     }
 
     export namespace Agent {
-        /**
-         * Conversation context including the history of messages and function calls
-         */
         export interface Context {
             /** Conversation history as a list of messages and function calls */
             messages?: Context.Messages.Item[] | undefined;
@@ -127,19 +124,13 @@ export namespace AgentV1Settings {
             export type Messages = Messages.Item[];
 
             export namespace Messages {
-                /**
-                 * A history message is either a conversational message or a function call
-                 */
+                /** A history message is either a conversational message or a function call */
                 export type Item =
-                    /**
-                     * Conversation text as part of the conversation history */
                     | {
                           type: "History";
                           role: "user" | "assistant" | string;
                           content: string;
                       }
-                    /**
-                     * Client-side or server-side function call request and response as part of the conversation history */
                     | {
                           type: "History";
                           function_calls: {

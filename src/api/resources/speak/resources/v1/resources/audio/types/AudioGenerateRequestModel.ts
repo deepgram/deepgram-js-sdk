@@ -98,7 +98,9 @@ export const AudioGenerateRequestModel = {
     Aura2LiviaIt: "aura-2-livia-it",
     Aura2MaiaIt: "aura-2-maia-it",
     Aura2MeliaIt: "aura-2-melia-it",
-    /** @deprecated This model never served from the API (it returns 400) and was removed from the spec; retained for source compatibility until the next major release. */
+    /**
+     * @deprecated This model was never served by the API and returns 400. Retained for source compatibility until the next major release.
+     */
     Aura2PerseoIt: "aura-2-perseo-it",
     Aura2AmaJa: "aura-2-ama-ja",
     Aura2EbisuJa: "aura-2-ebisu-ja",

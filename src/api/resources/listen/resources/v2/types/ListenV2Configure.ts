@@ -17,6 +17,7 @@ export interface ListenV2Configure {
      * the session will continue to use the currently configured value.
      */
     language_hints?: string[] | undefined;
+    numerals?: Deepgram.ListenV2ConfigureNumerals | undefined;
 }
 
 export namespace ListenV2Configure {
