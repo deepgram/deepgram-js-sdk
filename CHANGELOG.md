@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.13.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.12.0...v5.13.0) (2026-09-23)
+
+
+### Features
+
+* **Listen v2 (Flux):** change numerals during an active connection with `socket.sendConfigure({ type: "Configure", numerals: true })`. Numerals convert written numbers to numerical format for turns transcribed after the update. ([#559](https://github.com/deepgram/deepgram-js-sdk/issues/559)) ([667a729](https://github.com/deepgram/deepgram-js-sdk/commit/667a729bd00c6941581ffe549540ac5b1aae1fbf))
+
+
+### Bug Fixes
+
+* **Compatibility:** restore the v5 type and runtime safeguards lost during regeneration: legacy Voice Agent and listen-provider type paths, `ListenV2CloseStream.Type`, deprecated Aura/Flux model symbols, and `DeepgramTimeoutError` extending `Error`. ([acd8e37](https://github.com/deepgram/deepgram-js-sdk/commit/acd8e37a759b3839e9a1d261ccb482152d144f9a))
+* **Passthrough HTTP:** `client.fetch()` again sends authentication to every first-party Deepgram REST host, including absolute `agent.deepgram.com` URLs, while keeping credentials off third-party origins. ([acd8e37](https://github.com/deepgram/deepgram-js-sdk/commit/acd8e37a759b3839e9a1d261ccb482152d144f9a))
+
 ## [5.12.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.11.0...v5.12.0) (2026-09-18)
 
 
