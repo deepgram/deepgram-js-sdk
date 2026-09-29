@@ -862,6 +862,9 @@ class TransportWebSocketAdapter {
         this._clearConnectTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.OPEN;
         this._terminalMessageSent = false;
+        // A successful open ends the failure streak, so reconnectAttempts bounds
+        // consecutive failures instead of the whole life of the connection.
+        this._retryCount = 0;
 
         const queued = [...this._messageQueue];
         this._messageQueue = [];

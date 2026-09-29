@@ -396,6 +396,44 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports[0]!.closed).toBe(true);
         expect(adapter.readyState).toBe(adapter.CLOSED);
     });
+
+    it("resets the retry budget after each successful reopen", async () => {
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        // Every drop is recovered, so the budget of 2 must never run out.
+        for (let drop = 1; drop <= 4; drop++) {
+            transports[drop - 1]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+            await flush();
+            expect(transports).toHaveLength(drop + 1);
+            transports[drop]!.emitOpen();
+            expect(adapter.readyState).toBe(adapter.OPEN);
+        }
+        expect(adapter.retryCount).toBe(0);
+    });
+
+    it("still stops after reconnectAttempts consecutive failed attempts", async () => {
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        transports[0]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+        await flush();
+        expect(transports).toHaveLength(2);
+
+        // The replacement never opens; each failure counts against the budget.
+        transports[1]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+        await flush();
+        expect(transports).toHaveLength(3);
+        transports[2]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+        await flush();
+        expect(transports).toHaveLength(3);
+    });
 });
 
 describe("TransportWebSocketAdapter abort handling", () => {
