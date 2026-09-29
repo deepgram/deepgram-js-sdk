@@ -526,7 +526,11 @@ export class ReconnectingWebSocket {
 
     private _handleError = (event: Events.ErrorEvent) => {
         this._debug("error event", event.message);
+        const shouldReconnect = this._shouldReconnect;
         this._disconnect(undefined, event.message === "TIMEOUT" ? "timeout" : undefined);
+        // _disconnect() reports a synthetic 1000 close, which the server-close
+        // policy would treat as terminal. An error must still retry.
+        this._shouldReconnect = shouldReconnect && !this._closeCalled;
 
         if (this.onerror) {
             this.onerror(event);

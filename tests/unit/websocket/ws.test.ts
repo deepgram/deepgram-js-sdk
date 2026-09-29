@@ -1,4 +1,4 @@
-import { CloseEvent } from "../../../src/core/websocket/events";
+import { CloseEvent, ErrorEvent } from "../../../src/core/websocket/events";
 import { ReconnectingWebSocket } from "../../../src/core/websocket/ws";
 
 type Listener = (event: unknown) => void;
@@ -43,6 +43,10 @@ class FakeWebSocket {
     public simulateOpen(): void {
         this.readyState = FakeWebSocket.OPEN;
         this.dispatch("open", { type: "open" });
+    }
+
+    public simulateError(message = "connect ECONNREFUSED"): void {
+        this.dispatch("error", new ErrorEvent(new Error(message), this));
     }
 
     public simulateServerClose(code: number, reason = ""): void {
@@ -111,6 +115,31 @@ describe("ReconnectingWebSocket reconnect policy", () => {
 
         expect(FakeWebSocket.instances).toHaveLength(2);
         expect(socket?.retryCount).toBe(1);
+    });
+
+    it("reconnects after a connection error by default", async () => {
+        socket = createSocket();
+        await flush();
+        expect(FakeWebSocket.instances).toHaveLength(1);
+        const onError = vi.fn();
+        socket.addEventListener("error", onError);
+
+        (FakeWebSocket.instances[0] as FakeWebSocket).simulateError();
+        await flush();
+
+        expect(onError).toHaveBeenCalledTimes(1);
+        expect(FakeWebSocket.instances).toHaveLength(2);
+        expect(socket.retryCount).toBe(1);
+    });
+
+    it("does not reconnect after an error once close() was called", async () => {
+        const ws = await openInitialConnection();
+
+        socket?.close();
+        ws.simulateError();
+        await flush();
+
+        expect(FakeWebSocket.instances).toHaveLength(1);
     });
 
     it("reconnects after an abnormal close (1006) by default", async () => {
