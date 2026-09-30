@@ -91,17 +91,17 @@ AGENTS.md
 # examples), playwright (make browser), vite + terser (pinned for the .npmrc
 # minimum-release-age + strict-peer-deps policy, not used directly), and bump
 # @types/node forward to ^20. Swap to package.json.bak before regen.
-package.json
+package.json.bak
 
 # src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts:
 # keep manage.v1.projects.keys.create(request?) source-compatible with older
 # callers that omit the request body. Swap to .bak before regen.
-src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts
+src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/Client.ts.bak
 
 # src/api/types/CreateKeyV1Request.ts: preserve the old exported
 # CreateKeyV1RequestOne alias alongside CreateKeyV1Request. Swap to .bak before
 # regen.
-src/api/types/CreateKeyV1Request.ts
+src/api/types/CreateKeyV1Request.ts.bak
 
 # src/api/resources/agent/resources/v1/types/AgentV1Settings.ts: backward-compat
 # patch for the AgentV1Settings.Agent namespace. The 2026-05-06 regen restructured
@@ -115,7 +115,7 @@ src/api/types/CreateKeyV1Request.ts
 # want it in types. Mirrors the Python SDK's compat shims for the same regen.
 # Regression coverage in tests/unit/compat-aliases.test.ts.
 # Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
+src/api/resources/agent/resources/v1/types/AgentV1Settings.ts.bak
 
 # src/api/types/DeepgramListenProviderV2.ts: the 2026-06-16 regen replaced the
 # `language_hint` (string | string[]) field with `language_hints?: string[]` and
@@ -126,7 +126,7 @@ src/api/resources/agent/resources/v1/types/AgentV1Settings.ts
 # SDK's DeepgramListenProviderV2LanguageHint shim. Also re-adds the deprecated
 # `language_hint` field (renamed to `language_hints` by the regen) as an optional
 # compat field so existing call sites keep compiling. Swap to .bak before regen.
-src/api/types/DeepgramListenProviderV2.ts
+src/api/types/DeepgramListenProviderV2.ts.bak
 
 # src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts: the 2026-06-16
 # regen corrected the `type` field to the literal "CloseStream" and dropped the
@@ -134,7 +134,7 @@ src/api/types/DeepgramListenProviderV2.ts
 # copied from v1's control-message enum). We restore the `Type` namespace with ONLY
 # the valid "CloseStream" value so existing `ListenV2CloseStream.Type` references keep
 # compiling without resurrecting the invalid values. Swap to .bak before regen.
-src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts
+src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts.bak
 
 # NOTE: AgentV1SettingsAgentListenProvider.ts was UNFROZEN in the 2026-06-16 regen.
 # The generator now emits a type structurally equal to
@@ -147,7 +147,7 @@ src/api/resources/listen/resources/v2/types/ListenV2CloseStream.ts
 # `examples/browser/deepgram.js` bundle produced by `make browser-serve`, which
 # is .gitignored but not biome-ignored. We restore `useIgnoreFile: true` so the
 # generated browser artifact stays out of lint. Swap to .bak before regen.
-biome.json
+biome.json.bak
 
 # src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts:
 # the 2026-05-14 regen consolidated listen-provider sub-types into top-level
@@ -157,7 +157,7 @@ biome.json
 # DeepgramListenProviderV2.LanguageHint so deep imports keep resolving.
 # Regression coverage in tests/unit/compat-aliases.test.ts.
 # Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts
+src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProvider.ts.bak
 
 # src/Client.ts: the 2026-05-14 regen switched the `client.fetch()` passthrough
 # helper's default baseUrl from `base` (api.deepgram.com) to `agentRest`
@@ -166,21 +166,21 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProv
 # supported in the SDK and should default to the canonical Deepgram REST host.
 # Likely a Fern generator artifact — when the upstream fix lands, drop this
 # entry. Swap to .bak before regen.
-src/Client.ts
+src/Client.ts.bak
 
 # src/version.ts is the single source of truth for the SDK version. It carries the
 # inline `// x-release-please-version` marker and is the only file release-please
 # updates for the version (see .github/release-please-config.json extra-files).
 # Fern emits it without the marker, so we freeze it to preserve the marker.
 # Swap to .bak before regen.
-src/version.ts
+src/version.ts.bak
 
 # src/BaseClient.ts is frozen only to keep its one-line patch deriving the SDK
 # version from src/version.ts (`import { SDK_VERSION }` + ``@deepgram/sdk/${SDK_VERSION}``)
 # instead of Fern's hardcoded version string — so the User-Agent never drifts and
 # the version lives in exactly one place. Re-apply that import patch after regen;
 # take all of Fern's other BaseClient changes. Swap to .bak before regen.
-src/BaseClient.ts
+src/BaseClient.ts.bak
 
 # src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts: the 2026-07-31
 # regen repointed `Listen.provider` from `DeepgramListenProviderV2` to the new
@@ -195,30 +195,30 @@ src/BaseClient.ts
 # Compile-compat only — the serialized payload is unchanged. Mirrors the Python SDK's
 # provider-coercion shim. Regression coverage in tests/unit/regen-constraints.test.ts.
 # Swap to .bak before regen.
-src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
+src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts.bak
 
 # src/api/types/SpeakV2Speed.ts: the 2026-09-07 regen corrected the speed type
 # to `number`, but dropped the named string constants shipped in 5.10.0. Retain
 # both forms so existing callers using SpeakV2Speed.One or numeric speeds compile.
-src/api/types/SpeakV2Speed.ts
+src/api/types/SpeakV2Speed.ts.bak
 
 # src/api/resources/listen/resources/v2/client/Socket.ts: retain the ForceEndTurn
 # server-enablement caveat because deployments without the feature close the socket
 # with UNPARSABLE_CLIENT_MESSAGE. Also preserve v5's replacement semantics for on().
 # Swap to .bak before regen.
-src/api/resources/listen/resources/v2/client/Socket.ts
+src/api/resources/listen/resources/v2/client/Socket.ts.bak
 
 # Fern 3.94.0 changes socket on() registrations to accumulate. Preserve v5's
 # replacement semantics and isolate user handler failures until the next major;
 # all continue exposing off().
-src/api/resources/agent/resources/v1/client/Socket.ts
-src/api/resources/listen/resources/v1/client/Socket.ts
-src/api/resources/speak/resources/v1/client/Socket.ts
-src/api/resources/speak/resources/v2/client/Socket.ts
+src/api/resources/agent/resources/v1/client/Socket.ts.bak
+src/api/resources/listen/resources/v1/client/Socket.ts.bak
+src/api/resources/speak/resources/v1/client/Socket.ts.bak
+src/api/resources/speak/resources/v2/client/Socket.ts.bak
 
 # Fern 3.94.0 evaluates shouldReconnect during reconnect()'s internal close,
 # allowing a false policy to suppress an explicit reconnect. Re-arm reconnect.
-src/core/websocket/ws.ts
+src/core/websocket/ws.ts.bak
 
 # src/api/types/Deepgram.ts: the 2026-08-19 regen replaced the Early Access Flux TTS
 # voice roster with the GA catalog (deepgram-docs #1096, 2026-08-12). That added ~24
@@ -231,18 +231,18 @@ src/core/websocket/ws.ts
 # ALL of the generator's other voice additions unchanged. Drop this entry once the
 # voice is actually withdrawn server-side, or if the catalog re-lists it. Regression
 # coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
-src/api/types/Deepgram.ts
+src/api/types/Deepgram.ts.bak
 
 # src/api/types/SpeakV1Model.ts: the 2026-09-07 regen removed the released
 # Aura2PerseoIt named constant. Keep it as a deprecated source-compatibility
 # alias until the next major release, when its removal can be documented.
-src/api/types/SpeakV1Model.ts
+src/api/types/SpeakV1Model.ts.bak
 
 # src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestModel.ts:
 # the 2026-09-07 regen removed the released Aura2PerseoIt named constant from
 # the audio request namespace too. Keep the matching deprecated compatibility
 # alias until the next major release. Covered by tests/unit/regen-constraints.test.ts.
-src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestModel.ts
+src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestModel.ts.bak
 
 # src/errors/DeepgramTimeoutError.ts: the 2026-08-19 regen re-parented this class from
 # `Error` to `DeepgramError`. That is arguably the better hierarchy — a timeout IS a
@@ -255,7 +255,7 @@ src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestM
 # generator's version at the next major, where the change can be documented in the
 # migration guide. Regression coverage in tests/unit/error-handling.test.ts.
 # Swap to .bak before regen.
-src/errors/DeepgramTimeoutError.ts
+src/errors/DeepgramTimeoutError.ts.bak
 
 # src/core/fetcher/makePassthroughRequest.ts: the 2026-08-19 regen added an origin check
 # so `client.fetch()` stops sending credentials to an arbitrary host — a genuine
@@ -267,4 +267,4 @@ src/errors/DeepgramTimeoutError.ts
 # origin in DeepgramEnvironment; an unrelated host still receives no credentials. Report
 # upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
 # tests/unit/passthrough-auth.test.ts. Swap to .bak before regen.
-src/core/fetcher/makePassthroughRequest.ts
+src/core/fetcher/makePassthroughRequest.ts.bak
