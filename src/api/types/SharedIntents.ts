@@ -4,39 +4,27 @@
  * Output whenever `intents=true` is used
  */
 export interface SharedIntents {
-    results?: SharedIntents.Results | undefined;
+    segments?: SharedIntents.Segments.Item[] | undefined;
 }
 
 export namespace SharedIntents {
-    export interface Results {
-        intents?: Results.Intents | undefined;
-    }
+    export type Segments = Segments.Item[];
 
-    export namespace Results {
-        export interface Intents {
-            segments?: Intents.Segments.Item[] | undefined;
+    export namespace Segments {
+        export interface Item {
+            text?: string | undefined;
+            start_word?: number | undefined;
+            end_word?: number | undefined;
+            intents?: Item.Intents.Item[] | undefined;
         }
 
-        export namespace Intents {
-            export type Segments = Segments.Item[];
+        export namespace Item {
+            export type Intents = Intents.Item[];
 
-            export namespace Segments {
+            export namespace Intents {
                 export interface Item {
-                    text?: string | undefined;
-                    start_word?: number | undefined;
-                    end_word?: number | undefined;
-                    intents?: Item.Intents.Item[] | undefined;
-                }
-
-                export namespace Item {
-                    export type Intents = Intents.Item[];
-
-                    export namespace Intents {
-                        export interface Item {
-                            intent?: string | undefined;
-                            confidence_score?: number | undefined;
-                        }
-                    }
+                    intent?: string | undefined;
+                    confidence_score?: number | undefined;
                 }
             }
         }

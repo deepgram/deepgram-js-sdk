@@ -256,9 +256,6 @@ export class ReconnectingWebSocket {
             this._connect();
         } else {
             this._disconnect(code, reason);
-            // Explicit reconnects must not be vetoed by the server-close policy
-            // evaluated during _disconnect().
-            this._shouldReconnect = true;
             this._connect();
         }
     }
@@ -290,6 +287,21 @@ export class ReconnectingWebSocket {
             // @ts-ignore
             this._listeners[type].push(listener);
         }
+    }
+
+    /**
+     * Returns whether the given listener is registered for the event type
+     */
+    public hasEventListener<T extends keyof Events.WebSocketEventListenerMap>(
+        type: T,
+        listener: Events.WebSocketEventListenerMap[T],
+    ): boolean {
+        const listeners = this._listeners[type];
+        if (!listeners) {
+            return false;
+        }
+        // @ts-ignore
+        return listeners.some((l) => l === listener);
     }
 
     public dispatchEvent(event: Event) {

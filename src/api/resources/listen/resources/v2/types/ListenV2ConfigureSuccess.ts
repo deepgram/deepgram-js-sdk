@@ -15,6 +15,8 @@ export interface ListenV2ConfigureSuccess {
     keyterms: Deepgram.ListenV2Keyterm;
     /** The currently active language hints. Only applicable to the flux-general-multi model. */
     language_hints?: string[] | undefined;
+    /** Whether numeral formatting is enabled for transcripts Flux STT sends after it processes the update. */
+    numerals?: Deepgram.ListenV2ConfigureNumerals | undefined;
     /**
      * Starts at `0` and increments for each message the server sends
      * to the client.  This includes messages of other types, like

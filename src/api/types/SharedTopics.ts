@@ -4,39 +4,27 @@
  * Output whenever `topics=true` is used
  */
 export interface SharedTopics {
-    results?: SharedTopics.Results | undefined;
+    segments?: SharedTopics.Segments.Item[] | undefined;
 }
 
 export namespace SharedTopics {
-    export interface Results {
-        topics?: Results.Topics | undefined;
-    }
+    export type Segments = Segments.Item[];
 
-    export namespace Results {
-        export interface Topics {
-            segments?: Topics.Segments.Item[] | undefined;
+    export namespace Segments {
+        export interface Item {
+            text?: string | undefined;
+            start_word?: number | undefined;
+            end_word?: number | undefined;
+            topics?: Item.Topics.Item[] | undefined;
         }
 
-        export namespace Topics {
-            export type Segments = Segments.Item[];
+        export namespace Item {
+            export type Topics = Topics.Item[];
 
-            export namespace Segments {
+            export namespace Topics {
                 export interface Item {
-                    text?: string | undefined;
-                    start_word?: number | undefined;
-                    end_word?: number | undefined;
-                    topics?: Item.Topics.Item[] | undefined;
-                }
-
-                export namespace Item {
-                    export type Topics = Topics.Item[];
-
-                    export namespace Topics {
-                        export interface Item {
-                            topic?: string | undefined;
-                            confidence_score?: number | undefined;
-                        }
-                    }
+                    topic?: string | undefined;
+                    confidence_score?: number | undefined;
                 }
             }
         }

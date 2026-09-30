@@ -11,20 +11,20 @@ export interface SpeakV2SpeechMetadata {
     input_character_count: number;
     /** Billable character count for this turn — the input character count with stripped control characters removed. Always less than or equal to `input_character_count`. */
     billable_character_count: number;
-    /** Counts of the inline controls the server acted on during the turn. Inline pause and pronunciation controls are not applied at launch — support is coming soon — so every count is currently `0`. */
+    /** Counts of the inline controls the server acted on during the turn. A pronunciation override that triggers an IPA warning is still applied best-effort and counted in `pronunciations_applied`; the warning is reported separately through a `Warning` and `pronunciation_warnings`. */
     controls_applied: SpeakV2SpeechMetadata.ControlsApplied;
 }
 
 export namespace SpeakV2SpeechMetadata {
     /**
-     * Counts of the inline controls the server acted on during the turn. Inline pause and pronunciation controls are not applied at launch — support is coming soon — so every count is currently `0`.
+     * Counts of the inline controls the server acted on during the turn. A pronunciation override that triggers an IPA warning is still applied best-effort and counted in `pronunciations_applied`; the warning is reported separately through a `Warning` and `pronunciation_warnings`.
      */
     export interface ControlsApplied {
-        /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. Currently always `0`. */
+        /** Pronunciation overrides successfully applied. Mirrors the Aura-2 `dg-pronunciations-applied` REST header. */
         pronunciations_applied: number;
-        /** Pause (break) controls successfully applied. Mirrors the Aura-2 `dg-breaks-applied` REST header. Currently always `0`. */
+        /** Pause (break) controls successfully applied. Mirrors the Aura-2 `dg-breaks-applied` REST header. Always `0` on the WebSocket, where inline pause controls are not supported. */
         breaks_applied: number;
-        /** Pronunciation entries that triggered a warning (invalid IPA, word too long). Mirrors the Aura-2 `dg-pronunciation-warnings` REST header. Currently always `0`. */
+        /** Pronunciation entries that triggered a warning (invalid IPA, word too long). On batch requests the corresponding `PRON-NNN` codes are returned in the `dg-warnings` response header. */
         pronunciation_warnings: number;
     }
 }
