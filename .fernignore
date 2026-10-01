@@ -202,7 +202,6 @@ src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
 # to `number`, but dropped the named string constants shipped in 5.10.0. Retain
 # both forms so existing callers using SpeakV2Speed.One or numeric speeds compile.
 src/api/types/SpeakV2Speed.ts
-src/api/types/SpeakV2SpeedValue.ts
 
 # src/api/resources/listen/resources/v2/client/Socket.ts: retain the ForceEndTurn
 # server-enablement caveat because deployments without the feature close the socket
@@ -281,8 +280,3 @@ src/core/fetcher/getResponseBody.ts
 # segments API. Swap to .bak before regen.
 src/api/types/SharedIntents.ts
 src/api/types/SharedTopics.ts
-
-# Flux TTS controls copy points at the SDK-local guide, not the stale public page.
-# Swap to .bak before regen.
-src/api/resources/speak/resources/v2/resources/audio/client/requests/SpeakV2Request.ts
-src/api/resources/speak/resources/v2/types/SpeakV2Speak.ts

@@ -529,7 +529,7 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             // The first turn remains active, so the second pronunciation turn is buffered.
             // A speed change must fail until that buffered turn is flushed.
             socket.sendSpeak({ type: "Speak", text: "First turn." });
-            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.' });
+            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.' });
             socket.sendConfigure({ type: "Configure", speed: 1.1 });
             await waitForEventCount(tracker, "ConfigureFailure", 1);
 
@@ -616,7 +616,7 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
 
             socket.connect();
             await socket.waitForOpen();
-            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.' });
+            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.' });
             await waitForEventCount(tracker, "Error", 1);
             await waitForEventCount(tracker, "close", 1);
 

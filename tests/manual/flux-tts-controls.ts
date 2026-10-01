@@ -10,7 +10,7 @@
 import assert from "node:assert/strict";
 import { DeepgramClient, DeepgramError } from "../../src";
 
-const pronunciation = '\\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}';
+const pronunciation = '\\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}';
 
 function clientOptions(apiKey: string) {
     const configuredBaseUrl = process.env.DEEPGRAM_BASE_URL;
@@ -75,6 +75,7 @@ async function main(): Promise<void> {
         const metadata = new Promise<void>((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error("timed out waiting for SpeechMetadata")), 15_000);
             socket.on("message", (message) => {
+                if (typeof message !== "object" || message === null) return;
                 if (message.type === "Error") {
                     clearTimeout(timeout);
                     reject(new Error(`${message.code}: ${message.description}`));

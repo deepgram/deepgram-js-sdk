@@ -28,11 +28,24 @@ Inline pronunciation controls are Early Access. Use a JSON control in the text w
 ```typescript
 const response = await client.speak.v2.audio.generate({
   model: "flux-alexis-en",
-  text: 'Welcome to \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.',
+  text: 'Welcome to \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.',
 });
 ```
 
 Do not combine pronunciation with a pause or with a speed other than `1.0`; the service rejects the request with `CONTROL_COMBINATION_INVALID`. A request with a pause cannot set speed above `1.15` (`PAUSE_SPEED_CAP_EXCEEDED`).
+
+### Batch validation errors
+
+Batch requests can return these control validation errors:
+
+- `CONTROL_COMBINATION_INVALID`: a pronunciation control is combined with a pause or a speed other than `1.0`.
+- `PAUSE_SPEED_CAP_EXCEEDED`: a request with a pause sets speed above `1.15`.
+- `BREAK_SYNTAX_INVALID`: a pause control does not use the required `\{pause:<milliseconds>ms\}` syntax.
+- `BREAK_OUT_OF_RANGE`: a pause is outside the `500` to `3000` millisecond range.
+- `BREAK_INCREMENT_INVALID`: a pause is not in a `100` millisecond increment.
+- `BREAKS_LIMIT_EXCEEDED`: a request contains more than eight pauses.
+
+In a TypeScript source literal, `"\\{pause:500ms\\}"` sends `\{pause:500ms\}` on the wire. The examples above show the TypeScript source form; the wire syntax has one backslash before each brace.
 
 ## Streaming WebSocket
 
@@ -57,6 +70,7 @@ Handle `Warning` and `SpeechMetadata` messages for per-turn control results. `co
 
 ```typescript
 socket.on("message", (message) => {
+  if (typeof message !== "object" || message === null) return;
   if (message.type === "ConfigureFailure" && message.code === "CONTROL_COMBINATION_INVALID") {
     console.error("Flush the buffered pronunciation turn before changing speed.");
   }

@@ -104,10 +104,10 @@ describe("Speak V2 batch (POST /v2/speak)", () => {
 
         await makeClient().speak.v2.audio.generate({
             model: "flux-alexis-en",
-            text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.',
+            text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.',
         });
         expect(JSON.parse(last?.body ?? "{}")).toEqual({
-            text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.',
+            text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.',
         });
     });
 });
