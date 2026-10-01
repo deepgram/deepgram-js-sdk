@@ -40,10 +40,10 @@ Batch requests can return these control validation errors:
 
 - `CONTROL_COMBINATION_INVALID`: a pronunciation control is combined with a pause or a speed other than `1.0`.
 - `PAUSE_SPEED_CAP_EXCEEDED`: a request with a pause sets speed above `1.15`.
-- `BREAK_SYNTAX_INVALID`: a pause control does not use the required `\{pause:<milliseconds>ms\}` syntax.
+- `BREAK_SYNTAX_INVALID`: a pause control is malformed or incorrectly escaped. Valid simple forms are `\{pause:500\}`, `\{pause:500ms\}`, and `\{pause:1.5s\}`; the unescaped structured form `{pause:{duration_ms:500}}` is also valid.
 - `BREAK_OUT_OF_RANGE`: a pause is outside the `500` to `3000` millisecond range.
 - `BREAK_INCREMENT_INVALID`: a pause is not in a `100` millisecond increment.
-- `BREAKS_LIMIT_EXCEEDED`: a request contains more than eight pauses.
+- `BREAKS_LIMIT_EXCEEDED`: a request contains more than eight pauses, or two pauses have no intervening text.
 
 In a TypeScript source literal, `"\\{pause:500ms\\}"` sends `\{pause:500ms\}` on the wire. The examples above show the TypeScript source form; the wire syntax has one backslash before each brace.
 
