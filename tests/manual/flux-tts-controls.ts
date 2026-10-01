@@ -13,11 +13,12 @@ import { DeepgramClient, DeepgramError } from "../../src";
 const pronunciation = '\\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}';
 
 function clientOptions(apiKey: string) {
-    const baseUrl = process.env.DEEPGRAM_BASE_URL;
-    if (!baseUrl) {
+    const configuredBaseUrl = process.env.DEEPGRAM_BASE_URL;
+    if (!configuredBaseUrl) {
         return { apiKey };
     }
 
+    const baseUrl = configuredBaseUrl.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
     const websocketUrl = baseUrl.replace(/^http/, "ws");
     return {
         apiKey,
