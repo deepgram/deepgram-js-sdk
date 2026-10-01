@@ -38,8 +38,10 @@ async function main(): Promise<void> {
         return;
     }
 
+    const configuredBaseUrl = process.env.DEEPGRAM_BASE_URL;
+    const restTarget = configuredBaseUrl?.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
     console.log(
-        process.env.DEEPGRAM_BASE_URL ? "Using DEEPGRAM_BASE_URL" : "Using production API (DEEPGRAM_BASE_URL unset)",
+        restTarget ? `Using staging/custom REST ${restTarget}` : "Using production API (DEEPGRAM_BASE_URL unset)",
     );
     const client = new DeepgramClient(clientOptions(apiKey));
 

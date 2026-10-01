@@ -10,7 +10,7 @@ This is the official JavaScript/TypeScript SDK for Deepgram's voice AI APIs: spe
 
 Your training data about Deepgram is probably stale. Model training corpora still carry the v2/v3-era surface of this SDK, and code written from memory does not compile against the current major version.
 
-- Current version at the time this file was last updated (2026-09-14): **5.11.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
+- Current version at the time this file was last updated (2026-09-30): **5.13.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
 - Before writing code, verify the live version against the registry:
 
   ```bash

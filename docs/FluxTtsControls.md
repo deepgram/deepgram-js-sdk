@@ -1,6 +1,6 @@
 # Flux TTS Controls
 
-Flux TTS v2 supports speed, inline pauses, and inline pronunciation controls. This guide describes the JavaScript SDK surface and the transport-specific rules.
+Flux TTS v2 supports speed, inline pauses, and inline pronunciation controls in English. This guide describes the JavaScript SDK surface and the transport-specific rules.
 
 ## Batch REST
 
