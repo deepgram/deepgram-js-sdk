@@ -5,7 +5,12 @@
 
 ### Features
 
-* **regen:** add Flux TTS Controls ([#564](https://github.com/deepgram/deepgram-js-sdk/issues/564)) ([7d76c6c](https://github.com/deepgram/deepgram-js-sdk/commit/7d76c6c4eb5677d4c1c0a37e1d5ac6c8968c948b))
+* **Speak v2 (Flux TTS):** Add inline pause markers for batch requests and IPA pronunciation overrides for batch and WebSocket requests. Pronunciation is Early Access; pause markers are batch-only. Invalid combinations report `CONTROL_COMBINATION_INVALID`, and pause markers on WebSocket requests produce `DATA-0002`. See [Speed, Pause, Pronunciation](https://developers.deepgram.com/docs/tts-voice-controls). ([#564](https://github.com/deepgram/deepgram-js-sdk/issues/564)) ([7d76c6c](https://github.com/deepgram/deepgram-js-sdk/commit/7d76c6c4eb5677d4c1c0a37e1d5ac6c8968c948b))
+* **Listen v2 (Flux):** Add typed `Warning` server messages and `onWarning(...)` handling for warnings returned during a streaming session.
+
+### Compatibility
+
+* **Topics and Intents:** `SharedTopics` and `SharedIntents` now type the direct `segments` response shape returned by the API. Existing `results` traversal remains available in v5 through deprecated runtime facades.
 
 ## [5.13.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.12.0...v5.13.0) (2026-09-23)
 
