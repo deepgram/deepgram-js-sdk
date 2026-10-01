@@ -256,6 +256,7 @@ export class ReconnectingWebSocket {
             this._connect();
         } else {
             this._disconnect(code, reason);
+            this._shouldReconnect = true;
             this._connect();
         }
     }

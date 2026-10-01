@@ -248,7 +248,7 @@ describe("2026-07-09 regen constraints", () => {
             expect(fail.field).toBe("speed");
         });
 
-        it("SpeechInterrupted reports what was played, including the breaks_applied counter", () => {
+        it("SpeechInterrupted reports WebSocket controls with no applied pauses", () => {
             const interrupted: Deepgram.speak.SpeakV2SpeechInterrupted = {
                 type: "SpeechInterrupted",
                 audio_played_ms: 1200,
@@ -259,17 +259,17 @@ describe("2026-07-09 regen constraints", () => {
                     audio_duration_ms: 4000,
                     input_character_count: 24,
                     billable_character_count: 24,
-                    // breaks_applied is new in this regen and REQUIRED -- omitting it
-                    // must fail typecheck (this literal is gated by tsconfig.typecheck.json).
+                    // breaks_applied is required but always zero on the WebSocket,
+                    // where inline pause controls are not supported.
                     controls_applied: {
                         pronunciations_applied: 2,
-                        breaks_applied: 1,
+                        breaks_applied: 0,
                         pronunciation_warnings: 0,
                     },
                 },
             };
             expect(interrupted.audio_played_ms).toBe(1200);
-            expect(interrupted.metadata.controls_applied.breaks_applied).toBe(1);
+            expect(interrupted.metadata.controls_applied.breaks_applied).toBe(0);
         });
 
         it("SpeechMetadata carries the same required breaks_applied counter", () => {

@@ -1,3 +1,4 @@
+import { DeepgramEnvironment } from "../../environments.js";
 import { createLogger, type LogConfig, type Logger } from "../logging/logger.js";
 import { join } from "../url/join.js";
 import { EndpointSupplier } from "./EndpointSupplier.js";
@@ -192,20 +193,30 @@ export async function makePassthroughRequest(
 }
 
 /**
- * Returns true when the resolved request URL points at the same origin as the
- * configured base URL. Relative paths are always joined onto the base URL, so
- * they resolve to the base origin and return true. Absolute URLs only match when
- * their origin equals the base origin. When there is no base URL to compare
- * against, or either value is not a parseable absolute URL, this returns false so
- * auth headers are not attached.
+ * Returns true when the resolved request URL points at the configured base URL or
+ * a first-party Deepgram environment origin. Relative paths are always joined onto
+ * the base URL. Unparseable and unrelated origins return false so auth headers are
+ * not attached.
  */
 function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
-    if (baseUrl == null) {
-        return false;
-    }
+    let targetOrigin: string;
     try {
-        return new URL(fullUrl).origin === new URL(baseUrl).origin;
+        targetOrigin = new URL(fullUrl).origin;
     } catch {
         return false;
     }
+
+    const allowedOrigins = new Set<string>();
+    for (const candidate of [baseUrl, ...Object.values(DeepgramEnvironment.Production)]) {
+        if (candidate == null) {
+            continue;
+        }
+        try {
+            allowedOrigins.add(new URL(candidate).origin);
+        } catch {
+            // Not a parseable absolute URL, so it cannot contribute an origin.
+        }
+    }
+
+    return allowedOrigins.has(targetOrigin);
 }

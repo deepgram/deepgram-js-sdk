@@ -110,6 +110,8 @@ export namespace Deepgram {
         FluxNaveenEn: "flux-naveen-en",
         FluxPaigeEn: "flux-paige-en",
         FluxPriyaEn: "flux-priya-en",
+        /** @deprecated Retained for source compatibility while this voice remains available at runtime. */
+        FluxReneeEn: "flux-renee-en",
         FluxRufusEn: "flux-rufus-en",
         FluxSeanEn: "flux-sean-en",
         FluxSharonEn: "flux-sharon-en",

@@ -459,7 +459,7 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
                                 billable_character_count: 24,
                                 controls_applied: {
                                     pronunciations_applied: 0,
-                                    breaks_applied: 1,
+                                    breaks_applied: 0,
                                     pronunciation_warnings: 0,
                                 },
                             },
@@ -488,13 +488,13 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             });
             expect(receivedMessages.find((m) => m?.type === "SpeechInterrupted")).toMatchObject({
                 audio_played_ms: 1200,
-                metadata: { controls_applied: { breaks_applied: 1 } },
+                metadata: { controls_applied: { breaks_applied: 0 } },
             });
 
             socket.close();
         });
 
-        it("should deliver a ConfigureFailure for a rejected speed", async () => {
+        it("should deliver a ConfigureFailure when a buffered turn has pronunciation controls", async () => {
             const receivedMessages: any[] = [];
             const tracker = new WebSocketEventTracker();
 
@@ -513,12 +513,10 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
                     if (parsed.type === "Configure") {
                         const fail: Deepgram.speak.SpeakV2ConfigureFailure = {
                             type: "ConfigureFailure",
-                            // string literal, not the enum value: this file uses a type-only
-                            // import of Deepgram, so there is no runtime binding to read.
-                            code: "SPEED_OUT_OF_RANGE",
+                            code: "CONTROL_COMBINATION_INVALID",
                             field: "speed",
                             value: parsed.speed,
-                            description: "speed must be between 0.85 and 1.15",
+                            description: "Flush the buffered pronunciation turn before changing speed.",
                         };
                         ws.send(JSON.stringify(fail));
                     }
@@ -528,14 +526,159 @@ describe("Speak v2 (Flux) WebSocket TTS streaming", () => {
             socket.connect();
             await socket.waitForOpen();
 
-            // 9 is outside the spec range; the SDK does not narrow it (numeric spec
-            // enums generate as bare number), so the server is what rejects it.
-            socket.sendConfigure({ type: "Configure", speed: 9 });
+            // The first turn remains active, so the second pronunciation turn is buffered.
+            // A speed change must fail until that buffered turn is flushed.
+            socket.sendSpeak({ type: "Speak", text: "First turn." });
+            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.' });
+            socket.sendConfigure({ type: "Configure", speed: 1.1 });
             await waitForEventCount(tracker, "ConfigureFailure", 1);
 
             expect(receivedMessages.find((m) => m?.type === "ConfigureFailure")).toMatchObject({
-                code: "SPEED_OUT_OF_RANGE",
+                code: "CONTROL_COMBINATION_INVALID",
                 field: "speed",
+            });
+
+            socket.close();
+        });
+
+        it("should close with DATA-0002 when Speak contains a batch-only pause", async () => {
+            const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
+            const client = makeClient();
+            const socket = await client.speak.v2.createConnection({
+                model: "flux-alexis-en",
+                reconnectAttempts: 0,
+            });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                tracker.track((data as { type?: string })?.type ?? "unknown");
+            });
+            socket.on("close", (event) => tracker.track("close", event));
+
+            wsServer.on("connection", (ws) => {
+                ws.on("message", (data) => {
+                    if (JSON.parse(data.toString()).type === "Speak") {
+                        ws.send(
+                            JSON.stringify({
+                                type: "Error",
+                                code: "DATA-0002",
+                                description: "Inline pause controls are available only on batch requests.",
+                            } satisfies Deepgram.speak.SpeakV2Error),
+                        );
+                        ws.close(1008, "DATA-0002");
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+            socket.sendSpeak({ type: "Speak", text: "Hello \\{pause:500ms\\} again." });
+            await waitForEventCount(tracker, "Error", 1);
+            await waitForEventCount(tracker, "close", 1);
+
+            expect(receivedMessages.find((m) => m?.type === "Error")).toMatchObject({ code: "DATA-0002" });
+            expect(tracker.getHistory().find((event) => event.event === "close")?.data).toMatchObject({ code: 1008 });
+        });
+
+        it("should close with DATA-0002 when pronunciation is combined with WebSocket speed", async () => {
+            const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
+            const client = makeClient();
+            const socket = await client.speak.v2.createConnection({
+                model: "flux-alexis-en",
+                speed: 1.1,
+                reconnectAttempts: 0,
+            });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                tracker.track((data as { type?: string })?.type ?? "unknown");
+            });
+            socket.on("close", (event) => tracker.track("close", event));
+
+            wsServer.on("connection", (ws) => {
+                ws.on("message", (data) => {
+                    if (JSON.parse(data.toString()).type === "Speak") {
+                        ws.send(
+                            JSON.stringify({
+                                type: "Error",
+                                code: "DATA-0002",
+                                description: "Pronunciation controls require speed 1.0.",
+                            } satisfies Deepgram.speak.SpeakV2Error),
+                        );
+                        ws.close(1008, "DATA-0002");
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːp.ɡræm"\\}.' });
+            await waitForEventCount(tracker, "Error", 1);
+            await waitForEventCount(tracker, "close", 1);
+
+            expect(receivedMessages.find((m) => m?.type === "Error")).toMatchObject({ code: "DATA-0002" });
+            expect(tracker.getHistory().find((event) => event.event === "close")?.data).toMatchObject({ code: 1008 });
+        });
+
+        it("should deliver pronunciation warnings and WebSocket metadata counters", async () => {
+            const receivedMessages: any[] = [];
+            const tracker = new WebSocketEventTracker();
+            const client = makeClient();
+            const socket = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+            openSockets.push(socket);
+
+            socket.on("message", (data) => {
+                receivedMessages.push(data);
+                tracker.track((data as { type?: string })?.type ?? "unknown");
+            });
+
+            wsServer.on("connection", (ws) => {
+                ws.on("message", (data) => {
+                    const parsed = JSON.parse(data.toString());
+                    if (parsed.type === "Speak") {
+                        ws.send(
+                            JSON.stringify({
+                                type: "Warning",
+                                code: "PRONUNCIATION_WARNINGS",
+                                description: "The IPA was applied best-effort.",
+                            } satisfies Deepgram.speak.SpeakV2Warning),
+                        );
+                    }
+                    if (parsed.type === "Flush") {
+                        ws.send(
+                            JSON.stringify({
+                                type: "SpeechMetadata",
+                                speech_id: "dg_sp_controls",
+                                audio_duration_ms: 200,
+                                input_character_count: 42,
+                                billable_character_count: 42,
+                                controls_applied: {
+                                    pronunciations_applied: 1,
+                                    breaks_applied: 0,
+                                    pronunciation_warnings: 1,
+                                },
+                            } satisfies Deepgram.speak.SpeakV2SpeechMetadata),
+                        );
+                    }
+                });
+            });
+
+            socket.connect();
+            await socket.waitForOpen();
+            socket.sendSpeak({ type: "Speak", text: 'Say \\{"word":"Deepgram","pronounce":"not IPA"\\}.' });
+            socket.sendFlush({ type: "Flush" });
+            await waitForEventCount(tracker, "Warning", 1);
+            await waitForEventCount(tracker, "SpeechMetadata", 1);
+
+            expect(receivedMessages.find((m) => m?.type === "Warning")).toMatchObject({
+                code: "PRONUNCIATION_WARNINGS",
+            });
+            expect(receivedMessages.find((m) => m?.type === "SpeechMetadata")).toMatchObject({
+                controls_applied: { pronunciations_applied: 1, breaks_applied: 0, pronunciation_warnings: 1 },
             });
 
             socket.close();
