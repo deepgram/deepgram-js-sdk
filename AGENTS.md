@@ -10,7 +10,7 @@ This is the official JavaScript/TypeScript SDK for Deepgram's voice AI APIs: spe
 
 Your training data about Deepgram is probably stale. Model training corpora still carry the v2/v3-era surface of this SDK, and code written from memory does not compile against the current major version.
 
-- Current version at the time this file was last updated (2026-09-14): **5.11.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
+- Current version at the time this file was last updated (2026-09-30): **5.13.0** (major version 5). Inside this repository, `src/version.ts` is the single source of truth.
 - Before writing code, verify the live version against the registry:
 
   ```bash
@@ -130,6 +130,7 @@ Current permanently frozen files:
   **The glob above is descriptive, not literal — the generator honors only the exact paths listed in `.fernignore`.** Both forms work: a per-file entry (`tests/unit/foo.test.ts`) or a directory entry (`tests/unit/core`, matching the existing `tests/wire/websocket` and `tests/manual` entries). Prefer the directory form for subdirectories, since it also covers files added later; use per-file entries for tests sitting directly in `tests/unit/`. Keep the list alphabetically sorted so a regen review can diff it cleanly.
 - `tests/wire/websocket` — hand-written WebSocket wire tests
 - `tests/wire/listen/v1/transcription.test.ts` — hand-written wire test
+- `tests/unit/topics-intents-compat.test.ts` — hand-written Topics/Intents compatibility regression test
 - `tsconfig.typecheck.json` — hand-written type-check gate that compiles the compat/regen type-assertion tests (`compat-aliases.test.ts`, `regen-constraints.test.ts`) against `src` so a drifted shim fails `make typecheck-tests`. Not emitted by Fern; the generator deletes it each regen.
 - `vitest.config.mts` — test configuration
 - `Makefile` — development commands
@@ -176,6 +177,8 @@ Current temporarily frozen files:
 - `src/api/types/SpeakV1Model.ts` and `src/api/resources/speak/resources/v1/resources/audio/types/AudioGenerateRequestModel.ts` — the 2026-09-07 regen removed the released `Aura2PerseoIt` named constant from both public v1 TTS namespaces. The open string types still accept the literal, but callers using either named member would fail to compile. Retain both as deprecated aliases until the next major release, when removal can be documented. Regression coverage in `tests/unit/regen-constraints.test.ts`.
 - `src/errors/DeepgramTimeoutError.ts` — the 2026-08-19 regen re-parented this class from `Error` to `DeepgramError`. That is arguably the better hierarchy (a timeout *is* a Deepgram error, and it is currently the one error type the SDK's own base class fails to catch), but it is a **silent** breaking change: an ordered catch of the form `if (e instanceof DeepgramError) {…} else if (e instanceof DeepgramTimeoutError) {…}` stops reaching the timeout branch, and the timeout instead surfaces as an API error with an undefined `statusCode`. Nothing fails at compile time. Reverted to `extends Error` to keep the regen non-breaking. **Drop this entry and take the generator's version at the next major**, documenting it in the migration guide. Regression coverage in `tests/unit/error-handling.test.ts`.
 - `src/core/fetcher/makePassthroughRequest.ts` — the 2026-08-19 regen added an origin check so `client.fetch()` stops sending credentials to an arbitrary host. That fix is correct and we **keep** it; the patch only widens its allowlist. The generator compares the target against the resolved base URL *only*, but Deepgram serves REST from two hosts (`base` = api.deepgram.com, `agentRest` = agent.deepgram.com), so an absolute URL to the agent host silently lost its auth header and failed with an unexplained 401 — a runtime break with no compile-time signal. `targetsBaseUrl` now allows the caller's base URL plus every origin in `DeepgramEnvironment`; an unrelated host still receives no credentials, and the `wss://` slots cannot match an HTTP request. **Report upstream to Fern** — this is a generator bug, not a spec issue. Regression coverage in `tests/unit/passthrough-auth.test.ts`.
+- `src/core/fetcher/getResponseBody.ts` — adds narrowly scoped, non-enumerable legacy `results.topics.segments` / `results.intents.segments` facades to direct Listen V1 and Read V1 analysis payloads. The direct server shape remains unchanged and enumerable. Regression coverage: `tests/unit/topics-intents-compat.test.ts`.
+- `src/api/types/SharedTopics.ts` and `src/api/types/SharedIntents.ts` — preserve the direct generated `segments` API while restoring deprecated `results` wrapper properties and `SharedTopics.Results.Topics.Segments.Item` / `SharedIntents.Results.Intents.Segments.Item` namespace paths. Regression coverage: `tests/unit/topics-intents-compat.test.ts`.
 
 **Note:** If you need to patch a Fern-generated file, add it to `.fernignore` with a comment describing the patch, and add it to the "temporarily frozen" list above.
 

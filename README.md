@@ -11,6 +11,8 @@ The official JavaScript/TypeScript SDK for Deepgram's automated speech recogniti
 
 Comprehensive API documentation and guides are available at [developers.deepgram.com](https://developers.deepgram.com).
 
+- **[Flux TTS Controls](./docs/FluxTtsControls.md)** - SDK-specific batch and WebSocket guidance for speed, pauses, and pronunciation
+
 ### Migrating From Earlier Versions
 
 - [v2 to v3](./docs/Migrating-v2-to-v3.md)

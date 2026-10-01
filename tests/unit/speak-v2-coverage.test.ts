@@ -162,6 +162,9 @@ class FakeSocket {
     addEventListener(type: string, cb: (event: any) => void): void {
         (this.listeners[type] ??= []).push(cb);
     }
+    hasEventListener(type: string, cb: (event: unknown) => void): boolean {
+        return (this.listeners[type] ?? []).includes(cb);
+    }
     removeEventListener(type: string, cb: (event: any) => void): void {
         this.listeners[type] = (this.listeners[type] ?? []).filter((l) => l !== cb);
     }

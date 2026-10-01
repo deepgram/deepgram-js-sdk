@@ -49,6 +49,7 @@ tests/unit/socket-close-idempotent.test.ts
 tests/unit/speak-v2-batch.test.ts
 tests/unit/speak-v2-coverage.test.ts
 tests/unit/transport-factory.test.ts
+tests/unit/topics-intents-compat.test.ts
 tests/unit/websocket-native.test.ts
 tests/unit/websocket-reconnection.test.ts
 tests/unit/websocket-sockets.test.ts
@@ -268,3 +269,14 @@ src/errors/DeepgramTimeoutError.ts
 # upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
 # tests/unit/passthrough-auth.test.ts. Swap to .bak before regen.
 src/core/fetcher/makePassthroughRequest.ts
+
+# src/core/fetcher/getResponseBody.ts: preserve the non-enumerable legacy
+# SharedTopics/SharedIntents results facade while retaining the direct server shape.
+# Swap to .bak before regen.
+src/core/fetcher/getResponseBody.ts
+
+# src/api/types/SharedTopics.ts and SharedIntents.ts: retain deprecated results
+# wrapper properties and nested namespace paths alongside the generated direct
+# segments API. Swap to .bak before regen.
+src/api/types/SharedIntents.ts
+src/api/types/SharedTopics.ts

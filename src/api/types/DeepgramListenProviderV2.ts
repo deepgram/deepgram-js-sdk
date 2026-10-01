@@ -25,12 +25,6 @@ export interface DeepgramListenProviderV2 {
     keyterms?: string[] | undefined;
 }
 
-// Backward-compat shim: the 2026-06-16 regen replaced the `language_hint`
-// (`string | string[]`) field with `language_hints?: string[]` and dropped the
-// `DeepgramListenProviderV2.LanguageHint` namespace type that Fern previously
-// emitted. The nested `AgentV1SettingsAgentContextListenProviderV2.LanguageHint`
-// alias and the compat-aliases regression test still reference this type, so we
-// recreate it here and freeze the file in .fernignore.
 export namespace DeepgramListenProviderV2 {
     /** One or more BCP-47 language codes to bias the model toward specific languages. */
     export type LanguageHint = string | string[];

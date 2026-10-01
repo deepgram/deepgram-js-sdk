@@ -94,4 +94,20 @@ describe("Speak V2 batch (POST /v2/speak)", () => {
         expect(last?.query.get("sample_rate")).not.toContain(".");
         expect(last?.query.get("bit_rate")).not.toContain(".");
     });
+
+    it("serializes batch-only pause and Early Access pronunciation controls in text", async () => {
+        await makeClient().speak.v2.audio.generate({
+            model: "flux-alexis-en",
+            text: "Hello \\{pause:500ms\\} again.",
+        });
+        expect(JSON.parse(last?.body ?? "{}")).toEqual({ text: "Hello \\{pause:500ms\\} again." });
+
+        await makeClient().speak.v2.audio.generate({
+            model: "flux-alexis-en",
+            text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.',
+        });
+        expect(JSON.parse(last?.body ?? "{}")).toEqual({
+            text: 'Say \\{"word":"Deepgram","pronounce":"ˈdiːpɡræm"\\}.',
+        });
+    });
 });

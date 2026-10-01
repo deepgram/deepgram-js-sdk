@@ -22,8 +22,10 @@
         "src",
         "tests/unit/compat-aliases.test.ts",
         "tests/unit/regen-constraints.test.ts",
+        "tests/unit/topics-intents-compat.test.ts",
         "tests/unit/latency-report-stt-compat.test.ts",
-        "tests/unit/async-iteration-types.test.ts"
+        "tests/unit/async-iteration-types.test.ts",
+        "tests/manual/flux-tts-controls.ts"
     ],
     "exclude": ["node_modules", "dist"]
 }

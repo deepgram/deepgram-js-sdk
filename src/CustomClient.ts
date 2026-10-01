@@ -696,6 +696,13 @@ class TransportWebSocketAdapter {
         }
     }
 
+    public hasEventListener<T extends keyof websocketEvents.WebSocketEventListenerMap>(
+        type: T,
+        listener: websocketEvents.WebSocketEventListenerMap[T],
+    ): boolean {
+        return this._listeners[type]?.includes(listener as never) ?? false;
+    }
+
     public dispatchEvent(event: websocketEvents.Event): boolean {
         const listeners = this._listeners[event.type as keyof websocketEvents.WebSocketEventListenerMap];
 
