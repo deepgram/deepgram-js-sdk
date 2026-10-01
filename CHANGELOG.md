@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.14.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.13.0...v5.14.0) (2026-10-01)
+
+
+### Features
+
+* **regen:** add Flux TTS Controls ([#564](https://github.com/deepgram/deepgram-js-sdk/issues/564)) ([7d76c6c](https://github.com/deepgram/deepgram-js-sdk/commit/7d76c6c4eb5677d4c1c0a37e1d5ac6c8968c948b))
+
 ## [5.13.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.12.0...v5.13.0) (2026-09-23)
 
 
