@@ -396,6 +396,51 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(transports[0]!.closed).toBe(true);
         expect(adapter.readyState).toBe(adapter.CLOSED);
     });
+
+    it("resets the retry budget after each stable reopen", async () => {
+        vi.useFakeTimers();
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2, connectionTimeoutInSeconds: 10 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+        await vi.advanceTimersByTimeAsync(5000);
+
+        // Every connection stays open for the default minUptime, so the budget
+        // of 2 must never run out.
+        for (let drop = 1; drop <= 4; drop++) {
+            transports[drop - 1]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+            await flush();
+            expect(transports).toHaveLength(drop + 1);
+            transports[drop]!.emitOpen();
+            await vi.advanceTimersByTimeAsync(5000);
+            expect(adapter.readyState).toBe(adapter.OPEN);
+        }
+        expect(adapter.retryCount).toBe(0);
+    });
+
+    it("stops after reconnectAttempts when reopens do not reach minUptime", async () => {
+        vi.useFakeTimers();
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2, connectionTimeoutInSeconds: 10 });
+        adapter.onerror = () => {};
+        adapter.reconnect();
+        await flush();
+        transports[0]!.emitOpen();
+
+        transports[0]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+        await flush();
+        expect(transports).toHaveLength(2);
+
+        // These replacements open briefly but do not survive the default minUptime.
+        transports[1]!.emitOpen();
+        transports[1]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+        await flush();
+        expect(transports).toHaveLength(3);
+        transports[2]?.emitOpen();
+        transports[2]!.listeners.close?.({ code: 1006, reason: "abnormal" });
+        await flush();
+        expect(transports).toHaveLength(3);
+    });
 });
 
 describe("TransportWebSocketAdapter abort handling", () => {

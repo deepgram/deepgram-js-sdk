@@ -32,6 +32,8 @@ import type {
 
 // Default WebSocket connection timeout in milliseconds
 const DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
+// Keep custom transports aligned with ReconnectingWebSocket's default minUptime.
+const DEFAULT_MIN_UPTIME_MS = 5000;
 
 // Keys present in every ConnectArgs interface that control the WebSocket connection itself.
 // Every other key in ConnectArgs is treated as an API query parameter.
@@ -543,6 +545,7 @@ class TransportWebSocketAdapter {
     private _terminalMessageSent = false;
     private _messageQueue: DeepgramTransportMessage[] = [];
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
+    private _uptimeTimeout: ReturnType<typeof setTimeout> | undefined;
     private _transport: DeepgramTransport | undefined;
     private _readyState: ReconnectingWebSocket.ReadyState;
     private _ws:
@@ -644,6 +647,7 @@ class TransportWebSocketAdapter {
         this._closeCalled = true;
         this._shouldReconnect = false;
         this._clearConnectTimeout();
+        this._clearUptimeTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSING;
 
         const transport = this._transport;
@@ -664,6 +668,7 @@ class TransportWebSocketAdapter {
         this._closeCalled = false;
         this._terminalMessageSent = false;
         this._retryCount = -1;
+        this._clearUptimeTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.CONNECTING;
 
         const transport = this._transport;
@@ -740,6 +745,7 @@ class TransportWebSocketAdapter {
         this._closeCalled = true;
         this._shouldReconnect = false;
         this._clearConnectTimeout();
+        this._clearUptimeTimeout();
 
         const transport = this._transport;
         this._transport = undefined;
@@ -853,6 +859,13 @@ class TransportWebSocketAdapter {
         }
     }
 
+    private _clearUptimeTimeout(): void {
+        if (this._uptimeTimeout != null) {
+            clearTimeout(this._uptimeTimeout);
+            this._uptimeTimeout = undefined;
+        }
+    }
+
     private _handleOpen(transport: DeepgramTransport): void {
         if (this._transport !== transport || this._readyState === ReconnectingWebSocket.ReadyState.OPEN) {
             return;
@@ -862,6 +875,12 @@ class TransportWebSocketAdapter {
         this._clearConnectTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.OPEN;
         this._terminalMessageSent = false;
+        this._clearUptimeTimeout();
+        this._uptimeTimeout = setTimeout(() => {
+            if (this._transport === transport && this._readyState === ReconnectingWebSocket.ReadyState.OPEN) {
+                this._retryCount = 0;
+            }
+        }, DEFAULT_MIN_UPTIME_MS);
 
         const queued = [...this._messageQueue];
         this._messageQueue = [];
@@ -919,6 +938,7 @@ class TransportWebSocketAdapter {
     private _handleError(error: Error): void {
         this._debug("error event", error.message);
         this._clearConnectTimeout();
+        this._clearUptimeTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
 
         const event = new websocketEvents.ErrorEvent(error, this);
@@ -943,6 +963,7 @@ class TransportWebSocketAdapter {
     private _handleClose(code: number, reason: string): void {
         this._debug("close event", code, reason);
         this._clearConnectTimeout();
+        this._clearUptimeTimeout();
         this._transport = undefined;
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
         this._setTransportHandle(undefined);
