@@ -397,26 +397,31 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         expect(adapter.readyState).toBe(adapter.CLOSED);
     });
 
-    it("resets the retry budget after each successful reopen", async () => {
-        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2 });
+    it("resets the retry budget after each stable reopen", async () => {
+        vi.useFakeTimers();
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2, connectionTimeoutInSeconds: 10 });
         adapter.onerror = () => {};
         adapter.reconnect();
         await flush();
         transports[0]!.emitOpen();
+        await vi.advanceTimersByTimeAsync(5000);
 
-        // Every drop is recovered, so the budget of 2 must never run out.
+        // Every connection stays open for the default minUptime, so the budget
+        // of 2 must never run out.
         for (let drop = 1; drop <= 4; drop++) {
             transports[drop - 1]!.listeners.close?.({ code: 1006, reason: "abnormal" });
             await flush();
             expect(transports).toHaveLength(drop + 1);
             transports[drop]!.emitOpen();
+            await vi.advanceTimersByTimeAsync(5000);
             expect(adapter.readyState).toBe(adapter.OPEN);
         }
         expect(adapter.retryCount).toBe(0);
     });
 
-    it("still stops after reconnectAttempts consecutive failed attempts", async () => {
-        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2 });
+    it("stops after reconnectAttempts when reopens do not reach minUptime", async () => {
+        vi.useFakeTimers();
+        const { adapter, transports } = await makeAdapter({}, { reconnectAttempts: 2, connectionTimeoutInSeconds: 10 });
         adapter.onerror = () => {};
         adapter.reconnect();
         await flush();
@@ -426,10 +431,12 @@ describe("TransportWebSocketAdapter lifecycle", () => {
         await flush();
         expect(transports).toHaveLength(2);
 
-        // The replacement never opens; each failure counts against the budget.
+        // These replacements open briefly but do not survive the default minUptime.
+        transports[1]!.emitOpen();
         transports[1]!.listeners.close?.({ code: 1006, reason: "abnormal" });
         await flush();
         expect(transports).toHaveLength(3);
+        transports[2]?.emitOpen();
         transports[2]!.listeners.close?.({ code: 1006, reason: "abnormal" });
         await flush();
         expect(transports).toHaveLength(3);
