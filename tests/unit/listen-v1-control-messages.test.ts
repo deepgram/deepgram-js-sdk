@@ -79,6 +79,14 @@ describe("listen v1 control messages", () => {
         expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "Configure", keyterms: [] });
     });
 
+    it("sendConfigure serializes null keyterms without clearing the current list", async () => {
+        const { socket, transport } = await openSocket();
+
+        socket.sendConfigure({ type: "Configure", keyterms: null });
+
+        expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "Configure", keyterms: null });
+    });
+
     it("delivers typed Configure errors through on(message)", async () => {
         const { socket, transport } = await openSocket();
         let received: Deepgram.listen.ListenV1Error | undefined;

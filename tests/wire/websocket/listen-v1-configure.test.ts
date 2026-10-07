@@ -79,6 +79,7 @@ describe("Listen V1 Configure", () => {
             features: { numerals: true, punctuate: false },
         });
         socket.sendConfigure({ type: "Configure", keyterms: [] });
+        socket.sendConfigure({ type: "Configure", keyterms: null });
 
         await waitForEventCount(tracker, "Error", 1);
         expect(sentToServer).toEqual([
@@ -88,6 +89,7 @@ describe("Listen V1 Configure", () => {
                 features: { numerals: true, punctuate: false },
             },
             { type: "Configure", keyterms: [] },
+            { type: "Configure", keyterms: null },
         ]);
         expect(tracker.getHistory().find((event) => event.event === "Error")?.data).toEqual({
             type: "Error",

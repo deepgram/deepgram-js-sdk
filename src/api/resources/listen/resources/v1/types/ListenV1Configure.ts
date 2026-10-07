@@ -13,7 +13,7 @@ export interface ListenV1Configure {
      * applies to the `keyterm` query parameter also applies to each update. An over-limit update returns an
      * `Error`, and the stream keeps its previous keyterms.
      */
-    keyterms?: string[] | undefined;
+    keyterms?: string[] | null | undefined;
     /**
      * Turns formatting features on or off. Each key is a feature name and each value is a boolean, for
      * example `{"numerals": true}`.

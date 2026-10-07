@@ -441,6 +441,19 @@ describe("2026-09-16 agent surfaces", () => {
         expect(JSON.parse(JSON.stringify(outgoing))).toEqual(outgoing);
         expect(JSON.parse(JSON.stringify(incoming))).toEqual(incoming);
     });
+
+    it("custom think-provider messages require content", () => {
+        // @ts-expect-error The protocol requires a JSON payload in both directions.
+        const missingOutgoing: Deepgram.agent.AgentV1CustomToThinkProvider = {
+            type: "__customToThinkProvider",
+        };
+        // @ts-expect-error The provider response always carries its body.
+        const missingIncoming: Deepgram.agent.AgentV1CustomFromThinkProvider = {
+            type: "__customFromThinkProvider",
+        };
+
+        expect([missingOutgoing, missingIncoming]).toHaveLength(2);
+    });
 });
 
 describe("2026-10-07 listen v1 Configure controls", () => {
@@ -458,6 +471,12 @@ describe("2026-10-07 listen v1 Configure controls", () => {
         const configure: Deepgram.listen.ListenV1Configure = { type: "Configure", keyterms: [] };
 
         expect(configure.keyterms).toEqual([]);
+    });
+
+    it("Configure accepts null keyterms to retain the current terms", () => {
+        const configure: Deepgram.listen.ListenV1Configure = { type: "Configure", keyterms: null };
+
+        expect(configure.keyterms).toBeNull();
     });
 
     it("Error preserves Configure rejection details", () => {

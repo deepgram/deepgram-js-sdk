@@ -105,6 +105,22 @@ src/api/resources/manage/resources/v1/resources/projects/resources/keys/client/C
 # regen.
 src/api/types/CreateKeyV1Request.ts
 
+# src/api/resources/agent/resources/v1/types/AgentV1Custom{To,From}ThinkProvider.ts:
+# the AsyncAPI requires `content` on both custom Think message directions, but
+# Fern emits it optional when its schema is untyped. Require a JSON value so
+# callers cannot send or expect a payload-less protocol message. Regression
+# coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
+src/api/resources/agent/resources/v1/types/AgentV1CustomFromThinkProvider.ts
+src/api/resources/agent/resources/v1/types/AgentV1CustomToThinkProvider.ts
+
+# src/api/resources/listen/resources/v1/types/ListenV1Configure.ts: the AsyncAPI
+# description and live service accept `keyterms: null` to retain the current
+# keyterms, but the schema omits nullable and Fern emits string[] only. Preserve
+# the nullable field until the source schema is fixed. Regression coverage in
+# tests/unit/listen-v1-control-messages.test.ts and regen-constraints.test.ts.
+# Swap to .bak before regen.
+src/api/resources/listen/resources/v1/types/ListenV1Configure.ts
+
 # src/api/resources/agent/resources/v1/types/AgentV1Settings.ts: backward-compat
 # patch for the AgentV1Settings.Agent namespace. The 2026-05-06 regen restructured
 # Agent from an interface with named sub-types (Agent.Context, Agent.Listen,
