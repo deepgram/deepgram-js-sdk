@@ -1,5 +1,7 @@
 export * from "./DiarizeModel.js";
 export * from "./ListenV1CloseStream.js";
+export * from "./ListenV1Configure.js";
+export * from "./ListenV1Error.js";
 export * from "./ListenV1Finalize.js";
 export * from "./ListenV1KeepAlive.js";
 export * from "./ListenV1Metadata.js";

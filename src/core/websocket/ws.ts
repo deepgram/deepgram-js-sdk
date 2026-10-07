@@ -45,8 +45,9 @@ export declare namespace ReconnectingWebSocket {
         startClosed?: boolean;
         debug?: boolean;
         /**
-         * Decides whether a close event should trigger a reconnect. Return `false` to treat the close as terminal.
-         * Not consulted when `close()` was called or the abort signal fired. Defaults to `event.code !== 1000`.
+         * Decides whether a server close event should trigger a reconnect. Return `false` to treat the close as terminal.
+         * Not consulted for internal closes, when `close()` was called, or when the abort signal fired.
+         * Defaults to `event.code !== 1000`.
          */
         shouldReconnect?: (event: Events.CloseEvent) => boolean;
     };
@@ -256,9 +257,6 @@ export class ReconnectingWebSocket {
             this._connect();
         } else {
             this._disconnect(code, reason);
-            // Explicit reconnects must not be vetoed by the server-close policy
-            // evaluated during _disconnect().
-            this._shouldReconnect = true;
             this._connect();
         }
     }
@@ -390,8 +388,6 @@ export class ReconnectingWebSocket {
             this._debug("connect aborted");
             return;
         }
-        this._connectLock = true;
-
         const {
             maxRetries = DEFAULT_OPTIONS.maxRetries,
             connectionTimeout = DEFAULT_OPTIONS.connectionTimeout,
@@ -403,6 +399,7 @@ export class ReconnectingWebSocket {
             return;
         }
 
+        this._connectLock = true;
         this._retryCount++;
 
         this._debug("connect", this._retryCount);
@@ -450,7 +447,7 @@ export class ReconnectingWebSocket {
             this._ws.addEventListener("error", () => {});
             try {
                 this._ws.close(1000, "aborted");
-                this._handleClose(new Events.CloseEvent(1000, "aborted", this));
+                this._emitClose(new Events.CloseEvent(1000, "aborted", this));
             } catch (_error) {
                 // ignore
             }
@@ -472,7 +469,7 @@ export class ReconnectingWebSocket {
         this._ws.addEventListener("error", () => {});
         try {
             this._ws.close(code, reason);
-            this._handleClose(new Events.CloseEvent(code, reason, this));
+            this._emitClose(new Events.CloseEvent(code, reason, this));
         } catch (_error) {
             // ignore
         }
@@ -526,11 +523,7 @@ export class ReconnectingWebSocket {
 
     private _handleError = (event: Events.ErrorEvent) => {
         this._debug("error event", event.message);
-        const shouldReconnect = this._shouldReconnect;
         this._disconnect(undefined, event.message === "TIMEOUT" ? "timeout" : undefined);
-        // _disconnect() reports a synthetic 1000 close, which the server-close
-        // policy would treat as terminal. An error must still retry.
-        this._shouldReconnect = shouldReconnect && !this._closeCalled;
 
         if (this.onerror) {
             this.onerror(event);
@@ -553,11 +546,15 @@ export class ReconnectingWebSocket {
             this._connect();
         }
 
+        this._emitClose(event);
+    };
+
+    private _emitClose(event: Events.CloseEvent): void {
         if (this.onclose) {
             this.onclose(event);
         }
         this._listeners.close.forEach((listener) => this._callEventListener(event, listener));
-    };
+    }
 
     private _isReconnectableClose(event: Events.CloseEvent): boolean {
         const { shouldReconnect = DEFAULT_OPTIONS.shouldReconnect } = this._options;
