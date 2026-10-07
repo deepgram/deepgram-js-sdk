@@ -1,4 +1,4 @@
-const PORT = 8000;
+const PORT = Number(process.env.BROWSER_TEST_PORT ?? "8000");
 const BASE_URL = `http://localhost:${PORT}`;
 
 // Helper to get API key from environment

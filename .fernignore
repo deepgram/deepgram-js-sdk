@@ -35,6 +35,7 @@ tests/unit/fetcher-branches.test.ts
 tests/unit/file/multipart.test.ts
 tests/unit/generated-ws-clients.test.ts
 tests/unit/latency-report-stt-compat.test.ts
+tests/unit/listen-v1-control-messages.test.ts
 tests/unit/listen-v2-control-messages.test.ts
 tests/unit/live-reconnect-example.test.ts
 tests/unit/misc-branches.test.ts

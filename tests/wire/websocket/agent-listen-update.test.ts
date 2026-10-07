@@ -172,4 +172,57 @@ describe("Agent UpdateListen / ListenUpdated", () => {
         });
         socket.close();
     });
+
+    it("round-trips custom think-provider messages", async () => {
+        const sentToServer: unknown[] = [];
+        const tracker = new WebSocketEventTracker();
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: server.baseUrl,
+                production: `ws://localhost:${wsPort}`,
+                agent: `ws://localhost:${wsPort}`,
+            },
+        });
+        const socket = await client.agent.v1.createConnection();
+        openSockets.push(socket);
+        socket.on("message", (data) => tracker.track((data as { type?: string })?.type ?? "binary", data));
+
+        wsServer.on("connection", (ws) => {
+            ws.send(JSON.stringify({ type: "Welcome" }));
+            ws.on("message", (data) => {
+                const parsed = JSON.parse(data.toString());
+                sentToServer.push(parsed);
+                if (parsed.type === "__customToThinkProvider") {
+                    const reply: Deepgram.agent.AgentV1CustomFromThinkProvider = {
+                        type: "__customFromThinkProvider",
+                        content: { accepted: true },
+                    };
+                    ws.send(JSON.stringify(reply));
+                }
+            });
+        });
+
+        socket.connect();
+        await socket.waitForOpen();
+        await waitForEventCount(tracker, "Welcome", 1);
+
+        socket.sendCustomToThinkProvider({
+            type: "__customToThinkProvider",
+            content: { action: "handoff", conversationId: "conversation-123" },
+        });
+
+        await waitForEventCount(tracker, "__customFromThinkProvider", 1);
+        expect(sentToServer).toContainEqual({
+            type: "__customToThinkProvider",
+            content: { action: "handoff", conversationId: "conversation-123" },
+        });
+        expect(tracker.getHistory().find((event) => event.event === "__customFromThinkProvider")?.data).toEqual({
+            type: "__customFromThinkProvider",
+            content: { accepted: true },
+        });
+
+        socket.close();
+    });
 });

@@ -427,4 +427,48 @@ describe("2026-09-16 agent surfaces", () => {
 
         expect(think.functions?.[0]?.defer_until_eot).toBe(true);
     });
+
+    it("custom think-provider messages retain their literals and arbitrary content", () => {
+        const outgoing: Deepgram.agent.AgentV1CustomToThinkProvider = {
+            type: "__customToThinkProvider",
+            content: { action: "handoff", metadata: { priority: 1 } },
+        };
+        const incoming: Deepgram.agent.AgentV1CustomFromThinkProvider = {
+            type: "__customFromThinkProvider",
+            content: ["received", 42],
+        };
+
+        expect(JSON.parse(JSON.stringify(outgoing))).toEqual(outgoing);
+        expect(JSON.parse(JSON.stringify(incoming))).toEqual(incoming);
+    });
+});
+
+describe("2026-10-07 listen v1 Configure controls", () => {
+    it("Configure accepts keyterm replacement and formatting features", () => {
+        const configure: Deepgram.listen.ListenV1Configure = {
+            type: "Configure",
+            keyterms: ["Deepgram", "voice AI"],
+            features: { numerals: true, punctuate: false },
+        };
+
+        expect(JSON.parse(JSON.stringify(configure))).toEqual(configure);
+    });
+
+    it("Configure uses an empty keyterms array to clear existing terms", () => {
+        const configure: Deepgram.listen.ListenV1Configure = { type: "Configure", keyterms: [] };
+
+        expect(configure.keyterms).toEqual([]);
+    });
+
+    it("Error preserves Configure rejection details", () => {
+        const error: Deepgram.listen.ListenV1Error = {
+            type: "Error",
+            variant: "InvalidConfigureMessage",
+            code: "KeytermsNotSupported",
+            description: "keyterms are only supported for Nova-3",
+            message: '{"type":"Configure","keyterms":["Deepgram"]}',
+        };
+
+        expect(JSON.parse(JSON.stringify(error))).toEqual(error);
+    });
 });

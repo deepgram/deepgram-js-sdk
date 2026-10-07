@@ -76,6 +76,7 @@ describe.each([
             s.sendKeepAlive({ type: "KeepAlive" } as any);
             s.sendUpdatePrompt({ type: "UpdatePrompt" } as any);
             s.sendUpdateThink({ type: "UpdateThink" } as any);
+            s.sendCustomToThinkProvider({ type: "__customToThinkProvider" } as any);
         },
     },
     {
@@ -86,6 +87,7 @@ describe.each([
             s.sendFinalize({ type: "Finalize" } as any);
             s.sendCloseStream({ type: "CloseStream" } as any);
             s.sendKeepAlive({ type: "KeepAlive" } as any);
+            s.sendConfigure({ type: "Configure" } as any);
         },
     },
     {

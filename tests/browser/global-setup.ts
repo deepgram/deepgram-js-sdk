@@ -5,7 +5,7 @@ import { spawn, ChildProcess } from "child_process";
 
 let server: http.Server | null = null;
 let proxyProcess: ChildProcess | null = null;
-const PORT = 8000;
+const PORT = Number(process.env.BROWSER_TEST_PORT ?? "8000");
 const PROXY_PORT = 8001;
 
 // Teardown function that can be called from signal handlers
