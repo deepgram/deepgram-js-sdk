@@ -68,8 +68,10 @@ examples:
 	TOTAL=43; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
+	SKIP_COUNT=0; \
 	PASSED_LIST=""; \
 	FAILED_LIST=""; \
+	SKIPPED_LIST=""; \
 	ERROR_DIR=/tmp/example-errors; \
 	mkdir -p $$ERROR_DIR; \
 	\
@@ -149,7 +151,13 @@ examples:
 	run_example 39 "examples/39-transcription-flux-force-end-turn.ts" "Transcription Flux Force-End-Turn"; \
 	run_example 40 "examples/40-abortsignal-cancellation.ts" "AbortSignal Cancellation"; \
 	run_example 41 "examples/41-transcription-live-reconnect.ts" "Transcription Live Reconnect"; \
-	run_example 42 "examples/42-agent-custom-think-provider-messages.ts" "Agent Custom Think Provider Messages"; \
+	if [ -n "$$CUSTOM_THINK_ENDPOINT" ]; then \
+		run_example 42 "examples/42-agent-custom-think-provider-messages.ts" "Agent Custom Think Provider Messages"; \
+	else \
+		SKIP_COUNT=$$((SKIP_COUNT + 1)); \
+		SKIPPED_LIST="42 - Agent Custom Think Provider Messages (requires CUSTOM_THINK_ENDPOINT)"; \
+		printf "\r\033[1;33m[%2d/%2d]\033[0m %s \033[33mSKIP\033[0m\n" 42 "$$TOTAL" "Agent Custom Think Provider Messages"; \
+	fi; \
 	run_example 43 "examples/43-transcription-live-configure.ts" "Transcription Live Configure"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
@@ -159,6 +167,10 @@ examples:
 	if [ "$$PASS_COUNT" -gt 0 ] && [ -n "$$PASSED_LIST" ]; then \
 		printf "\033[1;32m  ✓ Passed examples:\033[0m\n"; \
 		echo "$$PASSED_LIST" | awk '{printf "    \033[32m%s\033[0m\n", $$0}'; \
+	fi; \
+	printf "\n\033[1;33mSkipped: %d/%d\033[0m\n" "$$SKIP_COUNT" "$$TOTAL"; \
+	if [ "$$SKIP_COUNT" -gt 0 ] && [ -n "$$SKIPPED_LIST" ]; then \
+		printf "\033[1;33m  - %s\033[0m\n" "$$SKIPPED_LIST"; \
 	fi; \
 	printf "\n"; \
 	printf "\033[1;31mFailed: %d/%d\033[0m\n" "$$FAIL_COUNT" "$$TOTAL"; \

@@ -19,6 +19,7 @@ const customThinkEndpoint = process.env.CUSTOM_THINK_ENDPOINT;
 async function agentCustomThinkProviderMessages() {
     if (!customThinkEndpoint) {
         console.error("Set CUSTOM_THINK_ENDPOINT to your custom wss:// think endpoint before running this example.");
+        process.exitCode = 1;
         return;
     }
 

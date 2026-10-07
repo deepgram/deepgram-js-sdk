@@ -71,12 +71,9 @@ async function liveTranscriptionConfigure() {
                 features: { numerals: true },
             });
 
-            // Configure is state replacement, not an append. [] clears all terms.
-            connection.sendConfigure({
-                type: "Configure",
-                keyterms: [],
-                features: { numerals: true },
-            });
+            // Configure is state replacement, not an append. Send this later to
+            // clear all keyterms after the audio above has used them:
+            // connection.sendConfigure({ type: "Configure", keyterms: [] });
 
             const audioStream = createReadStream("./examples/spacewalk.wav");
             audioStream.on("data", (chunk) => {
