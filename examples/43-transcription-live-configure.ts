@@ -3,6 +3,8 @@
  *
  * Updates a Nova-3 stream after it opens. Configure replaces the complete
  * keyterm list; send an empty list to remove every active keyterm.
+ * Keep the list under the 500-token keyterm limit: an over-limit update stops
+ * transcription without an Error.
  */
 
 const { DeepgramClient } = require("../dist/cjs/index.js");
