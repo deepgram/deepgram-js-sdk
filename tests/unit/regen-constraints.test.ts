@@ -429,9 +429,15 @@ describe("2026-09-16 agent surfaces", () => {
     });
 
     it("custom think-provider messages retain their literals and arbitrary content", () => {
+        interface Order {
+            id: string;
+            qty: number;
+        }
+
+        const order: Order = { id: "order-123", qty: 2 };
         const outgoing: Deepgram.agent.AgentV1CustomToThinkProvider = {
             type: "__customToThinkProvider",
-            content: { action: "handoff", metadata: { priority: 1 } },
+            content: order,
         };
         const incoming: Deepgram.agent.AgentV1CustomFromThinkProvider = {
             type: "__customFromThinkProvider",

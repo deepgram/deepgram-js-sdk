@@ -1,6 +1,8 @@
 /**
  * Example: Voice Agent Custom Think Provider Messages
  *
+ * Experimental: requires a custom `wss://` think endpoint.
+ *
  * Sends application-defined data to a think provider and handles a custom
  * response. Your think provider decides the shape and meaning of `content`.
  *

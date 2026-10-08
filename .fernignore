@@ -107,8 +107,8 @@ src/api/types/CreateKeyV1Request.ts
 
 # src/api/resources/agent/resources/v1/types/AgentV1Custom{To,From}ThinkProvider.ts:
 # the AsyncAPI requires `content` on both custom Think message directions, but
-# Fern emits it optional when its schema is untyped. Require a JSON value so
-# callers cannot send or expect a payload-less protocol message. Regression
+# Fern emits it optional when its schema is untyped. Require `content` while
+# preserving interface-typed application payloads with `unknown`. Regression
 # coverage in tests/unit/regen-constraints.test.ts. Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1CustomFromThinkProvider.ts
 src/api/resources/agent/resources/v1/types/AgentV1CustomToThinkProvider.ts

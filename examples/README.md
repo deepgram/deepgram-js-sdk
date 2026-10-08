@@ -28,8 +28,7 @@ This directory contains comprehensive examples demonstrating how to use the Deep
 - **34-agent-custom-providers.ts** - Voice Agent with custom third-party providers
 - **35-agent-provider-combinations.ts** - Voice Agent provider combinations
 - **36-agent-inject-message.ts** - Injecting agent and user messages into an active session
-- **42-agent-custom-think-provider-messages.ts** - Custom Think provider messages (requires `CUSTOM_THINK_ENDPOINT`)
-- **42-agent-custom-think-provider-messages.ts** - Exchange application-defined messages with a think provider
+- **42-agent-custom-think-provider-messages.ts** - Custom Think provider messages (experimental; requires a custom `wss://` think endpoint via `CUSTOM_THINK_ENDPOINT`)
 
 ### Text-to-Speech
 - **10-text-to-speech-single.ts** - Single request TTS

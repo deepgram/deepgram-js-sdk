@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Server } from "ws";
 import { DeepgramClient } from "../../../src";
 import type { MockServer } from "../../mock-server/MockServer";
@@ -419,10 +419,8 @@ describe("Socket async iteration", () => {
         socket.sendText({ type: "Speak", text: "trigger" });
 
         await expect(first).resolves.toMatchObject({ done: false, value: expect.any(Blob) });
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await vi.waitFor(() => expect(serverSawClose).toBe(true));
         await expect(iterator.next()).rejects.toThrow("Async iterator buffer overflow");
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        expect(serverSawClose).toBe(true);
     });
 
     it("rejects a second active iterator", async () => {
