@@ -13,7 +13,8 @@ export declare namespace V1Socket {
         | Deepgram.listen.ListenV1Results
         | Deepgram.listen.ListenV1Metadata
         | Deepgram.listen.ListenV1UtteranceEnd
-        | Deepgram.listen.ListenV1SpeechStarted;
+        | Deepgram.listen.ListenV1SpeechStarted
+        | Deepgram.listen.ListenV1Error;
     type EventHandlers = {
         open?: () => void;
         message?: (message: Response) => void;
@@ -140,6 +141,11 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    public sendConfigure(message: Deepgram.listen.ListenV1Configure): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     /** Connect to the websocket and register event handlers. Safe to call multiple times: each handler is only registered if it is not already attached. */
     public connect(): V1Socket {
         this.socket.reconnect();
@@ -214,7 +220,8 @@ export class V1Socket {
             | string
             | Deepgram.listen.ListenV1Finalize
             | Deepgram.listen.ListenV1CloseStream
-            | Deepgram.listen.ListenV1KeepAlive,
+            | Deepgram.listen.ListenV1KeepAlive
+            | Deepgram.listen.ListenV1Configure,
     ): void {
         const jsonPayload = toJson(payload);
         this.socket.send(jsonPayload);

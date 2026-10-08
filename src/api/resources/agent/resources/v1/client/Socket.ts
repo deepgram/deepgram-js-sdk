@@ -26,6 +26,7 @@ export declare namespace V1Socket {
         | Deepgram.agent.AgentV1FunctionCallCancelled
         | Deepgram.agent.AgentV1AgentStartedSpeaking
         | Deepgram.agent.AgentV1AgentAudioDone
+        | Deepgram.agent.AgentV1CustomFromThinkProvider
         | Deepgram.agent.AgentV1Error
         | Deepgram.agent.AgentV1Warning
         | Deepgram.agent.AgentV1History
@@ -186,6 +187,11 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    public sendCustomToThinkProvider(message: Deepgram.agent.AgentV1CustomToThinkProvider): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
         this.sendBinary(message);
@@ -272,6 +278,7 @@ export class V1Socket {
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
             | Deepgram.agent.AgentV1ForceEndTurn
+            | Deepgram.agent.AgentV1CustomToThinkProvider
             | string,
     ): void {
         const jsonPayload = toJson(payload);

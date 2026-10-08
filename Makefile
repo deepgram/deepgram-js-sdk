@@ -1,4 +1,4 @@
-.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 example-38 example-39 example-40 example-41 test test-coverage test-esm typecheck-tests lint build browser browser-serve
+.PHONY: help examples example-1 example-2 example-3 example-4 example-5 example-6 example-7 example-8 example-9 example-10 example-11 example-12 example-13 example-14 example-15 example-16 example-17 example-18 example-19 example-20 example-21 example-22 example-23 example-24 example-25 example-26 example-27 example-28 example-29 example-30 example-31 example-32 example-33 example-34 example-35 example-36 example-37 example-38 example-39 example-40 example-41 example-42 example-43 test test-coverage test-esm typecheck-tests lint build browser browser-serve
 
 # Default target
 help:
@@ -12,7 +12,7 @@ help:
 	@printf "  \033[1;32mmake test-esm\033[0m          - Run ESM build validation tests\n"
 	@echo ""
 	@printf "\033[1;33mExample Commands:\033[0m\n"
-	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-41) sequentially\n"
+	@printf "  \033[1;32mmake examples\033[0m          - Run all example scripts (1-43) sequentially\n"
 	@printf "  \033[1;32mmake example-N\033[0m         - Run a specific example by number (e.g., make example-1)\n"
 	@printf "  \033[1;32mmake browser\033[0m           - Run browser tests\n"
 	@printf "  \033[1;32mmake browser-serve\033[0m     - Serve the browser examples for manual testing\n"
@@ -59,15 +59,19 @@ help:
 	@printf "  \033[36m39\033[0m - Transcription Flux Force-End-Turn\n"
 	@printf "  \033[36m40\033[0m - AbortSignal Cancellation\n"
 	@printf "  \033[36m41\033[0m - Transcription Live Reconnect\n"
+	@printf "  \033[36m42\033[0m - Agent Custom Think Provider Messages\n"
+	@printf "  \033[36m43\033[0m - Transcription Live Configure\n"
 
 # Run all examples
 examples:
 	@printf "\033[1;36mRunning all examples...\033[0m\n\n"; \
-	TOTAL=41; \
+	TOTAL=43; \
 	PASS_COUNT=0; \
 	FAIL_COUNT=0; \
+	SKIP_COUNT=0; \
 	PASSED_LIST=""; \
 	FAILED_LIST=""; \
+	SKIPPED_LIST=""; \
 	ERROR_DIR=/tmp/example-errors; \
 	mkdir -p $$ERROR_DIR; \
 	\
@@ -147,6 +151,14 @@ examples:
 	run_example 39 "examples/39-transcription-flux-force-end-turn.ts" "Transcription Flux Force-End-Turn"; \
 	run_example 40 "examples/40-abortsignal-cancellation.ts" "AbortSignal Cancellation"; \
 	run_example 41 "examples/41-transcription-live-reconnect.ts" "Transcription Live Reconnect"; \
+	if [ -n "$$CUSTOM_THINK_ENDPOINT" ]; then \
+		run_example 42 "examples/42-agent-custom-think-provider-messages.ts" "Agent Custom Think Provider Messages"; \
+	else \
+		SKIP_COUNT=$$((SKIP_COUNT + 1)); \
+		SKIPPED_LIST="42 - Agent Custom Think Provider Messages (requires CUSTOM_THINK_ENDPOINT)"; \
+		printf "\r\033[1;33m[%2d/%2d]\033[0m %s \033[33mSKIP\033[0m\n" 42 "$$TOTAL" "Agent Custom Think Provider Messages"; \
+	fi; \
+	run_example 43 "examples/43-transcription-live-configure.ts" "Transcription Live Configure"; \
 	\
 	printf "\n\033[1;36m=========================================\033[0m\n"; \
 	printf "\033[1;36mSummary Report\033[0m\n"; \
@@ -155,6 +167,10 @@ examples:
 	if [ "$$PASS_COUNT" -gt 0 ] && [ -n "$$PASSED_LIST" ]; then \
 		printf "\033[1;32m  ✓ Passed examples:\033[0m\n"; \
 		echo "$$PASSED_LIST" | awk '{printf "    \033[32m%s\033[0m\n", $$0}'; \
+	fi; \
+	printf "\n\033[1;33mSkipped: %d/%d\033[0m\n" "$$SKIP_COUNT" "$$TOTAL"; \
+	if [ "$$SKIP_COUNT" -gt 0 ] && [ -n "$$SKIPPED_LIST" ]; then \
+		printf "\033[1;33m  - %s\033[0m\n" "$$SKIPPED_LIST"; \
 	fi; \
 	printf "\n"; \
 	printf "\033[1;31mFailed: %d/%d\033[0m\n" "$$FAIL_COUNT" "$$TOTAL"; \
@@ -305,6 +321,12 @@ example-40:
 
 example-41:
 	pnpm exec tsx examples/41-transcription-live-reconnect.ts
+
+example-42:
+	pnpm exec tsx examples/42-agent-custom-think-provider-messages.ts
+
+example-43:
+	pnpm exec tsx examples/43-transcription-live-configure.ts
 
 lint:
 	pnpm exec biome lint --skip-parse-errors --no-errors-on-unmatched --max-diagnostics=none

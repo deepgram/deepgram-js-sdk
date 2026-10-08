@@ -251,6 +251,7 @@ describe("WebSocket connection methods", () => {
             expect(typeof socket.on).toBe("function");
             expect(typeof socket.sendMedia).toBe("function");
             expect(typeof socket.sendFinalize).toBe("function");
+            expect(typeof socket.sendConfigure).toBe("function");
             expect(typeof socket.waitForOpen).toBe("function");
         });
     });
@@ -303,6 +304,7 @@ describe("WebSocket connection methods", () => {
             expect(typeof socket.on).toBe("function");
             expect(typeof socket.sendSettings).toBe("function");
             expect(typeof socket.sendForceEndTurn).toBe("function");
+            expect(typeof socket.sendCustomToThinkProvider).toBe("function");
             expect(typeof socket.sendMedia).toBe("function");
         });
     });
