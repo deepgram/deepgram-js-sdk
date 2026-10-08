@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.15.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.14.0...v5.15.0) (2026-10-08)
+
+
+### Features
+
+* **regen:** add agent custom think and listen v1 configure ([#567](https://github.com/deepgram/deepgram-js-sdk/issues/567)) ([108a127](https://github.com/deepgram/deepgram-js-sdk/commit/108a127a73e9ad05484aec32e3a281fbcc721caa))
+
+
+### Bug Fixes
+
+* **websocket:** keep reconnecting after a connection error ([#563](https://github.com/deepgram/deepgram-js-sdk/issues/563)) ([4b3dc3e](https://github.com/deepgram/deepgram-js-sdk/commit/4b3dc3ed88dfe0f66205c39babe48a68c5c29c73))
+* **websocket:** reset custom transport retry count after a successful open ([#562](https://github.com/deepgram/deepgram-js-sdk/issues/562)) ([92a1bf7](https://github.com/deepgram/deepgram-js-sdk/commit/92a1bf7b48902e9054f17a578e6eaf895ae67855))
+
 ## [5.14.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.13.0...v5.14.0) (2026-10-01)
 
 
