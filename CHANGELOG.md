@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.15.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.14.0...v5.15.0) (2026-10-08)
+
+
+### Features
+
+* **Listen V1:** Reconfigure an active Nova-3 stream without reconnecting with `sendConfigure({ type: "Configure", ... })`, including keyterms and the numerals formatting feature. Server-side Configure rejections arrive as typed `ListenV1Error` messages; send an empty keyterms list to clear all active keyterms or `null` to preserve them. ([#567](https://github.com/deepgram/deepgram-js-sdk/issues/567)) ([108a127](https://github.com/deepgram/deepgram-js-sdk/commit/108a127a73e9ad05484aec32e3a281fbcc721caa))
+* **Voice Agent:** Exchange custom Think-provider payloads with `sendCustomToThinkProvider(...)` and `AgentV1CustomFromThinkProvider` messages. This experimental capability requires a configured custom Think-provider `wss://` endpoint; payload contents preserve nested JSON values. ([#567](https://github.com/deepgram/deepgram-js-sdk/issues/567)) ([108a127](https://github.com/deepgram/deepgram-js-sdk/commit/108a127a73e9ad05484aec32e3a281fbcc721caa))
+
+
+### Bug Fixes
+
+* **WebSockets:** A connection error now consumes the configured `reconnectAttempts` retry budget and reconnects unless the application explicitly closed the socket. ([#563](https://github.com/deepgram/deepgram-js-sdk/issues/563)) ([4b3dc3e](https://github.com/deepgram/deepgram-js-sdk/commit/4b3dc3ed88dfe0f66205c39babe48a68c5c29c73))
+* **Custom transports:** Wrapper-level reconnects reset their retry budget after a connection remains open for the default five-second minimum uptime. Long-running streams no longer exhaust their retry allowance across recovered drops, while unstable connections still stop after `reconnectAttempts`. ([#562](https://github.com/deepgram/deepgram-js-sdk/issues/562)) ([92a1bf7](https://github.com/deepgram/deepgram-js-sdk/commit/92a1bf7b48902e9054f17a578e6eaf895ae67855))
+
 ## [5.14.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.13.0...v5.14.0) (2026-10-01)
 
 
