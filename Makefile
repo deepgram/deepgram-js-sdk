@@ -97,7 +97,7 @@ examples:
 			if [ -z "$$PASSED_LIST" ]; then \
 				PASSED_LIST="$$NUM - $$NAME"; \
 			else \
-				PASSED_LIST="$$PASSED_LIST"$$'\n'"$$NUM - $$NAME"; \
+				PASSED_LIST=$$(printf '%s\n%s' "$$PASSED_LIST" "$$NUM - $$NAME"); \
 			fi; \
 		else \
 			printf "\033[1;31m✗ FAIL\033[0m\n"; \
@@ -105,8 +105,31 @@ examples:
 			if [ -z "$$FAILED_LIST" ]; then \
 				FAILED_LIST="$$NUM - $$NAME"; \
 			else \
-				FAILED_LIST="$$FAILED_LIST"$$'\n'"$$NUM - $$NAME"; \
+				FAILED_LIST=$$(printf '%s\n%s' "$$FAILED_LIST" "$$NUM - $$NAME"); \
 			fi; \
+		fi; \
+	}; \
+	\
+	skip_example() { \
+		NUM=$$1; \
+		NAME=$$2; \
+		REASON=$$3; \
+		PERCENT=$$((NUM * 100 / TOTAL)); \
+		BAR_LEN=25; \
+		FILLED=$$((NUM * BAR_LEN / TOTAL)); \
+		EMPTY=$$((BAR_LEN - FILLED)); \
+		printf "\r\033[1;33m[%2d/%2d]\033[0m [" "$$NUM" "$$TOTAL"; \
+		printf "\033[32m"; \
+		for i in $$(seq 1 $$FILLED); do printf "█"; done; \
+		printf "\033[90m"; \
+		for i in $$(seq 1 $$EMPTY); do printf "░"; done; \
+		printf "\033[0m] %3d%% \033[36m%s\033[0m ... " "$$PERCENT" "$$NAME"; \
+		printf "\033[1;33m- SKIP\033[0m\n"; \
+		SKIP_COUNT=$$((SKIP_COUNT + 1)); \
+		if [ -z "$$SKIPPED_LIST" ]; then \
+			SKIPPED_LIST="$$NUM - $$NAME ($$REASON)"; \
+		else \
+			SKIPPED_LIST=$$(printf '%s\n%s' "$$SKIPPED_LIST" "$$NUM - $$NAME ($$REASON)"); \
 		fi; \
 	}; \
 	\
@@ -124,12 +147,28 @@ examples:
 	run_example 12 "examples/12-text-intelligence.ts" "Text Intelligence"; \
 	run_example 13 "examples/13-management-projects.ts" "Management Projects"; \
 	run_example 14 "examples/14-management-keys.ts" "Management Keys"; \
-	run_example 15 "examples/15-management-members.ts" "Management Members"; \
-	run_example 16 "examples/16-management-invites.ts" "Management Invites"; \
+	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
+		run_example 15 "examples/15-management-members.ts" "Management Members"; \
+	else \
+		skip_example 15 "Management Members" "requires members:read + members:write:scopes"; \
+	fi; \
+	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
+		run_example 16 "examples/16-management-invites.ts" "Management Invites"; \
+	else \
+		skip_example 16 "Management Invites" "requires members:*:invites"; \
+	fi; \
 	run_example 17 "examples/17-management-usage.ts" "Management Usage"; \
-	run_example 18 "examples/18-management-billing.ts" "Management Billing"; \
+	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
+		run_example 18 "examples/18-management-billing.ts" "Management Billing"; \
+	else \
+		skip_example 18 "Management Billing" "requires billing:read"; \
+	fi; \
 	run_example 19 "examples/19-management-models.ts" "Management Models"; \
-	run_example 20 "examples/20-onprem-credentials.ts" "On-Premises Credentials"; \
+	if [ -n "$$DEEPGRAM_SELF_HOSTED_SCOPES" ]; then \
+		run_example 20 "examples/20-onprem-credentials.ts" "On-Premises Credentials"; \
+	else \
+		skip_example 20 "On-Premises Credentials" "requires self-hosted:product:* scopes"; \
+	fi; \
 	run_example 21 "examples/21-configuration-scoped.ts" "Configuration Scoped"; \
 	run_example 22 "examples/22-transcription-advanced-options.ts" "Transcription Advanced Options"; \
 	run_example 23 "examples/23-file-upload-types.ts" "File Upload Types"; \
@@ -139,8 +178,16 @@ examples:
 	run_example 27 "examples/27-deepgram-session-header.ts" "Deepgram Session Header"; \
 	run_example 28 "examples/28-text-intelligence-advanced.ts" "Text Intelligence Advanced"; \
 	run_example 29 "examples/29-management-usage-breakdown.ts" "Management Usage Breakdown"; \
-	run_example 30 "examples/30-management-billing-detailed.ts" "Management Billing Detailed"; \
-	run_example 31 "examples/31-management-member-permissions.ts" "Management Member Permissions"; \
+	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
+		run_example 30 "examples/30-management-billing-detailed.ts" "Management Billing Detailed"; \
+	else \
+		skip_example 30 "Management Billing Detailed" "requires billing:read"; \
+	fi; \
+	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
+		run_example 31 "examples/31-management-member-permissions.ts" "Management Member Permissions"; \
+	else \
+		skip_example 31 "Management Member Permissions" "requires members:read + members:read:scopes"; \
+	fi; \
 	run_example 32 "examples/32-management-project-models.ts" "Management Project Models"; \
 	run_example 33 "examples/33-configuration-eu-endpoint.ts" "Configuration EU Endpoint"; \
 	run_example 34 "examples/34-agent-custom-providers.ts" "Agent Custom Providers"; \
@@ -154,9 +201,7 @@ examples:
 	if [ -n "$$CUSTOM_THINK_ENDPOINT" ]; then \
 		run_example 42 "examples/42-agent-custom-think-provider-messages.ts" "Agent Custom Think Provider Messages"; \
 	else \
-		SKIP_COUNT=$$((SKIP_COUNT + 1)); \
-		SKIPPED_LIST="42 - Agent Custom Think Provider Messages (requires CUSTOM_THINK_ENDPOINT)"; \
-		printf "\r\033[1;33m[%2d/%2d]\033[0m %s \033[33mSKIP\033[0m\n" 42 "$$TOTAL" "Agent Custom Think Provider Messages"; \
+		skip_example 42 "Agent Custom Think Provider Messages" "requires CUSTOM_THINK_ENDPOINT"; \
 	fi; \
 	run_example 43 "examples/43-transcription-live-configure.ts" "Transcription Live Configure"; \
 	\
@@ -170,7 +215,8 @@ examples:
 	fi; \
 	printf "\n\033[1;33mSkipped: %d/%d\033[0m\n" "$$SKIP_COUNT" "$$TOTAL"; \
 	if [ "$$SKIP_COUNT" -gt 0 ] && [ -n "$$SKIPPED_LIST" ]; then \
-		printf "\033[1;33m  - %s\033[0m\n" "$$SKIPPED_LIST"; \
+		printf "\033[1;33m  - Skipped examples:\033[0m\n"; \
+		echo "$$SKIPPED_LIST" | awk '{printf "    \033[33m%s\033[0m\n", $$0}'; \
 	fi; \
 	printf "\n"; \
 	printf "\033[1;31mFailed: %d/%d\033[0m\n" "$$FAIL_COUNT" "$$TOTAL"; \
