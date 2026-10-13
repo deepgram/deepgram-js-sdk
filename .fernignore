@@ -293,3 +293,5 @@ src/core/fetcher/getResponseBody.ts
 # segments API. Swap to .bak before regen.
 src/api/types/SharedIntents.ts
 src/api/types/SharedTopics.ts
+
+src/core/websocket/ws.ts
