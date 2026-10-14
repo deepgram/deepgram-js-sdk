@@ -315,9 +315,11 @@ export class CustomDeepgramClient extends DeepgramClient {
         // The auto-generated HeaderAuthProvider doesn't add the prefix
         (this._options as any).authProvider = new ApiKeyAuthProviderWrapper(this._options.authProvider);
 
-        // Wrap again to handle accessToken if provided
-        // This ensures accessToken takes priority over apiKey/env var
-        if (options.accessToken != null) {
+        // Wrap again to handle accessToken if provided, or DEEPGRAM_ACCESS_TOKEN when
+        // no explicit credential is passed. This ensures accessToken takes priority
+        // over apiKey/env var, and DEEPGRAM_ACCESS_TOKEN over DEEPGRAM_API_KEY.
+        const hasEnvAccessToken = typeof process !== "undefined" && process.env?.DEEPGRAM_ACCESS_TOKEN != null;
+        if (options.accessToken != null || (options.apiKey == null && options.auth == null && hasEnvAccessToken)) {
             (this._options as any).authProvider = new AccessTokenAuthProviderWrapper(
                 this._options.authProvider,
                 options.accessToken,
