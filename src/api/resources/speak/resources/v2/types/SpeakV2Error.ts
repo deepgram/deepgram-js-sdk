@@ -3,14 +3,14 @@
 export interface SpeakV2Error {
     /** Message type identifier */
     type: "Error";
-    /** A code identifying the error, e.g. `MESSAGE-0000` or `NET-0000`. `DATA-0002` covers invalid inline controls and speed, including an inline pause marker (pause is batch-only) and a pronunciation control combined with a `speed` other than `1.0`; `description` names the specific rule. */
+    /** A code identifying the error, e.g. `MESSAGE-0000` or `NET-0000`. */
     code: SpeakV2Error.Code;
     /** Prose description of the error */
     description: string;
 }
 
 export namespace SpeakV2Error {
-    /** A code identifying the error, e.g. `MESSAGE-0000` or `NET-0000`. `DATA-0002` covers invalid inline controls and speed, including an inline pause marker (pause is batch-only) and a pronunciation control combined with a `speed` other than `1.0`; `description` names the specific rule. */
+    /** A code identifying the error, e.g. `MESSAGE-0000` or `NET-0000`. */
     export const Code = {
         Message0000: "MESSAGE-0000",
         Data0000: "DATA-0000",

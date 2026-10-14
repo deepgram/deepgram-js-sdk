@@ -14,7 +14,6 @@ export declare namespace V2Socket {
         | Deepgram.listen.ListenV2TurnInfo
         | Deepgram.listen.ListenV2ConfigureSuccess
         | Deepgram.listen.ListenV2ConfigureFailure
-        | Deepgram.listen.ListenV2Warning
         | Deepgram.listen.ListenV2FatalError;
     type EventHandlers = {
         open?: () => void;
@@ -31,41 +30,25 @@ export class V2Socket {
     } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
         for (const handler of [...this.eventHandlers.open]) {
-            try {
-                handler();
-            } catch (error) {
-                console.error("Deepgram WebSocket open handler failed", error);
-            }
+            handler();
         }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
         for (const handler of [...this.eventHandlers.message]) {
-            try {
-                handler(data as V2Socket.Response);
-            } catch (error) {
-                console.error("Deepgram WebSocket message handler failed", error);
-            }
+            handler(data as V2Socket.Response);
         }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
         for (const handler of [...this.eventHandlers.close]) {
-            try {
-                handler(event);
-            } catch (error) {
-                console.error("Deepgram WebSocket close handler failed", error);
-            }
+            handler(event);
         }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
         const message = event.message;
         for (const handler of [...this.eventHandlers.error]) {
-            try {
-                handler(new Error(message));
-            } catch (error) {
-                console.error("Deepgram WebSocket error handler failed", error);
-            }
+            handler(new Error(message));
         }
     };
 
@@ -85,6 +68,8 @@ export class V2Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
+     * Handlers accumulate: registering another callback for the same event does not replace
+     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -92,13 +77,12 @@ export class V2Socket {
      * });
      * ```
      */
-    public on<T extends keyof V2Socket.EventHandlers>(event: T, callback: V2Socket.EventHandlers[T]): void {
+    public on<T extends keyof V2Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V2Socket.EventHandlers[T]>,
+    ): void {
         const handlers = this.eventHandlers[event] as Array<NonNullable<V2Socket.EventHandlers[T]>>;
-        if (callback == null) {
-            handlers.length = 0;
-        } else {
-            handlers.splice(0, handlers.length, callback);
-        }
+        handlers.push(callback);
     }
 
     /**
@@ -132,10 +116,6 @@ export class V2Socket {
         this.sendJson(message);
     }
 
-    /**
-     * Requires server-side enablement. On deployments without the feature, the
-     * server returns `UNPARSABLE_CLIENT_MESSAGE` and closes the connection.
-     */
     public sendForceEndTurn(message: Deepgram.listen.ListenV2ForceEndTurn): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -146,25 +126,14 @@ export class V2Socket {
         this.sendJson(message);
     }
 
-    /** Connect to the websocket and register event handlers. Safe to call multiple times: each handler is only registered if it is not already attached. */
+    /** Connect to the websocket and register event handlers. */
     public connect(): V2Socket {
         this.socket.reconnect();
 
-        if (!this.socket.hasEventListener("open", this.handleOpen)) {
-            this.socket.addEventListener("open", this.handleOpen);
-        }
-
-        if (!this.socket.hasEventListener("message", this.handleMessage)) {
-            this.socket.addEventListener("message", this.handleMessage);
-        }
-
-        if (!this.socket.hasEventListener("close", this.handleClose)) {
-            this.socket.addEventListener("close", this.handleClose);
-        }
-
-        if (!this.socket.hasEventListener("error", this.handleError)) {
-            this.socket.addEventListener("error", this.handleError);
-        }
+        this.socket.addEventListener("open", this.handleOpen);
+        this.socket.addEventListener("message", this.handleMessage);
+        this.socket.addEventListener("close", this.handleClose);
+        this.socket.addEventListener("error", this.handleError);
 
         return this;
     }
