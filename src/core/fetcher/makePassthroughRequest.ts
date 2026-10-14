@@ -195,6 +195,9 @@ export async function makePassthroughRequest(
 /**
  * Returns true when the resolved request URL points at the caller's base URL or a
  * first-party Deepgram origin. Other origins never receive auth headers.
+ *
+ * Patch: the generator also returns false when no base URL is configured. Do not
+ * reinstate that early return at the next regen; first-party origins always receive auth.
  */
 function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
     let targetOrigin: string;
