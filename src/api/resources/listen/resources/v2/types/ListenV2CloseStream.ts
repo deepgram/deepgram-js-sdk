@@ -2,5 +2,12 @@
 
 export interface ListenV2CloseStream {
     /** Message type identifier */
-    type: "CloseStream";
+    type: ListenV2CloseStream.Type;
+}
+
+export namespace ListenV2CloseStream {
+    export const Type = {
+        CloseStream: "CloseStream",
+    } as const;
+    export type Type = (typeof Type)[keyof typeof Type] | string;
 }

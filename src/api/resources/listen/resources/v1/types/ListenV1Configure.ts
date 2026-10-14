@@ -14,7 +14,7 @@ export interface ListenV1Configure {
      * transcription without an `Error`; after about 30 seconds, the server closes the stream with `1011`
      * (`NET-0000`). Keep each list under the limit and check its size before sending.
      */
-    keyterms?: string[] | undefined;
+    keyterms?: string[] | null | undefined;
     /**
      * Turns formatting features on or off. Each key is a feature name and each value is a boolean, for
      * example `{"numerals": true}`.
