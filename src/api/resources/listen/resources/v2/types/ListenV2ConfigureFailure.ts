@@ -11,4 +11,8 @@ export interface ListenV2ConfigureFailure {
      * `TurnInfo` messages.
      */
     sequence_id: number;
+    /** Failure code identifying the rejected configuration */
+    code?: string | undefined;
+    /** A human-readable description of the configuration failure */
+    description?: string | undefined;
 }

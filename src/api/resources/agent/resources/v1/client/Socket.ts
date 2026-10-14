@@ -26,6 +26,7 @@ export declare namespace V1Socket {
         | Deepgram.agent.AgentV1FunctionCallCancelled
         | Deepgram.agent.AgentV1AgentStartedSpeaking
         | Deepgram.agent.AgentV1AgentAudioDone
+        | Deepgram.agent.AgentV1CustomFromThinkProvider
         | Deepgram.agent.AgentV1Error
         | Deepgram.agent.AgentV1Warning
         | Deepgram.agent.AgentV1History
@@ -45,25 +46,41 @@ export class V1Socket {
     } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
         for (const handler of [...this.eventHandlers.open]) {
-            handler();
+            try {
+                handler();
+            } catch (error) {
+                console.error("Deepgram WebSocket open handler failed", error);
+            }
         }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
         for (const handler of [...this.eventHandlers.message]) {
-            handler(data as V1Socket.Response);
+            try {
+                handler(data as V1Socket.Response);
+            } catch (error) {
+                console.error("Deepgram WebSocket message handler failed", error);
+            }
         }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
         for (const handler of [...this.eventHandlers.close]) {
-            handler(event);
+            try {
+                handler(event);
+            } catch (error) {
+                console.error("Deepgram WebSocket close handler failed", error);
+            }
         }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
         const message = event.message;
         for (const handler of [...this.eventHandlers.error]) {
-            handler(new Error(message));
+            try {
+                handler(new Error(message));
+            } catch (error) {
+                console.error("Deepgram WebSocket error handler failed", error);
+            }
         }
     };
 
@@ -83,8 +100,6 @@ export class V1Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
-     * Handlers accumulate: registering another callback for the same event does not replace
-     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -92,12 +107,13 @@ export class V1Socket {
      * });
      * ```
      */
-    public on<T extends keyof V1Socket.EventHandlers>(
-        event: T,
-        callback: NonNullable<V1Socket.EventHandlers[T]>,
-    ): void {
+    public on<T extends keyof V1Socket.EventHandlers>(event: T, callback: V1Socket.EventHandlers[T]): void {
         const handlers = this.eventHandlers[event] as Array<NonNullable<V1Socket.EventHandlers[T]>>;
-        handlers.push(callback);
+        if (callback == null) {
+            handlers.length = 0;
+        } else {
+            handlers.splice(0, handlers.length, callback);
+        }
     }
 
     /**
@@ -171,19 +187,35 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    public sendCustomToThinkProvider(message: Deepgram.agent.AgentV1CustomToThinkProvider): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     public sendMedia(message: ArrayBuffer | Blob | ArrayBufferView): void {
         this.assertSocketIsOpen();
         this.sendBinary(message);
     }
 
-    /** Connect to the websocket and register event handlers. */
+    /** Connect to the websocket and register event handlers. Safe to call multiple times: each handler is only registered if it is not already attached. */
     public connect(): V1Socket {
         this.socket.reconnect();
 
-        this.socket.addEventListener("open", this.handleOpen);
-        this.socket.addEventListener("message", this.handleMessage);
-        this.socket.addEventListener("close", this.handleClose);
-        this.socket.addEventListener("error", this.handleError);
+        if (!this.socket.hasEventListener("open", this.handleOpen)) {
+            this.socket.addEventListener("open", this.handleOpen);
+        }
+
+        if (!this.socket.hasEventListener("message", this.handleMessage)) {
+            this.socket.addEventListener("message", this.handleMessage);
+        }
+
+        if (!this.socket.hasEventListener("close", this.handleClose)) {
+            this.socket.addEventListener("close", this.handleClose);
+        }
+
+        if (!this.socket.hasEventListener("error", this.handleError)) {
+            this.socket.addEventListener("error", this.handleError);
+        }
 
         return this;
     }
@@ -246,6 +278,7 @@ export class V1Socket {
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
             | Deepgram.agent.AgentV1ForceEndTurn
+            | Deepgram.agent.AgentV1CustomToThinkProvider
             | string,
     ): void {
         const jsonPayload = toJson(payload);
