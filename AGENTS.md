@@ -186,7 +186,7 @@ Current temporarily frozen files:
 ### Prepare repo for regeneration
 
 1. **Create a new branch** off `main` named `<YOUR_INITIALS>/sdk-gen-<YYYY-MM-DD>`.
-2. **Push the branch** and create a PR titled `chore: SDK regeneration <YYYY-MM-DD>` (empty commit if needed).
+2. **Push the branch** and create a PR titled `chore: sdk regeneration <YYYY-MM-DD>` (empty commit if needed).
 3. **Read `.fernignore`** and classify each entry using the rules above.
 4. **For each temporarily frozen file only:**
    - Copy the file to `<filename>.bak` alongside the original (e.g., `src/api/types/Foo.ts` → `src/api/types/Foo.ts.bak`).
