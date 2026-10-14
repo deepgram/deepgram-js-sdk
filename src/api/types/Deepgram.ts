@@ -111,12 +111,8 @@ export namespace Deepgram {
         FluxPaigeEn: "flux-paige-en",
         FluxPriyaEn: "flux-priya-en",
         /**
-         * @deprecated Removed from the published Flux TTS voice catalog in the GA cutover
-         * (deepgram-docs #1096, 2026-08-12). Retained here for backward compatibility: the
-         * voice was still synthesizing normally when this was verified on 2026-08-19, so
-         * dropping the constant would break callers whose code still works at runtime.
-         * It is no longer a documented voice and may be withdrawn without notice - prefer
-         * a voice from the GA catalog.
+         * @deprecated Removed from the published Flux TTS voice catalog and may be withdrawn without
+         * notice. Use a voice from the GA catalog.
          */
         FluxReneeEn: "flux-renee-en",
         FluxRufusEn: "flux-rufus-en",

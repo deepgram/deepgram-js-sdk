@@ -7,8 +7,7 @@ function isRecord(value: unknown): value is JsonRecord {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-// Keep the server's direct analysis shape while exposing the pre-regen wrapper
-// as a non-enumerable facade for callers that still read the deprecated path.
+// Preserve the direct server response while supporting the deprecated wrapper path.
 function addLegacyAnalysisFacades(responseBody: unknown): unknown {
     if (!isRecord(responseBody) || !isRecord(responseBody.results)) {
         return responseBody;
