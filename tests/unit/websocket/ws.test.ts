@@ -19,6 +19,7 @@ class FakeWebSocket {
     public readonly url: string;
     public closeCalls: { code?: number; reason?: string }[] = [];
     private listeners: Record<string, Listener[]> = {};
+    private emitterListeners: Record<string, Listener[]> = {};
 
     constructor(url: string) {
         this.url = url;
@@ -27,6 +28,17 @@ class FakeWebSocket {
 
     public addEventListener(type: string, listener: Listener): void {
         (this.listeners[type] ??= []).push(listener);
+    }
+
+    // EventEmitter-style API used by the `ws` package (and by the unexpected-response patch).
+    public on(type: string, listener: Listener): void {
+        (this.emitterListeners[type] ??= []).push(listener);
+    }
+
+    public simulateUnexpectedResponse(response: FakeIncomingMessage): void {
+        for (const listener of [...(this.emitterListeners["unexpected-response"] ?? [])]) {
+            (listener as (req: unknown, res: unknown) => void)({}, response);
+        }
     }
 
     public removeEventListener(type: string, listener: Listener): void {
@@ -58,6 +70,37 @@ class FakeWebSocket {
         for (const listener of [...(this.listeners[type] ?? [])]) {
             listener(event);
         }
+    }
+}
+
+// Minimal stand-in for Node's http.IncomingMessage as seen by the `unexpected-response` handler.
+class FakeIncomingMessage {
+    private dataListeners: ((chunk: string) => void)[] = [];
+    private endListeners: (() => void)[] = [];
+    public destroyed = false;
+
+    constructor(
+        public readonly statusCode: number,
+        public readonly headers: Record<string, string | string[] | undefined>,
+        private readonly body = "",
+    ) {}
+
+    public setEncoding(_encoding: string): void {}
+
+    public on(type: string, listener: (...args: any[]) => void): this {
+        if (type === "data") this.dataListeners.push(listener);
+        if (type === "end") this.endListeners.push(listener);
+        return this;
+    }
+
+    public destroy(): void {
+        this.destroyed = true;
+    }
+
+    // Emit the buffered body then end, as a real response stream would.
+    public flush(): void {
+        if (this.body) this.dataListeners.forEach((l) => l(this.body));
+        this.endListeners.forEach((l) => l());
     }
 }
 
@@ -235,5 +278,45 @@ describe("ReconnectingWebSocket reconnect policy", () => {
         await flush();
 
         expect(FakeWebSocket.instances).toHaveLength(1);
+    });
+
+    describe("rejected handshake (unexpected-response)", () => {
+        it("surfaces the dg-error header in the error message", async () => {
+            socket = createSocket({ maxRetries: 0 });
+            await flush();
+            const onError = vi.fn();
+            socket.addEventListener("error", onError);
+
+            const ws = FakeWebSocket.instances[0] as FakeWebSocket;
+            const response = new FakeIncomingMessage(
+                400,
+                { "dg-error": "Unknown query parameters: vad_events" },
+                '{"err_code":"INVALID_QUERY_PARAMETER","err_msg":"Unknown query parameters: vad_events"}',
+            );
+            ws.simulateUnexpectedResponse(response);
+            response.flush();
+            await flush();
+
+            expect(onError).toHaveBeenCalledTimes(1);
+            const event = onError.mock.calls[0]?.[0] as ErrorEvent;
+            expect(event.message).toBe("Unexpected server response: 400 (Unknown query parameters: vad_events)");
+            expect(response.destroyed).toBe(true);
+        });
+
+        it("falls back to the response body when no dg-error header is present", async () => {
+            socket = createSocket({ maxRetries: 0 });
+            await flush();
+            const onError = vi.fn();
+            socket.addEventListener("error", onError);
+
+            const ws = FakeWebSocket.instances[0] as FakeWebSocket;
+            const response = new FakeIncomingMessage(503, {}, "service unavailable");
+            ws.simulateUnexpectedResponse(response);
+            response.flush();
+            await flush();
+
+            const event = onError.mock.calls[0]?.[0] as ErrorEvent;
+            expect(event.message).toBe("Unexpected server response: 503 (service unavailable)");
+        });
     });
 });
