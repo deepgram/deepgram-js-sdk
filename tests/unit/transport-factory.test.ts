@@ -94,6 +94,17 @@ class ThrowingCloseTransport extends FakeTransport {
     }
 }
 
+class DeferredFactory {
+    private resolve!: (transport: DeepgramTransport) => void;
+    public readonly promise = new Promise<DeepgramTransport>((resolve) => {
+        this.resolve = resolve;
+    });
+
+    public complete(transport: DeepgramTransport): void {
+        this.resolve(transport);
+    }
+}
+
 describe("transportFactory", () => {
     const waitForTransport = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -214,6 +225,37 @@ describe("transportFactory", () => {
         });
         await Promise.resolve();
 
+        expect(transport.closed).toBe(true);
+        expect(settled).toBe(false);
+
+        transport.finishClose();
+        await disposed;
+        expect(settled).toBe(true);
+    });
+
+    it("waits for a pending factory transport to close during disposal", async () => {
+        if (typeof Symbol.asyncDispose !== "symbol") {
+            return;
+        }
+
+        const factory = new DeferredFactory();
+        const transport = new DeferredCloseTransport();
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory: () => factory.promise,
+        });
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.connect();
+
+        let settled = false;
+        const disposed = socket[Symbol.asyncDispose]().then(() => {
+            settled = true;
+        });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+
+        factory.complete(transport);
+        await waitForTransport();
         expect(transport.closed).toBe(true);
         expect(settled).toBe(false);
 
