@@ -451,4 +451,25 @@ describe("WebSocket wrapper Symbol.dispose / Symbol.asyncDispose", () => {
         const connection = await client.listen.v1.createConnection({ model: "nova-3" });
         await expect(connection[Symbol.asyncDispose]()).resolves.toBeUndefined();
     });
+
+    it("Symbol.asyncDispose waits for an active transport to close", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v1.createConnection({ model: "nova-3" });
+        const transport = connection.socket as any;
+        const underlyingSocket = { readyState: transport.OPEN, close: vi.fn() };
+        transport._ws = underlyingSocket;
+
+        let settled = false;
+        const disposed = connection[Symbol.asyncDispose]().then(() => {
+            settled = true;
+        });
+        await Promise.resolve();
+
+        expect(underlyingSocket.close).toHaveBeenCalledOnce();
+        expect(settled).toBe(false);
+
+        transport._emitClose({ type: "close", code: 1000, reason: "" });
+        await disposed;
+        expect(settled).toBe(true);
+    });
 });
