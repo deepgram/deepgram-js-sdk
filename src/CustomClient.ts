@@ -561,6 +561,7 @@ class TransportWebSocketAdapter {
     private _messageQueue: DeepgramTransportMessage[] = [];
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
     private _uptimeTimeout: ReturnType<typeof setTimeout> | undefined;
+    private _closeCompletion: Promise<void> | undefined;
     private _transport: DeepgramTransport | undefined;
     private _readyState: ReconnectingWebSocket.ReadyState;
     private _ws:
@@ -671,11 +672,24 @@ class TransportWebSocketAdapter {
 
         if (!transport) {
             this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
+            this._closeCompletion ??= Promise.resolve();
             return;
         }
 
-        void transport.close(code, reason);
+        try {
+            this._closeCompletion = Promise.resolve(transport.close(code, reason));
+        } catch (error) {
+            this._closeCompletion = Promise.reject(error);
+        }
+        // A direct close() remains fire-and-forget, while async disposal awaits the same promise.
+        void this._closeCompletion.catch((error) => {
+            this._debug("transport close failed", error);
+        });
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
+    }
+
+    public waitForClose(): Promise<void> {
+        return this._closeCompletion ?? Promise.resolve();
     }
 
     public reconnect(code?: number, reason?: string): void {
@@ -1500,6 +1514,10 @@ type DisposableSocketInstance = {
     socket: ReconnectingWebSocket;
 };
 
+type CloseAwaitableSocket = ReconnectingWebSocket & {
+    waitForClose?: () => Promise<void>;
+};
+
 function installSocketDisposal(socket: DisposableSocketInstance): void {
     // Node 18.0-18.17 support the SDK but do not define these newer symbols.
     // Do not create an accidental "undefined" property on those runtimes.
@@ -1516,7 +1534,11 @@ function installSocketDisposal(socket: DisposableSocketInstance): void {
 }
 
 function disposeSocketAsync(socket: DisposableSocketInstance): Promise<void> {
-    const transport = socket.socket;
+    const transport = socket.socket as CloseAwaitableSocket;
+    if (typeof transport.waitForClose === "function") {
+        socket.close();
+        return transport.waitForClose();
+    }
     if (transport.readyState === transport.CLOSED) {
         socket.close();
         return Promise.resolve();
