@@ -388,10 +388,7 @@ describe("WebSocket binaryType default", () => {
  * socket must expose both so `await using socket = await client...connect(...)`
  * closes the connection automatically, even on early return or a thrown error.
  */
-const describeDisposal =
-    typeof Symbol.dispose === "symbol" && typeof Symbol.asyncDispose === "symbol" ? describe : describe.skip;
-
-describeDisposal("WebSocket wrapper Symbol.dispose / Symbol.asyncDispose", () => {
+describe("WebSocket wrapper Symbol.dispose / Symbol.asyncDispose", () => {
     function makeClient() {
         return new DeepgramClient({
             maxRetries: 0,
