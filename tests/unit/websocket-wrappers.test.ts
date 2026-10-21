@@ -379,3 +379,76 @@ describe("WebSocket binaryType default", () => {
         connection.close();
     });
 });
+
+/**
+ * Python's DeepgramClient/AsyncDeepgramClient support `with`/`async with` for
+ * guaranteed cleanup. JS has no sync-client equivalent, but TC39 Explicit Resource
+ * Management (`using`/`await using`, downlevel-compiled by TS to these well-known
+ * symbols) is the closest analog for the connection objects themselves. Each wrapped
+ * socket must expose both so `await using socket = await client...connect(...)`
+ * closes the connection automatically, even on early return or a thrown error.
+ */
+describe("WebSocket wrapper Symbol.dispose / Symbol.asyncDispose", () => {
+    function makeClient() {
+        return new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: "https://example.com",
+                production: "ws://localhost:1",
+                agent: "ws://localhost:1",
+            },
+        });
+    }
+
+    it("speak.v1 socket supports Symbol.dispose and Symbol.asyncDispose", async () => {
+        const client = makeClient();
+        const connection = await client.speak.v1.createConnection({ model: "aura-2-thalia-en" });
+        expect(typeof connection[Symbol.dispose]).toBe("function");
+        expect(typeof connection[Symbol.asyncDispose]).toBe("function");
+        await connection[Symbol.asyncDispose]();
+        expect(connection.socket.readyState).toBe(connection.socket.CLOSED);
+    });
+
+    it("listen.v1 socket supports Symbol.dispose and Symbol.asyncDispose", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v1.createConnection({ model: "nova-3" });
+        expect(typeof connection[Symbol.dispose]).toBe("function");
+        expect(typeof connection[Symbol.asyncDispose]).toBe("function");
+        connection[Symbol.dispose]();
+        expect(connection.socket.readyState).toBe(connection.socket.CLOSED);
+    });
+
+    it("agent.v1 socket supports Symbol.dispose and Symbol.asyncDispose", async () => {
+        const client = makeClient();
+        const connection = await client.agent.v1.createConnection();
+        expect(typeof connection[Symbol.dispose]).toBe("function");
+        expect(typeof connection[Symbol.asyncDispose]).toBe("function");
+        connection[Symbol.dispose]();
+        expect(connection.socket.readyState).toBe(connection.socket.CLOSED);
+    });
+
+    it("listen.v2 socket supports Symbol.dispose and Symbol.asyncDispose", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v2.createConnection({ model: "flux-general-en" });
+        expect(typeof connection[Symbol.dispose]).toBe("function");
+        expect(typeof connection[Symbol.asyncDispose]).toBe("function");
+        connection[Symbol.dispose]();
+        expect(connection.socket.readyState).toBe(connection.socket.CLOSED);
+    });
+
+    it("speak.v2 socket supports Symbol.dispose and Symbol.asyncDispose", async () => {
+        const client = makeClient();
+        const connection = await client.speak.v2.createConnection({ model: "flux-alexis-en" });
+        expect(typeof connection[Symbol.dispose]).toBe("function");
+        expect(typeof connection[Symbol.asyncDispose]).toBe("function");
+        await connection[Symbol.asyncDispose]();
+        expect(connection.socket.readyState).toBe(connection.socket.CLOSED);
+    });
+
+    it("Symbol.asyncDispose resolves even when close() is synchronous", async () => {
+        const client = makeClient();
+        const connection = await client.listen.v1.createConnection({ model: "nova-3" });
+        await expect(connection[Symbol.asyncDispose]()).resolves.toBeUndefined();
+    });
+});

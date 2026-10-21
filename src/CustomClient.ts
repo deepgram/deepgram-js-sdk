@@ -1680,6 +1680,15 @@ class WrappedAgentV1Socket extends AgentV1Socket {
         closeOnce(this, () => super.close());
     }
 
+    public [Symbol.dispose](): void {
+        this.close();
+    }
+
+    public [Symbol.asyncDispose](): Promise<void> {
+        this.close();
+        return Promise.resolve();
+    }
+
     public connect(): WrappedAgentV1Socket {
         // Arm the close() idempotency guard so a reconnected socket can close again.
         armCloseGuard(this);
@@ -1793,6 +1802,15 @@ class WrappedListenV1Socket extends ListenV1Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
+    }
+
+    public [Symbol.dispose](): void {
+        this.close();
+    }
+
+    public [Symbol.asyncDispose](): Promise<void> {
+        this.close();
+        return Promise.resolve();
     }
 
     public connect(): WrappedListenV1Socket {
@@ -1920,6 +1938,15 @@ class WrappedListenV2Socket extends ListenV2Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
+    }
+
+    public [Symbol.dispose](): void {
+        this.close();
+    }
+
+    public [Symbol.asyncDispose](): Promise<void> {
+        this.close();
+        return Promise.resolve();
     }
 
     public sendCloseStream(message: Parameters<ListenV2Socket["sendCloseStream"]>[0]): void {
@@ -2078,6 +2105,15 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
         closeOnce(this, () => super.close());
     }
 
+    public [Symbol.dispose](): void {
+        this.close();
+    }
+
+    public [Symbol.asyncDispose](): Promise<void> {
+        this.close();
+        return Promise.resolve();
+    }
+
     public connect(): WrappedSpeakV1Socket {
         // Arm the close() idempotency guard so a reconnected socket can close again.
         armCloseGuard(this);
@@ -2192,6 +2228,15 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
+    }
+
+    public [Symbol.dispose](): void {
+        this.close();
+    }
+
+    public [Symbol.asyncDispose](): Promise<void> {
+        this.close();
+        return Promise.resolve();
     }
 
     public connect(): WrappedSpeakV2Socket {
