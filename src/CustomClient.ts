@@ -675,16 +675,20 @@ class TransportWebSocketAdapter {
 
         if (!transport) {
             this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
-            if (this._connectLock) {
-                this._closeCompletion ??= this._createCloseCompletion();
-            } else {
-                this._closeCompletion ??= Promise.resolve();
-            }
+            this._closeCompletion ??= Promise.resolve();
             return;
         }
 
         this._closingTransport = transport;
-        this._closeCompletion = this._createCloseCompletion();
+        this._closeCompletion = new Promise<void>((resolve, reject) => {
+            this._resolveClose = resolve;
+            this._rejectClose = reject;
+        });
+        // A direct close() remains fire-and-forget, while async disposal awaits the same promise.
+        // Attach this before invoking close() so a synchronous throw cannot become unhandled.
+        void this._closeCompletion.catch((error) => {
+            this._debug("transport close failed", error);
+        });
         try {
             const result = transport.close(code, reason);
             if (result instanceof Promise) {
@@ -829,20 +833,7 @@ class TransportWebSocketAdapter {
 
             if (this._closeCalled || this._request.abortSignal?.aborted) {
                 this._connectLock = false;
-                this._closingTransport = transport;
-                this._closeCompletion ??= this._createCloseCompletion();
-                this._bindTransport(transport);
-                try {
-                    const result = transport.close(1000, "aborted");
-                    if (result instanceof Promise) {
-                        void result.then(
-                            () => this._completeClose(),
-                            (error) => this._completeClose(error),
-                        );
-                    }
-                } catch (error) {
-                    this._completeClose(error);
-                }
+                await transport.close(1000, "aborted");
                 return;
             }
 
@@ -857,10 +848,6 @@ class TransportWebSocketAdapter {
             }
         } catch (error) {
             this._connectLock = false;
-            if (this._closeCalled) {
-                this._completeClose(error);
-                return;
-            }
             this._handleError(error instanceof Error ? error : new Error(String(error)));
         }
     }
@@ -1067,19 +1054,6 @@ class TransportWebSocketAdapter {
         } else {
             resolve?.();
         }
-    }
-
-    private _createCloseCompletion(): Promise<void> {
-        const completion = new Promise<void>((resolve, reject) => {
-            this._resolveClose = resolve;
-            this._rejectClose = reject;
-        });
-        // A direct close() remains fire-and-forget, while async disposal awaits the same promise.
-        // Attach this before invoking close() so a synchronous throw cannot become unhandled.
-        void completion.catch((error) => {
-            this._debug("transport close failed", error);
-        });
-        return completion;
     }
 
     private _emitClose(code: number, reason: string): void {
