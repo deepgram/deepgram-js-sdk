@@ -562,6 +562,9 @@ class TransportWebSocketAdapter {
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
     private _uptimeTimeout: ReturnType<typeof setTimeout> | undefined;
     private _closeCompletion: Promise<void> | undefined;
+    private _closingTransport: DeepgramTransport | undefined;
+    private _resolveClose: (() => void) | undefined;
+    private _rejectClose: ((error: unknown) => void) | undefined;
     private _transport: DeepgramTransport | undefined;
     private _readyState: ReconnectingWebSocket.ReadyState;
     private _ws:
@@ -676,15 +679,28 @@ class TransportWebSocketAdapter {
             return;
         }
 
-        try {
-            this._closeCompletion = Promise.resolve(transport.close(code, reason));
-        } catch (error) {
-            this._closeCompletion = Promise.reject(error);
-        }
+        this._closingTransport = transport;
+        this._closeCompletion = new Promise<void>((resolve, reject) => {
+            this._resolveClose = resolve;
+            this._rejectClose = reject;
+        });
         // A direct close() remains fire-and-forget, while async disposal awaits the same promise.
+        // Attach this before invoking close() so a synchronous throw cannot become unhandled.
         void this._closeCompletion.catch((error) => {
             this._debug("transport close failed", error);
         });
+        try {
+            const result = transport.close(code, reason);
+            if (result instanceof Promise) {
+                void result.then(
+                    () => this._completeClose(),
+                    (error) => this._completeClose(error),
+                );
+            }
+        } catch (error) {
+            this._completeClose(error);
+            throw error;
+        }
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
     }
 
@@ -862,6 +878,10 @@ class TransportWebSocketAdapter {
         });
 
         transport.onClose((event) => {
+            if (this._closingTransport === transport) {
+                this._completeClose();
+                return;
+            }
             if (this._transport !== transport) {
                 return;
             }
@@ -1020,6 +1040,19 @@ class TransportWebSocketAdapter {
 
         if (this._shouldReconnect && !this._closeCalled) {
             void this._connect();
+        }
+    }
+
+    private _completeClose(error?: unknown): void {
+        const resolve = this._resolveClose;
+        const reject = this._rejectClose;
+        this._closingTransport = undefined;
+        this._resolveClose = undefined;
+        this._rejectClose = undefined;
+        if (error !== undefined) {
+            reject?.(error);
+        } else {
+            resolve?.();
         }
     }
 
@@ -1536,7 +1569,11 @@ function installSocketDisposal(socket: DisposableSocketInstance): void {
 function disposeSocketAsync(socket: DisposableSocketInstance): Promise<void> {
     const transport = socket.socket as CloseAwaitableSocket;
     if (typeof transport.waitForClose === "function") {
-        socket.close();
+        try {
+            socket.close();
+        } catch (error) {
+            return Promise.reject(error);
+        }
         return transport.waitForClose();
     }
     if (transport.readyState === transport.CLOSED) {
