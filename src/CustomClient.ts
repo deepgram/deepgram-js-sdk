@@ -709,6 +709,10 @@ class TransportWebSocketAdapter {
         this._closeCalled = false;
         this._terminalMessageSent = false;
         this._retryCount = -1;
+        this._closeCompletion = undefined;
+        this._closingTransport = undefined;
+        this._resolveClose = undefined;
+        this._rejectClose = undefined;
         this._clearUptimeTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.CONNECTING;
 
