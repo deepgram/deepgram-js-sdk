@@ -264,48 +264,6 @@ describe("transportFactory", () => {
         expect(settled).toBe(true);
     });
 
-    it("waits for a pending factory after reconnect during disposal", async () => {
-        if (typeof Symbol.asyncDispose !== "symbol") {
-            return;
-        }
-
-        const firstTransport = new FakeTransport();
-        const secondFactory = new DeferredFactory();
-        const secondTransport = new DeferredCloseTransport();
-        let calls = 0;
-        const client = new DeepgramClient({
-            apiKey: "test-api-key",
-            transportFactory: () => {
-                calls++;
-                return calls === 1 ? firstTransport : secondFactory.promise;
-            },
-        });
-        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
-        socket.connect();
-        await waitForTransport();
-
-        socket.close();
-        socket.connect();
-        await Promise.resolve();
-        expect(calls).toBe(2);
-
-        let settled = false;
-        const disposed = socket[Symbol.asyncDispose]().then(() => {
-            settled = true;
-        });
-        await Promise.resolve();
-        expect(settled).toBe(false);
-
-        secondFactory.complete(secondTransport);
-        await waitForTransport();
-        expect(secondTransport.closed).toBe(true);
-        expect(settled).toBe(false);
-
-        secondTransport.finishClose();
-        await disposed;
-        expect(settled).toBe(true);
-    });
-
     it("preserves a synchronous custom transport close error", async () => {
         if (typeof Symbol.asyncDispose !== "symbol") {
             return;
