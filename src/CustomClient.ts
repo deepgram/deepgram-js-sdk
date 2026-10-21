@@ -217,16 +217,31 @@ export type SpeakV1SocketMessage = SpeakV1Socket.Response | Blob;
 export type SpeakV2SocketMessage = SpeakV2Socket.Response | Blob;
 
 /**
- * The streaming sockets, with async iteration. Consuming a connection with `for await`
- * is equivalent to `on("message", ...)`: iteration ends when the socket closes, throws
- * if it errors, and `break` closes the connection. Both styles can be used on the same
- * socket, and messages that arrive between iterations are buffered rather than dropped.
+ * Streaming sockets support async iteration and explicit resource management. Consuming a
+ * connection with `for await` is equivalent to `on("message", ...)`: iteration ends when the
+ * socket closes, throws if it errors, and `break` closes the connection. Both styles can be used
+ * on the same socket, and messages that arrive between iterations are buffered rather than dropped.
  */
-export type AsyncIterableAgentV1Socket = AgentV1Socket & AsyncIterable<AgentV1SocketMessage>;
-export type AsyncIterableListenV1Socket = ListenV1Socket & AsyncIterable<ListenV1SocketMessage>;
-export type AsyncIterableListenV2Socket = ListenV2Socket & AsyncIterable<ListenV2SocketMessage>;
-export type AsyncIterableSpeakV1Socket = SpeakV1Socket & AsyncIterable<SpeakV1SocketMessage>;
-export type AsyncIterableSpeakV2Socket = SpeakV2Socket & AsyncIterable<SpeakV2SocketMessage>;
+export interface DisposableStreamingSocket {
+    [Symbol.dispose](): void;
+    [Symbol.asyncDispose](): Promise<void>;
+}
+
+export type AsyncIterableAgentV1Socket = AgentV1Socket &
+    AsyncIterable<AgentV1SocketMessage> &
+    DisposableStreamingSocket;
+export type AsyncIterableListenV1Socket = ListenV1Socket &
+    AsyncIterable<ListenV1SocketMessage> &
+    DisposableStreamingSocket;
+export type AsyncIterableListenV2Socket = ListenV2Socket &
+    AsyncIterable<ListenV2SocketMessage> &
+    DisposableStreamingSocket;
+export type AsyncIterableSpeakV1Socket = SpeakV1Socket &
+    AsyncIterable<SpeakV1SocketMessage> &
+    DisposableStreamingSocket;
+export type AsyncIterableSpeakV2Socket = SpeakV2Socket &
+    AsyncIterable<SpeakV2SocketMessage> &
+    DisposableStreamingSocket;
 
 export interface AgentV1ClientWithWebSocket extends AgentV1Client {
     connect(args?: AgentV1ConnectionArgs): Promise<AsyncIterableAgentV1Socket>;
@@ -1495,6 +1510,52 @@ function armCloseGuard(self: object): void {
     closedSockets.delete(self);
 }
 
+type DisposableSocketInstance = {
+    close(): void;
+    socket: ReconnectingWebSocket;
+};
+
+function installSocketDisposal(socket: DisposableSocketInstance): void {
+    // Node 18.0-18.17 support the SDK but do not define these newer symbols.
+    // Do not create an accidental "undefined" property on those runtimes.
+    if (typeof Symbol.dispose === "symbol") {
+        Object.defineProperty(socket, Symbol.dispose, {
+            value: () => socket.close(),
+        });
+    }
+    if (typeof Symbol.asyncDispose === "symbol") {
+        Object.defineProperty(socket, Symbol.asyncDispose, {
+            value: () => disposeSocketAsync(socket),
+        });
+    }
+}
+
+function disposeSocketAsync(socket: DisposableSocketInstance): Promise<void> {
+    const transport = socket.socket;
+    if (transport.readyState === transport.CLOSED) {
+        socket.close();
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        let settled = false;
+        const onClose = () => {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            transport.removeEventListener("close", onClose);
+            resolve();
+        };
+
+        transport.addEventListener("close", onClose);
+        socket.close();
+        if (transport.readyState === transport.CLOSED) {
+            onClose();
+        }
+    });
+}
+
 /**
  * Helper function to create a WebSocket connection with common setup logic.
  * Handles authentication, header merging, and WebSocket configuration.
@@ -1678,11 +1739,14 @@ class WrappedAgentV1Socket extends AgentV1Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<AgentV1SocketMessage>;
+    public declare [Symbol.dispose]: () => void;
+    public declare [Symbol.asyncDispose]: () => Promise<void>;
 
     constructor(args: AgentV1Socket.Args) {
         super(args);
         this.setupBinaryHandling();
         installAsyncIteration(this);
+        installSocketDisposal(this);
     }
 
     private setupBinaryHandling() {
@@ -1693,15 +1757,6 @@ class WrappedAgentV1Socket extends AgentV1Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
-    }
-
-    public [Symbol.dispose](): void {
-        this.close();
-    }
-
-    public [Symbol.asyncDispose](): Promise<void> {
-        this.close();
-        return Promise.resolve();
     }
 
     public connect(): WrappedAgentV1Socket {
@@ -1802,11 +1857,14 @@ class WrappedListenV1Socket extends ListenV1Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV1SocketMessage>;
+    public declare [Symbol.dispose]: () => void;
+    public declare [Symbol.asyncDispose]: () => Promise<void>;
 
     constructor(args: ListenV1Socket.Args) {
         super(args);
         this.setupBinaryHandling();
         installAsyncIteration(this);
+        installSocketDisposal(this);
     }
 
     private setupBinaryHandling() {
@@ -1817,15 +1875,6 @@ class WrappedListenV1Socket extends ListenV1Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
-    }
-
-    public [Symbol.dispose](): void {
-        this.close();
-    }
-
-    public [Symbol.asyncDispose](): Promise<void> {
-        this.close();
-        return Promise.resolve();
     }
 
     public connect(): WrappedListenV1Socket {
@@ -1935,6 +1984,8 @@ class WrappedListenV2Socket extends ListenV2Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<ListenV2SocketMessage>;
+    public declare [Symbol.dispose]: () => void;
+    public declare [Symbol.asyncDispose]: () => Promise<void>;
 
     constructor(args: ListenV2Socket.Args & { onCloseStreamSent?: () => void; onConnect?: () => void }) {
         super(args);
@@ -1943,6 +1994,7 @@ class WrappedListenV2Socket extends ListenV2Socket {
         this.socket.addEventListener("open", this.onConnect);
         this.setupBinaryHandling();
         installAsyncIteration(this);
+        installSocketDisposal(this);
     }
 
     private setupBinaryHandling() {
@@ -1953,15 +2005,6 @@ class WrappedListenV2Socket extends ListenV2Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
-    }
-
-    public [Symbol.dispose](): void {
-        this.close();
-    }
-
-    public [Symbol.asyncDispose](): Promise<void> {
-        this.close();
-        return Promise.resolve();
     }
 
     public sendCloseStream(message: Parameters<ListenV2Socket["sendCloseStream"]>[0]): void {
@@ -2096,6 +2139,8 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<SpeakV1SocketMessage>;
+    public declare [Symbol.dispose]: () => void;
+    public declare [Symbol.asyncDispose]: () => Promise<void>;
 
     constructor(args: SpeakV1Socket.Args) {
         super(args);
@@ -2108,6 +2153,7 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
         }
         this.setupBinaryHandling();
         installAsyncIteration(this);
+        installSocketDisposal(this);
     }
 
     private setupBinaryHandling() {
@@ -2118,15 +2164,6 @@ class WrappedSpeakV1Socket extends SpeakV1Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
-    }
-
-    public [Symbol.dispose](): void {
-        this.close();
-    }
-
-    public [Symbol.asyncDispose](): Promise<void> {
-        this.close();
-        return Promise.resolve();
     }
 
     public connect(): WrappedSpeakV1Socket {
@@ -2221,6 +2258,8 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
 
     // Installed on the instance by installAsyncIteration() in the constructor.
     public declare [Symbol.asyncIterator]: () => AsyncIterableIterator<SpeakV2SocketMessage>;
+    public declare [Symbol.dispose]: () => void;
+    public declare [Symbol.asyncDispose]: () => Promise<void>;
 
     constructor(args: SpeakV2Socket.Args) {
         super(args);
@@ -2233,6 +2272,7 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
         }
         this.setupBinaryHandling();
         installAsyncIteration(this);
+        installSocketDisposal(this);
     }
 
     private setupBinaryHandling() {
@@ -2243,15 +2283,6 @@ class WrappedSpeakV2Socket extends SpeakV2Socket {
         // Guard against the generated close() re-entering through its synchronous
         // handleClose() → user `close` handler → close() cycle (stack overflow).
         closeOnce(this, () => super.close());
-    }
-
-    public [Symbol.dispose](): void {
-        this.close();
-    }
-
-    public [Symbol.asyncDispose](): Promise<void> {
-        this.close();
-        return Promise.resolve();
     }
 
     public connect(): WrappedSpeakV2Socket {
