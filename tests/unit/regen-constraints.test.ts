@@ -497,3 +497,44 @@ describe("2026-10-07 listen v1 Configure controls", () => {
         expect(JSON.parse(JSON.stringify(error))).toEqual(error);
     });
 });
+
+describe("2026-10-22 conversational Think controls", () => {
+    it("keeps conversational Think settings on Agent settings", () => {
+        const settings: Deepgram.agent.AgentV1Settings = {
+            type: "Settings",
+            audio: {},
+            agent: {
+                think_conversational: {
+                    provider: {
+                        type: "deepgram",
+                        version: "v1",
+                        agent_backchannel_sensitivity: 0.25,
+                        frustration_max_count: 2,
+                        restricted_terms: ["classified"],
+                    },
+                },
+            },
+        };
+
+        expect(settings.agent.think_conversational?.provider.frustration_max_count).toBe(2);
+    });
+
+    it("keeps the conversational control and notification message shapes", () => {
+        const update: Deepgram.agent.AgentV1UpdateThinkConversational = {
+            type: "UpdateThink_Conversational",
+            think_conversational: { provider: { type: "deepgram", version: "v1" } },
+        };
+        const dynamic: Deepgram.agent.AgentV1InjectDynamicAgentMessage = {
+            type: "InjectAgentMessage",
+            is_dynamic: true,
+            behavior: "queue",
+        };
+        const frustration: Deepgram.agent.AgentV1FrustrationDetected = {
+            type: "FrustrationDetected",
+            count: 1,
+            escalated: false,
+        };
+
+        expect(JSON.parse(JSON.stringify([update, dynamic, frustration]))).toEqual([update, dynamic, frustration]);
+    });
+});

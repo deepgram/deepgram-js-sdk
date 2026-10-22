@@ -194,7 +194,15 @@ describe("Listen v1 REST transcription", () => {
                     channels: [
                         {
                             detected_language: "es",
-                            alternatives: [{ transcript: "Hola, ¿cómo estás?", confidence: 0.92 }],
+                            alternatives: [
+                                {
+                                    transcript: "Hola, ¿cómo estás?",
+                                    confidence: 0.92,
+                                    languages: ["es"],
+                                    languages_hinted: ["en", "es"],
+                                    words: [{ word: "Hola", language: "es" }],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -213,11 +221,16 @@ describe("Listen v1 REST transcription", () => {
 
             const result = await client.listen.v1.media.transcribeUrl({
                 url: "https://example.com/spanish.wav",
-                model: "nova-2",
+                model: "nova-3",
+                language: "multi",
                 detect_language: true,
+                language_hint: ["en", "es"],
             });
 
             expect(result.results?.channels?.[0]?.detected_language).toBe("es");
+            expect(result.results?.channels?.[0]?.alternatives?.[0]?.languages).toEqual(["es"]);
+            expect(result.results?.channels?.[0]?.alternatives?.[0]?.languages_hinted).toEqual(["en", "es"]);
+            expect(result.results?.channels?.[0]?.alternatives?.[0]?.words?.[0]?.language).toBe("es");
         });
     });
 

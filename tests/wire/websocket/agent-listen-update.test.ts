@@ -225,4 +225,75 @@ describe("Agent UpdateListen / ListenUpdated", () => {
 
         socket.close();
     });
+
+    it("round-trips conversational Think updates and dynamic agent messages", async () => {
+        const sentToServer: unknown[] = [];
+        const tracker = new WebSocketEventTracker();
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: server.baseUrl,
+                production: `ws://localhost:${wsPort}`,
+                agent: `ws://localhost:${wsPort}`,
+            },
+        });
+        const socket = await client.agent.v1.createConnection();
+        openSockets.push(socket);
+        socket.on("message", (data) => tracker.track((data as { type?: string })?.type ?? "binary", data));
+
+        wsServer.on("connection", (ws) => {
+            ws.send(JSON.stringify({ type: "Welcome" }));
+            ws.on("message", (data) => {
+                const parsed = JSON.parse(data.toString());
+                sentToServer.push(parsed);
+
+                if (parsed.type === "UpdateThink_Conversational") {
+                    const updated: Deepgram.agent.AgentV1ThinkConversationalUpdated = {
+                        type: "ThinkConversationalUpdated",
+                    };
+                    ws.send(JSON.stringify(updated));
+                }
+
+                if (parsed.type === "InjectAgentMessage" && parsed.is_dynamic === true) {
+                    const frustration: Deepgram.agent.AgentV1FrustrationDetected = {
+                        type: "FrustrationDetected",
+                        count: 1,
+                        escalated: false,
+                    };
+                    ws.send(JSON.stringify(frustration));
+                }
+            });
+        });
+
+        socket.connect();
+        await socket.waitForOpen();
+        await waitForEventCount(tracker, "Welcome", 1);
+
+        socket.sendUpdateThinkConversational({
+            type: "UpdateThink_Conversational",
+            think_conversational: {
+                provider: { type: "deepgram", version: "v1", frustration_max_count: 2 },
+            },
+        });
+        socket.sendInjectDynamicAgentMessage({ type: "InjectAgentMessage", is_dynamic: true, behavior: "queue" });
+
+        await waitForEventCount(tracker, "ThinkConversationalUpdated", 1);
+        await waitForEventCount(tracker, "FrustrationDetected", 1);
+
+        expect(sentToServer).toContainEqual({
+            type: "UpdateThink_Conversational",
+            think_conversational: {
+                provider: { type: "deepgram", version: "v1", frustration_max_count: 2 },
+            },
+        });
+        expect(sentToServer).toContainEqual({ type: "InjectAgentMessage", is_dynamic: true, behavior: "queue" });
+        expect(tracker.getHistory().find((event) => event.event === "FrustrationDetected")?.data).toEqual({
+            type: "FrustrationDetected",
+            count: 1,
+            escalated: false,
+        });
+
+        socket.close();
+    });
 });
