@@ -25,7 +25,8 @@
         "tests/unit/topics-intents-compat.test.ts",
         "tests/unit/latency-report-stt-compat.test.ts",
         "tests/unit/async-iteration-types.test.ts",
-        "tests/manual/flux-tts-controls.ts"
+        "tests/manual/flux-tts-controls.ts",
+        "examples/44-agent-conversational-think.ts"
     ],
     "exclude": ["node_modules", "dist"]
 }

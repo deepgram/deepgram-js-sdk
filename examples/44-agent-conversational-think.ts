@@ -1,3 +1,5 @@
+import type { AgentV1SocketMessage } from "../src/CustomClient.js";
+
 /**
  * Example: Voice Agent Conversational Think
  *
@@ -18,7 +20,17 @@ async function conversationalThink() {
     let keepAliveInterval: ReturnType<typeof setInterval> | undefined;
     let sentDynamicMessage = false;
 
-    connection.on("message", (data) => {
+    connection.on("message", (data: AgentV1SocketMessage) => {
+        if (data instanceof Blob) {
+            console.log("Audio received (bytes):", data.size);
+            return;
+        }
+
+        if (typeof data === "string") {
+            console.log("Message:", data);
+            return;
+        }
+
         if (data.type === "SettingsApplied") {
             // Runtime updates let you tune the Conversational LLM without replacing
             // the primary Think provider or reconnecting the agent.
@@ -46,14 +58,12 @@ async function conversationalThink() {
             console.warn("Dynamic message was refused:", data.message);
         } else if (data.type === "ConversationText") {
             console.log(`${data.role}: ${data.content}`);
-        } else if (data instanceof Blob) {
-            console.log("Audio received (bytes):", data.size);
         } else {
             console.log("Message:", data);
         }
     });
 
-    connection.on("error", (error) => {
+    connection.on("error", (error: Error) => {
         console.error("Connection error:", error);
     });
 
@@ -98,9 +108,9 @@ async function conversationalThink() {
         }, 5000);
 
         const audioStream = createReadStream("./examples/spacewalk.wav");
-        audioStream.on("data", (chunk) => connection.sendMedia(chunk));
+        audioStream.on("data", (chunk: Buffer) => connection.sendMedia(chunk));
         audioStream.on("end", () => console.log("Finished sending audio"));
-        audioStream.on("error", (error) => {
+        audioStream.on("error", (error: Error) => {
             console.error("Audio stream error:", error);
             connection.close();
         });
