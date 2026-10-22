@@ -2,9 +2,9 @@
  * Example: Live Transcription Configure Messages
  *
  * Updates a Nova-3 stream after it opens. Configure replaces the complete
- * keyterm list; send an empty list to remove every active keyterm.
- * Keep the list under the 500-token keyterm limit: an over-limit update stops
- * transcription without an Error.
+ * keyterm list; send an empty list to remove every active keyterm. Listen for
+ * ConfigureSuccess to confirm the active terms or ConfigureFailure when the
+ * service rejects an update, such as for exceeding the 500-token limit.
  */
 
 const { DeepgramClient } = require("../dist/cjs/index.js");
@@ -41,10 +41,12 @@ async function liveTranscriptionConfigure() {
                 if (data.is_final) {
                     setTimeout(() => connection.close(), 1000);
                 }
+            } else if (data.type === "ConfigureSuccess") {
+                console.log(`Configure applied (${data.request_id}):`, data.keyterms ?? "formatting-only update");
+            } else if (data.type === "ConfigureFailure") {
+                console.error(`Configure rejected (${data.code}): ${data.description}`);
             } else if (data.type === "Error") {
-                console.error(
-                    `Configure error (${data.variant}${data.code ? `/${data.code}` : ""}): ${data.description}`,
-                );
+                console.error(`Listen error (${data.variant}${data.code ? `/${data.code}` : ""}): ${data.description}`);
             } else if (data.type === "Metadata") {
                 console.log("Metadata:", data);
             } else {
@@ -76,6 +78,8 @@ async function liveTranscriptionConfigure() {
             // Configure is state replacement, not an append. Send this later to
             // clear all keyterms after the audio above has used them:
             // connection.sendConfigure({ type: "Configure", keyterms: [] });
+            // Set `keyterms: null` when updating features without replacing the
+            // currently active keyterms.
 
             const audioStream = createReadStream("./examples/spacewalk.wav");
             audioStream.on("data", (chunk) => {
