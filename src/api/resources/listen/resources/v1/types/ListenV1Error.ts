@@ -3,16 +3,13 @@
 export interface ListenV1Error {
     /** Message type identifier for error responses */
     type: "Error";
-    /**
-     * The error category. `SchemaError` means the server could not parse a client text message.
-     * `InvalidConfigureMessage` means the server rejected a `Configure` message.
-     */
+    /** The error category. `SchemaError` means the server could not parse a client text message. */
     variant: string;
     /** A human-readable description of what went wrong */
     description: string;
     /**
-     * Identifies the reason for an `InvalidConfigureMessage` error, for example `KeytermsNotSupported`
-     * when `keyterms` are sent on a model other than Nova-3.
+     * Deprecated. Present only on legacy error frames; use `ConfigureFailure.code` for `Configure`
+     * rejections.
      */
     code?: string | undefined;
     /** For `SchemaError`, the original client message that could not be parsed */

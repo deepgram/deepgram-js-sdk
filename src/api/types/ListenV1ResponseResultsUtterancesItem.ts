@@ -6,6 +6,8 @@ export interface ListenV1ResponseResultsUtterancesItem {
     confidence?: number | undefined;
     channel?: number | undefined;
     transcript?: string | undefined;
+    /** [BCP-47](https://tools.ietf.org/html/bcp47) language tags of the languages detected in the utterance, sorted by word count in descending order. Only present when `language=multi`. */
+    languages?: string[] | undefined;
     words?: ListenV1ResponseResultsUtterancesItem.Words.Item[] | undefined;
     speaker?: number | undefined;
     id?: string | undefined;
@@ -20,6 +22,8 @@ export namespace ListenV1ResponseResultsUtterancesItem {
             start?: number | undefined;
             end?: number | undefined;
             confidence?: number | undefined;
+            /** [BCP-47](https://tools.ietf.org/html/bcp47) language tag of the word's detected language. Only present when `language=multi`. Can be absent on audio that switches languages. */
+            language?: string | undefined;
             speaker?: number | undefined;
             speaker_confidence?: number | undefined;
             punctuated_word?: string | undefined;
