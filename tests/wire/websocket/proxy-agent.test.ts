@@ -261,4 +261,21 @@ describe("WebSocket proxy agent", () => {
         expect(overrideProxy.targets).toEqual([targetAuthority]);
         expect(upgradeRequests.map(({ url }) => new URL(url, serverUrl).searchParams.has("agent"))).toEqual([false]);
     });
+
+    it("serializes Listen V1 language hints as repeated upgrade parameters", async () => {
+        const proxy = await createProxy();
+        const client = createClient(proxy.agent);
+        const socket = await client.listen.v1.createConnection({
+            model: "nova-3",
+            language: "multi",
+            language_hint: ["en", "es"],
+            reconnectAttempts: 0,
+        });
+
+        await open(socket);
+
+        const url = new URL(upgradeRequests[0].url, serverUrl);
+        expect(url.searchParams.get("language")).toBe("multi");
+        expect(url.searchParams.getAll("language_hint")).toEqual(["en", "es"]);
+    });
 });
