@@ -5,7 +5,7 @@
 
 ### Features
 
-* **regen:** add nova-3 multilingual Listen V1 support ([#583](https://github.com/deepgram/deepgram-js-sdk/issues/583)) ([9c31d2f](https://github.com/deepgram/deepgram-js-sdk/commit/9c31d2f2eac31f0666d21a99ef7010539afcd5e6))
+* **Listen V1 (Nova-3 multilingual):** Add `language_hint` support for prerecorded and streaming requests with `language: "multi"`; results expose typed `languages` and normalized `languages_hinted` values. Live reconfiguration now returns typed `ConfigureSuccess` or `ConfigureFailure` frames; keep legacy `Error` handling for older server frames. ([#583](https://github.com/deepgram/deepgram-js-sdk/issues/583)) ([9c31d2f](https://github.com/deepgram/deepgram-js-sdk/commit/9c31d2f2eac31f0666d21a99ef7010539afcd5e6))
 
 ## [5.15.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.14.0...v5.15.0) (2026-10-08)
 
