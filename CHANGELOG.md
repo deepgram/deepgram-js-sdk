@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.16.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.15.0...v5.16.0) (2026-10-23)
+
+
+### Features
+
+* **Listen V1 (Nova-3 multilingual):** Add optional `language_hint` support for prerecorded and streaming requests. Pass one BCP-47 hint as a string or several as an array; hints bias detection when `model: "nova-3"` and `language: "multi"`. Transcription alternatives expose typed `languages` and normalized `languages_hinted` values. Live reconfiguration emits typed `ConfigureSuccess` or `ConfigureFailure` frames; retain legacy `Error` handling for older server frames. ([#583](https://github.com/deepgram/deepgram-js-sdk/issues/583)) ([9c31d2f](https://github.com/deepgram/deepgram-js-sdk/commit/9c31d2f2eac31f0666d21a99ef7010539afcd5e6))
+
 ## [5.15.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.14.0...v5.15.0) (2026-10-08)
 
 
