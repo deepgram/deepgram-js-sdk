@@ -496,4 +496,29 @@ describe("2026-10-07 listen v1 Configure controls", () => {
 
         expect(JSON.parse(JSON.stringify(error))).toEqual(error);
     });
+
+    it("keeps the typed Configure success and failure frames", () => {
+        const success: Deepgram.listen.ListenV1ConfigureSuccess = {
+            type: "ConfigureSuccess",
+            request_id: "configure-1",
+            keyterms: ["Deepgram"],
+        };
+        const failure: Deepgram.listen.ListenV1ConfigureFailure = {
+            type: "ConfigureFailure",
+            request_id: "configure-2",
+            code: Deepgram.listen.ListenV1ConfigureFailure.Code.ConfigureKeytermLimitExceeded,
+            description: "The keyterms exceed the limit.",
+        };
+
+        expect(JSON.parse(JSON.stringify([success, failure]))).toEqual([success, failure]);
+    });
+});
+
+describe("2026-10-23 Nova-3 multilingual Listen V1", () => {
+    it("keeps singular and repeated language hints typed", () => {
+        const single: Deepgram.ListenV1LanguageHint = "en";
+        const multiple: Deepgram.ListenV1LanguageHint = ["en", "es"];
+
+        expect([single, multiple]).toEqual(["en", ["en", "es"]]);
+    });
 });
