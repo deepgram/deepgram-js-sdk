@@ -35,7 +35,10 @@ export namespace ListenV1Results {
                 transcript: string;
                 /** The confidence of the transcription */
                 confidence: number;
+                /** [BCP-47](https://tools.ietf.org/html/bcp47) language tags of the languages detected in the transcript, sorted by word count in descending order. Only present when `language=multi`. Can be absent on audio that switches languages. */
                 languages?: string[] | undefined;
+                /** The `language_hint` values set at connection time, normalized: codes are returned in canonical form (`ES` → `es`, `zh-hk` → `zh-HK`), and a regional code the model has no tag for is returned as its base language (`en-GB` → `en`). Present on interim and final results of every Nova-3 multilingual stream (`model=nova-3&language=multi`); an empty array when no `language_hint` was sent. */
+                languages_hinted?: string[] | undefined;
                 words: Item.Words.Item[];
             }
 
@@ -52,7 +55,7 @@ export namespace ListenV1Results {
                         end: number;
                         /** The confidence of the word */
                         confidence: number;
-                        /** The language of the word */
+                        /** [BCP-47](https://tools.ietf.org/html/bcp47) language tag of the word's detected language. Only present when `language=multi`. Can be absent on audio that switches languages. */
                         language?: string | undefined;
                         /** The punctuated word of the word */
                         punctuated_word?: string | undefined;

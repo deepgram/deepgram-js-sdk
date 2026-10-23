@@ -35,6 +35,10 @@ export namespace ListenV1ResponseResultsChannelsItem {
         export interface Item {
             transcript?: string | undefined;
             confidence?: number | undefined;
+            /** [BCP-47](https://tools.ietf.org/html/bcp47) language tags of the languages detected in the transcript, sorted by word count in descending order. Only present when `language=multi`. Can be absent on audio that switches languages. */
+            languages?: string[] | undefined;
+            /** The `language_hint` values for the request, normalized: codes are returned in canonical form (`ES` → `es`, `zh-hk` → `zh-HK`), and a regional code the model has no tag for is returned as its base language (`en-GB` → `en`). Returned on every Nova-3 multilingual response (`model=nova-3&language=multi`); an empty array when no `language_hint` was sent. */
+            languages_hinted?: string[] | undefined;
             words?: Item.Words.Item[] | undefined;
             paragraphs?: Item.Paragraphs | undefined;
             entities?: Item.Entities.Item[] | undefined;
@@ -51,6 +55,8 @@ export namespace ListenV1ResponseResultsChannelsItem {
                     start?: number | undefined;
                     end?: number | undefined;
                     confidence?: number | undefined;
+                    /** [BCP-47](https://tools.ietf.org/html/bcp47) language tag of the word's detected language. Only present when `language=multi`. Can be absent on audio that switches languages. */
+                    language?: string | undefined;
                     /** The speaker of the word, present when diarization is enabled */
                     speaker?: number | undefined;
                     /** Confidence in the speaker assignment. Returned only for pre-recorded diarization; not available for streaming */

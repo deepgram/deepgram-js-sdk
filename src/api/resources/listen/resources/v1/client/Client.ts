@@ -28,6 +28,7 @@ export declare namespace V1Client {
         keyterm?: Deepgram.ListenV1Keyterm | undefined;
         keywords?: Deepgram.ListenV1Keywords | undefined;
         language?: Deepgram.ListenV1Language | undefined;
+        language_hint?: Deepgram.ListenV1LanguageHint;
         mip_opt_out?: Deepgram.ListenV1MipOptOut | undefined;
         model: Deepgram.ListenV1Model;
         multichannel?: Deepgram.ListenV1Multichannel;
@@ -91,6 +92,7 @@ export class V1Client {
             keyterm,
             keywords,
             language,
+            language_hint: languageHint,
             mip_opt_out: mipOptOut,
             model,
             multichannel,
@@ -131,6 +133,13 @@ export class V1Client {
             keyterm: keyterm != null ? (typeof keyterm === "string" ? keyterm : toJson(keyterm)) : undefined,
             keywords: keywords != null ? (typeof keywords === "string" ? keywords : toJson(keywords)) : undefined,
             language: language != null ? (typeof language === "string" ? language : toJson(language)) : undefined,
+            language_hint: Array.isArray(languageHint)
+                ? languageHint.map((item) => (typeof item === "string" ? item : toJson(item)))
+                : languageHint != null
+                  ? typeof languageHint === "string"
+                      ? languageHint
+                      : toJson(languageHint)
+                  : undefined,
             mip_opt_out:
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
             model,

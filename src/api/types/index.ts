@@ -52,6 +52,7 @@ export * from "./ListenV1InterimResults.js";
 export * from "./ListenV1Keyterm.js";
 export * from "./ListenV1Keywords.js";
 export * from "./ListenV1Language.js";
+export * from "./ListenV1LanguageHint.js";
 export * from "./ListenV1MipOptOut.js";
 export * from "./ListenV1Model.js";
 export * from "./ListenV1Multichannel.js";
