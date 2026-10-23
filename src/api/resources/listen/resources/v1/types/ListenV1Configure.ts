@@ -5,14 +5,13 @@ export interface ListenV1Configure {
     type: "Configure";
     /**
      * Replaces the stream's keyterms. Compatible with all Nova-3 models, monolingual and multilingual; on other
-     * models the server returns an `Error` with code `KeytermsNotSupported`. Each array replaces the entire list,
-     * including keyterms set with the `keyterm` query parameter. Send an empty array to clear all keyterms. Omit
-     * the field, or set it to `null`, to keep the current keyterms.
+     * models the server returns a `ConfigureFailure` with code `CONFIGURE_KEYTERMS_NOT_SUPPORTED`. Each array
+     * replaces the entire list, including keyterms set with the `keyterm` query parameter. Send an empty array to
+     * clear all keyterms. Omit the field, or set it to `null`, to keep the current keyterms.
      *
      * Each entry is a plain term or phrase with no weights or intensifiers. The 500-token keyterm limit that
-     * applies to the `keyterm` query parameter also applies to each update. An over-limit update currently stops
-     * transcription without an `Error`; after about 30 seconds, the server closes the stream with `1011`
-     * (`NET-0000`). Keep each list under the limit and check its size before sending.
+     * applies to the `keyterm` query parameter also applies to each update. An over-limit update returns a
+     * `ConfigureFailure` with code `CONFIGURE_KEYTERM_LIMIT_EXCEEDED`.
      */
     keyterms?: string[] | null | undefined;
     /**

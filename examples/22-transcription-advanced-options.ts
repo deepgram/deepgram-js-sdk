@@ -16,7 +16,7 @@ async function transcribeWithAdvancedOptions() {
         const data = await deepgramClient.listen.v1.media.transcribeUrl({
             url: "https://dpgr.am/spacewalk.wav",
             model: "nova-3",
-            language: "en",
+            language: "multi",
             punctuate: true,
             paragraphs: true,
             utterances: true,
@@ -33,8 +33,10 @@ async function transcribeWithAdvancedOptions() {
             custom_intent_mode: "extended",
             // Entity detection
             detect_entities: true,
-            // Language detection
-            detect_language: true,
+            // Bias Nova-3 multilingual detection toward the languages you expect.
+            // Hints bias, they do not restrict, and they apply only with language: "multi".
+            // Do not combine with detect_language, which switches to single-language detection.
+            language_hint: ["en", "es"],
             // Speaker diarization
             diarize: true,
             // Dictation mode
@@ -62,6 +64,9 @@ async function transcribeWithAdvancedOptions() {
         });
 
         console.log("Transcription with advanced options:", JSON.stringify(data, null, 2));
+        const alternative = data.results?.channels?.[0]?.alternatives?.[0];
+        console.log("Detected languages:", alternative?.languages ?? []);
+        console.log("Applied language hints:", alternative?.languages_hinted ?? []);
     } catch (error) {
         console.error("Error:", error);
     }

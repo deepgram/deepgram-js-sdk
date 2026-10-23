@@ -47,6 +47,8 @@ Pass `shouldReconnect: (event) => boolean` when a connection needs a custom clos
 | [Text-to-Speech v1](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/speak/resources/v1/client/Socket.ts) | `client.speak.v1.connect(args)` or `.createConnection(args)` | `sendText`, `sendFlush`, `sendClear`, `sendClose` |
 | [Flux TTS v2](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/api/resources/speak/resources/v2/client/Socket.ts) | `client.speak.v2.connect(args)` or `.createConnection(args)` | `sendSpeak`, `sendFlush`, `sendInterrupt`, `sendConfigure`, `sendClose` |
 
+For Nova-3 multilingual Listen V1, set `language: "multi"` and optionally pass one or more `language_hint` values. Hints bias language detection toward the listed languages; they do not restrict the transcript to them, and they are ignored with any other `language`. Results include detected `languages` and normalized `languages_hinted` (an empty array when no hint was sent). A `sendConfigure(...)` update receives `ConfigureSuccess` or `ConfigureFailure`; retain legacy `Error` handling for older server frames.
+
 The public connection argument types and Deepgram-specific wrapper behavior are defined in [`src/CustomClient.ts`](https://github.com/deepgram/deepgram-js-sdk/blob/main/src/CustomClient.ts). Use the linked socket classes for exact message and event types.
 
 For Voice Agent function calls, do not send `FunctionCallResponse` for an ID listed in a `FunctionCallCancelled` event. Set `defer_until_eot: true` on an `agent.think.functions` entry when its action cannot be undone: the agent waits until the user's turn is confirmed, and discards the deferred call if that turn resumes.

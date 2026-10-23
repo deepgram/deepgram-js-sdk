@@ -10,6 +10,8 @@ export declare namespace V1Socket {
     }
 
     export type Response =
+        | Deepgram.listen.ListenV1ConfigureSuccess
+        | Deepgram.listen.ListenV1ConfigureFailure
         | Deepgram.listen.ListenV1Results
         | Deepgram.listen.ListenV1Metadata
         | Deepgram.listen.ListenV1UtteranceEnd

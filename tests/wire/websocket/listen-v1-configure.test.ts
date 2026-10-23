@@ -38,7 +38,7 @@ describe("Listen V1 Configure", () => {
         wsServer?.close();
     });
 
-    it("serializes Configure updates and delivers Configure errors", async () => {
+    it("serializes Configure updates and delivers success, failure, and error frames", async () => {
         const sentToServer: unknown[] = [];
         const tracker = new WebSocketEventTracker();
         const client = new DeepgramClient({
@@ -58,7 +58,23 @@ describe("Listen V1 Configure", () => {
             ws.on("message", (data) => {
                 const parsed = JSON.parse(data.toString());
                 sentToServer.push(parsed);
-                if (parsed.type === "Configure" && parsed.keyterms?.length === 0) {
+
+                if (parsed.type !== "Configure") {
+                    return;
+                }
+
+                if (parsed.keyterms === null) {
+                    const failure: Deepgram.listen.ListenV1ConfigureFailure = {
+                        type: "ConfigureFailure",
+                        request_id: "configure-2",
+                        code: "CONFIGURE_ALREADY_PENDING",
+                        description: "A Configure request is already pending.",
+                    };
+                    ws.send(JSON.stringify(failure));
+                    return;
+                }
+
+                if (Array.isArray(parsed.keyterms) && parsed.keyterms.length === 0) {
                     const error: Deepgram.listen.ListenV1Error = {
                         type: "Error",
                         variant: "InvalidConfigureMessage",
@@ -67,7 +83,15 @@ describe("Listen V1 Configure", () => {
                         message: JSON.stringify(parsed),
                     };
                     ws.send(JSON.stringify(error));
+                    return;
                 }
+
+                const success: Deepgram.listen.ListenV1ConfigureSuccess = {
+                    type: "ConfigureSuccess",
+                    request_id: "configure-1",
+                    keyterms: parsed.keyterms,
+                };
+                ws.send(JSON.stringify(success));
             });
         });
 
@@ -78,19 +102,29 @@ describe("Listen V1 Configure", () => {
             keyterms: ["Deepgram", "voice AI"],
             features: { numerals: true, punctuate: false },
         });
-        socket.sendConfigure({ type: "Configure", keyterms: [] });
         socket.sendConfigure({ type: "Configure", keyterms: null });
+        socket.sendConfigure({ type: "Configure", keyterms: [] });
 
+        await waitForEventCount(tracker, "ConfigureSuccess", 1);
+        await waitForEventCount(tracker, "ConfigureFailure", 1);
         await waitForEventCount(tracker, "Error", 1);
-        expect(sentToServer).toEqual([
-            {
-                type: "Configure",
-                keyterms: ["Deepgram", "voice AI"],
-                features: { numerals: true, punctuate: false },
-            },
-            { type: "Configure", keyterms: [] },
-            { type: "Configure", keyterms: null },
-        ]);
+
+        expect(sentToServer).toContainEqual({
+            type: "Configure",
+            keyterms: ["Deepgram", "voice AI"],
+            features: { numerals: true, punctuate: false },
+        });
+        expect(sentToServer).toContainEqual({ type: "Configure", keyterms: null });
+        expect(sentToServer).toContainEqual({ type: "Configure", keyterms: [] });
+        expect(tracker.getHistory().find((event) => event.event === "ConfigureSuccess")?.data).toMatchObject({
+            type: "ConfigureSuccess",
+            request_id: "configure-1",
+            keyterms: ["Deepgram", "voice AI"],
+        });
+        expect(tracker.getHistory().find((event) => event.event === "ConfigureFailure")?.data).toMatchObject({
+            type: "ConfigureFailure",
+            code: "CONFIGURE_ALREADY_PENDING",
+        });
         expect(tracker.getHistory().find((event) => event.event === "Error")?.data).toEqual({
             type: "Error",
             variant: "InvalidConfigureMessage",
@@ -98,7 +132,5 @@ describe("Listen V1 Configure", () => {
             description: "keyterms are only supported for Nova-3",
             message: '{"type":"Configure","keyterms":[]}',
         });
-
-        socket.close();
     });
 });

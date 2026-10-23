@@ -157,6 +157,7 @@ const fullTranscribeRequest = {
     keyterm: ["kt"],
     keywords: ["kw"],
     language: "en",
+    language_hint: ["en", "es"],
     measurements: true,
     model: "nova-3",
     multichannel: true,
@@ -185,6 +186,7 @@ describe("REST client success paths with full query params", () => {
         const q = queryOf(urls);
         expect(q.get("model")).toBe("nova-3");
         expect(q.get("language")).toBe("en");
+        expect(q.getAll("language_hint")).toEqual(["en", "es"]);
         expect(q.get("smart_format")).toBe("true");
         expect(q.get("utt_split")).toBe("0.8");
         expect(q.get("summarize")).toBe("v2");
@@ -210,6 +212,7 @@ describe("REST client success paths with full query params", () => {
         expect(q.get("encoding")).toBe("linear16");
         expect(q.get("diarize")).toBe("true");
         expect(q.get("diarize_model")).toBe("v2");
+        expect(q.getAll("language_hint")).toEqual(["en", "es"]);
         expect(q.getAll("keyterm")).toEqual(["kt"]);
         expect(q.getAll("custom_topic")).toEqual(["ct"]);
     });

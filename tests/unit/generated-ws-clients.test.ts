@@ -41,6 +41,7 @@ const listenV1StringArgs = {
     keyterm: "term",
     keywords: "kw",
     language: "en",
+    language_hint: "en",
     mip_opt_out: "true",
     model: "nova-3",
     multichannel: true,
@@ -66,6 +67,7 @@ const listenV1ObjectArgs = {
     keyterm: ["term1", { w: 1 }],
     keywords: ["kw1"],
     language: ["en", "es"],
+    language_hint: ["en", { l: 1 }],
     mip_opt_out: true,
     replace: ["a:b"],
     sample_rate: 16000,
@@ -130,6 +132,7 @@ describe("generated Listen V1Client.connect query params", () => {
         const socket = await client.connect({ ...listenV1ObjectArgs, abortSignal: abortedSignal() } as any);
         const qp = queryParamsOf(socket);
         expect(typeof qp.callback).toBe("string"); // toJson output
+        expect(Array.isArray(qp.language_hint)).toBe(true);
     });
 
     it("omits absent params", async () => {
