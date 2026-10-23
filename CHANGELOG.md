@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.16.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.15.0...v5.16.0) (2026-10-23)
+
+
+### Features
+
+* **regen:** add nova-3 multilingual Listen V1 support ([#583](https://github.com/deepgram/deepgram-js-sdk/issues/583)) ([9c31d2f](https://github.com/deepgram/deepgram-js-sdk/commit/9c31d2f2eac31f0666d21a99ef7010539afcd5e6))
+
 ## [5.15.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.14.0...v5.15.0) (2026-10-08)
 
 
