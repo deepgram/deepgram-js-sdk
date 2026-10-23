@@ -33,9 +33,9 @@ async function transcribeWithAdvancedOptions() {
             custom_intent_mode: "extended",
             // Entity detection
             detect_entities: true,
-            // Language detection
-            detect_language: true,
-            // Bias Nova-3 multilingual transcription toward expected languages
+            // Bias Nova-3 multilingual detection toward the languages you expect.
+            // Hints bias, they do not restrict, and they apply only with language: "multi".
+            // Do not combine with detect_language, which switches to single-language detection.
             language_hint: ["en", "es"],
             // Speaker diarization
             diarize: true,
