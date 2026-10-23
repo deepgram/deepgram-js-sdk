@@ -5,8 +5,6 @@
  */
 export interface SharedTopics {
     segments?: SharedTopics.Segments.Item[] | undefined;
-    /** @deprecated Use `segments` directly. */
-    results?: SharedTopics.Results | undefined;
 }
 
 export namespace SharedTopics {
@@ -28,28 +26,6 @@ export namespace SharedTopics {
                     topic?: string | undefined;
                     confidence_score?: number | undefined;
                 }
-            }
-        }
-    }
-
-    /** @deprecated Use `SharedTopics.Segments` directly. */
-    export interface Results {
-        topics?: Results.Topics | undefined;
-    }
-
-    export namespace Results {
-        /** @deprecated Use `SharedTopics` directly. */
-        export interface Topics {
-            segments?: Topics.Segments.Item[] | undefined;
-        }
-
-        export namespace Topics {
-            /** @deprecated Use `SharedTopics.Segments` directly. */
-            export type Segments = Segments.Item[];
-
-            export namespace Segments {
-                /** @deprecated Use `SharedTopics.Segments.Item` directly. */
-                export type Item = SharedTopics.Segments.Item;
             }
         }
     }

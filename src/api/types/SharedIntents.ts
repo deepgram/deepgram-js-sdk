@@ -5,8 +5,6 @@
  */
 export interface SharedIntents {
     segments?: SharedIntents.Segments.Item[] | undefined;
-    /** @deprecated Use `segments` directly. */
-    results?: SharedIntents.Results | undefined;
 }
 
 export namespace SharedIntents {
@@ -28,28 +26,6 @@ export namespace SharedIntents {
                     intent?: string | undefined;
                     confidence_score?: number | undefined;
                 }
-            }
-        }
-    }
-
-    /** @deprecated Use `SharedIntents.Segments` directly. */
-    export interface Results {
-        intents?: Results.Intents | undefined;
-    }
-
-    export namespace Results {
-        /** @deprecated Use `SharedIntents` directly. */
-        export interface Intents {
-            segments?: Intents.Segments.Item[] | undefined;
-        }
-
-        export namespace Intents {
-            /** @deprecated Use `SharedIntents.Segments` directly. */
-            export type Segments = Segments.Item[];
-
-            export namespace Segments {
-                /** @deprecated Use `SharedIntents.Segments.Item` directly. */
-                export type Item = SharedIntents.Segments.Item;
             }
         }
     }
