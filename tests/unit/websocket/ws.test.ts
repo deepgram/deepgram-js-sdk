@@ -61,6 +61,54 @@ class FakeWebSocket {
     }
 }
 
+/** Mimics the subset of Node's "ws" EventEmitter API the handshake-error listener relies on. */
+class FakeNodeWebSocket extends FakeWebSocket {
+    private emitterListeners: Record<string, Array<(...args: unknown[]) => void>> = {};
+
+    public on(event: string, listener: (...args: unknown[]) => void): void {
+        (this.emitterListeners[event] ??= []).push(listener);
+    }
+
+    public simulateUnexpectedResponse(statusCode: number, headers: Record<string, string>, body: string): FakeReq {
+        const req = new FakeReq();
+        const res = new FakeRes(statusCode, headers, body);
+        for (const listener of [...(this.emitterListeners["unexpected-response"] ?? [])]) {
+            listener(req, res);
+        }
+        return req;
+    }
+}
+
+class FakeReq {
+    public destroyed = false;
+    public destroy(): void {
+        this.destroyed = true;
+    }
+}
+
+class FakeRes {
+    private dataListeners: Array<(chunk: string) => void> = [];
+    private endListeners: Array<() => void> = [];
+
+    constructor(
+        public statusCode: number,
+        public headers: Record<string, string>,
+        private body: string,
+    ) {}
+
+    public on(event: string, listener: (...args: any[]) => void): void {
+        if (event === "data") this.dataListeners.push(listener);
+        if (event === "end") this.endListeners.push(listener);
+        if (event === "end") {
+            // Emit asynchronously-free: deliver body then end immediately on registration order.
+            queueMicrotask(() => {
+                this.dataListeners.forEach((l) => l(this.body));
+                this.endListeners.forEach((l) => l());
+            });
+        }
+    }
+}
+
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 20));
 
 const createSocket = (options: ReconnectingWebSocket.Options = {}): ReconnectingWebSocket =>
@@ -235,5 +283,69 @@ describe("ReconnectingWebSocket reconnect policy", () => {
         await flush();
 
         expect(FakeWebSocket.instances).toHaveLength(1);
+    });
+});
+
+describe("ReconnectingWebSocket handshake error enrichment", () => {
+    let socket: ReconnectingWebSocket | undefined;
+
+    beforeEach(() => {
+        FakeWebSocket.instances = [];
+    });
+
+    afterEach(() => {
+        socket?.close();
+        socket = undefined;
+    });
+
+    it("surfaces statusCode, headers, body, and requestId from a rejected handshake", async () => {
+        socket = new ReconnectingWebSocket({
+            url: "ws://localhost/test",
+            options: {
+                WebSocket: FakeNodeWebSocket,
+                minReconnectionDelay: 0,
+                maxReconnectionDelay: 0,
+                maxRetries: 0,
+            },
+        });
+        await flush();
+        const ws = FakeWebSocket.instances[0] as FakeNodeWebSocket;
+
+        const onError = vi.fn();
+        socket.addEventListener("error", onError);
+
+        const req = ws.simulateUnexpectedResponse(
+            401,
+            { "dg-error": "INVALID_AUTH", "dg-request-id": "req-123" },
+            '{"err_code":"INVALID_AUTH"}',
+        );
+        await flush();
+
+        expect(req.destroyed).toBe(true);
+        expect(onError).toHaveBeenCalledTimes(1);
+        const event = onError.mock.calls[0]?.[0] as ErrorEvent;
+        expect(event.statusCode).toBe(401);
+        expect(event.headers).toEqual({ "dg-error": "INVALID_AUTH", "dg-request-id": "req-123" });
+        expect(event.body).toBe('{"err_code":"INVALID_AUTH"}');
+        expect(event.requestId).toBe("req-123");
+        expect(event.message).toBe("Unexpected server response: 401");
+    });
+
+    it("leaves statusCode/headers/body undefined for a plain connection error", async () => {
+        socket = createSocket({ maxRetries: 0 });
+        await flush();
+        const ws = FakeWebSocket.instances[0] as FakeWebSocket;
+
+        const onError = vi.fn();
+        socket.addEventListener("error", onError);
+
+        ws.simulateError();
+        await flush();
+
+        const event = onError.mock.calls[0]?.[0] as ErrorEvent;
+        expect(event.statusCode).toBeUndefined();
+        expect(event.headers).toBeUndefined();
+        expect(event.body).toBeUndefined();
+        expect(event.requestId).toBeUndefined();
     });
 });
