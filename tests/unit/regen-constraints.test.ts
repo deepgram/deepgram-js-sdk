@@ -462,6 +462,72 @@ describe("2026-09-16 agent surfaces", () => {
     });
 });
 
+describe("2026-10-23 Think Live agent surfaces", () => {
+    it("configures Think Live through Agent settings", () => {
+        const thinkLive: Deepgram.ThinkLiveSettingsV1 = {
+            provider: {
+                type: "deepgram",
+                version: "v1",
+                agent_backchannel_sensitivity: 0.4,
+                presence_check_max_count: 2,
+                presence_check_interval_ms: 5000,
+                frustration_max_count: 3,
+                restricted_terms: ["account number"],
+            },
+        };
+        const settings: Deepgram.agent.AgentV1Settings = {
+            type: "Settings",
+            audio: {},
+            agent: { think_live: thinkLive },
+        };
+
+        expect(settings.agent.think_live?.provider.restricted_terms).toEqual(["account number"]);
+    });
+
+    it("types Think Live controls and server events", () => {
+        const update: Deepgram.agent.AgentV1UpdateThinkLive = {
+            type: "UpdateThink_Live",
+            think_live: { provider: { type: "deepgram", version: "v1" } },
+        };
+        const dynamic: Deepgram.agent.AgentV1InjectDynamicAgentMessage = {
+            type: "InjectAgentMessage",
+            is_dynamic: true,
+            behavior: Deepgram.agent.AgentV1InjectDynamicAgentMessage.Behavior.Queue,
+        };
+        const updated: Deepgram.agent.AgentV1ThinkLiveUpdated = { type: "ThinkLiveUpdated" };
+        const frustrated: Deepgram.agent.AgentV1FrustrationDetected = {
+            type: "FrustrationDetected",
+            count: 2,
+            escalated: false,
+        };
+        const conversation: Deepgram.agent.AgentV1ConversationText = {
+            type: "ConversationText",
+            role: "assistant",
+            content: "One moment while I check that.",
+            conversational_behavior: Deepgram.agent.AgentV1ConversationText.ConversationalBehavior.Filler,
+        };
+
+        expect(JSON.parse(JSON.stringify([update, dynamic, updated, frustrated, conversation]))).toEqual([
+            update,
+            dynamic,
+            updated,
+            frustrated,
+            conversation,
+        ]);
+    });
+
+    it("types Think Live function filler controls", () => {
+        const functionSettings: Deepgram.ThinkSettingsV1.Functions.Item = {
+            name: "lookup_order",
+            initial_agent_filler: true,
+            agent_filler_max_count: 2,
+            agent_filler_interval_ms: 3000,
+        };
+
+        expect(functionSettings.agent_filler_interval_ms).toBe(3000);
+    });
+});
+
 describe("2026-10-07 listen v1 Configure controls", () => {
     it("Configure accepts keyterm replacement and formatting features", () => {
         const configure: Deepgram.listen.ListenV1Configure = {

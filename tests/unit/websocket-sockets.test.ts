@@ -76,6 +76,8 @@ describe.each([
             s.sendKeepAlive({ type: "KeepAlive" } as any);
             s.sendUpdatePrompt({ type: "UpdatePrompt" } as any);
             s.sendUpdateThink({ type: "UpdateThink" } as any);
+            s.sendUpdateThinkLive({ type: "UpdateThink_Live" });
+            s.sendInjectDynamicAgentMessage({ type: "InjectAgentMessage", is_dynamic: true });
             s.sendCustomToThinkProvider({ type: "__customToThinkProvider" } as any);
         },
     },

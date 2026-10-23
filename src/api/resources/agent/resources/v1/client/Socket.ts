@@ -12,6 +12,8 @@ export declare namespace V1Socket {
     export type Response =
         | Deepgram.agent.AgentV1ListenUpdated
         | Deepgram.agent.AgentV1ThinkUpdated
+        | Deepgram.agent.AgentV1ThinkLiveUpdated
+        | Deepgram.agent.AgentV1FrustrationDetected
         | Deepgram.agent.AgentV1ReceiveFunctionCallResponse
         | Deepgram.agent.AgentV1PromptUpdated
         | Deepgram.agent.AgentV1SpeakUpdated
@@ -152,6 +154,11 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    public sendUpdateThinkLive(message: Deepgram.agent.AgentV1UpdateThinkLive): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
     public sendUpdateSpeak(message: Deepgram.agent.AgentV1UpdateSpeak): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -163,6 +170,11 @@ export class V1Socket {
     }
 
     public sendInjectAgentMessage(message: Deepgram.agent.AgentV1InjectAgentMessage): void {
+        this.assertSocketIsOpen();
+        this.sendJson(message);
+    }
+
+    public sendInjectDynamicAgentMessage(message: Deepgram.agent.AgentV1InjectDynamicAgentMessage): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
     }
@@ -271,9 +283,11 @@ export class V1Socket {
             | Deepgram.agent.AgentV1Settings
             | Deepgram.agent.AgentV1UpdateListen
             | Deepgram.agent.AgentV1UpdateThink
+            | Deepgram.agent.AgentV1UpdateThinkLive
             | Deepgram.agent.AgentV1UpdateSpeak
             | Deepgram.agent.AgentV1InjectUserMessage
             | Deepgram.agent.AgentV1InjectAgentMessage
+            | Deepgram.agent.AgentV1InjectDynamicAgentMessage
             | Deepgram.agent.AgentV1SendFunctionCallResponse
             | Deepgram.agent.AgentV1KeepAlive
             | Deepgram.agent.AgentV1UpdatePrompt
