@@ -185,7 +185,7 @@
 
       try {
         const data = await client.manage.v1.projects.update(projectId, {
-          name: "Naomi's Sandbox",
+          name: "New Project Name",
         });
         log(`✓ Updated project:\n${JSON.stringify(data, null, 2)}`, 'success');
       } catch (error) {
