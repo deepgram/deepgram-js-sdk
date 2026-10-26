@@ -154,6 +154,11 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    /**
+     * Replaces the active Think Live provider configuration. Include every provider field
+     * that should remain active; omitted fields revert to their server defaults.
+     * The server confirms a successful update with `ThinkLiveUpdated`.
+     */
     public sendUpdateThinkLive(message: Deepgram.agent.AgentV1UpdateThinkLive): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -174,6 +179,11 @@ export class V1Socket {
         this.sendJson(message);
     }
 
+    /**
+     * Requires `agent.think_live`. Requests a Think Live-generated filler line instead of
+     * fixed text. If no filler can be generated, the server returns a
+     * `DYNAMIC_FILLER_UNAVAILABLE` warning.
+     */
     public sendInjectDynamicAgentMessage(message: Deepgram.agent.AgentV1InjectDynamicAgentMessage): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
