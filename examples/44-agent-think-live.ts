@@ -52,7 +52,7 @@ async function run() {
                 });
                 break;
             case "ConversationText":
-                console.log(`${data.role} (${data.conversational_behavior}): ${data.content}`);
+                console.log(`${data.role} (${data.conversational_behavior ?? "default"}): ${data.content}`);
                 break;
             case "FrustrationDetected":
                 console.log(`Frustration detected: count=${data.count}, escalated=${data.escalated}`);

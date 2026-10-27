@@ -113,6 +113,13 @@ src/api/types/CreateKeyV1Request.ts
 src/api/resources/agent/resources/v1/types/AgentV1CustomFromThinkProvider.ts
 src/api/resources/agent/resources/v1/types/AgentV1CustomToThinkProvider.ts
 
+# src/api/resources/agent/resources/v1/types/AgentV1ConversationText.ts: the
+# service always emits conversational_behavior, but making it required breaks
+# v5 callers that construct or mock ConversationText objects. Keep it optional
+# until the next major while retaining the server-behavior JSDoc. Regression
+# coverage in tests/unit/regen-constraints.test.ts.
+src/api/resources/agent/resources/v1/types/AgentV1ConversationText.ts
+
 # src/api/resources/listen/resources/v1/types/ListenV1Configure.ts: the AsyncAPI
 # description and live service accept `keyterms: null` to retain the current
 # keyterms, but the schema omits nullable and Fern emits string[] only. Preserve

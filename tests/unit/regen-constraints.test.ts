@@ -516,6 +516,16 @@ describe("2026-10-23 Think Live agent surfaces", () => {
         ]);
     });
 
+    it("keeps ConversationText behavior optional for v5 source compatibility", () => {
+        const legacy: Deepgram.agent.AgentV1ConversationText = {
+            type: "ConversationText",
+            role: "assistant",
+            content: "Hello.",
+        };
+
+        expect(legacy.conversational_behavior).toBeUndefined();
+    });
+
     it("types Think Live function filler controls", () => {
         const functionSettings: Deepgram.ThinkSettingsV1.Functions.Item = {
             name: "lookup_order",
