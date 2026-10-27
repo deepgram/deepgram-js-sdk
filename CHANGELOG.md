@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.17.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.16.0...v5.17.0) (2026-10-27)
+
+
+### Features
+
+* **regen:** add think live and flux tts support ([#585](https://github.com/deepgram/deepgram-js-sdk/issues/585)) ([d521639](https://github.com/deepgram/deepgram-js-sdk/commit/d521639a80b9e7af6ebf4f74ac9dd5ac18c9a79c))
+
+
+### Bug Fixes
+
+* **agent:** document ConversationText conversational_behavior as always sent ([#588](https://github.com/deepgram/deepgram-js-sdk/issues/588)) ([3a8119f](https://github.com/deepgram/deepgram-js-sdk/commit/3a8119f1f089879790d93b8705425b259c1ea71d))
+
 ## [5.16.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.15.0...v5.16.0) (2026-10-23)
 
 
