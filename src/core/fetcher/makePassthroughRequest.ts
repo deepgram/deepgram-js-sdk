@@ -1,3 +1,4 @@
+import { DeepgramEnvironment } from "../../environments.js";
 import { createLogger, type LogConfig, type Logger } from "../logging/logger.js";
 import { join } from "../url/join.js";
 import { EndpointSupplier } from "./EndpointSupplier.js";
@@ -192,20 +193,31 @@ export async function makePassthroughRequest(
 }
 
 /**
- * Returns true when the resolved request URL points at the same origin as the
- * configured base URL. Relative paths are always joined onto the base URL, so
- * they resolve to the base origin and return true. Absolute URLs only match when
- * their origin equals the base origin. When there is no base URL to compare
- * against, or either value is not a parseable absolute URL, this returns false so
- * auth headers are not attached.
+ * Returns true when the resolved request URL points at the caller's base URL or a
+ * first-party Deepgram origin. Other origins never receive auth headers.
+ *
+ * Patch: the generator also returns false when no base URL is configured. Do not
+ * reinstate that early return at the next regen; first-party origins always receive auth.
  */
 function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
-    if (baseUrl == null) {
-        return false;
-    }
+    let targetOrigin: string;
     try {
-        return new URL(fullUrl).origin === new URL(baseUrl).origin;
+        targetOrigin = new URL(fullUrl).origin;
     } catch {
         return false;
     }
+
+    const allowedOrigins = new Set<string>();
+    for (const candidate of [baseUrl, ...Object.values(DeepgramEnvironment.Production)]) {
+        if (candidate == null) {
+            continue;
+        }
+        try {
+            allowedOrigins.add(new URL(candidate).origin);
+        } catch {
+            // Non-URL environment slots cannot contribute an allowed origin.
+        }
+    }
+
+    return allowedOrigins.has(targetOrigin);
 }
