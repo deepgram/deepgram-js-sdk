@@ -100,6 +100,7 @@ export namespace AgentV1Settings {
         context?: Agent.Context | undefined;
         listen?: Agent.Listen | undefined;
         think?: Agent.Think | undefined;
+        think_live?: Deepgram.ThinkLiveSettingsV1 | undefined;
         speak?: Agent.Speak | undefined;
         /** Optional message that agent will speak at the start */
         greeting?: string | undefined;

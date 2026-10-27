@@ -7,19 +7,19 @@ import { WebSocketEventTracker, waitForEventCount } from "./helpers";
 import type { Server } from "ws";
 
 /**
- * Wire test for the agent UpdateListen / ListenUpdated round-trip (2026-07-09 regen).
+ * Wire tests for Agent V1 control-message round trips.
  *
  * The regen added:
  *   - AgentV1UpdateListen  (client -> server, sendUpdateListen)  with a
  *     DeepgramListenProviderV2 provider payload
  *   - AgentV1ListenUpdated (server -> client, "ListenUpdated" confirmation)
  *
- * This verifies the message serializes correctly over the wire and the
- * confirmation is delivered back through on("message"). The UpdateListen payload
- * is typed so a schema drift surfaces as a compile error; the wait uses
- * waitForEventCount rather than a fixed sleep.
+ * The Think Live test also covers UpdateThink_Live, dynamic agent-message
+ * injection, ThinkLiveUpdated, and FrustrationDetected. Payloads are typed so a
+ * schema drift surfaces as a compile error; waits use waitForEventCount rather
+ * than fixed sleeps.
  */
-describe("Agent UpdateListen / ListenUpdated", () => {
+describe("Agent control messages", () => {
     let server: MockServer;
     let wsServer: Server;
     let wsPort: number;
@@ -170,6 +170,83 @@ describe("Agent UpdateListen / ListenUpdated", () => {
             type: "FunctionCallCancelled",
             functions: [{ id: "call-123", name: "book_flight" }],
         });
+        socket.close();
+    });
+
+    it("round-trips Think Live controls and events", async () => {
+        const sentToServer: unknown[] = [];
+        const tracker = new WebSocketEventTracker();
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: server.baseUrl,
+                production: `ws://localhost:${wsPort}`,
+                agent: `ws://localhost:${wsPort}`,
+            },
+        });
+        const socket = await client.agent.v1.createConnection();
+        openSockets.push(socket);
+        socket.on("message", (data) => tracker.track((data as { type?: string })?.type ?? "binary", data));
+
+        wsServer.on("connection", (ws) => {
+            ws.send(JSON.stringify({ type: "Welcome" }));
+            ws.on("message", (data) => {
+                const parsed = JSON.parse(data.toString());
+                sentToServer.push(parsed);
+
+                if (parsed.type === "UpdateThink_Live") {
+                    const updated: Deepgram.agent.AgentV1ThinkLiveUpdated = { type: "ThinkLiveUpdated" };
+                    ws.send(JSON.stringify(updated));
+                }
+                if (parsed.type === "InjectAgentMessage" && parsed.is_dynamic === true) {
+                    const frustrated: Deepgram.agent.AgentV1FrustrationDetected = {
+                        type: "FrustrationDetected",
+                        count: 1,
+                        escalated: false,
+                    };
+                    ws.send(JSON.stringify(frustrated));
+                }
+            });
+        });
+
+        socket.connect();
+        await socket.waitForOpen();
+        await waitForEventCount(tracker, "Welcome", 1);
+
+        socket.sendUpdateThinkLive({
+            type: "UpdateThink_Live",
+            think_live: {
+                provider: {
+                    type: "deepgram",
+                    version: "v1",
+                    frustration_max_count: 2,
+                },
+            },
+        });
+        socket.sendInjectDynamicAgentMessage({
+            type: "InjectAgentMessage",
+            is_dynamic: true,
+            behavior: "queue",
+        });
+
+        await waitForEventCount(tracker, "ThinkLiveUpdated", 1);
+        await waitForEventCount(tracker, "FrustrationDetected", 1);
+
+        expect(sentToServer).toContainEqual({
+            type: "UpdateThink_Live",
+            think_live: { provider: { type: "deepgram", version: "v1", frustration_max_count: 2 } },
+        });
+        expect(sentToServer).toContainEqual({ type: "InjectAgentMessage", is_dynamic: true, behavior: "queue" });
+        expect(tracker.getHistory().find((event) => event.event === "ThinkLiveUpdated")?.data).toEqual({
+            type: "ThinkLiveUpdated",
+        });
+        expect(tracker.getHistory().find((event) => event.event === "FrustrationDetected")?.data).toEqual({
+            type: "FrustrationDetected",
+            count: 1,
+            escalated: false,
+        });
+
         socket.close();
     });
 
