@@ -5,7 +5,8 @@
 
 ### Features
 
-* **regen:** add think live and flux tts support ([#585](https://github.com/deepgram/deepgram-js-sdk/issues/585)) ([d521639](https://github.com/deepgram/deepgram-js-sdk/commit/d521639a80b9e7af6ebf4f74ac9dd5ac18c9a79c))
+* **Voice Agent Think Live:** Configure `agent.think_live` with the Deepgram v1 provider; update it during a session with `sendUpdateThinkLive(...)`; and receive `ThinkLiveUpdated` and `FrustrationDetected` events. Use `sendInjectDynamicAgentMessage(...)` to request a Think Live-generated filler line. `ConversationText` now reports `conversational_behavior` (`default`, `backchannel`, `presence_check`, or `filler`); the service always sends it, while the TypeScript field remains optional in v5 for compatibility with self-hosted and mocked payloads. ([#585](https://github.com/deepgram/deepgram-js-sdk/issues/585)) ([d521639](https://github.com/deepgram/deepgram-js-sdk/commit/d521639a80b9e7af6ebf4f74ac9dd5ac18c9a79c))
+* **Flux TTS:** Flux models now support 41 languages and 230 voices. Continue to pass the model as `flux-{voice}-{language}`; text normalization is available for English, German, Dutch, French, Hindi, Italian, Japanese, Portuguese, Russian, and Spanish. ([#585](https://github.com/deepgram/deepgram-js-sdk/issues/585)) ([d521639](https://github.com/deepgram/deepgram-js-sdk/commit/d521639a80b9e7af6ebf4f74ac9dd5ac18c9a79c))
 
 
 ### Bug Fixes
