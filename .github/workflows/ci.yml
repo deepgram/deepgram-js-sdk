@@ -11,7 +11,8 @@ on:
 
 jobs:
   compile:
-    runs-on: ubuntu-latest
+    # Playwright 1.59 does not ship a Chromium build for Ubuntu 26.04 yet.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repo
