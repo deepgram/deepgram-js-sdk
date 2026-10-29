@@ -7,7 +7,8 @@ export type ThinkSettingsV1Provider =
     | Deepgram.ThinkSettingsV1Provider.AwsBedrock
     | Deepgram.ThinkSettingsV1Provider.Anthropic
     | Deepgram.ThinkSettingsV1Provider.Google
-    | Deepgram.ThinkSettingsV1Provider.Groq;
+    | Deepgram.ThinkSettingsV1Provider.Groq
+    | Deepgram.ThinkSettingsV1Provider.Deepgram;
 
 export namespace ThinkSettingsV1Provider {
     export interface OpenAi extends Deepgram.OpenAiThinkProvider {
@@ -28,5 +29,9 @@ export namespace ThinkSettingsV1Provider {
 
     export interface Groq extends Deepgram.Groq {
         type: "groq";
+    }
+
+    export interface Deepgram extends Deepgram.Deepgram {
+        type: "deepgram";
     }
 }
