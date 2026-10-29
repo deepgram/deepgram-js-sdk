@@ -463,6 +463,35 @@ describe("2026-09-16 agent surfaces", () => {
 });
 
 describe("2026-10-23 Think Live agent surfaces", () => {
+    it("preserves Deepgram Think provider settings", () => {
+        const think: Deepgram.ThinkSettingsV1 = {
+            provider: {
+                type: "deepgram",
+                version: "v1",
+                model: "think-fast",
+                temperature: 0.7,
+                reasoning_mode: "minimal",
+                voice_prompt_opt_out: true,
+            },
+        };
+
+        expect(JSON.parse(JSON.stringify(think))).toEqual(think);
+    });
+
+    it("accepts forward-compatible Deepgram Think values", () => {
+        const think: Deepgram.ThinkSettingsV1 = {
+            provider: {
+                type: "deepgram",
+                model: "future-deepgram-think-model",
+                reasoning_mode: "future-reasoning-mode",
+            },
+        };
+
+        if (think.provider.type === "deepgram") {
+            expect(think.provider.model).toBe("future-deepgram-think-model");
+        }
+    });
+
     it("configures Think Live through Agent settings", () => {
         const thinkLive: Deepgram.ThinkLiveSettingsV1 = {
             provider: {
