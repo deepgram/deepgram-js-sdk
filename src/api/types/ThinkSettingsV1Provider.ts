@@ -34,15 +34,28 @@ export namespace ThinkSettingsV1Provider {
     /** Deepgram-hosted language models for the Voice Agent think stage. */
     export interface Deepgram {
         type: "deepgram";
-        /** Deepgram language model to use. */
+        /**
+         * Deepgram language model to use. Early Access. `think-fast` requires
+         * participation in the Model Improvement Program: sessions with
+         * `mip_opt_out: true` are rejected with `INVALID_SETTINGS`. Use
+         * `phonellm-mini-alpha-2-fp8` for opted-out sessions.
+         */
         model: Deepgram.Model;
         /** API version for the Deepgram think provider. Defaults to `v1`. */
         version?: "v1" | undefined;
         /** Deepgram temperature (0-2). */
         temperature?: number | undefined;
-        /** Reasoning effort. */
+        /**
+         * Reasoning effort. With `phonellm-mini-alpha-2-fp8`, use `none` or
+         * omit this field; other values add reasoning text to the reply that
+         * the agent speaks.
+         */
         reasoning_mode?: Deepgram.ReasoningMode | undefined;
-        /** Send the prompt unchanged instead of adding spoken-style instructions. */
+        /**
+         * With `think-fast`, suppresses Deepgram's inserted spoken-style
+         * instructions and the `VOICE_PROMPT_ADDED` warning, sending the prompt
+         * unchanged.
+         */
         voice_prompt_opt_out?: boolean | undefined;
     }
 
