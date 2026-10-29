@@ -222,6 +222,12 @@ src/BaseClient.ts
 # Swap to .bak before regen.
 src/api/resources/agent/resources/v1/types/AgentV1UpdateListen.ts
 
+# src/api/types/ThinkSettingsV1Provider.ts: Fern reuses the TTS `Deepgram`
+# schema type for the new Think provider, omitting the Think-specific model,
+# temperature, reasoning, and voice-prompt fields. Preserve the local provider
+# shape until the source schema gives the two providers distinct generated names.
+src/api/types/ThinkSettingsV1Provider.ts
+
 # src/api/types/SpeakV2Speed.ts: the 2026-09-07 regen corrected the speed type
 # to `number`, but dropped the named string constants shipped in 5.10.0. Retain
 # both forms so existing callers using SpeakV2Speed.One or numeric speeds compile.

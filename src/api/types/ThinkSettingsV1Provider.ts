@@ -31,7 +31,18 @@ export namespace ThinkSettingsV1Provider {
         type: "groq";
     }
 
-    export interface Deepgram extends Deepgram.Deepgram {
+    /** Deepgram-hosted language models for the Voice Agent think stage. */
+    export interface Deepgram {
         type: "deepgram";
+        /** Deepgram language model to use. */
+        model: "think-fast" | "phonellm-mini-alpha-2-fp8";
+        /** API version for the Deepgram think provider. Defaults to `v1`. */
+        version?: "v1" | undefined;
+        /** Deepgram temperature (0-2). */
+        temperature?: number | undefined;
+        /** Reasoning effort. */
+        reasoning_mode?: "none" | "minimal" | "low" | "medium" | "high" | undefined;
+        /** Send the prompt unchanged instead of adding spoken-style instructions. */
+        voice_prompt_opt_out?: boolean | undefined;
     }
 }

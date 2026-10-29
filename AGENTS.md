@@ -149,6 +149,7 @@ How to identify:
 - Our version is a **modified copy** of what Fern generates (e.g., fixed types, added optional defaults, broadened a union type)
 
 Current temporarily frozen files:
+- `src/api/types/ThinkSettingsV1Provider.ts` — Fern reuses the TTS `Deepgram` type for the Deepgram Think provider because both source schemas resolve to the same generated name. The generated type therefore omits the Think-specific `think-fast` / `phonellm-mini-alpha-2-fp8` models, `temperature`, `reasoning_mode`, and `voice_prompt_opt_out` fields. Keep the local nested provider shape until the source schema gives the two providers distinct generated names. Regression coverage in `tests/unit/regen-constraints.test.ts` and `tests/wire/websocket/agent-listen-update.test.ts`.
 - `package.json` — Fern's generator produces a minimal `devDependencies` set; we add the following:
   - `@commitlint/cli`, `@commitlint/config-conventional` — used by `.github/workflows/pr-title-check.yml`
   - `tsx` — used by `make examples` / `make example-N`

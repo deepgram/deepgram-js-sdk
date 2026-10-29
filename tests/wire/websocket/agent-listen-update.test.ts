@@ -139,6 +139,58 @@ describe("Agent control messages", () => {
         socket.close();
     });
 
+    it("serializes Deepgram Think provider settings", async () => {
+        let resolveSettings: (settings: unknown) => void = () => undefined;
+        const settingsReceived = new Promise<unknown>((resolve) => {
+            resolveSettings = resolve;
+        });
+        const client = new DeepgramClient({
+            maxRetries: 0,
+            apiKey: "test",
+            environment: {
+                base: server.baseUrl,
+                production: `ws://localhost:${wsPort}`,
+                agent: `ws://localhost:${wsPort}`,
+            },
+        });
+        const socket = await client.agent.v1.createConnection();
+        openSockets.push(socket);
+
+        wsServer.on("connection", (ws) => {
+            ws.send(JSON.stringify({ type: "Welcome" }));
+            ws.on("message", (data) => {
+                const parsed = JSON.parse(data.toString());
+                if (parsed.type === "Settings") {
+                    resolveSettings(parsed);
+                }
+            });
+        });
+
+        socket.connect();
+        await socket.waitForOpen();
+
+        const settings: Deepgram.agent.AgentV1Settings = {
+            type: "Settings",
+            audio: {},
+            agent: {
+                think: {
+                    provider: {
+                        type: "deepgram",
+                        version: "v1",
+                        model: "think-fast",
+                        temperature: 0.7,
+                        reasoning_mode: "minimal",
+                        voice_prompt_opt_out: true,
+                    },
+                },
+            },
+        };
+        socket.sendSettings(settings);
+
+        await expect(settingsReceived).resolves.toEqual(settings);
+        socket.close();
+    });
+
     it("delivers FunctionCallCancelled messages to consumers", async () => {
         const tracker = new WebSocketEventTracker();
         const client = new DeepgramClient({
