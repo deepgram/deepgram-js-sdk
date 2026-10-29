@@ -11,8 +11,7 @@ on:
 
 jobs:
   compile:
-    # Playwright 1.59 does not ship a Chromium build for Ubuntu 26.04 yet.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
@@ -158,7 +157,8 @@ jobs:
           path: code-coverage-results.md
 
   test-browser:
-    runs-on: ubuntu-latest
+    # Playwright 1.59 does not ship a Chromium build for Ubuntu 26.04 yet.
+    runs-on: ubuntu-24.04
     needs: compile
     # Same reason as `examples`: tests/browser/setup.ts throws outright without
     # DEEPGRAM_API_KEY, which fork PRs never receive.
