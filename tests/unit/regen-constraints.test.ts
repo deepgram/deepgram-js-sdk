@@ -478,6 +478,20 @@ describe("2026-10-23 Think Live agent surfaces", () => {
         expect(JSON.parse(JSON.stringify(think))).toEqual(think);
     });
 
+    it("accepts forward-compatible Deepgram Think values", () => {
+        const think: Deepgram.ThinkSettingsV1 = {
+            provider: {
+                type: "deepgram",
+                model: "future-deepgram-think-model",
+                reasoning_mode: "future-reasoning-mode",
+            },
+        };
+
+        if (think.provider.type === "deepgram") {
+            expect(think.provider.model).toBe("future-deepgram-think-model");
+        }
+    });
+
     it("configures Think Live through Agent settings", () => {
         const thinkLive: Deepgram.ThinkLiveSettingsV1 = {
             provider: {
