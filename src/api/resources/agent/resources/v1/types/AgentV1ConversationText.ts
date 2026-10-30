@@ -7,8 +7,8 @@ export interface AgentV1ConversationText {
     role: AgentV1ConversationText.Role;
     /** The actual statement that was spoken */
     content: string;
-    /** Annotates what kind of utterance the message represents: `default` (a standard turn), `backchannel` (a short acknowledgement while the user held the floor), `presence_check` (a prompt after extended silence), or `filler` (a line covering a wait on a function call or a dynamic InjectAgentMessage). The service always sends it; it is kept optional in v5 for source compatibility with callers constructing response objects. Treat an omitted value from a self-hosted or mocked payload as `default`. */
-    conversational_behavior?: AgentV1ConversationText.ConversationalBehavior | undefined;
+    /** Annotates what kind of utterance the message represents: `default` (a standard turn), `backchannel` (a short acknowledgement while the user held the floor), `presence_check` (a prompt after extended silence), or `filler` (a line covering a wait on a function call or a dynamic InjectAgentMessage). Always sent; it is `default` for every message while Think Live is off */
+    conversational_behavior: AgentV1ConversationText.ConversationalBehavior;
     /** The language hints that were active at the time of the turn. Only present on user-role messages when the listen model is flux-general-multi. */
     languages_hinted?: string[] | undefined;
     /** Languages detected in the user's speech, sorted by word count (descending). Only present on user-role messages when the listen model is flux-general-multi. */
