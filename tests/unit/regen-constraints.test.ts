@@ -463,6 +463,17 @@ describe("2026-09-16 agent surfaces", () => {
 });
 
 describe("2026-10-23 Think Live agent surfaces", () => {
+    it("exports the Deepgram Think provider and its named values", () => {
+        const provider: Deepgram.DeepgramThinkProvider = {
+            type: "deepgram",
+            model: Deepgram.DeepgramThinkProvider.Model.ThinkFast,
+            reasoning_mode: Deepgram.DeepgramThinkProvider.ReasoningMode.Minimal,
+        };
+        const think: Deepgram.ThinkSettingsV1 = { provider };
+
+        expect(think.provider).toEqual(provider);
+    });
+
     it("preserves Deepgram Think provider settings", () => {
         const think: Deepgram.ThinkSettingsV1 = {
             provider: {

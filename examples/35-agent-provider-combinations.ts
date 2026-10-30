@@ -11,6 +11,8 @@
  * - Enterprise deployments
  */
 
+import type { Deepgram } from "../src";
+
 const { DeepgramClient } = require("../dist/cjs/index.js");
 
 const deepgramClient = new DeepgramClient({
@@ -371,6 +373,39 @@ function commonPitfalls(): void {
     console.log("   → Use environment-based configuration\n");
 }
 
+/**
+ * Deepgram-hosted Think provider
+ *
+ * `phonellm-mini-alpha-2-fp8` supports Model Improvement Program opt-out.
+ * Use `think-fast` only when the session does not set `mip_opt_out: true`.
+ */
+function deepgramHostedThink(): void {
+    const configuration = {
+        type: "Settings",
+        audio: {
+            input: { encoding: "linear16", sample_rate: 24_000 },
+            output: { encoding: "linear16", sample_rate: 16_000, container: "wav" },
+        },
+        agent: {
+            language: "en",
+            listen: { provider: { type: "deepgram", model: "nova-3" } },
+            think: {
+                provider: {
+                    type: "deepgram",
+                    model: "phonellm-mini-alpha-2-fp8",
+                    reasoning_mode: "none",
+                    voice_prompt_opt_out: true,
+                },
+                prompt: "You are a concise and helpful assistant.",
+            },
+            speak: { provider: { type: "deepgram", model: "aura-2-thalia-en" } },
+        },
+    } satisfies Deepgram.agent.AgentV1Settings;
+
+    console.log("\n=== Deepgram-hosted Think Provider ===\n");
+    console.log(JSON.stringify(configuration, null, 2));
+}
+
 // Main execution
 function main(): void {
     console.log("=== Voice Agent Provider Combinations ===");
@@ -381,6 +416,7 @@ function main(): void {
     costOptimized();
     balancedProduction();
     enterpriseAws();
+    deepgramHostedThink();
 
     performanceComparison();
     bestPractices();
