@@ -499,6 +499,34 @@ describe("auth provider wrappers (via transport headers)", () => {
     it("falls back to the api key when the accessToken supplier resolves nullish", async () => {
         expect(await authHeaderFor({ accessToken: () => undefined })).toBe("Token test-api-key");
     });
+
+    describe("DEEPGRAM_ACCESS_TOKEN environment variable", () => {
+        afterEach(() => {
+            vi.unstubAllEnvs();
+        });
+
+        it("uses a Bearer scheme when no credentials are passed", async () => {
+            vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
+            vi.stubEnv("DEEPGRAM_API_KEY", undefined);
+            expect(await authHeaderFor({ apiKey: undefined })).toBe("Bearer env-access-token");
+        });
+
+        it("takes precedence over DEEPGRAM_API_KEY", async () => {
+            vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
+            vi.stubEnv("DEEPGRAM_API_KEY", "env-api-key");
+            expect(await authHeaderFor({ apiKey: undefined })).toBe("Bearer env-access-token");
+        });
+
+        it("does not override an explicit api key", async () => {
+            vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
+            expect(await authHeaderFor({ apiKey: "explicit-key" })).toBe("Token explicit-key");
+        });
+
+        it("does not override an explicit auth option", async () => {
+            vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
+            expect(await authHeaderFor({ apiKey: undefined, auth: { apiKey: "auth-key" } })).toBe("Token auth-key");
+        });
+    });
 });
 
 describe("TransportWebSocketAdapter branch edges", () => {
