@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.18.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.17.0...v5.18.0) (2026-10-29)
+
+
+### Features
+
+* **agent:** add Deepgram Think provider ([#589](https://github.com/deepgram/deepgram-js-sdk/issues/589)) ([2e6e7aa](https://github.com/deepgram/deepgram-js-sdk/commit/2e6e7aa897da2041f7b88b7944e3459f7fe00b48))
+
 ## [5.17.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.16.0...v5.17.0) (2026-10-27)
 
 
