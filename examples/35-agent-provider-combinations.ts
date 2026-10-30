@@ -382,19 +382,19 @@ function commonPitfalls(): void {
 function deepgramHostedThink(): void {
     const configuration = {
         type: "Settings",
+        mip_opt_out: true,
         audio: {
             input: { encoding: "linear16", sample_rate: 24_000 },
             output: { encoding: "linear16", sample_rate: 16_000, container: "wav" },
         },
         agent: {
             language: "en",
-            listen: { provider: { type: "deepgram", model: "nova-3" } },
+            listen: { provider: { type: "deepgram", version: "v1", model: "nova-3" } },
             think: {
                 provider: {
                     type: "deepgram",
                     model: "phonellm-mini-alpha-2-fp8",
                     reasoning_mode: "none",
-                    voice_prompt_opt_out: true,
                 },
                 prompt: "You are a concise and helpful assistant.",
             },
