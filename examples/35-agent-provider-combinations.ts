@@ -377,7 +377,8 @@ function commonPitfalls(): void {
  * Deepgram-hosted Think provider
  *
  * `phonellm-mini-alpha-2-fp8` supports Model Improvement Program opt-out.
- * Use `think-fast` only when the session does not set `mip_opt_out: true`.
+ * `think-fast` requires Model Improvement Program participation; sessions with
+ * `mip_opt_out: true` receive `INVALID_SETTINGS`.
  */
 function deepgramHostedThink(): void {
     const configuration = {
