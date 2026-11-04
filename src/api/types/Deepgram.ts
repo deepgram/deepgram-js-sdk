@@ -110,11 +110,6 @@ export namespace Deepgram {
         FluxNaveenEn: "flux-naveen-en",
         FluxPaigeEn: "flux-paige-en",
         FluxPriyaEn: "flux-priya-en",
-        /**
-         * @deprecated Removed from the published Flux TTS voice catalog and may be withdrawn without
-         * notice. Use a voice from the GA catalog.
-         */
-        FluxReneeEn: "flux-renee-en",
         FluxRufusEn: "flux-rufus-en",
         FluxSeanEn: "flux-sean-en",
         FluxSharonEn: "flux-sharon-en",

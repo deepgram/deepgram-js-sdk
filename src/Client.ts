@@ -91,8 +91,8 @@ export class DeepgramClient {
                         const env = await core.Supplier.get(this._options.environment);
                         return typeof env === "string"
                             ? env
-                            : ((env as Record<string, string>)?.base ??
-                                  environments.DeepgramEnvironment.Production.base);
+                            : ((env as Record<string, string>)?.agentRest ??
+                                  environments.DeepgramEnvironment.Production.agentRest);
                     }),
                 headers: this._options.headers,
                 timeoutInSeconds: this._options.timeoutInSeconds,

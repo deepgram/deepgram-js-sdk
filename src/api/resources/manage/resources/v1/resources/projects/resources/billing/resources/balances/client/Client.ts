@@ -62,7 +62,7 @@ export class BalancesClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/balances`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/balances`,
             ),
             method: "GET",
             headers: _headers,
@@ -141,7 +141,7 @@ export class BalancesClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/balances/${core.url.encodePathParam(balance_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/balances/${core.url.encodePathParam(balance_id, errors.DeepgramError)}`,
             ),
             method: "GET",
             headers: _headers,

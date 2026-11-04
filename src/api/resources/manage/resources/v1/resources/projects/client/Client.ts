@@ -175,7 +175,7 @@ export class ProjectsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}`,
             ),
             method: "GET",
             headers: _headers,
@@ -247,7 +247,7 @@ export class ProjectsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}`,
             ),
             method: "DELETE",
             headers: _headers,
@@ -318,7 +318,7 @@ export class ProjectsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}`,
             ),
             method: "PATCH",
             headers: _headers,
@@ -389,7 +389,7 @@ export class ProjectsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/leave`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/leave`,
             ),
             method: "DELETE",
             headers: _headers,

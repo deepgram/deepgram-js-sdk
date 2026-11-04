@@ -74,7 +74,7 @@ export class MembersClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/members`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/members`,
             ),
             method: "GET",
             headers: _headers,
@@ -153,7 +153,7 @@ export class MembersClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/members/${core.url.encodePathParam(member_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/members/${core.url.encodePathParam(member_id, errors.DeepgramError)}`,
             ),
             method: "DELETE",
             headers: _headers,
