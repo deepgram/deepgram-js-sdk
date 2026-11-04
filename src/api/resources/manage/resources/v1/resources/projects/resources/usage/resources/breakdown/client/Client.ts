@@ -205,7 +205,7 @@ export class BreakdownClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/usage/breakdown`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/usage/breakdown`,
             ),
             method: "GET",
             headers: _headers,

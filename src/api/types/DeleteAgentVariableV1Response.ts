@@ -3,4 +3,6 @@
 /**
  * Confirmation that the agent variable was deleted
  */
-export type DeleteAgentVariableV1Response = Record<string, unknown>;
+export type DeleteAgentVariableV1Response = {
+    [key: string]: unknown;
+};

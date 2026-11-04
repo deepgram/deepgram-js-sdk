@@ -3,4 +3,6 @@
 /**
  * Confirmation that the agent configuration was deleted
  */
-export type DeleteAgentConfigurationV1Response = Record<string, unknown>;
+export type DeleteAgentConfigurationV1Response = {
+    [key: string]: unknown;
+};

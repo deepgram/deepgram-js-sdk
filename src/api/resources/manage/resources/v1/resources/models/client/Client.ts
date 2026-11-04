@@ -140,7 +140,7 @@ export class ModelsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/models/${core.url.encodePathParam(model_id)}`,
+                `v1/models/${core.url.encodePathParam(model_id, errors.DeepgramError)}`,
             ),
             method: "GET",
             headers: _headers,

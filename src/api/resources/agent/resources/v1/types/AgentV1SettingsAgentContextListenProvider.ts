@@ -14,8 +14,4 @@ export namespace AgentV1SettingsAgentContextListenProvider {
     export interface V2 extends Deepgram.DeepgramListenProviderV2 {
         version: "v2";
     }
-
-    export namespace AgentV1SettingsAgentContextListenProviderV2 {
-        export type LanguageHint = Deepgram.DeepgramListenProviderV2.LanguageHint;
-    }
 }

@@ -63,7 +63,7 @@ export class DistributionCredentialsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/self-hosted/distribution/credentials`,
             ),
             method: "GET",
             headers: _headers,
@@ -150,7 +150,7 @@ export class DistributionCredentialsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/self-hosted/distribution/credentials`,
             ),
             method: "POST",
             headers: _headers,
@@ -238,7 +238,7 @@ export class DistributionCredentialsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials/${core.url.encodePathParam(distribution_credentials_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/self-hosted/distribution/credentials/${core.url.encodePathParam(distribution_credentials_id, errors.DeepgramError)}`,
             ),
             method: "GET",
             headers: _headers,
@@ -319,7 +319,7 @@ export class DistributionCredentialsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/self-hosted/distribution/credentials/${core.url.encodePathParam(distribution_credentials_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/self-hosted/distribution/credentials/${core.url.encodePathParam(distribution_credentials_id, errors.DeepgramError)}`,
             ),
             method: "DELETE",
             headers: _headers,
