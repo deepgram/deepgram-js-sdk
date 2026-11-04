@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.18.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.17.0...v5.18.0) (2026-11-04)
+
+
+### Features
+
+* **Voice Agent:** Use Deepgram-hosted language models in the Think stage with `Deepgram.ThinkSettingsV1Provider.Deepgram`. Select `think-fast` (requires Model Improvement Program participation) or `phonellm-mini-alpha-2-fp8` (for sessions using `mip_opt_out: true`). The provider supports `temperature`, `reasoning_mode`, and `voice_prompt_opt_out`; use `reasoning_mode: "none"` or omit it with phonellm to prevent reasoning text from being spoken. Early Access. ([#589](https://github.com/deepgram/deepgram-js-sdk/issues/589)) ([2e6e7aa](https://github.com/deepgram/deepgram-js-sdk/commit/2e6e7aa897da2041f7b88b7944e3459f7fe00b48)) ([#592](https://github.com/deepgram/deepgram-js-sdk/issues/592)) ([d9f525a](https://github.com/deepgram/deepgram-js-sdk/commit/d9f525a7fee0cfe32e18ad4c91db1f0cd69e5e7e))
+
 ## [5.17.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.16.0...v5.17.0) (2026-10-27)
 
 
