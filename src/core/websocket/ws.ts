@@ -427,6 +427,7 @@ export class ReconnectingWebSocket {
                 this._ws = new WebSocket(url, this._protocols, options);
                 this._ws!.binaryType = this._binaryType;
                 this._connectLock = false;
+                this._attachHandshakeErrorListener();
                 this._addListeners();
 
                 this._connectTimeout = setTimeout(() => this._handleTimeout(), connectionTimeout);
@@ -457,6 +458,42 @@ export class ReconnectingWebSocket {
     private _handleTimeout() {
         this._debug("timeout event");
         this._handleError(new Events.ErrorEvent(Error("TIMEOUT"), this));
+    }
+
+    /**
+     * Node's `ws` library emits `unexpected-response` (with the raw request/response)
+     * when the server rejects the handshake with a non-101 status. Without a listener,
+     * `ws` destroys the socket and falls back to a generic `error` event, losing the
+     * status code, headers, request ID, and body — the only place the API's `dg-error`
+     * diagnostics arrive on a rejected handshake. Browsers never expose this data
+     * (the WebSocket spec hides handshake responses entirely), so this is a Node-only
+     * enrichment; `ws.on` is absent elsewhere and the duck-type check below no-ops.
+     */
+    private _attachHandshakeErrorListener() {
+        const ws = this._ws as unknown as { on?: (event: string, listener: (...args: any[]) => void) => void };
+        if (typeof ws.on !== "function") {
+            return;
+        }
+        ws.on("unexpected-response", (req: any, res: any) => {
+            let body = "";
+            res.on("data", (chunk: any) => {
+                body += chunk;
+            });
+            res.on("end", () => {
+                const headers: Record<string, string> = {};
+                for (const [key, value] of Object.entries(res.headers ?? {})) {
+                    headers[key] = String(value);
+                }
+                const error = new Error(`Unexpected server response: ${res.statusCode}`) as Error &
+                    Events.HandshakeErrorDetails;
+                error.statusCode = res.statusCode;
+                error.headers = headers;
+                error.body = body;
+                error.requestId = headers["dg-request-id"];
+                req.destroy();
+                this._handleError(new Events.ErrorEvent(error, this));
+            });
+        });
     }
 
     private _disconnect(code = 1000, reason?: string) {
