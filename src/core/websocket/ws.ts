@@ -588,6 +588,58 @@ export class ReconnectingWebSocket {
         this._ws.addEventListener("message", this._handleMessage);
         // @ts-ignore
         this._ws.addEventListener("error", this._handleError);
+        this._addUnexpectedResponseListener();
+    }
+
+    /**
+     * When a handshake is rejected with a non-101 response, the server returns the reason in the
+     * response body and headers (Deepgram sets `dg-error`). The `ws` package exposes that response
+     * only through its `unexpected-response` event; with no listener it discards the response and
+     * emits a bare `Unexpected server response: <status>`. We register a listener so the status,
+     * `dg-error` header and body can be folded into the error message that reaches callers via
+     * `waitForOpen()` and the `error` listener. Browser `WebSocket` has no `on()`, so this is a
+     * no-op there (and the standard `error` event still fires).
+     */
+    private _addUnexpectedResponseListener() {
+        const emitter = this._ws as unknown as {
+            on?: (event: string, listener: (...args: any[]) => void) => void;
+        };
+        if (typeof emitter.on !== "function") {
+            return;
+        }
+        emitter.on("unexpected-response", (_request: unknown, response: any) => {
+            // Adding this listener suppresses the `ws` package's own abort-and-error behaviour, so
+            // we own the teardown: drain the body, clear the connect timeout, and emit a single
+            // enriched error through the normal error path (which keeps the existing retry policy).
+            clearTimeout(this._connectTimeout);
+            const statusCode: number | undefined = response?.statusCode;
+            const headers: Record<string, string | string[] | undefined> = response?.headers ?? {};
+            let body = "";
+            let settled = false;
+            const finish = () => {
+                if (settled) {
+                    return;
+                }
+                settled = true;
+                const dgError = headers["dg-error"];
+                const detail = (typeof dgError === "string" && dgError) || body.trim();
+                const message = detail
+                    ? `Unexpected server response: ${statusCode} (${detail})`
+                    : `Unexpected server response: ${statusCode}`;
+                response?.destroy?.();
+                this._handleError(new Events.ErrorEvent(new Error(message), this));
+            };
+            if (typeof response?.on === "function") {
+                response.setEncoding?.("utf8");
+                response.on("data", (chunk: string) => {
+                    body += chunk;
+                });
+                response.on("end", finish);
+                response.on("error", finish);
+            } else {
+                finish();
+            }
+        });
     }
 
     private _clearTimeouts() {
