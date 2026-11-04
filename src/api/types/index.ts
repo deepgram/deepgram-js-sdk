@@ -15,6 +15,7 @@ export * from "./Deepgram.js";
 export * from "./DeepgramListenProviderV1.js";
 export * from "./DeepgramListenProviderV2.js";
 export * from "./DeepgramThinkLiveProviderV1.js";
+export * from "./DeepgramThinkProvider.js";
 export * from "./DeleteAgentConfigurationV1Response.js";
 export * from "./DeleteAgentVariableV1Response.js";
 export * from "./DeleteProjectInviteV1Response.js";
