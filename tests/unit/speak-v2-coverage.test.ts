@@ -177,6 +177,33 @@ class FakeSocket {
     reconnect(): void {
         this.reconnectCalled = true;
     }
+    waitForOpen(): Promise<void> {
+        if (this.readyState === OPEN) {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            const cleanup = () => {
+                this.removeEventListener("open", onOpen);
+                this.removeEventListener("error", onError);
+                this.removeEventListener("close", onClose);
+            };
+            const onOpen = () => {
+                cleanup();
+                resolve();
+            };
+            const onError = (event: unknown) => {
+                cleanup();
+                reject(event);
+            };
+            const onClose = (event: unknown) => {
+                cleanup();
+                reject(event);
+            };
+            this.addEventListener("open", onOpen);
+            this.addEventListener("error", onError);
+            this.addEventListener("close", onClose);
+        });
+    }
     emit(type: string, event: any): void {
         (this.listeners[type] ?? []).forEach((l) => l(event));
     }

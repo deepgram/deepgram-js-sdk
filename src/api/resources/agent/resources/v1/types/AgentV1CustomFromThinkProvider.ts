@@ -3,5 +3,5 @@
 export interface AgentV1CustomFromThinkProvider {
     /** Message type identifier for a custom payload returned by the think provider */
     type: "__customFromThinkProvider";
-    content?: unknown | undefined;
+    content: unknown;
 }
