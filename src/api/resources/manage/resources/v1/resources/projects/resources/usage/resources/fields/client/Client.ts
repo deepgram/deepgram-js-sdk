@@ -73,7 +73,7 @@ export class FieldsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/usage/fields`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/usage/fields`,
             ),
             method: "GET",
             headers: _headers,

@@ -60,7 +60,7 @@ export class ConfigurationsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/agents`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/agents`,
             ),
             method: "GET",
             headers: _headers,
@@ -141,7 +141,7 @@ export class ConfigurationsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/agents`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/agents`,
             ),
             method: "POST",
             headers: _headers,
@@ -223,7 +223,7 @@ export class ConfigurationsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/agents/${core.url.encodePathParam(agent_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/agents/${core.url.encodePathParam(agent_id, errors.DeepgramError)}`,
             ),
             method: "GET",
             headers: _headers,
@@ -306,7 +306,7 @@ export class ConfigurationsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/agents/${core.url.encodePathParam(agent_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/agents/${core.url.encodePathParam(agent_id, errors.DeepgramError)}`,
             ),
             method: "PUT",
             headers: _headers,
@@ -385,7 +385,7 @@ export class ConfigurationsClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/agents/${core.url.encodePathParam(agent_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/agents/${core.url.encodePathParam(agent_id, errors.DeepgramError)}`,
             ),
             method: "DELETE",
             headers: _headers,

@@ -37,7 +37,7 @@ export declare namespace V1Socket {
         open?: () => void;
         message?: (message: Response) => void;
         close?: (event: core.CloseEvent) => void;
-        error?: (error: Error) => void;
+        error?: (error: Error & Pick<core.ErrorEvent, "statusCode" | "headers" | "body">) => void;
     };
 }
 
@@ -76,10 +76,14 @@ export class V1Socket {
         }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
-        const message = event.message;
+        const error = Object.assign(event.error ?? new Error(event.message), {
+            statusCode: event.statusCode,
+            headers: event.headers,
+            body: event.body,
+        });
         for (const handler of [...this.eventHandlers.error]) {
             try {
-                handler(new Error(message));
+                handler(error);
             } catch (error) {
                 console.error("Deepgram WebSocket error handler failed", error);
             }
@@ -102,6 +106,8 @@ export class V1Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
+     * Registering another callback for the same event replaces the previous callback.
+     * Pass `undefined` to clear the callback.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -154,11 +160,6 @@ export class V1Socket {
         this.sendJson(message);
     }
 
-    /**
-     * Replaces the active Think Live provider configuration. Include every provider field
-     * that should remain active; omitted fields revert to their server defaults.
-     * The server confirms a successful update with `ThinkLiveUpdated`.
-     */
     public sendUpdateThinkLive(message: Deepgram.agent.AgentV1UpdateThinkLive): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -179,11 +180,6 @@ export class V1Socket {
         this.sendJson(message);
     }
 
-    /**
-     * Requires `agent.think_live`. Requests a Think Live-generated filler line instead of
-     * fixed text. If no filler can be generated, the server returns a
-     * `DYNAMIC_FILLER_UNAVAILABLE` warning.
-     */
     public sendInjectDynamicAgentMessage(message: Deepgram.agent.AgentV1InjectDynamicAgentMessage): void {
         this.assertSocketIsOpen();
         this.sendJson(message);
@@ -254,21 +250,10 @@ export class V1Socket {
         this.socket.removeEventListener("error", this.handleError);
     }
 
-    /** Returns a promise that resolves when the websocket is open. */
+    /** Returns a promise that resolves when the websocket is open, and rejects if it errors or closes before opening. */
     public async waitForOpen(): Promise<core.ReconnectingWebSocket> {
-        if (this.socket.readyState === core.ReconnectingWebSocket.ReadyState.OPEN) {
-            return this.socket;
-        }
-
-        return new Promise((resolve, reject) => {
-            this.socket.addEventListener("open", () => {
-                resolve(this.socket);
-            });
-
-            this.socket.addEventListener("error", (event: unknown) => {
-                reject(event);
-            });
-        });
+        await this.socket.waitForOpen();
+        return this.socket;
     }
 
     /** Asserts that the websocket is open. */
