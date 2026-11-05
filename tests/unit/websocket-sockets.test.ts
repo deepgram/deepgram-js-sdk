@@ -35,6 +35,33 @@ class FakeSocket {
     reconnect(): void {
         this.reconnectCalled = true;
     }
+    waitForOpen(): Promise<void> {
+        if (this.readyState === OPEN) {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            const cleanup = () => {
+                this.removeEventListener("open", onOpen);
+                this.removeEventListener("error", onError);
+                this.removeEventListener("close", onClose);
+            };
+            const onOpen = () => {
+                cleanup();
+                resolve();
+            };
+            const onError = (event: unknown) => {
+                cleanup();
+                reject(event);
+            };
+            const onClose = (event: unknown) => {
+                cleanup();
+                reject(event);
+            };
+            this.addEventListener("open", onOpen);
+            this.addEventListener("error", onError);
+            this.addEventListener("close", onClose);
+        });
+    }
     emit(type: string, event: any): void {
         (this.listeners[type] ?? []).forEach((l) => l(event));
     }
@@ -144,6 +171,34 @@ describe.each([
 
         fake.emit("close", { code: 1011, reason: "server" });
         expect(seen.close).toEqual({ code: 1011, reason: "server" });
+    });
+
+    it("forwards rejected handshake metadata to error handlers", () => {
+        const fake = new FakeSocket();
+        const socket = make(fake);
+        const sourceError = new Error("Unexpected server response: 403");
+        let received: (Error & { statusCode?: number; headers?: Record<string, string>; body?: string }) | undefined;
+
+        socket.on(
+            "error",
+            (error: Error & { statusCode?: number; headers?: Record<string, string>; body?: string }) => {
+                received = error;
+            },
+        );
+        fake.emit("error", {
+            message: sourceError.message,
+            error: sourceError,
+            statusCode: 403,
+            headers: { "content-type": "application/json" },
+            body: '{"err_msg":"Forbidden"}',
+        });
+
+        expect(received).toBe(sourceError);
+        expect(received).toMatchObject({
+            statusCode: 403,
+            headers: { "content-type": "application/json" },
+            body: '{"err_msg":"Forbidden"}',
+        });
     });
 
     it("replaces a handler when the same event is registered again", () => {
