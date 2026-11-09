@@ -19,6 +19,7 @@ class FakeWebSocket {
     public readonly url: string;
     public closeCalls: { code?: number; reason?: string }[] = [];
     private listeners: Record<string, Listener[]> = {};
+    private emitterListeners: Record<string, Listener[]> = {};
 
     constructor(url: string) {
         this.url = url;
@@ -27,6 +28,20 @@ class FakeWebSocket {
 
     public addEventListener(type: string, listener: Listener): void {
         (this.listeners[type] ??= []).push(listener);
+    }
+
+    public on(type: string, listener: Listener): void {
+        (this.emitterListeners[type] ??= []).push(listener);
+    }
+
+    public removeListener(type: string, listener: Listener): void {
+        this.emitterListeners[type] = (this.emitterListeners[type] ?? []).filter((candidate) => candidate !== listener);
+    }
+
+    public simulateUnexpectedResponse(response: FakeIncomingMessage): void {
+        for (const listener of [...(this.emitterListeners["unexpected-response"] ?? [])]) {
+            (listener as (request: unknown, response: FakeIncomingMessage) => void)({}, response);
+        }
     }
 
     public removeEventListener(type: string, listener: Listener): void {
@@ -57,6 +72,36 @@ class FakeWebSocket {
     private dispatch(type: string, event: unknown): void {
         for (const listener of [...(this.listeners[type] ?? [])]) {
             listener(event);
+        }
+    }
+}
+
+class FakeIncomingMessage {
+    private listeners: Record<string, Array<(...args: unknown[]) => void>> = {};
+    public destroyed = false;
+
+    constructor(
+        public readonly statusCode: number,
+        public readonly headers: Record<string, string | string[]>,
+        private readonly body: string,
+    ) {}
+
+    public setEncoding(_encoding: string): void {}
+
+    public on(type: string, listener: (...args: unknown[]) => void): void {
+        (this.listeners[type] ??= []).push(listener);
+    }
+
+    public destroy(): void {
+        this.destroyed = true;
+    }
+
+    public flush(): void {
+        for (const listener of this.listeners.data ?? []) {
+            listener(this.body);
+        }
+        for (const listener of this.listeners.end ?? []) {
+            listener();
         }
     }
 }
@@ -235,5 +280,64 @@ describe("ReconnectingWebSocket reconnect policy", () => {
         await flush();
 
         expect(FakeWebSocket.instances).toHaveLength(1);
+    });
+
+    describe("rejected handshakes", () => {
+        it("exposes the status, headers, and body from a rejected handshake", async () => {
+            socket = createSocket({ maxRetries: 0 });
+            await flush();
+            const onError = vi.fn();
+            socket.addEventListener("error", onError);
+            const opened = socket.waitForOpen().catch((error: unknown) => error);
+
+            const response = new FakeIncomingMessage(
+                401,
+                { "dg-request-id": "request-123" },
+                '{"err_code":"INVALID_AUTH","err_msg":"Invalid credentials"}',
+            );
+            (FakeWebSocket.instances[0] as FakeWebSocket).simulateUnexpectedResponse(response);
+            response.flush();
+
+            const event = (await opened) as ErrorEvent;
+            expect(onError).toHaveBeenCalledWith(event);
+            expect(event).toMatchObject({
+                statusCode: 401,
+                headers: { "dg-request-id": "request-123" },
+                body: '{"err_code":"INVALID_AUTH","err_msg":"Invalid credentials"}',
+            });
+            expect(response.destroyed).toBe(true);
+        });
+
+        it("caps a rejected handshake body at 1,000 characters", async () => {
+            socket = createSocket({ maxRetries: 0 });
+            await flush();
+            const onError = vi.fn();
+            socket.addEventListener("error", onError);
+            const response = new FakeIncomingMessage(502, {}, "x".repeat(1001));
+
+            (FakeWebSocket.instances[0] as FakeWebSocket).simulateUnexpectedResponse(response);
+            response.flush();
+            await flush();
+
+            const event = onError.mock.calls[0]?.[0] as ErrorEvent;
+            expect(event.body).toHaveLength(1000);
+            expect(event.message).toBe(`Unexpected server response: 502 (${"x".repeat(1000)}...)`);
+        });
+
+        it("does not emit a rejected-handshake error after close()", async () => {
+            socket = createSocket({ maxRetries: 0 });
+            await flush();
+            const onError = vi.fn();
+            socket.addEventListener("error", onError);
+            socket.close();
+            const response = new FakeIncomingMessage(401, {}, "invalid credentials");
+
+            (FakeWebSocket.instances[0] as FakeWebSocket).simulateUnexpectedResponse(response);
+            response.flush();
+            await flush();
+
+            expect(response.destroyed).toBe(true);
+            expect(onError).not.toHaveBeenCalled();
+        });
     });
 });
