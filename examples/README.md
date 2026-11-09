@@ -86,6 +86,26 @@ DEEPGRAM_API_KEY="your-api-key-here" DEEPGRAM_PROJECT_ID="your-id-here" make exa
 DEEPGRAM_API_KEY="your-api-key-here" DEEPGRAM_PROJECT_ID="your-id-here" make examples
 ```
 
+### Privileged management examples
+
+`make examples` uses a member-scoped key by default and skips management examples that need broader access. This is intentional: CI does not store a privileged management or self-hosted key.
+
+Run the privileged management examples locally with a key that has the required scopes:
+
+```bash
+DEEPGRAM_ADMIN_SCOPES=1 DEEPGRAM_API_KEY="your-admin-key" DEEPGRAM_PROJECT_ID="your-id" make examples
+```
+
+This enables examples 15, 16, 18, 30, and 31. `DEEPGRAM_ADMIN_SCOPES=true` is equivalent; all other values leave them skipped.
+
+Self-hosted credentials require a separate product entitlement. Run example 20 locally with:
+
+```bash
+DEEPGRAM_SELF_HOSTED_SCOPES=1 DEEPGRAM_API_KEY="your-self-hosted-key" DEEPGRAM_PROJECT_ID="your-id" make examples
+```
+
+`DEEPGRAM_SELF_HOSTED_SCOPES=true` is equivalent; all other values leave example 20 skipped.
+
 ## Getting an API Key
 
 🔑 To access the Deepgram API you will need a [free Deepgram API Key](https://console.deepgram.com/signup?jump=keys).

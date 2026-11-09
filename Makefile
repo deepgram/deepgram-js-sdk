@@ -133,6 +133,18 @@ examples:
 		fi; \
 	}; \
 	\
+	run_scoped_example() { \
+		GATE=$$1; \
+		NUM=$$2; \
+		FILE=$$3; \
+		NAME=$$4; \
+		REASON=$$5; \
+		case "$$GATE" in \
+			1|true) run_example "$$NUM" "$$FILE" "$$NAME" ;; \
+			*) skip_example "$$NUM" "$$NAME" "$$REASON" ;; \
+		esac; \
+	}; \
+	\
 	run_example 1 "examples/01-authentication-api-key.ts" "Authentication API Key"; \
 	run_example 2 "examples/02-authentication-access-token.ts" "Authentication Access Token"; \
 	run_example 3 "examples/03-authentication-proxy.ts" "Authentication Proxy"; \
@@ -147,28 +159,12 @@ examples:
 	run_example 12 "examples/12-text-intelligence.ts" "Text Intelligence"; \
 	run_example 13 "examples/13-management-projects.ts" "Management Projects"; \
 	run_example 14 "examples/14-management-keys.ts" "Management Keys"; \
-	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
-		run_example 15 "examples/15-management-members.ts" "Management Members"; \
-	else \
-		skip_example 15 "Management Members" "requires members:read + members:write:scopes"; \
-	fi; \
-	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
-		run_example 16 "examples/16-management-invites.ts" "Management Invites"; \
-	else \
-		skip_example 16 "Management Invites" "requires members:*:invites"; \
-	fi; \
+	run_scoped_example "$$DEEPGRAM_ADMIN_SCOPES" 15 "examples/15-management-members.ts" "Management Members" "requires members:read + members:write:scopes"; \
+	run_scoped_example "$$DEEPGRAM_ADMIN_SCOPES" 16 "examples/16-management-invites.ts" "Management Invites" "requires members:*:invites"; \
 	run_example 17 "examples/17-management-usage.ts" "Management Usage"; \
-	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
-		run_example 18 "examples/18-management-billing.ts" "Management Billing"; \
-	else \
-		skip_example 18 "Management Billing" "requires billing:read"; \
-	fi; \
+	run_scoped_example "$$DEEPGRAM_ADMIN_SCOPES" 18 "examples/18-management-billing.ts" "Management Billing" "requires billing:read"; \
 	run_example 19 "examples/19-management-models.ts" "Management Models"; \
-	if [ -n "$$DEEPGRAM_SELF_HOSTED_SCOPES" ]; then \
-		run_example 20 "examples/20-onprem-credentials.ts" "On-Premises Credentials"; \
-	else \
-		skip_example 20 "On-Premises Credentials" "requires self-hosted:product:* scopes"; \
-	fi; \
+	run_scoped_example "$$DEEPGRAM_SELF_HOSTED_SCOPES" 20 "examples/20-onprem-credentials.ts" "On-Premises Credentials" "requires self-hosted:product:* scopes"; \
 	run_example 21 "examples/21-configuration-scoped.ts" "Configuration Scoped"; \
 	run_example 22 "examples/22-transcription-advanced-options.ts" "Transcription Advanced Options"; \
 	run_example 23 "examples/23-file-upload-types.ts" "File Upload Types"; \
@@ -178,16 +174,8 @@ examples:
 	run_example 27 "examples/27-deepgram-session-header.ts" "Deepgram Session Header"; \
 	run_example 28 "examples/28-text-intelligence-advanced.ts" "Text Intelligence Advanced"; \
 	run_example 29 "examples/29-management-usage-breakdown.ts" "Management Usage Breakdown"; \
-	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
-		run_example 30 "examples/30-management-billing-detailed.ts" "Management Billing Detailed"; \
-	else \
-		skip_example 30 "Management Billing Detailed" "requires billing:read"; \
-	fi; \
-	if [ -n "$$DEEPGRAM_ADMIN_SCOPES" ]; then \
-		run_example 31 "examples/31-management-member-permissions.ts" "Management Member Permissions"; \
-	else \
-		skip_example 31 "Management Member Permissions" "requires members:read + members:read:scopes"; \
-	fi; \
+	run_scoped_example "$$DEEPGRAM_ADMIN_SCOPES" 30 "examples/30-management-billing-detailed.ts" "Management Billing Detailed" "requires billing:read"; \
+	run_scoped_example "$$DEEPGRAM_ADMIN_SCOPES" 31 "examples/31-management-member-permissions.ts" "Management Member Permissions" "requires members:read + members:read:scopes"; \
 	run_example 32 "examples/32-management-project-models.ts" "Management Project Models"; \
 	run_example 33 "examples/33-configuration-eu-endpoint.ts" "Configuration EU Endpoint"; \
 	run_example 34 "examples/34-agent-custom-providers.ts" "Agent Custom Providers"; \
