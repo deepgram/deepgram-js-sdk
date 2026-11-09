@@ -577,6 +577,10 @@ class TransportWebSocketAdapter {
     private _connectTimeout: ReturnType<typeof setTimeout> | undefined;
     private _uptimeTimeout: ReturnType<typeof setTimeout> | undefined;
     private _transport: DeepgramTransport | undefined;
+    private _closeCompletion: Promise<void> | undefined;
+    private _closingTransport: DeepgramTransport | undefined;
+    private _resolveClose: (() => void) | undefined;
+    private _rejectClose: ((error: unknown) => void) | undefined;
     private _readyState: ReconnectingWebSocket.ReadyState;
     private _ws:
         | {
@@ -674,6 +678,9 @@ class TransportWebSocketAdapter {
     }
 
     public close(code = 1000, reason?: string): void {
+        if (this._closeCompletion != null) {
+            return;
+        }
         this._closeCalled = true;
         this._shouldReconnect = false;
         this._clearConnectTimeout();
@@ -686,11 +693,33 @@ class TransportWebSocketAdapter {
 
         if (!transport) {
             this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
+            if (this._connectLock) {
+                this._closeCompletion = this._createCloseCompletion();
+            } else {
+                this._closeCompletion = Promise.resolve();
+            }
             return;
         }
 
-        void transport.close(code, reason);
+        this._closingTransport = transport;
+        this._closeCompletion = this._createCloseCompletion();
+        try {
+            const result = transport.close(code, reason);
+            if (result instanceof Promise) {
+                void result.then(
+                    () => this._completeClose(),
+                    (error) => this._completeClose(error),
+                );
+            }
+        } catch (error) {
+            this._completeClose(error);
+            throw error;
+        }
         this._readyState = ReconnectingWebSocket.ReadyState.CLOSED;
+    }
+
+    public waitForClose(): Promise<void> {
+        return this._closeCompletion ?? Promise.resolve();
     }
 
     public reconnect(code?: number, reason?: string): void {
@@ -698,6 +727,10 @@ class TransportWebSocketAdapter {
         this._closeCalled = false;
         this._terminalMessageSent = false;
         this._retryCount = -1;
+        this._closeCompletion = undefined;
+        this._closingTransport = undefined;
+        this._resolveClose = undefined;
+        this._rejectClose = undefined;
         this._clearUptimeTimeout();
         this._readyState = ReconnectingWebSocket.ReadyState.CONNECTING;
 
@@ -818,7 +851,20 @@ class TransportWebSocketAdapter {
 
             if (this._closeCalled || this._request.abortSignal?.aborted) {
                 this._connectLock = false;
-                await transport.close(1000, "aborted");
+                this._closingTransport = transport;
+                this._closeCompletion ??= this._createCloseCompletion();
+                this._bindTransport(transport);
+                try {
+                    const result = transport.close(1000, "aborted");
+                    if (result instanceof Promise) {
+                        void result.then(
+                            () => this._completeClose(),
+                            (error) => this._completeClose(error),
+                        );
+                    }
+                } catch (error) {
+                    this._completeClose(error);
+                }
                 return;
             }
 
@@ -833,6 +879,10 @@ class TransportWebSocketAdapter {
             }
         } catch (error) {
             this._connectLock = false;
+            if (this._closeCalled) {
+                this._completeClose(error);
+                return;
+            }
             this._handleError(error instanceof Error ? error : new Error(String(error)));
         }
     }
@@ -863,6 +913,10 @@ class TransportWebSocketAdapter {
         });
 
         transport.onClose((event) => {
+            if (this._closingTransport === transport) {
+                this._completeClose();
+                return;
+            }
             if (this._transport !== transport) {
                 return;
             }
@@ -1021,6 +1075,29 @@ class TransportWebSocketAdapter {
 
         if (this._shouldReconnect && !this._closeCalled) {
             void this._connect();
+        }
+    }
+
+    private _createCloseCompletion(): Promise<void> {
+        const completion = new Promise<void>((resolve, reject) => {
+            this._resolveClose = resolve;
+            this._rejectClose = reject;
+        });
+        // Direct close() callers cannot observe this promise, so contain failures while preserving them for disposal.
+        void completion.catch((error) => this._debug("transport close failed", error));
+        return completion;
+    }
+
+    private _completeClose(error?: unknown): void {
+        const resolve = this._resolveClose;
+        const reject = this._rejectClose;
+        this._closingTransport = undefined;
+        this._resolveClose = undefined;
+        this._rejectClose = undefined;
+        if (error !== undefined) {
+            reject?.(error);
+        } else {
+            resolve?.();
         }
     }
 
@@ -1515,29 +1592,47 @@ type DisposableSocketInstance = {
     socket: ReconnectingWebSocket;
 };
 
-function installSocketDisposal(socket: DisposableSocketInstance): void {
-    // Node 18.0-18.17 support the SDK but do not define these newer symbols.
-    // Do not create an accidental "undefined" property on those runtimes.
-    if (typeof Symbol.dispose === "symbol") {
-        Object.defineProperty(socket, Symbol.dispose, {
-            value: () => socket.close(),
-        });
+type CloseAwaitableSocket = ReconnectingWebSocket & {
+    waitForClose?: () => Promise<void>;
+};
+
+function installDisposalSymbols(): void {
+    if (typeof Symbol.dispose !== "symbol") {
+        Object.defineProperty(Symbol, "dispose", { value: Symbol.for("Symbol.dispose") });
     }
-    if (typeof Symbol.asyncDispose === "symbol") {
-        Object.defineProperty(socket, Symbol.asyncDispose, {
-            value: () => disposeSocketAsync(socket),
-        });
+    if (typeof Symbol.asyncDispose !== "symbol") {
+        Object.defineProperty(Symbol, "asyncDispose", { value: Symbol.for("Symbol.asyncDispose") });
     }
 }
 
+function installSocketDisposal(socket: DisposableSocketInstance): void {
+    // Node 18.0-18.17 lack the standardized symbols even though the SDK supports those releases.
+    // Install the protocol symbols before `await using` evaluates its disposal method.
+    installDisposalSymbols();
+    Object.defineProperty(socket, Symbol.dispose, {
+        value: () => socket.close(),
+    });
+    Object.defineProperty(socket, Symbol.asyncDispose, {
+        value: () => disposeSocketAsync(socket),
+    });
+}
+
 function disposeSocketAsync(socket: DisposableSocketInstance): Promise<void> {
-    const transport = socket.socket;
+    const transport = socket.socket as CloseAwaitableSocket;
+    if (typeof transport.waitForClose === "function") {
+        try {
+            socket.close();
+        } catch (error) {
+            return Promise.reject(error);
+        }
+        return transport.waitForClose();
+    }
     if (transport.readyState === transport.CLOSED) {
         socket.close();
         return Promise.resolve();
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         let settled = false;
         const onClose = () => {
             if (settled) {
