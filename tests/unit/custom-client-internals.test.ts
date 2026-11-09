@@ -526,6 +526,20 @@ describe("auth provider wrappers (via transport headers)", () => {
             vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
             expect(await authHeaderFor({ apiKey: undefined, auth: { apiKey: "auth-key" } })).toBe("Token auth-key");
         });
+
+        it("does not override an explicit api key when an accessToken supplier resolves nullish", async () => {
+            vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
+            expect(await authHeaderFor({ apiKey: "explicit-key", accessToken: () => undefined })).toBe(
+                "Token explicit-key",
+            );
+        });
+
+        it("does not override an explicit auth option when an accessToken supplier resolves nullish", async () => {
+            vi.stubEnv("DEEPGRAM_ACCESS_TOKEN", "env-access-token");
+            expect(await authHeaderFor({ accessToken: () => undefined, auth: { apiKey: "auth-key" } })).toBe(
+                "Token auth-key",
+            );
+        });
     });
 });
 

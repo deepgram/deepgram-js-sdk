@@ -151,16 +151,27 @@ class ApiKeyAuthProviderWrapper implements core.AuthProvider {
 class AccessTokenAuthProviderWrapper implements core.AuthProvider {
     private readonly originalProvider: core.AuthProvider;
     private readonly accessToken?: core.Supplier<string | undefined>;
+    private readonly allowEnvAccessToken: boolean;
 
-    constructor(originalProvider: core.AuthProvider, accessToken?: core.Supplier<string | undefined>) {
+    constructor(
+        originalProvider: core.AuthProvider,
+        accessToken?: core.Supplier<string | undefined>,
+        allowEnvAccessToken = false,
+    ) {
         this.originalProvider = originalProvider;
         this.accessToken = accessToken;
+        this.allowEnvAccessToken = allowEnvAccessToken;
     }
 
     public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
         // Check for access token first (highest priority)
         // Access tokens use Bearer scheme, API keys use Token scheme
-        const accessToken = (await core.Supplier.get(this.accessToken)) ?? process.env?.DEEPGRAM_ACCESS_TOKEN;
+        const explicitAccessToken = await core.Supplier.get(this.accessToken);
+        const accessToken =
+            explicitAccessToken ??
+            (this.allowEnvAccessToken && typeof process !== "undefined"
+                ? process.env?.DEEPGRAM_ACCESS_TOKEN
+                : undefined);
         if (accessToken != null) {
             return {
                 headers: { Authorization: `Bearer ${accessToken}` },
@@ -319,10 +330,12 @@ export class CustomDeepgramClient extends DeepgramClient {
         // no explicit credential is passed. This ensures accessToken takes priority
         // over apiKey/env var, and DEEPGRAM_ACCESS_TOKEN over DEEPGRAM_API_KEY.
         const hasEnvAccessToken = typeof process !== "undefined" && process.env?.DEEPGRAM_ACCESS_TOKEN != null;
+        const allowEnvAccessToken = options.apiKey == null && options.auth == null;
         if (options.accessToken != null || (options.apiKey == null && options.auth == null && hasEnvAccessToken)) {
             (this._options as any).authProvider = new AccessTokenAuthProviderWrapper(
                 this._options.authProvider,
                 options.accessToken,
+                allowEnvAccessToken,
             );
         }
     }
