@@ -14,16 +14,6 @@ export namespace AgentV1UpdateListen {
      * Listen configuration to update. Contains a provider object with the same schema as Settings. The model and language can be changed mid-session. Keyterms can only be updated mid-session for Flux models.
      */
     export interface Listen {
-        provider: AgentV1UpdateListen.Provider;
+        provider: Deepgram.agent.AgentV1UpdateListenListenProvider;
     }
-
-    /**
-     * Merges the V2 provider with V1-only update fields so existing callers retain
-     * optional versioning, required model reads, and access to V2-specific fields.
-     */
-    export type Provider = Omit<Deepgram.DeepgramListenProviderV2, "version"> & {
-        version?: string | undefined;
-        language?: string | undefined;
-        smart_format?: boolean | undefined;
-    };
 }

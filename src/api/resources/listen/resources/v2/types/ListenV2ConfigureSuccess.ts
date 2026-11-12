@@ -17,6 +17,8 @@ export interface ListenV2ConfigureSuccess {
     language_hints?: string[] | undefined;
     /** Whether numeral formatting is enabled for transcripts Flux STT sends after it processes the update. */
     numerals?: Deepgram.ListenV2ConfigureNumerals | undefined;
+    /** Whether usage redaction is on for this connection. */
+    redact_usage?: boolean | undefined;
     /**
      * Starts at `0` and increments for each message the server sends
      * to the client.  This includes messages of other types, like

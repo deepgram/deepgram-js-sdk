@@ -75,6 +75,8 @@ export interface MediaTranscribeRequestOctetStream {
     punctuate?: boolean;
     /** Redaction removes sensitive information from your transcripts */
     redact?: string;
+    /** Replaces the values of user-supplied text parameters (`keyterm`, `keywords`, `replace`, `search`, `extra`, `custom_topic`, and `custom_intent`) with `[REDACTED]` in this request's usage records. Does not affect transcription, the response, `tag`, or `callback`. Independent of `mip_opt_out`. https://developers.deepgram.com/docs/redact-usage */
+    redact_usage?: boolean;
     /** Search for terms or phrases in submitted audio and replaces them */
     replace?: string | string[];
     /** Search for terms or phrases in submitted audio */

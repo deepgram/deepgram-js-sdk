@@ -25,7 +25,7 @@ export declare namespace V2Socket {
         open?: () => void;
         message?: (message: Response) => void;
         close?: (event: core.CloseEvent) => void;
-        error?: (error: Error & Pick<core.ErrorEvent, "statusCode" | "headers" | "body">) => void;
+        error?: (error: Error) => void;
     };
 }
 
@@ -36,45 +36,25 @@ export class V2Socket {
     } = { open: [], message: [], close: [], error: [] };
     private handleOpen: () => void = () => {
         for (const handler of [...this.eventHandlers.open]) {
-            try {
-                handler();
-            } catch (error) {
-                console.error("Deepgram WebSocket open handler failed", error);
-            }
+            handler();
         }
     };
     private handleMessage: (event: { data: string }) => void = (event) => {
         const data = fromJson(event.data);
 
         for (const handler of [...this.eventHandlers.message]) {
-            try {
-                handler(data as V2Socket.Response);
-            } catch (error) {
-                console.error("Deepgram WebSocket message handler failed", error);
-            }
+            handler(data as V2Socket.Response);
         }
     };
     private handleClose: (event: core.CloseEvent) => void = (event) => {
         for (const handler of [...this.eventHandlers.close]) {
-            try {
-                handler(event);
-            } catch (error) {
-                console.error("Deepgram WebSocket close handler failed", error);
-            }
+            handler(event);
         }
     };
     private handleError: (event: core.ErrorEvent) => void = (event) => {
-        const error = Object.assign(event.error ?? new Error(event.message), {
-            statusCode: event.statusCode,
-            headers: event.headers,
-            body: event.body,
-        });
+        const message = event.message;
         for (const handler of [...this.eventHandlers.error]) {
-            try {
-                handler(error);
-            } catch (error) {
-                console.error("Deepgram WebSocket error handler failed", error);
-            }
+            handler(new Error(message));
         }
     };
 
@@ -94,8 +74,8 @@ export class V2Socket {
     /**
      * @param event - The event to attach to.
      * @param callback - The callback to run when the event is triggered.
-     * Registering another callback for the same event replaces the previous callback.
-     * Pass `undefined` to clear the callback.
+     * Handlers accumulate: registering another callback for the same event does not replace
+     * the previous one. Handlers run in registration order.
      * Usage:
      * ```typescript
      * this.on('open', () => {
@@ -103,13 +83,12 @@ export class V2Socket {
      * });
      * ```
      */
-    public on<T extends keyof V2Socket.EventHandlers>(event: T, callback: V2Socket.EventHandlers[T]): void {
+    public on<T extends keyof V2Socket.EventHandlers>(
+        event: T,
+        callback: NonNullable<V2Socket.EventHandlers[T]>,
+    ): void {
         const handlers = this.eventHandlers[event] as Array<NonNullable<V2Socket.EventHandlers[T]>>;
-        if (callback == null) {
-            handlers.length = 0;
-        } else {
-            handlers.splice(0, handlers.length, callback);
-        }
+        handlers.push(callback);
     }
 
     /**

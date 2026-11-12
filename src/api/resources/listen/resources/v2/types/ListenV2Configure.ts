@@ -18,6 +18,7 @@ export interface ListenV2Configure {
      */
     language_hints?: string[] | undefined;
     numerals?: Deepgram.ListenV2ConfigureNumerals | undefined;
+    redact_usage?: Deepgram.ListenV2ConfigureRedactUsage | undefined;
 }
 
 export namespace ListenV2Configure {

@@ -36,6 +36,7 @@ export declare namespace V1Client {
         profanity_filter?: Deepgram.ListenV1ProfanityFilter;
         punctuate?: Deepgram.ListenV1Punctuate;
         redact?: Deepgram.ListenV1Redact;
+        redact_usage?: Deepgram.ListenV1RedactUsage;
         replace?: Deepgram.ListenV1Replace | undefined;
         sample_rate?: Deepgram.ListenV1SampleRate | undefined;
         search?: Deepgram.ListenV1Search | undefined;
@@ -100,6 +101,7 @@ export class V1Client {
             profanity_filter: profanityFilter,
             punctuate,
             redact,
+            redact_usage: redactUsage,
             replace,
             sample_rate: sampleRate,
             search,
@@ -148,6 +150,7 @@ export class V1Client {
             profanity_filter: profanityFilter != null ? profanityFilter : undefined,
             punctuate: punctuate != null ? punctuate : undefined,
             redact: redact != null ? redact : undefined,
+            redact_usage: redactUsage != null ? redactUsage : undefined,
             replace: replace != null ? (typeof replace === "string" ? replace : toJson(replace)) : undefined,
             sample_rate:
                 sampleRate != null ? (typeof sampleRate === "string" ? sampleRate : toJson(sampleRate)) : undefined,
