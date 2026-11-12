@@ -40,6 +40,25 @@ describe("Test fetcherImpl", () => {
         );
     });
 
+    it("should serialize non-string headers and skip null values", async () => {
+        global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: "test" })));
+
+        await fetcherImpl({
+            url: "https://httpbin.org/headers",
+            method: "GET",
+            headers: { "X-Retry-Count": 3, "X-Omit": null },
+            maxRetries: 0,
+        });
+
+        expect(global.fetch).toHaveBeenCalledWith(
+            "https://httpbin.org/headers",
+            expect.objectContaining({
+                headers: expect.toContainHeaders({ "X-Retry-Count": "3" }),
+            }),
+        );
+        expect((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].headers.get("X-Omit")).toBeNull();
+    });
+
     it("should send octet stream", async () => {
         const url = "https://httpbin.org/post/file";
         const mockArgs: Fetcher.Args = {
@@ -278,6 +297,30 @@ describe("Test fetcherImpl", () => {
         }
     });
 
+    it.each([
+        "text/json",
+        "application/problem+json",
+    ])("should reject malformed JSON responses with content type %s", async (contentType) => {
+        global.fetch = vi
+            .fn()
+            .mockResolvedValue(new Response('{"broken":', { status: 200, headers: { "Content-Type": contentType } }));
+
+        const result = await fetcherImpl({ url: "https://example.com/items", method: "GET", maxRetries: 0 });
+
+        expect(result.ok).toBe(false);
+        if (!result.ok) {
+            expect(result.error).toMatchObject({ reason: "non-json", statusCode: 200 });
+        }
+    });
+
+    it("should keep a malformed successful response without a content type", async () => {
+        global.fetch = vi.fn().mockResolvedValue(new Response(new TextEncoder().encode('{"broken":'), { status: 200 }));
+
+        const result = await fetcherImpl({ url: "https://example.com/items", method: "GET", maxRetries: 0 });
+
+        expect(result.ok).toBe(true);
+    });
+
     it("should still resolve when a successful response has a plain-text body", async () => {
         global.fetch = vi
             .fn()
@@ -286,6 +329,22 @@ describe("Test fetcherImpl", () => {
         const result = await fetcherImpl({ url: "https://example.com/items", method: "DELETE", maxRetries: 0 });
 
         expect(result.ok).toBe(true);
+    });
+
+    it("should not reject malformed text from a successful non-JSON response", async () => {
+        global.fetch = vi
+            .fn()
+            .mockResolvedValue(new Response('{"broken":', { status: 200, headers: { "Content-Type": "text/plain" } }));
+
+        const result = await fetcherImpl({ url: "https://example.com/items", method: "DELETE", maxRetries: 0 });
+
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.body).toMatchObject({
+                ok: false,
+                error: { reason: "non-json", statusCode: 200, rawBody: '{"broken":' },
+            });
+        }
     });
 
     it("should keep the status and raw body when a JSON error response is malformed", async () => {
@@ -314,6 +373,30 @@ describe("Test fetcherImpl", () => {
         if (!result.ok) {
             expect(result.error).toEqual({ reason: "status-code", statusCode: 500, body: '{"broken":' });
         }
+    });
+
+    it("should report non-Error fetch failures", async () => {
+        const logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() };
+        global.fetch = vi.fn().mockRejectedValue({ code: "CONNECTION_CLOSED" });
+
+        const result = await fetcherImpl({
+            url: "https://example.com/items",
+            method: "GET",
+            maxRetries: 0,
+            logging: { level: "error", logger, silent: false },
+        });
+
+        expect(result.ok).toBe(false);
+        if (!result.ok) {
+            expect(result.error).toMatchObject({
+                reason: "unknown",
+                errorMessage: '{"code":"CONNECTION_CLOSED"}',
+            });
+        }
+        expect(logger.error).toHaveBeenCalledWith(
+            "HTTP request failed with unknown error",
+            expect.objectContaining({ error: '{"code":"CONNECTION_CLOSED"}' }),
+        );
     });
 
     it("should still parse valid JSON error bodies and keep plain-text error bodies", async () => {
@@ -382,6 +465,34 @@ describe("Test fetcherImpl", () => {
         if (!result.ok) {
             expect(result.error.reason).toBe("timeout");
         }
+    });
+
+    it("should report an aborted request when error logging is disabled", async () => {
+        const controller = new AbortController();
+        let fetchStarted!: () => void;
+        const started = new Promise<void>((resolve) => {
+            fetchStarted = resolve;
+        });
+        global.fetch = vi.fn().mockImplementation((_url: string, init: RequestInit) => {
+            fetchStarted();
+            return new Promise((_resolve, reject) => {
+                init.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+            });
+        });
+
+        const request = fetcherImpl({
+            url: "https://example.com/slow",
+            method: "GET",
+            maxRetries: 0,
+            abortSignal: controller.signal,
+        });
+        await started;
+        controller.abort("cancelled");
+
+        await expect(request).resolves.toMatchObject({
+            ok: false,
+            error: { reason: "unknown", errorMessage: "The user aborted a request" },
+        });
     });
 
     it("should not leave timers running after a request succeeds or fails", async () => {

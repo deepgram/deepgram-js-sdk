@@ -1,3 +1,4 @@
+import { DeepgramEnvironment } from "../../environments.js";
 import { createLogger, type LogConfig, type Logger } from "../logging/logger.js";
 import { join } from "../url/join.js";
 import { EndpointSupplier } from "./EndpointSupplier.js";
@@ -116,9 +117,9 @@ export async function makePassthroughRequest(
         }
     }
 
-    // Apply auth headers, but only when the resolved URL targets the configured base URL.
-    // This prevents the SDK's credentials from leaking to an unrelated host when a caller
-    // passes an absolute cross-origin URL into the passthrough fetch escape hatch.
+    // Apply auth headers only to the configured base URL or a first-party Deepgram HTTP origin.
+    // This prevents credentials leaking through the passthrough fetch escape hatch while still
+    // supporting absolute requests to Deepgram's separate REST hosts.
     if (clientOptions.getAuthHeaders != null && targetsBaseUrl(fullUrl, baseUrl)) {
         const authHeaders = await clientOptions.getAuthHeaders();
         for (const [key, value] of Object.entries(authHeaders)) {
@@ -209,20 +210,31 @@ function createTimeoutError(): Error {
 }
 
 /**
- * Returns true when the resolved request URL points at the same origin as the
- * configured base URL. Relative paths are always joined onto the base URL, so
- * they resolve to the base origin and return true. Absolute URLs only match when
- * their origin equals the base origin. When there is no base URL to compare
- * against, or either value is not a parseable absolute URL, this returns false so
- * auth headers are not attached.
+ * Returns true when the resolved request URL points at the caller's base URL or a
+ * first-party Deepgram HTTP origin. Other origins never receive auth headers.
  */
 function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
-    if (baseUrl == null) {
-        return false;
-    }
+    let targetOrigin: string;
     try {
-        return new URL(fullUrl).origin === new URL(baseUrl).origin;
+        targetOrigin = new URL(fullUrl).origin;
     } catch {
         return false;
     }
+
+    const allowedOrigins = new Set<string>();
+    for (const candidate of [baseUrl, ...Object.values(DeepgramEnvironment.Production)]) {
+        if (candidate == null) {
+            continue;
+        }
+        try {
+            const origin = new URL(candidate);
+            if (origin.protocol === "http:" || origin.protocol === "https:") {
+                allowedOrigins.add(origin.origin);
+            }
+        } catch {
+            // Non-URL environment slots cannot contribute an allowed origin.
+        }
+    }
+
+    return allowedOrigins.has(targetOrigin);
 }
