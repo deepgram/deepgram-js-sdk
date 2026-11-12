@@ -392,8 +392,9 @@ describe("2026-07-09 regen constraints", () => {
                 redact_usage: true,
                 sequence_id: 1,
             };
+            const configuredRedactUsage: boolean | undefined = success.redact_usage;
 
-            expect([configure.redact_usage, success.redact_usage]).toEqual([true, true]);
+            expect([configure.redact_usage, configuredRedactUsage]).toEqual([true, true]);
         });
     });
 
