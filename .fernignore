@@ -297,6 +297,11 @@ src/core/fetcher/makePassthroughRequest.ts
 # Swap to .bak before regen.
 src/core/fetcher/getResponseBody.ts
 
+# src/core/websocket/ws.ts: rejected-handshake details expose server response
+# headers through error callbacks. Redact Set-Cookie so callers cannot leak a
+# session cookie by logging the error. Swap to .bak before regen.
+src/core/websocket/ws.ts
+
 # src/api/types/SharedTopics.ts and SharedIntents.ts: retain deprecated results
 # wrapper properties and nested namespace paths alongside the generated direct
 # segments API. Swap to .bak before regen.
