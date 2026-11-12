@@ -1,13 +1,20 @@
 # Changelog
 
-## [Unreleased]
+## [5.19.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.18.0...v5.19.0) (2026-11-12)
+
 
 ### Features
 
+* **websocket:** expose rejected handshake details ([#593](https://github.com/deepgram/deepgram-js-sdk/issues/593)) ([0e83fe1](https://github.com/deepgram/deepgram-js-sdk/commit/0e83fe1bcc104f60485636abd2274d16f31102f6))
+
+
+### Bug Fixes
+
+* **auth:** read DEEPGRAM_ACCESS_TOKEN when no credentials are passed ([#570](https://github.com/deepgram/deepgram-js-sdk/issues/570)) ([849b735](https://github.com/deepgram/deepgram-js-sdk/commit/849b735ff0739889abb344291223428918377168))
+
+### Behavior changes
+
 * **WebSockets:** Rejected Node WebSocket handshakes now expose the HTTP `statusCode`, response `headers`, and response `body` through socket error handlers and `waitForOpen()`. Handshake response bodies are capped at 1,000 characters, and connection setup still times out if a rejected response does not finish.
-
-### Improvements
-
 * **Connection lifecycle:** `waitForOpen()` now rejects when a socket is closed, aborted, or reaches a terminal connection failure instead of waiting indefinitely.
 * **HTTP responses:** Request timeouts cover reading JSON response bodies. A successful response declared as JSON but containing malformed JSON now returns a structured `non-json` error instead of succeeding with invalid data; request IDs are recognized from common request-ID response headers.
 * **Request validation:** Path parameters `.` and `..` now throw before URL resolution can change the request path. Retry backoff stops promptly when the caller aborts a request.
