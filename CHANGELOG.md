@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.20.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.19.0...v5.20.0) (2026-11-12)
+
+
+### Features
+
+* **regen:** add redacted usage and volume normalization ([#597](https://github.com/deepgram/deepgram-js-sdk/issues/597)) ([8846b54](https://github.com/deepgram/deepgram-js-sdk/commit/8846b546a52189daeae125df40c8b21930a2d721))
+
+
+### Bug Fixes
+
+* **websocket:** redact handshake cookies ([#596](https://github.com/deepgram/deepgram-js-sdk/issues/596)) ([06e8dba](https://github.com/deepgram/deepgram-js-sdk/commit/06e8dbaa34db5224005809e4bc43626cf879b55e))
+
 ## [5.19.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.18.0...v5.19.0) (2026-11-12)
 
 
