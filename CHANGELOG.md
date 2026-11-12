@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.19.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.18.0...v5.19.0) (2026-11-12)
+
+
+### Features
+
+* **websocket:** expose rejected handshake details ([#593](https://github.com/deepgram/deepgram-js-sdk/issues/593)) ([0e83fe1](https://github.com/deepgram/deepgram-js-sdk/commit/0e83fe1bcc104f60485636abd2274d16f31102f6))
+
+
+### Bug Fixes
+
+* **auth:** read DEEPGRAM_ACCESS_TOKEN when no credentials are passed ([#570](https://github.com/deepgram/deepgram-js-sdk/issues/570)) ([849b735](https://github.com/deepgram/deepgram-js-sdk/commit/849b735ff0739889abb344291223428918377168))
+
 ## [Unreleased]
 
 ### Features
