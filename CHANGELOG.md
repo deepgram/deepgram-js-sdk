@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Features
+
+* **WebSockets:** Rejected Node WebSocket handshakes now expose the HTTP `statusCode`, response `headers`, and response `body` through socket error handlers and `waitForOpen()`. Handshake response bodies are capped at 1,000 characters, and connection setup still times out if a rejected response does not finish.
+
+### Improvements
+
+* **Connection lifecycle:** `waitForOpen()` now rejects when a socket is closed, aborted, or reaches a terminal connection failure instead of waiting indefinitely.
+* **HTTP responses:** Request timeouts cover reading JSON response bodies. A successful response declared as JSON but containing malformed JSON now returns a structured `non-json` error instead of succeeding with invalid data; request IDs are recognized from common request-ID response headers.
+* **Request validation:** Path parameters `.` and `..` now throw before URL resolution can change the request path. Retry backoff stops promptly when the caller aborts a request.
+
 ## [5.18.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.17.0...v5.18.0) (2026-11-04)
 
 

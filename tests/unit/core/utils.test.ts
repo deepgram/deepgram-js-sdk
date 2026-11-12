@@ -94,6 +94,20 @@ describe("websocket events", () => {
         expect(event.error).toBe(err);
     });
 
+    it("includes rejected handshake details in an ErrorEvent", () => {
+        const event = new ErrorEvent(new Error("forbidden"), null, {
+            statusCode: 403,
+            headers: { "dg-request-id": "request-123" },
+            body: '{"err_msg":"Forbidden"}',
+        });
+
+        expect(event).toMatchObject({
+            statusCode: 403,
+            headers: { "dg-request-id": "request-123" },
+            body: '{"err_msg":"Forbidden"}',
+        });
+    });
+
     it("constructs a CloseEvent with defaults and custom values", () => {
         const def = new CloseEvent(undefined, undefined, null);
         expect(def.type).toBe("close");

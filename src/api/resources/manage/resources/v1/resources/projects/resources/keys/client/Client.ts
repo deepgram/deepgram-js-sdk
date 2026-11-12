@@ -72,7 +72,7 @@ export class KeysClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/keys`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/keys`,
             ),
             method: "GET",
             headers: _headers,
@@ -154,7 +154,7 @@ export class KeysClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/keys`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/keys`,
             ),
             method: "POST",
             headers: _headers,
@@ -233,7 +233,7 @@ export class KeysClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/keys/${core.url.encodePathParam(key_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/keys/${core.url.encodePathParam(key_id, errors.DeepgramError)}`,
             ),
             method: "GET",
             headers: _headers,
@@ -309,7 +309,7 @@ export class KeysClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/keys/${core.url.encodePathParam(key_id)}`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/keys/${core.url.encodePathParam(key_id, errors.DeepgramError)}`,
             ),
             method: "DELETE",
             headers: _headers,

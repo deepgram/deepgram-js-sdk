@@ -66,7 +66,7 @@ export class ScopesClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/members/${core.url.encodePathParam(member_id)}/scopes`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/members/${core.url.encodePathParam(member_id, errors.DeepgramError)}/scopes`,
             ),
             method: "GET",
             headers: _headers,
@@ -150,7 +150,7 @@ export class ScopesClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/members/${core.url.encodePathParam(member_id)}/scopes`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/members/${core.url.encodePathParam(member_id, errors.DeepgramError)}/scopes`,
             ),
             method: "PUT",
             headers: _headers,

@@ -71,7 +71,7 @@ export class PurchasesClient {
                         (await core.Supplier.get(this._options.environment)) ??
                         environments.DeepgramEnvironment.Production
                     ).base,
-                `v1/projects/${core.url.encodePathParam(project_id)}/purchases`,
+                `v1/projects/${core.url.encodePathParam(project_id, errors.DeepgramError)}/purchases`,
             ),
             method: "GET",
             headers: _headers,

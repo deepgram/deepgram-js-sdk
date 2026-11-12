@@ -7,6 +7,7 @@ import { makeRequest } from "./makeRequest.js";
 import { redactUrl } from "./redactUrl.js";
 import { requestWithRetries } from "./requestWithRetries.js";
 import { Supplier } from "./Supplier.js";
+import { TIMEOUT } from "./signals.js";
 
 export declare namespace PassthroughRequest {
     /**
@@ -116,9 +117,9 @@ export async function makePassthroughRequest(
         }
     }
 
-    // Apply auth headers, but only when the resolved URL targets the configured base URL.
-    // This prevents the SDK's credentials from leaking to an unrelated host when a caller
-    // passes an absolute cross-origin URL into the passthrough fetch escape hatch.
+    // Apply auth headers only to the configured base URL or a first-party Deepgram HTTP origin.
+    // This prevents credentials leaking through the passthrough fetch escape hatch while still
+    // supporting absolute requests to Deepgram's separate REST hosts.
     if (clientOptions.getAuthHeaders != null && targetsBaseUrl(fullUrl, baseUrl)) {
         const authHeaders = await clientOptions.getAuthHeaders();
         for (const [key, value] of Object.entries(authHeaders)) {
@@ -164,22 +165,32 @@ export async function makePassthroughRequest(
         });
     }
 
-    const response = await requestWithRetries(
-        async () =>
-            makeRequest(
-                fetchFn,
-                fullUrl,
-                method,
-                mergedHeaders,
-                body ?? undefined,
-                timeoutMs,
-                abortSignal,
-                effectiveInit?.credentials === "include",
-                undefined, // duplex
-                false, // disableCache
-            ),
-        maxRetries,
-    );
+    let response: Response;
+    try {
+        response = await requestWithRetries(
+            async () =>
+                makeRequest(
+                    fetchFn,
+                    fullUrl,
+                    method,
+                    mergedHeaders,
+                    body ?? undefined,
+                    timeoutMs,
+                    abortSignal,
+                    effectiveInit?.credentials === "include",
+                    undefined, // duplex
+                    false, // disableCache
+                ),
+            maxRetries,
+            abortSignal,
+        );
+    } catch (error) {
+        // Match `fetch`: a timeout rejects with an Error named "TimeoutError", not the bare abort reason.
+        if (error === TIMEOUT) {
+            throw createTimeoutError();
+        }
+        throw error;
+    }
 
     if (logger.isDebug()) {
         logger.debug("Passthrough HTTP request completed", {
@@ -192,12 +203,15 @@ export async function makePassthroughRequest(
     return response;
 }
 
+function createTimeoutError(): Error {
+    const error = new Error("The request timed out.");
+    error.name = "TimeoutError";
+    return error;
+}
+
 /**
  * Returns true when the resolved request URL points at the caller's base URL or a
- * first-party Deepgram origin. Other origins never receive auth headers.
- *
- * Patch: the generator also returns false when no base URL is configured. Do not
- * reinstate that early return at the next regen; first-party origins always receive auth.
+ * first-party Deepgram HTTP origin. Other origins never receive auth headers.
  */
 function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
     let targetOrigin: string;
@@ -213,7 +227,10 @@ function targetsBaseUrl(fullUrl: string, baseUrl: string | undefined): boolean {
             continue;
         }
         try {
-            allowedOrigins.add(new URL(candidate).origin);
+            const origin = new URL(candidate);
+            if (origin.protocol === "http:" || origin.protocol === "https:") {
+                allowedOrigins.add(origin.origin);
+            }
         } catch {
             // Non-URL environment slots cannot contribute an allowed origin.
         }
