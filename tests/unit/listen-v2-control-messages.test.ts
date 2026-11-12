@@ -92,12 +92,39 @@ describe("listen v2 control messages", () => {
         expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "CloseStream" });
     });
 
-    it("sendConfigure serializes the numerals option", async () => {
+    it("sendConfigure serializes numerals and usage redaction", async () => {
         const { socket, transport } = await openSocket();
 
-        socket.sendConfigure({ type: "Configure", numerals: true });
+        socket.sendConfigure({ type: "Configure", numerals: true, redact_usage: true });
 
-        expect(JSON.parse(transport.sent[0] as string)).toEqual({ type: "Configure", numerals: true });
+        expect(JSON.parse(transport.sent[0] as string)).toEqual({
+            type: "Configure",
+            numerals: true,
+            redact_usage: true,
+        });
+    });
+
+    it("surfaces usage redaction from ConfigureSuccess", async () => {
+        const { socket, transport } = await openSocket();
+        let redactUsage: boolean | undefined;
+        socket.on("message", (message: { type?: string; redact_usage?: boolean }) => {
+            if (message.type === "ConfigureSuccess") {
+                redactUsage = message.redact_usage;
+            }
+        });
+
+        transport.emitMessage(
+            JSON.stringify({
+                type: "ConfigureSuccess",
+                request_id: "configure-1",
+                thresholds: {},
+                keyterms: [],
+                redact_usage: true,
+                sequence_id: 1,
+            }),
+        );
+
+        expect(redactUsage).toBe(true);
     });
 
     it("control messages are sent as text frames, not binary", async () => {

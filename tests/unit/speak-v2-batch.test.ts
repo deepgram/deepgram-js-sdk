@@ -68,6 +68,7 @@ describe("Speak V2 batch (POST /v2/speak)", () => {
             model: "flux-alexis-en",
             text: "Hello from the batch endpoint.",
             encoding: "mp3",
+            normalize_volume: true,
         });
         const audio = new Uint8Array(await response.arrayBuffer());
 
@@ -75,6 +76,7 @@ describe("Speak V2 batch (POST /v2/speak)", () => {
         expect(last?.path).toBe("/v2/speak");
         expect(last?.query.get("model")).toBe("flux-alexis-en");
         expect(last?.query.get("encoding")).toBe("mp3");
+        expect(last?.query.get("normalize_volume")).toBe("true");
         expect(JSON.parse(last?.body ?? "{}")).toEqual({ text: "Hello from the batch endpoint." });
         expect(audio).toEqual(new Uint8Array(AUDIO));
     });
