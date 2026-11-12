@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.20.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.19.0...v5.20.0) (2026-11-12)
+
+
+### Features
+
+* **Usage-record redaction:** Listen v1 and Flux Listen v2 support `redact_usage` for supported REST and streaming requests. It replaces user-supplied text in usage records with `[REDACTED]`, without changing transcripts, API responses, or `tag`, and is independent of `mip_opt_out`. Flux accepts the setting at connection time and through `sendConfigure(...)`; `ConfigureSuccess` reports the active value. ([#597](https://github.com/deepgram/deepgram-js-sdk/issues/597)) ([8846b54](https://github.com/deepgram/deepgram-js-sdk/commit/8846b546a52189daeae125df40c8b21930a2d721))
+* **Flux TTS:** Speak v2 batch and streaming requests accept `normalize_volume`. Loudness normalization is enabled by default; set it to `false` to opt out. Peak limiting remains enabled. The SDK also adds named `Deepgram.Model` constants for the expanded multilingual Flux voice catalog. ([#597](https://github.com/deepgram/deepgram-js-sdk/issues/597)) ([8846b54](https://github.com/deepgram/deepgram-js-sdk/commit/8846b546a52189daeae125df40c8b21930a2d721))
+
+
+### Bug Fixes
+
+* **WebSockets:** Rejected Node WebSocket handshake errors no longer expose `Set-Cookie` response headers, including mixed-case variants, while retaining safe diagnostic headers, the status code, and the response body. ([#596](https://github.com/deepgram/deepgram-js-sdk/issues/596)) ([06e8dba](https://github.com/deepgram/deepgram-js-sdk/commit/06e8dbaa34db5224005809e4bc43626cf879b55e))
+
 ## [5.19.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.18.0...v5.19.0) (2026-11-12)
 
 
