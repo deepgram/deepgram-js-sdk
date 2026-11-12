@@ -20,6 +20,7 @@ const getGlobalWebSocket = (): WebSocket | undefined => {
 const isWebSocket = (w: any) => typeof w !== "undefined" && !!w && w.CLOSING === 2;
 
 const MAX_HANDSHAKE_REJECTION_BODY_LENGTH = 1000;
+const SENSITIVE_HANDSHAKE_HEADERS = new Set(["set-cookie"]);
 
 type EmitterListener = (...args: unknown[]) => void;
 
@@ -56,6 +57,10 @@ const normalizeHandshakeHeaders = (rawHeaders: unknown): Record<string, string> 
         return headers;
     }
     for (const [name, value] of Object.entries(rawHeaders)) {
+        if (SENSITIVE_HANDSHAKE_HEADERS.has(name.toLowerCase())) {
+            headers[name] = "[REDACTED]";
+            continue;
+        }
         if (typeof value === "string") {
             headers[name] = value;
         } else if (Array.isArray(value)) {

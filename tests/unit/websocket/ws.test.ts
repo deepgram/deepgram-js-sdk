@@ -308,6 +308,24 @@ describe("ReconnectingWebSocket reconnect policy", () => {
             expect(response.destroyed).toBe(true);
         });
 
+        it("redacts cookies from rejected handshake headers", async () => {
+            socket = createSocket({ maxRetries: 0 });
+            await flush();
+            const onError = vi.fn();
+            socket.addEventListener("error", onError);
+            const response = new FakeIncomingMessage(
+                401,
+                { "dg-request-id": "request-123", "Set-Cookie": ["session=secret", "csrf=secret"] },
+                "invalid credentials",
+            );
+
+            (FakeWebSocket.instances[0] as FakeWebSocket).simulateUnexpectedResponse(response);
+            response.flush();
+
+            const event = onError.mock.calls[0]?.[0] as ErrorEvent;
+            expect(event.headers).toEqual({ "dg-request-id": "request-123", "Set-Cookie": "[REDACTED]" });
+        });
+
         it("caps a rejected handshake body at 1,000 characters", async () => {
             socket = createSocket({ maxRetries: 0 });
             await flush();
