@@ -345,16 +345,31 @@ describe("2026-07-09 regen constraints", () => {
             expect(renee).toBe("flux-renee-en");
         });
 
-        it("keeps every voice the GA catalog added", () => {
+        it("keeps representative English and multilingual GA voice constants", () => {
             // The other half of the patch: re-adding Renee must not cost us the ~24 new
-            // GA voices. Spot-check the ones that bracket her alphabetically plus the new
-            // default, so a botched merge that reverts to the EA roster fails here.
+            // GA voices. Spot-check English and newly added language catalogs so a botched
+            // merge that reverts to the EA roster fails here.
             const model = Deepgram.Deepgram.Model;
-            expect([model.FluxKitEn, model.FluxPriyaEn, model.FluxRufusEn, model.FluxWesEn]).toEqual([
+            expect([
+                model.FluxKitEn,
+                model.FluxPriyaEn,
+                model.FluxRufusEn,
+                model.FluxWesEn,
+                model.FluxAnoukNl,
+                model.FluxArnaudFr,
+                model.FluxAjayHi,
+                model.FluxAyumiJa,
+                model.FluxHoaVi,
+            ]).toEqual([
                 "flux-kit-en",
                 "flux-priya-en",
                 "flux-rufus-en",
                 "flux-wes-en",
+                "flux-anouk-nl",
+                "flux-arnaud-fr",
+                "flux-ajay-hi",
+                "flux-ayumi-ja",
+                "flux-hoa-vi",
             ]);
         });
 
@@ -363,6 +378,22 @@ describe("2026-07-09 regen constraints", () => {
             // the connect param a string enum. Pinned so the split is noticed if it moves.
             const configure: Deepgram.speak.SpeakV2Configure = { type: "Configure", speed: 1.1 };
             expect(configure.speed).toBe(1.1);
+        });
+    });
+
+    describe("Listen V2 usage redaction", () => {
+        it("keeps Configure and ConfigureSuccess usage-redaction fields typed", () => {
+            const configure: Deepgram.listen.ListenV2Configure = { type: "Configure", redact_usage: true };
+            const success: Deepgram.listen.ListenV2ConfigureSuccess = {
+                type: "ConfigureSuccess",
+                request_id: "configure-1",
+                thresholds: {},
+                keyterms: [],
+                redact_usage: true,
+                sequence_id: 1,
+            };
+
+            expect([configure.redact_usage, success.redact_usage]).toEqual([true, true]);
         });
     });
 
