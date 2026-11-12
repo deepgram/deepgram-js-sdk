@@ -277,6 +277,15 @@ describe("Socket async iteration", () => {
             _options: { minReconnectionDelay: number };
         };
         socketInternals._options.minReconnectionDelay = 0;
+        let openCount = 0;
+        const reconnected = new Promise<void>((resolve) => {
+            socket.on("open", () => {
+                openCount += 1;
+                if (openCount === 2) {
+                    resolve();
+                }
+            });
+        });
         socket.connect();
         await socket.waitForOpen();
 
@@ -284,7 +293,7 @@ describe("Socket async iteration", () => {
         socket.sendKeepAlive({ type: "KeepAlive" });
         const first = await iterator.next();
 
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await reconnected;
         socket.sendKeepAlive({ type: "KeepAlive" });
         const second = await iterator.next();
 

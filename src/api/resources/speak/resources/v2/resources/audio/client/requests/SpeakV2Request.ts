@@ -28,6 +28,8 @@ export interface SpeakV2Request {
     expressivity?: number;
     /** Flux TTS model used to synthesize the submitted text, in the form `flux-{voice}-{language}` (for example, `flux-alexis-en`). Required; unlike the v1 (Aura) endpoint there is no default and only flux models are accepted. */
     model: string;
+    /** Normalizes the loudness of the generated speech to a consistent level across voices and requests. On by default; set to `false` to opt out. Peak limiting is applied either way. */
+    normalize_volume?: boolean;
     /** Sample Rate specifies the sample rate for the output audio. Based on the encoding, different sample rates are supported. For some encodings, the sample rate is not configurable */
     sample_rate?: number;
     /** Speaking rate multiplier that adjusts the pace of generated speech while preserving natural prosody and voice quality. Accepted values run `0.5` to `1.5` in `0.05` increments. Not yet supported in all languages. When the text contains an inline pause marker, speed is capped at `1.15` (`PAUSE_SPEED_CAP_EXCEEDED` above that). A value other than `1.0` cannot be combined with inline pronunciation controls (`CONTROL_COMBINATION_INVALID`). */

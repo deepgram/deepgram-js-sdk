@@ -297,21 +297,21 @@ describe("Test fetcherImpl", () => {
         }
     });
 
-    it.each(["text/json", "application/problem+json"])(
-        "should reject malformed JSON responses with content type %s",
-        async (contentType) => {
-            global.fetch = vi.fn().mockResolvedValue(
-                new Response('{"broken":', { status: 200, headers: { "Content-Type": contentType } }),
-            );
+    it.each([
+        "text/json",
+        "application/problem+json",
+    ])("should reject malformed JSON responses with content type %s", async (contentType) => {
+        global.fetch = vi
+            .fn()
+            .mockResolvedValue(new Response('{"broken":', { status: 200, headers: { "Content-Type": contentType } }));
 
-            const result = await fetcherImpl({ url: "https://example.com/items", method: "GET", maxRetries: 0 });
+        const result = await fetcherImpl({ url: "https://example.com/items", method: "GET", maxRetries: 0 });
 
-            expect(result.ok).toBe(false);
-            if (!result.ok) {
-                expect(result.error).toMatchObject({ reason: "non-json", statusCode: 200 });
-            }
-        },
-    );
+        expect(result.ok).toBe(false);
+        if (!result.ok) {
+            expect(result.error).toMatchObject({ reason: "non-json", statusCode: 200 });
+        }
+    });
 
     it("should keep a malformed successful response without a content type", async () => {
         global.fetch = vi.fn().mockResolvedValue(new Response(new TextEncoder().encode('{"broken":'), { status: 200 }));
@@ -473,14 +473,12 @@ describe("Test fetcherImpl", () => {
         const started = new Promise<void>((resolve) => {
             fetchStarted = resolve;
         });
-        global.fetch = vi.fn().mockImplementation(
-            (_url: string, init: RequestInit) => {
-                fetchStarted();
-                return new Promise((_resolve, reject) => {
-                    init.signal?.addEventListener("abort", () => reject(init.signal?.reason));
-                });
-            },
-        );
+        global.fetch = vi.fn().mockImplementation((_url: string, init: RequestInit) => {
+            fetchStarted();
+            return new Promise((_resolve, reject) => {
+                init.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+            });
+        });
 
         const request = fetcherImpl({
             url: "https://example.com/slow",

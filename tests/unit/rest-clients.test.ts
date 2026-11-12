@@ -166,6 +166,7 @@ const fullTranscribeRequest = {
     profanity_filter: true,
     punctuate: true,
     redact: ["pci"],
+    redact_usage: true,
     replace: ["a:b"],
     search: ["hi"],
     smart_format: true,
@@ -195,6 +196,7 @@ describe("REST client success paths with full query params", () => {
         expect(q.getAll("keyterm")).toEqual(["kt"]);
         expect(q.getAll("keywords")).toEqual(["kw"]);
         expect(q.getAll("redact")).toEqual(["pci"]);
+        expect(q.get("redact_usage")).toBe("true");
         expect(q.getAll("replace")).toEqual(["a:b"]);
         expect(q.getAll("search")).toEqual(["hi"]);
         expect(q.getAll("tag")).toEqual(["t"]);
@@ -215,6 +217,7 @@ describe("REST client success paths with full query params", () => {
         expect(q.getAll("language_hint")).toEqual(["en", "es"]);
         expect(q.getAll("keyterm")).toEqual(["kt"]);
         expect(q.getAll("custom_topic")).toEqual(["ct"]);
+        expect(q.get("redact_usage")).toBe("true");
     });
 
     it("speak audio generate serializes every optional query param and returns binary", async () => {

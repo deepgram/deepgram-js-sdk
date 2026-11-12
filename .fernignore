@@ -31,6 +31,7 @@ tests/unit/custom-client-fallback.test.ts
 tests/unit/custom-client-internals.test.ts
 tests/unit/custom-client.test.ts
 tests/unit/error-handling.test.ts
+tests/unit/fetcher/Fetcher.test.ts
 tests/unit/fetcher-branches.test.ts
 tests/unit/file/multipart.test.ts
 tests/unit/generated-ws-clients.test.ts

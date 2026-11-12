@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { DeepgramClient } from "../../../src";
 import { mockServerPool } from "../../mock-server/MockServerPool";
 import { MockServer } from "../../mock-server/MockServer";
-import { generateMockAudioData, WebSocketEventTracker } from "./helpers";
+import { generateMockAudioData, WebSocketEventTracker, waitForEventCount } from "./helpers";
 import type { Server } from "ws";
 
 /**
@@ -382,8 +382,8 @@ describe("Speak v1 WebSocket TTS streaming", () => {
 
     describe("Error handling", () => {
         it("should handle server-side errors gracefully", async () => {
-            const errors: any[] = [];
             const messages: any[] = [];
+            const tracker = new WebSocketEventTracker();
 
             const client = new DeepgramClient({
                 maxRetries: 0,
@@ -399,8 +399,12 @@ describe("Speak v1 WebSocket TTS streaming", () => {
                 model: "aura-asteria-en",
             });
 
-            socket.on("error", (error) => errors.push(error));
-            socket.on("message", (data) => messages.push(data));
+            socket.on("message", (data) => {
+                messages.push(data);
+                if (data?.type === "Error") {
+                    tracker.track("Error", data);
+                }
+            });
 
             wsServer.on("connection", (ws) => {
                 ws.on("message", (data) => {
@@ -418,21 +422,21 @@ describe("Speak v1 WebSocket TTS streaming", () => {
                 });
             });
 
-            socket.connect();
-            await socket.waitForOpen();
+            try {
+                socket.connect();
+                await socket.waitForOpen();
 
-            socket.sendText({ type: "Speak", text: "Test" });
+                socket.sendText({ type: "Speak", text: "Test" });
+                await waitForEventCount(tracker, "Error", 1);
 
-            await new Promise((resolve) => setTimeout(resolve, 300));
-
-            // Should have received the error message
-            const errorMsg = messages.find((m) => m?.type === "Error");
-            expect(errorMsg).toMatchObject({
-                type: "Error",
-                err_code: "RATE_LIMIT",
-            });
-
-            socket.close();
+                const errorMsg = messages.find((m) => m?.type === "Error");
+                expect(errorMsg).toMatchObject({
+                    type: "Error",
+                    err_code: "RATE_LIMIT",
+                });
+            } finally {
+                socket.close();
+            }
         });
 
         it("should throw error when sending before connection is open", async () => {

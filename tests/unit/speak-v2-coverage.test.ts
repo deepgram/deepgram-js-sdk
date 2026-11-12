@@ -70,6 +70,7 @@ describe("Speak V2Client.connect", () => {
             encoding: "linear16",
             sample_rate: "24000",
             mip_opt_out: "true",
+            normalize_volume: true,
             tag: "t",
             Authorization: "Token abc",
             abortSignal: abortedSignal(),
@@ -80,6 +81,7 @@ describe("Speak V2Client.connect", () => {
         expect(qp.sample_rate).toBe("24000");
         // string mip_opt_out/tag bypass toJson and are passed through unchanged.
         expect(qp.mip_opt_out).toBe("true");
+        expect(qp.normalize_volume).toBe(true);
         expect(qp.tag).toBe("t");
     });
 
@@ -109,6 +111,7 @@ describe("Speak V2Client.connect", () => {
         expect(qp.encoding).toBeUndefined();
         expect(qp.sample_rate).toBeUndefined();
         expect(qp.mip_opt_out).toBeUndefined();
+        expect(qp.normalize_volume).toBeUndefined();
         expect(qp.tag).toBeUndefined();
     });
 

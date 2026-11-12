@@ -49,6 +49,7 @@ const listenV1StringArgs = {
     profanity_filter: true,
     punctuate: true,
     redact: "pci",
+    redact_usage: true,
     replace: "a:b",
     sample_rate: "16000",
     search: "hello",
@@ -88,6 +89,7 @@ const listenV2StringArgs = {
     keyterm: "kt",
     language_hint: "en",
     profanity_filter: true,
+    redact_usage: true,
     mip_opt_out: "true",
     tag: "t",
 };
@@ -126,6 +128,7 @@ describe("generated Listen V1Client.connect query params", () => {
         const qp = queryParamsOf(socket);
         expect(qp.model).toBe("nova-3");
         expect(qp.callback).toBe("https://cb.example.com");
+        expect(qp.redact_usage).toBe(true);
     });
 
     it("serializes object/array-valued params", async () => {
@@ -138,6 +141,7 @@ describe("generated Listen V1Client.connect query params", () => {
     it("omits absent params", async () => {
         const socket = await client.connect({ model: "nova-3", abortSignal: abortedSignal() } as any);
         expect(queryParamsOf(socket).callback).toBeUndefined();
+        expect(queryParamsOf(socket).redact_usage).toBeUndefined();
     });
 
     it("merges explicit queryParams overrides", async () => {
@@ -156,6 +160,7 @@ describe("generated Listen V2Client.connect query params", () => {
     it("serializes string-valued params", async () => {
         const socket = await client.connect({ ...listenV2StringArgs, abortSignal: abortedSignal() } as any);
         expect(queryParamsOf(socket).model).toBe("flux-general-en");
+        expect(queryParamsOf(socket).redact_usage).toBe(true);
     });
 
     it("serializes object/array-valued params (arrays mapped item-by-item)", async () => {
@@ -168,6 +173,7 @@ describe("generated Listen V2Client.connect query params", () => {
     it("omits absent params", async () => {
         const socket = await client.connect({ model: "flux-general-en", abortSignal: abortedSignal() } as any);
         expect(queryParamsOf(socket).encoding).toBeUndefined();
+        expect(queryParamsOf(socket).redact_usage).toBeUndefined();
     });
 });
 

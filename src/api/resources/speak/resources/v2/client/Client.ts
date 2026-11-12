@@ -19,6 +19,7 @@ export declare namespace V2Client {
         sample_rate?: Deepgram.SpeakV2SampleRate;
         speed?: Deepgram.SpeakV2Speed;
         expressivity?: Deepgram.SpeakV2Expressivity;
+        normalize_volume?: Deepgram.SpeakV2NormalizeVolume;
         mip_opt_out?: Deepgram.SpeakV2MipOptOut | undefined;
         tag?: Deepgram.SpeakV2Tag | undefined;
         Authorization: string;
@@ -60,6 +61,7 @@ export class V2Client {
             sample_rate: sampleRate,
             speed,
             expressivity,
+            normalize_volume: normalizeVolume,
             mip_opt_out: mipOptOut,
             tag,
             protocols,
@@ -77,6 +79,7 @@ export class V2Client {
             sample_rate: sampleRate != null ? sampleRate : undefined,
             speed,
             expressivity,
+            normalize_volume: normalizeVolume != null ? normalizeVolume : undefined,
             mip_opt_out:
                 mipOptOut != null ? (typeof mipOptOut === "string" ? mipOptOut : toJson(mipOptOut)) : undefined,
             tag: tag != null ? (typeof tag === "string" ? tag : toJson(tag)) : undefined,
