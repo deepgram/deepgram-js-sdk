@@ -12,6 +12,11 @@ const deepgramClient = new DeepgramClient({
 
 const projectId = process.env.DEEPGRAM_PROJECT_ID;
 
+function reportError(error) {
+    console.error("Error:", error);
+    process.exitCode = 1;
+}
+
 // List all invites
 async function listInvites() {
     try {
@@ -19,7 +24,7 @@ async function listInvites() {
         console.log("Invites:", JSON.stringify(data, null, 2));
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -34,7 +39,7 @@ async function sendInvite() {
         console.log("Invite sent:", JSON.stringify(data, null, 2));
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -44,7 +49,7 @@ async function deleteInvite(email) {
         await deepgramClient.manage.v1.projects.members.invites.delete(projectId, email);
         console.log("Invite deleted successfully");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 

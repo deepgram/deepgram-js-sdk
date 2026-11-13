@@ -12,6 +12,11 @@ const deepgramClient = new DeepgramClient({
 
 const projectId = process.env.DEEPGRAM_PROJECT_ID;
 
+function reportError(error) {
+    console.error("Error:", error);
+    process.exitCode = 1;
+}
+
 // Get all balances
 async function getAllBalances() {
     try {
@@ -19,7 +24,7 @@ async function getAllBalances() {
         console.log("Balances:", data);
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -30,7 +35,7 @@ async function getBalance(balanceId) {
         console.log("Balance:", data);
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 

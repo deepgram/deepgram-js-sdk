@@ -12,6 +12,11 @@ const deepgramClient = new DeepgramClient({
 
 const projectId = process.env.DEEPGRAM_PROJECT_ID;
 
+function reportError(error) {
+    console.error("Error:", error);
+    process.exitCode = 1;
+}
+
 // List on-prem credentials
 async function listCredentials() {
     try {
@@ -19,7 +24,7 @@ async function listCredentials() {
         console.log("Credentials:", data);
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -29,7 +34,7 @@ async function getCredentials(credentialId) {
         const data = await deepgramClient.selfHosted.v1.distributionCredentials.get(projectId, credentialId);
         console.log("Credentials:", data);
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -41,7 +46,7 @@ async function createCredentials() {
         });
         console.log("Created credentials:", data);
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -51,7 +56,7 @@ async function deleteCredentials(credentialId) {
         await deepgramClient.selfHosted.v1.distributionCredentials.delete(projectId, credentialId);
         console.log("Credentials deleted successfully");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
