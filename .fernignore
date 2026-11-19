@@ -48,6 +48,7 @@ tests/unit/regen-constraints.test.ts
 tests/unit/request-body.test.ts
 tests/unit/rest-clients.test.ts
 tests/unit/sdk-version-header.test.ts
+tests/unit/self-hosted-auth-hint.test.ts
 tests/unit/socket-close-idempotent.test.ts
 tests/unit/speak-v2-batch.test.ts
 tests/unit/speak-v2-coverage.test.ts
