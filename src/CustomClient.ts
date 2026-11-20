@@ -1,6 +1,8 @@
 import { DeepgramClient } from "./Client.js";
 import { ReconnectingWebSocket } from "./core/websocket/ws.js";
 import { BadRequestError } from "./api/errors/index.js";
+import { HeaderAuthProvider } from "./auth/HeaderAuthProvider.js";
+import { DeepgramError } from "./errors/index.js";
 import type { AgentClient } from "./api/resources/agent/client/Client.js";
 import type { ListenClient } from "./api/resources/listen/client/Client.js";
 import type { SpeakClient } from "./api/resources/speak/client/Client.js";
@@ -109,18 +111,61 @@ function generateUUID(): string {
 }
 
 /**
+ * Appended to the generated "Please provide 'apiKey'" error when the client points at a server
+ * other than Deepgram's hosted API. Self-hosted and local Deepgram servers can run without
+ * request authentication, and nothing else tells the developer that `auth: false` is the fix.
+ */
+const SELF_HOSTED_NO_AUTH_HINT =
+    "If you are connecting to a self-hosted or local Deepgram server that does not require authentication, " +
+    "pass `auth: false` when initializing the client.";
+
+/**
+ * Whether a configured REST base URL is Deepgram's hosted API. An unset or unparseable URL counts
+ * as hosted, so the standard missing-key message is kept unless the host is clearly elsewhere.
+ */
+function isDeepgramHostedUrl(url: string | undefined): boolean {
+    if (url == null) {
+        return true;
+    }
+    try {
+        const host = new URL(url).hostname.toLowerCase();
+        return host === "deepgram.com" || host.endsWith(".deepgram.com");
+    } catch {
+        return true;
+    }
+}
+
+/** The REST base URL the client will call: `baseUrl` first, then the environment's `base`. */
+async function resolveConfiguredBaseUrl(options: DeepgramClient.Options): Promise<string | undefined> {
+    const baseUrl = await core.Supplier.get(options.baseUrl);
+    if (baseUrl != null) {
+        return baseUrl;
+    }
+    const environment = await core.Supplier.get(options.environment);
+    return environment?.base;
+}
+
+/**
  * Wrapper auth provider that adds "Token " prefix to API keys.
  * The auto-generated HeaderAuthProvider doesn't add the prefix, so we wrap it here.
+ * It also adds a self-hosted hint to the missing-key error (see SELF_HOSTED_NO_AUTH_HINT).
  */
 class ApiKeyAuthProviderWrapper implements core.AuthProvider {
     private readonly originalProvider: core.AuthProvider;
+    private readonly resolveBaseUrl: () => Promise<string | undefined>;
 
-    constructor(originalProvider: core.AuthProvider) {
+    constructor(originalProvider: core.AuthProvider, resolveBaseUrl: () => Promise<string | undefined>) {
         this.originalProvider = originalProvider;
+        this.resolveBaseUrl = resolveBaseUrl;
     }
 
     public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
-        const authRequest = await this.originalProvider.getAuthRequest(arg);
+        let authRequest: core.AuthRequest;
+        try {
+            authRequest = await this.originalProvider.getAuthRequest(arg);
+        } catch (error) {
+            throw await this.withSelfHostedHint(error);
+        }
         const authHeader = authRequest.headers?.Authorization || authRequest.headers?.authorization;
 
         // If the header doesn't already have a scheme prefix, add "Token " prefix for API keys
@@ -141,6 +186,24 @@ class ApiKeyAuthProviderWrapper implements core.AuthProvider {
         }
 
         return authRequest;
+    }
+
+    private async withSelfHostedHint(error: unknown): Promise<unknown> {
+        const isMissingKeyError =
+            error instanceof DeepgramError && error.message === HeaderAuthProvider.AUTH_CONFIG_ERROR_MESSAGE;
+        if (!isMissingKeyError) {
+            return error;
+        }
+        let baseUrl: string | undefined;
+        try {
+            baseUrl = await this.resolveBaseUrl();
+        } catch {
+            return error;
+        }
+        if (isDeepgramHostedUrl(baseUrl)) {
+            return error;
+        }
+        return new DeepgramError({ message: `${error.message}. ${SELF_HOSTED_NO_AUTH_HINT}`, cause: error });
     }
 }
 
@@ -324,7 +387,9 @@ export class CustomDeepgramClient extends DeepgramClient {
 
         // Always wrap the auth provider to add "Token " prefix to API keys
         // The auto-generated HeaderAuthProvider doesn't add the prefix
-        (this._options as any).authProvider = new ApiKeyAuthProviderWrapper(this._options.authProvider);
+        (this._options as any).authProvider = new ApiKeyAuthProviderWrapper(this._options.authProvider, () =>
+            resolveConfiguredBaseUrl(this._options),
+        );
 
         // Wrap again to handle accessToken if provided, or DEEPGRAM_ACCESS_TOKEN when
         // no explicit credential is passed. This ensures accessToken takes priority
