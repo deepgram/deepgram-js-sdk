@@ -62,7 +62,58 @@ class FakeTransport implements DeepgramTransport {
     }
 }
 
+class DeferredCloseTransport extends FakeTransport {
+    private resolveClose!: () => void;
+    private rejectClose!: (error: Error) => void;
+    private readonly closeCompletion = new Promise<void>((resolve, reject) => {
+        this.resolveClose = resolve;
+        this.rejectClose = reject;
+    });
+
+    public override close(): Promise<void> {
+        this.closed = true;
+        return this.closeCompletion;
+    }
+
+    public finishClose(): void {
+        this.resolveClose();
+    }
+
+    public failClose(error: Error): void {
+        this.rejectClose(error);
+    }
+}
+
+class EventDrivenCloseTransport extends FakeTransport {
+    public override close(): void {
+        this.closed = true;
+    }
+
+    public finishClose(): void {
+        this.listeners.close?.({ code: 1000 });
+    }
+}
+
+class ThrowingCloseTransport extends FakeTransport {
+    public override close(): void {
+        throw new Error("close failed");
+    }
+}
+
+class DeferredFactory {
+    private resolve!: (transport: DeepgramTransport) => void;
+    public readonly promise = new Promise<DeepgramTransport>((resolve) => {
+        this.resolve = resolve;
+    });
+
+    public complete(transport: DeepgramTransport): void {
+        this.resolve(transport);
+    }
+}
+
 describe("transportFactory", () => {
+    const waitForTransport = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+
     it("routes listen websocket connections through the custom transport instead of an HTTP agent", async () => {
         const created: Array<{ url: string; headers: Record<string, string>; request: { service: string } }> = [];
         const transport = new FakeTransport();
@@ -130,6 +181,96 @@ describe("transportFactory", () => {
 
         socket.ping("keepalive");
         expect(transport.pingPayloads).toEqual(["keepalive"]);
+    });
+
+    it("waits for a promise-returning custom transport to close during disposal", async () => {
+        const transport = new DeferredCloseTransport();
+        const client = new DeepgramClient({ apiKey: "test-api-key", transportFactory: () => transport });
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.connect();
+        await waitForTransport();
+
+        let settled = false;
+        const disposed = socket[Symbol.asyncDispose]().then(() => {
+            settled = true;
+        });
+        await Promise.resolve();
+
+        expect(transport.closed).toBe(true);
+        expect(settled).toBe(false);
+        transport.finishClose();
+        await disposed;
+        expect(settled).toBe(true);
+    });
+
+    it("waits for a void-returning custom transport to emit close during disposal", async () => {
+        const transport = new EventDrivenCloseTransport();
+        const client = new DeepgramClient({ apiKey: "test-api-key", transportFactory: () => transport });
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.connect();
+        await waitForTransport();
+
+        let settled = false;
+        const disposed = socket[Symbol.asyncDispose]().then(() => {
+            settled = true;
+        });
+        await Promise.resolve();
+
+        expect(transport.closed).toBe(true);
+        expect(settled).toBe(false);
+        transport.finishClose();
+        await disposed;
+        expect(settled).toBe(true);
+    });
+
+    it("rejects disposal when a custom transport close fails", async () => {
+        const transport = new DeferredCloseTransport();
+        const client = new DeepgramClient({ apiKey: "test-api-key", transportFactory: () => transport });
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.connect();
+        await waitForTransport();
+
+        const disposed = socket[Symbol.asyncDispose]();
+        const error = new Error("close failed");
+        transport.failClose(error);
+
+        await expect(disposed).rejects.toBe(error);
+    });
+
+    it("waits for a transport factory that resolves after disposal begins", async () => {
+        const factory = new DeferredFactory();
+        const transport = new EventDrivenCloseTransport();
+        const client = new DeepgramClient({ apiKey: "test-api-key", transportFactory: () => factory.promise });
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.connect();
+
+        let settled = false;
+        const disposed = socket[Symbol.asyncDispose]().then(() => {
+            settled = true;
+        });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+
+        factory.complete(transport);
+        await waitForTransport();
+        expect(transport.closed).toBe(true);
+        expect(settled).toBe(false);
+
+        transport.finishClose();
+        await disposed;
+        expect(settled).toBe(true);
+    });
+
+    it("preserves a synchronous custom transport close error", async () => {
+        const client = new DeepgramClient({
+            apiKey: "test-api-key",
+            transportFactory: () => new ThrowingCloseTransport(),
+        });
+        const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+        socket.connect();
+        await waitForTransport();
+
+        await expect(socket[Symbol.asyncDispose]()).rejects.toThrow("close failed");
     });
 
     it('routes Agent ForceEndTurn through the custom transport as {"type":"ForceEndTurn"}', async () => {
