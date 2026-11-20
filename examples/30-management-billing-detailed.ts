@@ -17,6 +17,11 @@ const deepgramClient = new DeepgramClient({
 
 const projectId = process.env.DEEPGRAM_PROJECT_ID;
 
+function reportError(error, context = "Error:") {
+    console.error(context, error);
+    process.exitCode = 1;
+}
+
 // Example 1: Get all balances
 async function getAllBalances() {
     console.log("\n=== All Account Balances ===\n");
@@ -29,7 +34,7 @@ async function getAllBalances() {
 
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -43,7 +48,7 @@ async function getSpecificBalance(balanceId) {
         console.log("Balance details:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -63,7 +68,7 @@ async function getBillingBreakdownByLineItem() {
         console.log("Billing breakdown by line item:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -80,7 +85,7 @@ async function getBillingBreakdownByAccessor() {
         console.log("Billing breakdown by accessor:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -97,7 +102,7 @@ async function getBillingBreakdownByDeployment() {
         console.log("Billing breakdown by deployment:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -114,7 +119,7 @@ async function getBillingBreakdownByTag() {
         console.log("Billing breakdown by tag:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -131,7 +136,7 @@ async function getBillingBreakdownMultiGrouped() {
         console.log("Billing breakdown with multiple groupings:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -150,7 +155,7 @@ async function getBillingForSpecificAccessor() {
         console.log("Billing for specific accessor:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -167,7 +172,7 @@ async function getBillingForSpecificLineItem() {
         console.log("Billing for nova-3 streaming:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -184,7 +189,7 @@ async function getBillingForDeployment() {
         console.log("Billing for hosted deployment:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -201,7 +206,7 @@ async function getBillingForSpecificTag() {
         console.log("Billing for 'production' tag:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -220,7 +225,7 @@ async function getDetailedBillingBreakdown() {
         console.log("Detailed billing breakdown:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -237,7 +242,7 @@ async function getPurchaseHistory() {
         console.log("Purchase history:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -256,7 +261,7 @@ async function getBillingFields() {
         console.log(JSON.stringify(data, null, 2));
         console.log("\nUse these fields to filter your billing breakdown queries!");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -281,7 +286,7 @@ async function getMonthlyBillingSummary() {
             console.log(`\n${month.name} billing:`);
             console.log(JSON.stringify(data, null, 2));
         } catch (error) {
-            console.error(`Error for ${month.name}:`, error);
+            reportError(error, `Error for ${month.name}:`);
         }
     }
 }

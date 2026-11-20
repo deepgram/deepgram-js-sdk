@@ -17,6 +17,11 @@ const deepgramClient = new DeepgramClient({
 
 const projectId = process.env.DEEPGRAM_PROJECT_ID;
 
+function reportError(error, context = "Error:") {
+    console.error(context, error);
+    process.exitCode = 1;
+}
+
 // Example 1: List all project members
 async function listProjectMembers() {
     console.log("\n=== Project Members ===\n");
@@ -29,7 +34,7 @@ async function listProjectMembers() {
 
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -45,7 +50,7 @@ async function getMemberScopes(memberId) {
 
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -61,7 +66,7 @@ async function promoteToAdmin(memberId) {
         console.log("Updated member scopes:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -77,7 +82,7 @@ async function demoteToMember(memberId) {
         console.log("Updated member scopes:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -93,7 +98,7 @@ async function listPendingInvites() {
 
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -110,7 +115,7 @@ async function inviteNewMember() {
         console.log("Invitation sent:");
         console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -125,7 +130,7 @@ async function revokeInvitation() {
 
         console.log("Invitation revoked successfully");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -138,7 +143,7 @@ async function removeMemberFromProject(memberId) {
 
         console.log("Member removed successfully");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -160,11 +165,11 @@ async function auditMemberPermissions() {
                 console.log(`  Scopes: ${JSON.stringify(scopes)}`);
                 console.log("");
             } catch (error) {
-                console.error(`  Error getting scopes: ${error.message}`);
+                reportError(error, "  Error getting scopes:");
             }
         }
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -200,7 +205,7 @@ async function manageTeamWorkflow() {
 
         console.log("\nTeam management workflow completed!");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -218,7 +223,7 @@ async function checkMemberPermission(memberId, requiredScope) {
 
         return hasPermission;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
         return false;
     }
 }

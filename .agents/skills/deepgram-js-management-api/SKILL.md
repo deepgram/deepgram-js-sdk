@@ -46,7 +46,7 @@ console.log("Projects:", JSON.stringify(projects, null, 2));
 
 const project = await deepgramClient.manage.v1.projects.get(projects.projects[0].project_id);
 await deepgramClient.manage.v1.projects.update(project.project_id, {
-  name: "Naomi's Sandbox",
+  name: "New Project Name",
 });
 
 const models = await deepgramClient.manage.v1.models.list();

@@ -12,6 +12,11 @@ const deepgramClient = new DeepgramClient({
 
 const projectId = process.env.DEEPGRAM_PROJECT_ID;
 
+function reportError(error) {
+    console.error("Error:", error);
+    process.exitCode = 1;
+}
+
 // Get all members
 async function getMembers() {
     try {
@@ -19,7 +24,7 @@ async function getMembers() {
         console.log("Members:", JSON.stringify(data, null, 2));
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -29,7 +34,7 @@ async function removeMember(memberId) {
         await deepgramClient.manage.v1.projects.members.delete(projectId, memberId);
         console.log("Member removed successfully");
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -40,7 +45,7 @@ async function getMemberScopes(memberId) {
         console.log("Member scopes:", data);
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 
@@ -53,7 +58,7 @@ async function updateMemberScope(memberId) {
         console.log("Updated member scope:", JSON.stringify(data, null, 2));
         return data;
     } catch (error) {
-        console.error("Error:", error);
+        reportError(error);
     }
 }
 

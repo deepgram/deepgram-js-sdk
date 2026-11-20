@@ -35,7 +35,7 @@ async function getProject(projectId) {
 async function updateProject(projectId) {
     try {
         const data = await deepgramClient.manage.v1.projects.update(projectId, {
-            name: "Naomi's Sandbox",
+            name: "New Project Name",
             // Add more update options as needed
         });
         console.log("Updated project:", data);
@@ -58,7 +58,8 @@ async function deleteProject(projectId) {
 (async () => {
     const projects = await getProjects();
     getProject(projects.projects[0].project_id);
-    updateProject(projects.projects[0].project_id);
-    // Not testing this one, it's destructive.
+    // Not testing these two, they're destructive: update renames a real project,
+    // and both run against projects.list()[0] rather than DEEPGRAM_PROJECT_ID.
+    // updateProject(projects.projects[0].project_id);
     // deleteProject(projects[0].id);
 })();
