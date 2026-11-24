@@ -42,8 +42,8 @@ export declare namespace PassthroughRequest {
         fetch?: typeof fetch;
         /** Logging configuration. */
         logging?: LogConfig | Logger;
-        /** A function that returns auth headers. */
-        getAuthHeaders?: () => Promise<Record<string, string>>;
+        /** A function that returns auth headers for the resolved request URL. */
+        getAuthHeaders?: (url: string) => Promise<Record<string, string>>;
     }
 }
 
@@ -138,7 +138,7 @@ export async function makePassthroughRequest(
     // This prevents credentials leaking through the passthrough fetch escape hatch while still
     // supporting absolute requests to Deepgram's separate REST hosts.
     if (clientOptions.getAuthHeaders != null && targetsBaseUrl(fullUrl, baseUrl)) {
-        const authHeaders = await clientOptions.getAuthHeaders();
+        const authHeaders = await clientOptions.getAuthHeaders(fullUrl);
         for (const [key, value] of Object.entries(authHeaders)) {
             mergedHeaders[key.toLowerCase()] = value;
         }

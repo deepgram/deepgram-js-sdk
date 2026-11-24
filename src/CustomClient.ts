@@ -610,6 +610,20 @@ function buildWebSocketUrl(url: string, queryParams: Record<string, unknown>): s
     return queryString ? `${url}?${queryString}` : url;
 }
 
+function toWebSocketUrl(url: string): string {
+    try {
+        const websocketUrl = new URL(url);
+        if (websocketUrl.protocol === "http:") {
+            websocketUrl.protocol = "ws:";
+        } else if (websocketUrl.protocol === "https:") {
+            websocketUrl.protocol = "wss:";
+        }
+        return websocketUrl.toString();
+    } catch {
+        return url;
+    }
+}
+
 function getTransportFactory(options: DeepgramClient.Options): DeepgramTransportFactory | undefined {
     return (options as CustomDeepgramClientOptions).transportFactory;
 }
@@ -1634,7 +1648,7 @@ async function createWebSocketConnection({
     const _headers = await resolveHeaders(mergedHeaders);
     const normalizedProtocols = normalizeProtocols(protocols);
 
-    const url = core.url.join(baseUrl, urlPath);
+    const url = toWebSocketUrl(core.url.join(baseUrl, urlPath));
     const fullUrl = buildWebSocketUrl(url, queryParams);
     const transportFactory = getTransportFactory(options);
     const reconnect = getReconnect(options);

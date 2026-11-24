@@ -45,6 +45,19 @@ describe("missing-key error hint for self-hosted servers", () => {
         throw new Error("expected models.list() to reject");
     };
 
+    const missingKeyFetchError = async (
+        options: ConstructorParameters<typeof DeepgramClient>[0],
+        targetUrl: string,
+    ): Promise<unknown> => {
+        const client = new DeepgramClient({ ...options, fetch: mockFetch, maxRetries: 0 });
+        try {
+            await client.fetch(targetUrl);
+        } catch (error) {
+            return error;
+        }
+        throw new Error("expected client.fetch() to reject");
+    };
+
     const authHeaderSent = (): string | undefined => {
         const [, init] = mockFetch.mock.calls[0];
         const headers = new Headers(init?.headers as HeadersInit);
@@ -100,6 +113,21 @@ describe("missing-key error hint for self-hosted servers", () => {
         const error = await missingKeyError({ baseUrl: "127.0.0.1:8000" });
         expect((error as DeepgramError).message).toContain(MISSING_KEY);
         expect((error as DeepgramError).message).toContain("auth: false");
+    });
+
+    it("classifies client.fetch() using its resolved target URL", async () => {
+        const hostedTargetError = await missingKeyFetchError({ baseUrl: LOCAL }, "https://api.deepgram.com/v1/models");
+        expect((hostedTargetError as DeepgramError).message).not.toContain("auth: false");
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        const client = new DeepgramClient({
+            baseUrl: "https://api.deepgram.com",
+            fetch: mockFetch,
+            maxRetries: 0,
+        });
+        await client.fetch(`${LOCAL}/v1/models`);
+        expect(mockFetch).toHaveBeenCalledTimes(1);
+        expect(authHeaderSent()).toBeUndefined();
     });
 
     it("classifies the target streaming endpoint instead of the REST base URL", async () => {
