@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.20.1](https://github.com/deepgram/deepgram-js-sdk/compare/v5.20.0...v5.20.1) (2026-11-24)
+
+
+### Bug Fixes
+
+* **fetch:** keep the query string of a relative client.fetch() path ([#603](https://github.com/deepgram/deepgram-js-sdk/issues/603)) ([e546043](https://github.com/deepgram/deepgram-js-sdk/commit/e546043afd29b6696b402c3b87855b22d259cf57))
+
 ## [5.20.0](https://github.com/deepgram/deepgram-js-sdk/compare/v5.19.0...v5.20.0) (2026-11-12)
 
 
