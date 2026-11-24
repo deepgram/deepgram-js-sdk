@@ -116,6 +116,18 @@ an overflow throws and closes the connection rather than retaining unbounded aud
 This works on `listen.v1`, `listen.v2`, `agent.v1`, `speak.v1` and `speak.v2`; on the sockets
 that carry audio, binary frames are delivered as a `Blob`.
 
+Streaming sockets also support TypeScript 5.2+ `using` and `await using` for scope-bound
+cleanup. The SDK installs the standard disposal symbols on supported Node 18 and browser
+runtimes when a streaming socket is created:
+
+```typescript
+await using connection = await client.listen.v1.createConnection({ model: "nova-3" });
+
+connection.connect();
+await connection.waitForOpen();
+// The connection is closed when this scope exits, including when it throws.
+```
+
 #### File Transcription
 
 Transcribe pre-recorded audio files ([API Reference](./reference.md)):

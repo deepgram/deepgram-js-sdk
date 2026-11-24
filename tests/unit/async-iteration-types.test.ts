@@ -56,4 +56,12 @@ describe("Socket async iteration types", () => {
         };
         expect(typeof _check).toBe("function");
     });
+
+    it("supports await using on streaming sockets", () => {
+        const _check = async () => {
+            await using connection = await client.listen.v1.createConnection({ model: "nova-3" });
+            connection.connect();
+        };
+        expect(typeof _check).toBe("function");
+    });
 });
