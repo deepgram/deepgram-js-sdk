@@ -99,7 +99,12 @@ export async function makePassthroughRequest(
     if (url.startsWith("http://") || url.startsWith("https://")) {
         fullUrl = url;
     } else if (baseUrl != null) {
-        fullUrl = join(baseUrl, url);
+        // join() assigns the path through URL.pathname, which percent-encodes "?" and "#".
+        // Split off the query string and fragment so they stay a query string and fragment.
+        const suffixStart = url.search(/[?#]/);
+        const path = suffixStart === -1 ? url : url.slice(0, suffixStart);
+        const suffix = suffixStart === -1 ? "" : url.slice(suffixStart);
+        fullUrl = `${join(baseUrl, path)}${suffix}`;
     } else {
         fullUrl = url;
     }

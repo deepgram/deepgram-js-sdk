@@ -43,6 +43,7 @@ tests/unit/misc-branches.test.ts
 tests/unit/multiple-keyterms.test.ts
 tests/unit/nodejs-version-compatibility.test.ts
 tests/unit/passthrough-auth.test.ts
+tests/unit/passthrough-query.test.ts
 tests/unit/regen-constraints.test.ts
 tests/unit/request-body.test.ts
 tests/unit/rest-clients.test.ts
@@ -290,7 +291,9 @@ src/errors/DeepgramTimeoutError.ts
 # compile-time signal. We widen `targetsBaseUrl` to allow the caller's base URL plus every
 # origin in DeepgramEnvironment; an unrelated host still receives no credentials. Report
 # upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
-# tests/unit/passthrough-auth.test.ts. Swap to .bak before regen.
+# tests/unit/passthrough-auth.test.ts. Also keeps a relative path's query string and
+# fragment out of join(), which percent-encodes "?" and "#" through URL.pathname.
+# Regression coverage in tests/unit/passthrough-query.test.ts. Swap to .bak before regen.
 src/core/fetcher/makePassthroughRequest.ts
 
 # src/core/fetcher/getResponseBody.ts: preserve the non-enumerable legacy
