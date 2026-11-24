@@ -67,14 +67,21 @@ describe("browser websocket connection (getWebSocketOptions)", () => {
     });
 
     it("converts an HTTP(S) base URL to a browser-safe WebSocket URL", async () => {
-        const httpClient = new DeepgramClient({ apiKey: "secret-key", baseUrl: "http://127.0.0.1:8000" });
-        const httpsClient = new DeepgramClient({ apiKey: "secret-key", baseUrl: "https://example.com" });
+        const cases = [
+            ["http://127.0.0.1:8000", "ws://127.0.0.1:8000/v1/listen"],
+            ["https://example.com", "wss://example.com/v1/listen"],
+            ["ws://127.0.0.1:8000", "ws://127.0.0.1:8000/v1/listen"],
+            ["wss://example.com", "wss://example.com/v1/listen"],
+        ] as const;
 
-        const httpSocket = await httpClient.listen.v1.connect({ model: "nova-3" });
-        const httpsSocket = await httpsClient.listen.v1.connect({ model: "nova-3" });
+        for (const [baseUrl, expectedUrl] of cases) {
+            const client = new DeepgramClient({ apiKey: "secret-key", baseUrl });
+            const socket = await client.listen.v1.connect({ model: "nova-3" });
 
-        expect(urlOf(httpSocket)).toBe("ws://127.0.0.1:8000/v1/listen");
-        expect(urlOf(httpsSocket)).toBe("wss://example.com/v1/listen");
+            expect(urlOf(socket)).toBe(expectedUrl);
+            expect(protocolsOf(socket)).toContain("token");
+            expect(protocolsOf(socket)).toContain("secret-key");
+        }
     });
 });
 

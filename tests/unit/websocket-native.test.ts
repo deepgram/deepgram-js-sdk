@@ -14,6 +14,15 @@ function aborted(): AbortSignal {
     return c.signal;
 }
 
+function urlOf(wrapped: unknown): string {
+    return (wrapped as any).socket._url;
+}
+
+function authorizationOf(wrapped: unknown): string | undefined {
+    const headers = (wrapped as any).socket._headers ?? {};
+    return headers.Authorization ?? headers.authorization;
+}
+
 describe("native websocket connections (no transportFactory)", () => {
     it("builds a Node websocket for listen v1/v2, agent and speak", async () => {
         const client = new DeepgramClient({ apiKey: "secret" });
@@ -50,6 +59,26 @@ describe("native websocket connections (no transportFactory)", () => {
             abortSignal: aborted(),
         });
         expect(socket).toBeDefined();
+    });
+
+    it("normalizes HTTP(S) base URLs while preserving native auth headers", async () => {
+        const cases = [
+            ["http://127.0.0.1:8000", "ws://127.0.0.1:8000/v1/listen"],
+            ["https://example.com", "wss://example.com/v1/listen"],
+            ["ws://127.0.0.1:8000", "ws://127.0.0.1:8000/v1/listen"],
+            ["wss://example.com", "wss://example.com/v1/listen"],
+        ] as const;
+
+        for (const [baseUrl, expectedUrl] of cases) {
+            const client = new DeepgramClient({ apiKey: "secret", baseUrl });
+            const socket = await client.listen.v1.connect({
+                model: "nova-3",
+                abortSignal: aborted(),
+            });
+
+            expect(urlOf(socket)).toBe(expectedUrl);
+            expect(authorizationOf(socket)).toBe("Token secret");
+        }
     });
 });
 
