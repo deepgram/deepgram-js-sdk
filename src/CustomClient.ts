@@ -120,8 +120,9 @@ const SELF_HOSTED_NO_AUTH_HINT =
     "pass `auth: false` when initializing the client.";
 
 /**
- * Whether a configured REST base URL is Deepgram's hosted API. An unset or unparseable URL counts
- * as hosted, so the standard missing-key message is kept unless the host is clearly elsewhere.
+ * Whether a configured REST base URL is Deepgram's hosted API. Only an unset URL counts as hosted,
+ * because every request then goes to `DeepgramEnvironment.Production`. A URL that can't be parsed
+ * (for example `127.0.0.1:8000`, with the scheme left off) can never be Deepgram's host.
  */
 function isDeepgramHostedUrl(url: string | undefined): boolean {
     if (url == null) {
@@ -131,7 +132,7 @@ function isDeepgramHostedUrl(url: string | undefined): boolean {
         const host = new URL(url).hostname.toLowerCase();
         return host === "deepgram.com" || host.endsWith(".deepgram.com");
     } catch {
-        return true;
+        return false;
     }
 }
 

@@ -271,7 +271,7 @@ const client = new DeepgramClient({
 });
 ```
 
-`baseUrl` covers both REST and streaming requests; the SDK opens WebSockets on `ws://` (or `wss://`) at the same host. Without `auth: false` and without a key, requests fail with a "Please provide 'apiKey'" error. If your server does require a key, pass `apiKey` as usual.
+`baseUrl` covers both REST and streaming requests; an `http://` URL is opened as `ws://` (and `https://` as `wss://`) for streaming. Without `auth: false` and without a key, requests fail with a "Please provide 'apiKey'" error. If your server does require a key, pass `apiKey` as usual.
 
 ### Getting an API Key
 

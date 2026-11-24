@@ -90,6 +90,13 @@ describe("missing-key error hint for self-hosted servers", () => {
         expect((error as DeepgramError).message).toContain("auth: false");
     });
 
+    it("adds the hint when baseUrl has no scheme and can't be parsed", async () => {
+        // An easy mistake with a local server; an unparseable URL can never be Deepgram's host.
+        const error = await missingKeyError({ baseUrl: "127.0.0.1:8000" });
+        expect((error as DeepgramError).message).toContain(MISSING_KEY);
+        expect((error as DeepgramError).message).toContain("auth: false");
+    });
+
     it("adds the hint on the streaming path too", async () => {
         const client = new DeepgramClient({ baseUrl: LOCAL });
         await expect(client.listen.v2.connect({ model: "flux-general-en", reconnectAttempts: 0 })).rejects.toThrow(
