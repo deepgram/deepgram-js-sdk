@@ -132,6 +132,33 @@ describe("transportFactory", () => {
         expect(transport.pingPayloads).toEqual(["keepalive"]);
     });
 
+    it("normalizes HTTP(S) base URLs before passing them to a custom transport", async () => {
+        const cases = [
+            ["http://127.0.0.1:8000", "ws://127.0.0.1:8000/v1/listen?model=nova-3"],
+            ["https://example.com", "wss://example.com/v1/listen?model=nova-3"],
+            ["ws://127.0.0.1:8000", "ws://127.0.0.1:8000/v1/listen?model=nova-3"],
+            ["wss://example.com", "wss://example.com/v1/listen?model=nova-3"],
+        ] as const;
+
+        for (const [baseUrl, expectedUrl] of cases) {
+            const urls: string[] = [];
+            const client = new DeepgramClient({
+                apiKey: "test-api-key",
+                baseUrl,
+                transportFactory: (url) => {
+                    urls.push(url);
+                    return new FakeTransport();
+                },
+            });
+            const socket = await client.listen.v1.createConnection({ model: "nova-3" });
+
+            socket.connect();
+            await Promise.resolve();
+
+            expect(urls).toEqual([expectedUrl]);
+        }
+    });
+
     it('routes Agent ForceEndTurn through the custom transport as {"type":"ForceEndTurn"}', async () => {
         const transport = new FakeTransport();
         const created: Array<{ url: string; request: { service: string } }> = [];
