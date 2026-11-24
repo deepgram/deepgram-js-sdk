@@ -99,7 +99,24 @@ export async function makePassthroughRequest(
     if (url.startsWith("http://") || url.startsWith("https://")) {
         fullUrl = url;
     } else if (baseUrl != null) {
-        fullUrl = join(baseUrl, url);
+        // join() assigns the path through URL.pathname, which percent-encodes "?" and "#".
+        // Split them off before joining and attach them with URL so a query on baseUrl remains valid.
+        const hashStart = url.indexOf("#");
+        const queryStart = url.indexOf("?");
+        const suffixStarts = [queryStart, hashStart].filter((index) => index !== -1);
+        const pathEnd = suffixStarts.length === 0 ? url.length : Math.min(...suffixStarts);
+        const path = url.slice(0, pathEnd);
+        const relativeSuffix = new URL(url.slice(pathEnd) || "/", "https://relative.invalid");
+        const resolvedUrl = new URL(join(baseUrl, path));
+        if (relativeSuffix.search) {
+            resolvedUrl.search = resolvedUrl.search
+                ? `${resolvedUrl.search}&${relativeSuffix.search.slice(1)}`
+                : relativeSuffix.search;
+        }
+        if (relativeSuffix.hash) {
+            resolvedUrl.hash = relativeSuffix.hash;
+        }
+        fullUrl = resolvedUrl.toString();
     } else {
         fullUrl = url;
     }
