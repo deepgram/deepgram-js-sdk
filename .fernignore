@@ -292,7 +292,8 @@ src/errors/DeepgramTimeoutError.ts
 # origin in DeepgramEnvironment; an unrelated host still receives no credentials. Report
 # upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
 # tests/unit/passthrough-auth.test.ts. Also keeps a relative path's query string and
-# fragment out of join(), which percent-encodes "?" and "#" through URL.pathname.
+# fragment out of join(), which percent-encodes "?" and "#" through URL.pathname, while
+# retaining any query string configured on the base URL.
 # Regression coverage in tests/unit/passthrough-query.test.ts. Swap to .bak before regen.
 src/core/fetcher/makePassthroughRequest.ts
 

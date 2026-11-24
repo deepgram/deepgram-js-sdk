@@ -27,4 +27,28 @@ describe("client.fetch() relative path with a query string", () => {
         const calledUrl = String((mockFetch.mock.calls[0] as unknown[])[0]);
         expect(calledUrl).toBe("https://proxy.example.com/deepgram/v1/models?include_outdated=true");
     });
+
+    it("combines the base URL and relative path query strings", async () => {
+        const mockFetch = vi.fn(async () => new Response("{}", { status: 200 }));
+        const client = new DeepgramClient({
+            apiKey: "test-key",
+            baseUrl: "https://proxy.example.com/deepgram?tenant=a",
+            fetch: mockFetch as unknown as typeof fetch,
+        });
+
+        await client.fetch("/v1/projects?limit=10&page=2");
+
+        const calledUrl = String((mockFetch.mock.calls[0] as unknown[])[0]);
+        expect(calledUrl).toBe("https://proxy.example.com/deepgram/v1/projects?tenant=a&limit=10&page=2");
+    });
+
+    it("keeps a fragment separate from the joined path and query", async () => {
+        const mockFetch = vi.fn(async () => new Response("{}", { status: 200 }));
+        const client = new DeepgramClient({ apiKey: "test-key", fetch: mockFetch as unknown as typeof fetch });
+
+        await client.fetch("/v1/projects?limit=10#client-fragment");
+
+        const calledUrl = String((mockFetch.mock.calls[0] as unknown[])[0]);
+        expect(calledUrl).toBe("https://api.deepgram.com/v1/projects?limit=10#client-fragment");
+    });
 });
