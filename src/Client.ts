@@ -19,6 +19,13 @@ export declare namespace DeepgramClient {
     export interface RequestOptions extends BaseRequestOptions {}
 }
 
+type TargetAwareAuthProvider = core.AuthProvider & {
+    getAuthRequest(arg?: {
+        endpointMetadata?: core.EndpointMetadata;
+        targetBaseUrl?: string;
+    }): Promise<core.AuthRequest>;
+};
+
 export class DeepgramClient {
     protected readonly _options: NormalizedClientOptionsWithAuth<DeepgramClient.Options>;
     protected _agent: AgentClient | undefined;
@@ -99,7 +106,12 @@ export class DeepgramClient {
                 maxRetries: this._options.maxRetries,
                 fetch: this._options.fetch,
                 logging: this._options.logging,
-                getAuthHeaders: async () => (await this._options.authProvider.getAuthRequest()).headers,
+                getAuthHeaders: async (targetUrl) =>
+                    (
+                        await (this._options.authProvider as TargetAwareAuthProvider).getAuthRequest({
+                            targetBaseUrl: targetUrl,
+                        })
+                    ).headers,
             },
             requestOptions,
         );

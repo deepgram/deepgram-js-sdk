@@ -48,6 +48,7 @@ tests/unit/regen-constraints.test.ts
 tests/unit/request-body.test.ts
 tests/unit/rest-clients.test.ts
 tests/unit/sdk-version-header.test.ts
+tests/unit/self-hosted-auth-hint.test.ts
 tests/unit/socket-close-idempotent.test.ts
 tests/unit/speak-v2-batch.test.ts
 tests/unit/speak-v2-coverage.test.ts
@@ -191,8 +192,13 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProv
 # (agent.deepgram.com) after the upstream spec introduced the new agentRest
 # slot. The passthrough is documented as the catch-all for endpoints not yet
 # supported in the SDK and should default to the canonical Deepgram REST host.
-# Likely a Fern generator artifact — when the upstream fix lands, drop this
-# entry. Swap to .bak before regen.
+# The auth callback also receives the resolved passthrough URL, so the
+# self-hosted missing-key guidance classifies the actual target rather than
+# the configured base URL. The default-base correction is a Fern generator
+# artifact that can be dropped when fixed upstream; the resolved-URL auth
+# hand-off is a permanent local patch and must be re-applied after every
+# regen. Regression coverage in tests/unit/self-hosted-auth-hint.test.ts.
+# Swap to .bak before regen.
 src/Client.ts
 
 # src/version.ts is the single source of truth for the SDK version. It carries the
@@ -290,11 +296,14 @@ src/errors/DeepgramTimeoutError.ts
 # its auth header and failed with an unexplained 401 — a runtime break with no
 # compile-time signal. We widen `targetsBaseUrl` to allow the caller's base URL plus every
 # origin in DeepgramEnvironment; an unrelated host still receives no credentials. Report
-# upstream to Fern — this is a generator bug, not a spec issue. Regression coverage in
-# tests/unit/passthrough-auth.test.ts. Also keeps a relative path's query string and
-# fragment out of join(), which percent-encodes "?" and "#" through URL.pathname, while
-# retaining any query string configured on the base URL.
-# Regression coverage in tests/unit/passthrough-query.test.ts. Swap to .bak before regen.
+# upstream to Fern — this is a generator bug, not a spec issue. Its auth callback receives the
+# resolved URL so the self-hosted missing-key guidance applies to the actual target, not merely
+# the configured base. It also keeps a relative path's query string and fragment out of join(),
+# which percent-encodes "?" and "#" through URL.pathname, while retaining any query string
+# configured on the base URL. Regression coverage in tests/unit/passthrough-auth.test.ts,
+# tests/unit/passthrough-query.test.ts, and tests/unit/self-hosted-auth-hint.test.ts.
+# The resolved-URL hand-off is a permanent local patch and must be re-applied after every regen.
+# Swap to .bak before regen.
 src/core/fetcher/makePassthroughRequest.ts
 
 # src/core/fetcher/getResponseBody.ts: preserve the non-enumerable legacy

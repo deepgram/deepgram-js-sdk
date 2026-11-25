@@ -1,6 +1,8 @@
 import { DeepgramClient } from "./Client.js";
 import { ReconnectingWebSocket } from "./core/websocket/ws.js";
 import { BadRequestError } from "./api/errors/index.js";
+import { HeaderAuthProvider } from "./auth/HeaderAuthProvider.js";
+import { DeepgramError } from "./errors/index.js";
 import type { AgentClient } from "./api/resources/agent/client/Client.js";
 import type { ListenClient } from "./api/resources/listen/client/Client.js";
 import type { SpeakClient } from "./api/resources/speak/client/Client.js";
@@ -109,18 +111,81 @@ function generateUUID(): string {
 }
 
 /**
+ * Appended to the generated "Please provide 'apiKey'" error when the client points at a server
+ * other than Deepgram's hosted API. Self-hosted and local Deepgram servers can run without
+ * request authentication, and nothing else tells the developer that `auth: false` is the fix.
+ */
+const SELF_HOSTED_NO_AUTH_HINT =
+    "If you are connecting to a self-hosted or local Deepgram server that does not require authentication, " +
+    "pass 'auth: false' when initializing the client.";
+
+/**
+ * Whether a configured REST base URL is Deepgram's hosted API. Only an unset URL counts as hosted,
+ * because every request then goes to `DeepgramEnvironment.Production`. A URL that can't be parsed
+ * (for example `127.0.0.1:8000`, with the scheme left off) can never be Deepgram's host.
+ */
+function isDeepgramHostedUrl(url: string | undefined): boolean {
+    if (url == null) {
+        return true;
+    }
+    try {
+        const host = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
+        return host === "deepgram.com" || host.endsWith(".deepgram.com");
+    } catch {
+        return false;
+    }
+}
+
+/** The REST base URL the client will call: `baseUrl` first, then the environment's `base`. */
+async function resolveConfiguredBaseUrl(options: DeepgramClient.Options): Promise<string | undefined> {
+    const baseUrl = await core.Supplier.get(options.baseUrl);
+    if (baseUrl != null) {
+        return baseUrl;
+    }
+    const environment = await core.Supplier.get(options.environment);
+    return environment?.base;
+}
+
+async function resolveWebSocketBaseUrl(
+    options: DeepgramClient.Options,
+    environmentKey: "agent" | "production",
+): Promise<string> {
+    const baseUrl = await core.Supplier.get(options.baseUrl);
+    if (baseUrl != null) {
+        return baseUrl;
+    }
+    const environment = await core.Supplier.get(options.environment);
+    return (environment ?? environments.DeepgramEnvironment.Production)[environmentKey];
+}
+
+interface AuthRequestOptions {
+    endpointMetadata?: core.EndpointMetadata;
+    targetBaseUrl?: string;
+}
+
+/**
  * Wrapper auth provider that adds "Token " prefix to API keys.
  * The auto-generated HeaderAuthProvider doesn't add the prefix, so we wrap it here.
+ * It also adds a self-hosted hint to the missing-key error (see SELF_HOSTED_NO_AUTH_HINT).
  */
 class ApiKeyAuthProviderWrapper implements core.AuthProvider {
     private readonly originalProvider: core.AuthProvider;
+    private readonly resolveBaseUrl: () => Promise<string | undefined>;
 
-    constructor(originalProvider: core.AuthProvider) {
+    constructor(originalProvider: core.AuthProvider, resolveBaseUrl: () => Promise<string | undefined>) {
         this.originalProvider = originalProvider;
+        this.resolveBaseUrl = resolveBaseUrl;
     }
 
-    public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
-        const authRequest = await this.originalProvider.getAuthRequest(arg);
+    public async getAuthRequest(arg?: AuthRequestOptions): Promise<core.AuthRequest> {
+        let authRequest: core.AuthRequest;
+        try {
+            authRequest = await this.originalProvider.getAuthRequest(
+                arg?.endpointMetadata == null ? undefined : { endpointMetadata: arg.endpointMetadata },
+            );
+        } catch (error) {
+            throw await this.withSelfHostedHint(error, arg?.targetBaseUrl);
+        }
         const authHeader = authRequest.headers?.Authorization || authRequest.headers?.authorization;
 
         // If the header doesn't already have a scheme prefix, add "Token " prefix for API keys
@@ -141,6 +206,24 @@ class ApiKeyAuthProviderWrapper implements core.AuthProvider {
         }
 
         return authRequest;
+    }
+
+    private async withSelfHostedHint(error: unknown, targetBaseUrl?: string): Promise<unknown> {
+        const isMissingKeyError =
+            error instanceof DeepgramError && error.message === HeaderAuthProvider.AUTH_CONFIG_ERROR_MESSAGE;
+        if (!isMissingKeyError) {
+            return error;
+        }
+        let baseUrl: string | undefined;
+        try {
+            baseUrl = targetBaseUrl ?? (await this.resolveBaseUrl());
+        } catch {
+            return error;
+        }
+        if (isDeepgramHostedUrl(baseUrl)) {
+            return error;
+        }
+        return new DeepgramError({ message: `${error.message}. ${SELF_HOSTED_NO_AUTH_HINT}`, cause: error });
     }
 }
 
@@ -163,7 +246,7 @@ class AccessTokenAuthProviderWrapper implements core.AuthProvider {
         this.allowEnvAccessToken = allowEnvAccessToken;
     }
 
-    public async getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
+    public async getAuthRequest(arg?: AuthRequestOptions): Promise<core.AuthRequest> {
         // Check for access token first (highest priority)
         // Access tokens use Bearer scheme, API keys use Token scheme
         const explicitAccessToken = await core.Supplier.get(this.accessToken);
@@ -324,7 +407,9 @@ export class CustomDeepgramClient extends DeepgramClient {
 
         // Always wrap the auth provider to add "Token " prefix to API keys
         // The auto-generated HeaderAuthProvider doesn't add the prefix
-        (this._options as any).authProvider = new ApiKeyAuthProviderWrapper(this._options.authProvider);
+        (this._options as any).authProvider = new ApiKeyAuthProviderWrapper(this._options.authProvider, () =>
+            resolveConfiguredBaseUrl(this._options),
+        );
 
         // Wrap again to handle accessToken if provided, or DEEPGRAM_ACCESS_TOKEN when
         // no explicit credential is passed. This ensures accessToken takes priority
@@ -523,6 +608,20 @@ function stringifyHeaders(headers: Record<string, unknown>): Record<string, stri
 function buildWebSocketUrl(url: string, queryParams: Record<string, unknown>): string {
     const queryString = core.url.toQueryString(queryParams, { arrayFormat: "repeat" });
     return queryString ? `${url}?${queryString}` : url;
+}
+
+function toWebSocketUrl(url: string): string {
+    try {
+        const websocketUrl = new URL(url);
+        if (websocketUrl.protocol === "http:") {
+            websocketUrl.protocol = "ws:";
+        } else if (websocketUrl.protocol === "https:") {
+            websocketUrl.protocol = "wss:";
+        }
+        return websocketUrl.toString();
+    } catch {
+        return url;
+    }
 }
 
 function getTransportFactory(options: DeepgramClient.Options): DeepgramTransportFactory | undefined {
@@ -1532,8 +1631,15 @@ async function createWebSocketConnection({
     // Ensure ws is loaded for Node.js environments (no-op after first call)
     await loadNodeWebSocket();
 
-    // Get Authorization from authProvider (cast to any to access internal property)
-    const authRequest = await (options as any).authProvider?.getAuthRequest();
+    // Get the appropriate base URL for the environment before resolving auth. A client-level
+    // baseUrl overrides both REST and streaming endpoints; otherwise streams use their own
+    // production or agent URL from the configured environment.
+    const baseUrl = await resolveWebSocketBaseUrl(options, environmentKey);
+
+    // Get Authorization from authProvider (cast to any to access internal property).
+    // The target endpoint lets its missing-key guidance distinguish a self-hosted stream from
+    // a hosted REST base URL (and vice versa).
+    const authRequest = await (options as any).authProvider?.getAuthRequest({ targetBaseUrl: baseUrl });
 
     // Merge headers from options (which includes session ID), auth headers, and request headers
     const mergedHeaders = mergeHeaders(options.headers ?? {}, authRequest?.headers ?? {}, headers);
@@ -1542,12 +1648,7 @@ async function createWebSocketConnection({
     const _headers = await resolveHeaders(mergedHeaders);
     const normalizedProtocols = normalizeProtocols(protocols);
 
-    // Get the appropriate base URL for the environment
-    const baseUrl =
-        (await core.Supplier.get(options.baseUrl)) ??
-        ((await core.Supplier.get(options.environment)) ?? environments.DeepgramEnvironment.Production)[environmentKey];
-
-    const url = core.url.join(baseUrl, urlPath);
+    const url = toWebSocketUrl(core.url.join(baseUrl, urlPath));
     const fullUrl = buildWebSocketUrl(url, queryParams);
     const transportFactory = getTransportFactory(options);
     const reconnect = getReconnect(options);
