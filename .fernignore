@@ -194,9 +194,11 @@ src/api/resources/agent/resources/v1/types/AgentV1SettingsAgentContextListenProv
 # supported in the SDK and should default to the canonical Deepgram REST host.
 # The auth callback also receives the resolved passthrough URL, so the
 # self-hosted missing-key guidance classifies the actual target rather than
-# the configured base URL. Likely Fern generator artifacts — when the
-# upstream fixes land, drop this entry. Regression coverage in
-# tests/unit/self-hosted-auth-hint.test.ts. Swap to .bak before regen.
+# the configured base URL. The default-base correction is a Fern generator
+# artifact that can be dropped when fixed upstream; the resolved-URL auth
+# hand-off is a permanent local patch and must be re-applied after every
+# regen. Regression coverage in tests/unit/self-hosted-auth-hint.test.ts.
+# Swap to .bak before regen.
 src/Client.ts
 
 # src/version.ts is the single source of truth for the SDK version. It carries the
