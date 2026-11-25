@@ -20,7 +20,10 @@ export declare namespace DeepgramClient {
 }
 
 type TargetAwareAuthProvider = core.AuthProvider & {
-    getAuthRequest(arg?: { endpointMetadata?: core.EndpointMetadata; targetBaseUrl?: string }): Promise<core.AuthRequest>;
+    getAuthRequest(arg?: {
+        endpointMetadata?: core.EndpointMetadata;
+        targetBaseUrl?: string;
+    }): Promise<core.AuthRequest>;
 };
 
 export class DeepgramClient {
@@ -104,9 +107,11 @@ export class DeepgramClient {
                 fetch: this._options.fetch,
                 logging: this._options.logging,
                 getAuthHeaders: async (targetUrl) =>
-                    (await (this._options.authProvider as TargetAwareAuthProvider).getAuthRequest({
-                        targetBaseUrl: targetUrl,
-                    })).headers,
+                    (
+                        await (this._options.authProvider as TargetAwareAuthProvider).getAuthRequest({
+                            targetBaseUrl: targetUrl,
+                        })
+                    ).headers,
             },
             requestOptions,
         );

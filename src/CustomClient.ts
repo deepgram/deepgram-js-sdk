@@ -117,7 +117,7 @@ function generateUUID(): string {
  */
 const SELF_HOSTED_NO_AUTH_HINT =
     "If you are connecting to a self-hosted or local Deepgram server that does not require authentication, " +
-    "pass `auth: false` when initializing the client.";
+    "pass 'auth: false' when initializing the client.";
 
 /**
  * Whether a configured REST base URL is Deepgram's hosted API. Only an unset URL counts as hosted,

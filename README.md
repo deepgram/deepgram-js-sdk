@@ -260,7 +260,7 @@ The SDK automatically discovers credentials from these environment variables:
 
 ### Self-Hosted and Local Servers Without Authentication
 
-A self-hosted or local Deepgram server may not require request authentication. Point the client at it with `baseUrl` and pass `auth: false` so the SDK doesn't ask for an API key:
+A self-hosted or local [Deepgram server](https://developers.deepgram.com/docs/self-hosted-introduction) may not require request authentication. Point the client at it with `baseUrl` and pass `auth: false` so the SDK doesn't ask for an API key:
 
 ```typescript
 import { DeepgramClient } from "@deepgram/sdk";
@@ -271,7 +271,7 @@ const client = new DeepgramClient({
 });
 ```
 
-`baseUrl` covers both REST and streaming requests; an `http://` URL is opened as `ws://` (and `https://` as `wss://`) for streaming. Without `auth: false` and without a key, requests fail with a "Please provide 'apiKey'" error. If your server does require a key, pass `apiKey` as usual.
+`baseUrl` covers both REST and streaming requests; an `http://` URL is opened as `ws://` (and `https://` as `wss://`) for streaming. Without `auth: false` and without a key, requests and streaming connections fail with a "Please provide 'apiKey'" error. If your server does require a key, pass `apiKey` as usual.
 
 ### Getting an API Key
 

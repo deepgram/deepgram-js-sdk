@@ -1,5 +1,6 @@
 import type { Mock } from "vitest";
 import { DeepgramClient, DeepgramError } from "../../src";
+import { HeaderAuthProvider } from "../../src/auth/HeaderAuthProvider.js";
 
 /**
  * Self-hosted and local Deepgram servers can run without request authentication. Pointing the
@@ -89,7 +90,7 @@ describe("missing-key error hint for self-hosted servers", () => {
     it("keeps the generated message unchanged for the default hosted API", async () => {
         const error = await missingKeyError({});
         expect(error).toBeInstanceOf(DeepgramError);
-        expect((error as DeepgramError).message).toContain(MISSING_KEY);
+        expect((error as DeepgramError).message).toBe(HeaderAuthProvider.AUTH_CONFIG_ERROR_MESSAGE);
         expect((error as DeepgramError).message).not.toContain("auth: false");
     });
 
